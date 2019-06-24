@@ -56,37 +56,6 @@ glueExt {g = glue _ a _} p refl =
     (λ {(t , ft≡a) → glue t a ft≡a})
     (Σext (funext p) (funext (λ _ → uipImp)))
 
-abstract
-  FibFiber : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} (f : ∀ x → A x → B x)
-    → isFib A → isFib B → isFib (Fiber' f)
-  FibFiber {A = A} {B} f α β =
-    FibΣ
-      (reindex A α fst)
-      (reindex (Path' B) (FibPath β) (λ {((x , b) , a) → (x , f x a , b)}))
-
-  reindexFiber : ∀ {ℓ ℓ'}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set}
-    {B : Γ → Set}
-    (f : ∀ x → A x → B x)
-    (α : isFib A)
-    (β : isFib B)
-    (ρ : Δ → Γ)
-    → ----------------------
-    reindex (Fiber' f) (FibFiber f α β) (ρ ×id) ≡ FibFiber (f ∘ ρ) (reindex A α ρ) (reindex B β ρ)
-  reindexFiber {A = A} {B} f α β ρ =
-    trans
-      (cong
-        (λ δ →
-          FibΣ (reindex A α (ρ ∘ fst))
-            (reindex (Path' (λ z → B (ρ z))) δ (λ {((x , b) , a) → (x , f (ρ x) a , b)})))
-        (reindexPath B β ρ))
-      (reindexΣ (A ∘ fst) (λ {((x , b) , a) → f x a ~ b})
-        (reindex A α fst)
-        (reindex (Path' B) (FibPath β) (λ {((x , b) , a) → (x , f x a , b)}))
-        (ρ ×id))
-
-
 module FibGlueId
   (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)
