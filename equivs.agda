@@ -35,8 +35,8 @@ Fiber' f (x , b) = Fiber (f x) b
 Equiv : {A B : Set} (f : A → B) → Set
 Equiv {B = B} f = (b : B) → Contr (Fiber f b)
 
-Equiv' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} (f : (x : Γ) → A x → B x) → Set ℓ
-Equiv' {Γ = Γ} f = (x : Γ) → Equiv (f x)
+Equiv' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} (f : (x : Γ) → A x → B x) → (Γ → Set)
+Equiv' {Γ = Γ} f x = Equiv (f x)
 
 Qinv : {A B : Set} (f : A → B) → Set
 Qinv {A} {B} f = Σ g ∈ (B → A) , ((b : B) → f (g b) ~ b) × ((a : A) → g (f a) ~ a)
@@ -65,7 +65,7 @@ fiberDomEqDep :  {A B : Set} {f : A → B} {b b' : B} (p : b ≡ b') {x : Fiber 
 fiberDomEqDep refl refl = refl
 
 -- The identity map on a fibration is an equivalence
-idEquiv : ∀ {ℓ} {Γ : Set ℓ} {A : Γ → Set} → isFib A → Equiv' {A = A} (λ _ → id)
+idEquiv : ∀ {ℓ} {Γ : Set ℓ} {A : Γ → Set} → isFib A → Π (Equiv' {A = A} (λ _ → id))
 idEquiv {A = A} α x a .fst = (a , refl~ a)
 idEquiv {A = A} α x a .snd (a' , p) =
   path

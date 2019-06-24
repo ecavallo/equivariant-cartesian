@@ -26,7 +26,7 @@ FibSGlue :
   {A : res Γ Φ → Set}
   {B : Γ → Set}
   (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Equiv' f)
+  (equiv : Π (Equiv' f))
   → ---------------
   isFib A → isFib B → isFib (SGlue' Φ A B f)
 FibSGlue {a} {Γ} Φ {A} {B} f equiv α β =
@@ -41,7 +41,7 @@ FibSGlueStrictness :
   {A : res Γ Φ → Set}
   {B : Γ → Set}
   (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Equiv' f)
+  (equiv : Π (Equiv' f))
   (α : isFib A) (β : isFib B)
   → ---------------
   subst isFib (SGlueStrictness' Φ f) α ≡ reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) fst
@@ -57,7 +57,7 @@ SGlueFib :
   (Aα : Fib (res Γ Φ))
   (Bβ : Fib Γ)
   (f : (xu : res Γ Φ) → Aα .fst xu → Bβ .fst (xu .fst))
-  (equiv : Equiv' f)
+  (equiv : Π (Equiv' f))
   → ---------------
   Fib Γ
 SGlueFib {a} {Γ} Φ (A , α) (B , β) f equiv =
@@ -69,7 +69,7 @@ SGlueFibStrictness :
   (Aα : Fib (res Γ Φ))
   (Bβ : Fib Γ)
   (f : (xu : res Γ Φ) → Aα .fst xu → Bβ .fst (xu .fst))
-  (equiv : Equiv' f)
+  (equiv : Π (Equiv' f))
   → Aα ≡ reindex' (SGlueFib Φ Aα Bβ f equiv) fst
 SGlueFibStrictness Φ (A , α) (B , β) f equiv =
   Σext (SGlueStrictness' Φ f) (FibSGlueStrictness Φ f equiv α β)
@@ -80,7 +80,7 @@ reindexSGlue :
   {A : res Γ Φ → Set}
   {B : Γ → Set}
   (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Equiv' f)
+  (equiv : Π (Equiv' f))
   (α : isFib A) (β : isFib B)
   (ρ : Δ → Γ)
   → reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) ρ

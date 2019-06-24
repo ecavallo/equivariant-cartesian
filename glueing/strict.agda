@@ -175,7 +175,7 @@ module Misaligned where
     {A : res Γ Φ → Set}
     {B : Γ → Set}
     (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-    (equiv : Equiv' f)
+    (equiv : Π (Equiv' f))
     → ---------------
     isFib A → isFib B → isFib (SGlue' Φ A B f)
   FibSGlue {a} {Γ} Φ {A} {B} f equiv α β =
@@ -191,7 +191,7 @@ module Misaligned where
     {A : res Γ Φ → Set}
     {B : Γ → Set}
     (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-    (equiv : Equiv' f)
+    (equiv : Π (Equiv' f))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) ρ

@@ -93,7 +93,7 @@ module FibGlueId
   {B : res ⟨ S ⟩ Φ → Set}
   {A : ⟨ S ⟩ → Set}
   (f : (su : res ⟨ S ⟩ Φ) → B su → A (su .fst))
-  (e : Equiv' f)
+  (e : Π (Equiv' f))
   (β : isFib B) (α : isFib A)
   (r : ⟨ S ⟩) (ψ : CofProp) (g : [ ψ ] → (s : ⟨ S ⟩) → Glue' Φ B A f s)
   (x₀ : Glue' Φ B A f r [ ψ ↦ g ◆ r ])
@@ -185,7 +185,7 @@ abstract
     {B : res Γ Φ → Set}
     {A : Γ → Set}
     (f : (xu : res Γ Φ) → B xu → A (xu .fst))
-    (e : Equiv' f)
+    (e : Π (Equiv' f))
     → ---------------
     isFib B → isFib A → isFib (Glue' Φ B A f)
   FibGlue Φ {B} {A} f e β α .lift S r p ψ g x₀ =
@@ -281,7 +281,7 @@ abstract
     {B : res Γ Φ → Set}
     {A : Γ → Set}
     (f : (xu : res Γ Φ) → B xu → A (xu .fst))
-    (e : Equiv' f)
+    (e : Π (Equiv' f))
     (β : isFib B)
     (α : isFib A)
     (ρ : Δ → Γ)
