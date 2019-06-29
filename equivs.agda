@@ -168,10 +168,10 @@ abstract
 -- Identity and coercion maps are equivalences
 ----------------------------------------------------------------------
 
-idEquiv : ∀ {ℓ} {Γ : Set ℓ} {A : Γ → Set} → isFib A → Π (Equiv' A A)
-idEquiv α x .fst = λ a → a
-idEquiv {A = A} α x .snd a .fst = (a , refl~ a)
-idEquiv {A = A} α x .snd a .snd (a' , p) =
+idEquiv : {A : Set} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
+idEquiv α .fst = λ a → a
+idEquiv α .snd a .fst = (a , refl~ a)
+idEquiv α .snd a .snd (a' , p) =
   path
     (λ i →
       ( q i .comp O  .fst
@@ -186,7 +186,7 @@ idEquiv {A = A} α x .snd a .snd (a' , p) =
   where
   q : (i : Int) → _
   q i =
-    α .lift int I (λ _ → x) (∂ i)
+    α .lift int I (λ _ → tt) (∂ i)
       (OI-rec i
         (λ {refl → p .at})
         (λ {refl _ → a}))
@@ -196,38 +196,30 @@ idEquiv {A = A} α x .snd a .snd (a' , p) =
         (λ {refl → refl})
       )
 
-coerce : ∀ {ℓ} {Γ : Set ℓ} (S : Shape) {A : Γ → ⟨ S ⟩ → Set}
-  → isFib (uncurry A)
-  → (r s : ⟨ S ⟩) → ∀ x → A x r → A x s
-coerce S α r s x a =
-  α .lift S r (λ i → x , i) (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .comp s .fst
+coerce : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
+  → (r s : ⟨ S ⟩) → A r → A s
+coerce S α r s a =
+  α .lift S r id (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .comp s .fst
 
-coerceCap : ∀ {ℓ} {Γ : Set ℓ} (S : Shape) {A : Γ → ⟨ S ⟩ → Set}
-  (α : isFib (uncurry A))
-  → (r : ⟨ S ⟩) → ∀ x a → coerce S α r r x a ≡ a
-coerceCap S α r x a =
-  α .lift S r (λ s → x , s) (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .cap
+coerceCap : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
+  → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
+coerceCap S α r a =
+  α .lift S r id (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .cap
 
-coerceEquiv : ∀ {ℓ} {Γ : Set ℓ} (S : Shape) {A : Γ → ⟨ S ⟩ → Set}
-  (α : isFib (uncurry A)) (r s : ⟨ S ⟩)
-  → Π (Equiv' (A ◆ r) (A ◆ s))
-coerceEquiv S {A} α r s x =
+coerceEquiv : (S : Shape) {A : ⟨ S ⟩ → Set}
+  (α : isFib A) (r s : ⟨ S ⟩)
+  → Equiv (A r) (A s)
+coerceEquiv S {A} α r s =
   coerce S
-    {λ x i → Equiv' (A ◆ r) (A ◆ i) x}
-    (FibEquiv
-      (reindex _ α (λ {(x , _) → x , r}))
-      (reindex _ α (λ {(x , i) → x , i})))
-    r s x
-    (idEquiv (reindex _ α (λ x → x , r)) x)
+    (FibEquiv (reindex _ α (λ _ → r)) (reindex _ α id))
+    r s
+    (idEquiv (reindex _ α (λ _ → r)))
 
-coerceEquivCap : ∀ {ℓ} {Γ : Set ℓ} (S : Shape) {A : Γ → ⟨ S ⟩ → Set}
-  (α : isFib (uncurry A)) (r : ⟨ S ⟩)
-  → ∀ x → coerceEquiv S α r r x ≡ idEquiv (reindex _ α (λ x → x , r)) x
-coerceEquivCap S {A} α r x =
+coerceEquivCap : (S : Shape) {A : ⟨ S ⟩ → Set}
+  (α : isFib A) (r : ⟨ S ⟩)
+  → coerceEquiv S α r r ≡ idEquiv (reindex _ α (λ _ → r))
+coerceEquivCap S {A} α r =
   coerceCap S
-    {λ x i → Equiv' (A ◆ r) (A ◆ i) x}
-    (FibEquiv
-      (reindex _ α (λ {(x , _) → x , r}))
-      (reindex _ α (λ {(x , i) → x , i})))
-    r x
-    (idEquiv (reindex _ α (λ x → x , r)) x)
+    (FibEquiv (reindex _ α (λ _ → r)) (reindex _ α id))
+    r
+    (idEquiv (reindex _ α (λ _ → r)))
