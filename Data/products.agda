@@ -18,6 +18,10 @@ open import fibrations
 Σ' : ∀{a}{Γ : Set a}(A : Γ → Set)(B : Σ Γ A → Set) → Γ → Set
 Σ' A B x = Σ a ∈ A x , B (x , a)
 
+_×'_ : ∀{a}{Γ : Set a}(A : Γ → Set)(B : Γ → Set) → Γ → Set
+(A ×' B) x = A x × B x
+
+
 module FibΣId
   (S : Shape) {A : ⟨ S ⟩ → Set} {B : Σ ⟨ S ⟩ A → Set}
   (α : isFib A) (β : isFib B)
@@ -51,7 +55,7 @@ module FibΣId
           (cA .comp r .snd u) (symm (cA .cap))
           (trans
             (congdep snd (x₀ .snd u))
-            (symm (subst-cong-assoc (curry B r) fst (x₀ .snd u) _)))
+            (symm (substCongAssoc (curry B r) fst (x₀ .snd u) _)))
       )
 
     compB = β .lift S r q φ tubeB baseB
@@ -87,7 +91,7 @@ abstract
       (trans
         (trans
           (congdep (λ cA → S.compB cA .comp s .fst) varyA)
-          (symm (subst-cong-assoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)))
+          (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)))
         (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
           refl refl
           (α .vary S T σ r p φ T.tubeA T.baseA s)

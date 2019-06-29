@@ -90,7 +90,7 @@ abstract
         (T.compA (⟪ σ ⟫ s) a .cap) (S.compA s a .cap)
         (trans
           (congdep (λ cA → S.compB s a cA .comp s .fst) (varyA a))
-          (symm (subst-cong-assoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (varyA a) _))))
+          (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (varyA a) _))))
       (cong
         (subst (curry B (p (⟪ σ ⟫ s))) (T.compA _ a .cap))
         (β .vary S T σ r (p ×id ∘ T.q _ a (T.compA _ a)) φ

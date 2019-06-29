@@ -116,64 +116,25 @@ congdep₂ :
   → subst C p (f x z) ≡ f y w
 congdep₂ _ refl refl = refl
 
-substconst :
-  {ℓ ℓ' : Level}
-  {A : Set ℓ}
-  (B : Set ℓ')
-  {x y : A}
-  (p : x ≡ y)
-  (b : B)
-  → ------------------------
-  (subst (λ _ → B) p) b ≡ b
-substconst _ refl _ = refl
-
-subst₂ :
-  {ℓ ℓ' : Level}
-  {A  A' : Set ℓ}
-  (B : A → A' → Set ℓ')
-  {x y  : A}
-  {x' y' : A'}
-  (p : x ≡ y)
-  (p' : x' ≡ y')
-  → ------------------
-  B x x' → B y y'
-subst₂ _ refl refl = λ b → b
-
-subst₂dep :
+substCongAssoc :
   {ℓ ℓ' ℓ'' : Level}
-  {A : Set ℓ} (A' : A → Set ℓ')
-  (B : (a : A) → A' a → Set ℓ'')
-  {x y : A}
-  {x' : A' x} {y' : A' y}
-  (p : x ≡ y)
-  (p' : subst A' p x' ≡ y')
-  → ------------------
-  B x x' → B y y'
-subst₂dep _ _ refl refl = λ b → b
-
-subst-cong-assoc :
-  {l l' l'' : Level}
-  {A : Set l}
-  {B : Set l'}
-  (C : B → Set l'')
+  {A : Set ℓ}
+  {B : Set ℓ'}
+  (C : B → Set ℓ'')
   (f : A → B)
   {x y : A}
   (p : x ≡ y)
   (b : C (f x))
   → ------------------------------------------
   subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
-subst-cong-assoc _ _ refl _ = refl
+substCongAssoc _ _ refl _ = refl
 
-substTrans :
-  {ℓ ℓ' : Level}
-  {A : Set ℓ}
-  (B : A → Set ℓ')
-  {x y z : A}
-  (q : y ≡ z) (p : x ≡ y)
-  {b : B x}
-  → ------------------------------------------
-  subst B (trans q p) b ≡ subst B q (subst B p b)
-substTrans B refl refl = refl
+substNaturality : ∀ {ℓ ℓ' ℓ''}
+  {A : Set ℓ} (B : A → Set ℓ') (C : A → Set ℓ'')
+  (η : ∀ a → B a → C a)
+  {a a' : A} (p : a ≡ a') (b : B a)
+  → η a' (subst B p b) ≡ subst C p (η a b)
+substNaturality B C η refl b = refl
 
 uip :
   {ℓ : Level}
@@ -340,7 +301,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
         trans
           (trans
             (congdep f (pA a a'))
-            (symm (subst-cong-assoc C (∣_∣ ∘ inl) (pA a a') _)))
+            (symm (substCongAssoc C (∣_∣ ∘ inl) (pA a a') _)))
           (cong (λ q → subst C q (f a)) (uip (trunc _ _) (cong (∣_∣ ∘ inl) (pA a a'))))
       ; (inl a) (inr b') → p a b'
       ; (inr b) (inl a') →
@@ -352,7 +313,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
         trans
           (trans
             (congdep g (pB b b'))
-            (symm (subst-cong-assoc C (∣_∣ ∘ inr) (pB b b') _)))
+            (symm (substCongAssoc C (∣_∣ ∘ inr) (pB b b') _)))
           (cong (λ q → subst C q (g b)) (uip (trunc _ _) (cong (∣_∣ ∘ inr) (pB b b'))))
       })
 
@@ -375,13 +336,13 @@ syntax Σ A (λ x → B) = Σ x ∈ A , B
 _×_ : {ℓ m : Level} → Set ℓ → Set m → Set (ℓ ⊔ m)
 A × B = Σ A (λ _ → B)
 
-_×'_ : {ℓ ℓ' m m' : Level}{A : Set ℓ}{A' : Set ℓ'}{B : Set m}{B' : Set m'}
-  → (A → A') → (B → B') → A × B → A' × B'
-(f ×' g) (a , b) = f a , g b
-
 _×id : {ℓ ℓ' m : Level}{A : Set ℓ}{A' : Set ℓ'}{B : A' → Set m}
   (f : A → A') → Σ A (B ∘ f) → Σ A' B
 (f ×id) (a , b) = (f a , b)
+
+id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
+  (f : ∀ {a} → B a → B' a) → Σ A B → Σ A B'
+(id× f) (a , b) = (a , f b)
 
 ×ext :
   {ℓ m : Level}
@@ -408,20 +369,6 @@ _×id : {ℓ ℓ' m : Level}{A : Set ℓ}{A' : Set ℓ'}{B : A' → Set m}
   (x , y) ≡ (x' , y')
 Σext refl refl = refl
 
-Σextdep :
-  {ℓ m n : Level}
-  {A : Set ℓ}
-  {B : A → Set m}
-  {C : (a : A) → B a → Set n}
-  {x x' : A}
-  (p : x ≡ x')
-  {y : B x} {y' : B x'}
-  (q : subst B p y ≡ y')
-  {z : C x y} {z' : C x' y'}
-  (r : subst₂dep B C p q z ≡ z')
-  → subst (λ x → Σ (B x) (C x)) p (y , z) ≡ (y' , z')
-Σextdep refl refl refl = refl
-
 Σeq₁ :
   {ℓ ℓ' : Level}
   {A  : Set ℓ}
@@ -439,8 +386,17 @@ _×id : {ℓ ℓ' m : Level}{A : Set ℓ}{A' : Set ℓ'}{B : A' → Set m}
   {x y : Σ A B}
   (p : x ≡ y)
   → --------------
-  subst B (Σeq₁ p) (snd x) ≡ snd y
+  subst B (Σeq₁ p) (x .snd) ≡ y .snd
 Σeq₂ refl = refl
+
+Σeq₂' :
+  {ℓ ℓ' : Level}
+  {A  : Set ℓ}
+  {B : A → Set ℓ'}
+  {x y : Σ A B}
+  (p : x ≡ y) (q : x .fst ≡ y .fst)
+  → subst B q (x .snd) ≡ y .snd
+Σeq₂' refl refl = refl
 
 uncurry : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   → (∀ a b → C a b)
@@ -473,12 +429,19 @@ postulate
      → ----------------------------
      ((x : A) → f x ≡ g x) → f ≡ g
 
-funextDep : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → Set ℓ''}
+funextDepDom : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : Set ℓ''}
+  {a₀ a₁ : A} (p : a₀ ≡ a₁)
+  {f₀ : B a₀ → C} {f₁ : B a₁ → C}
+  → (∀ b → f₀ b ≡ f₁ (subst B p b))
+  → subst (λ a → B a → C) p f₀ ≡ f₁
+funextDepDom refl = funext
+
+funextDepCod : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → Set ℓ''}
   {a₀ a₁ : A} (p : a₀ ≡ a₁)
   {f₀ : B → C a₀} {f₁ : B → C a₁}
   → (∀ b → subst C p (f₀ b) ≡ f₁ b)
   → subst (λ a → B → C a) p f₀ ≡ f₁
-funextDep refl = funext
+funextDepCod refl = funext
 
 ----------------------------------------------------------------------
 -- Isomorphism

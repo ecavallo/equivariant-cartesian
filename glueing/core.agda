@@ -61,12 +61,14 @@ module FibGlueId
   (Φ : ⟨ S ⟩ → CofProp)
   {B : res ⟨ S ⟩ Φ → Set}
   {A : ⟨ S ⟩ → Set}
-  (f : (su : res ⟨ S ⟩ Φ) → B su → A (su .fst))
-  (e : Π (Equiv' f))
+  (fe : Π (Equiv' B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
-  (r : ⟨ S ⟩) (ψ : CofProp) (g : [ ψ ] → (s : ⟨ S ⟩) → Glue' Φ B A f s)
-  (x₀ : Glue' Φ B A f r [ ψ ↦ g ◆ r ])
+  (r : ⟨ S ⟩) (ψ : CofProp) (g : [ ψ ] → (s : ⟨ S ⟩) → Glue' Φ B A (equivFun fe) s)
+  (x₀ : Glue' Φ B A (equivFun fe) r [ ψ ↦ g ◆ r ])
   where
+
+  f = λ su → fe su .fst
+  e = λ su → fe su .snd
 
   tubeA : [ ψ ] → (s : ⟨ S ⟩) → A s
   tubeA v s = g v s .cod
@@ -105,8 +107,8 @@ module FibGlueId
       baseR = ( C₁ , λ uv → C₂ (fiberR uv) .atI)
 
       compR =
-        FibFiber f β (reindex A α fst) .lift
-          int I (λ _ → ((s , us) , compA .comp s .fst)) (ψ ∨ S ∋ r ≈ s) tubeR baseR .comp O
+        FibFiber β (reindex A α fst) .lift
+          int I (λ _ → (((s , us) , f (s , us)) , compA .comp s .fst)) (ψ ∨ S ∋ r ≈ s) tubeR baseR .comp O
 
     tubeFix : [ ψ ∨ Φ s ∨ S ∋ r ≈ s ] → Int → A s
     tubeFix =
@@ -153,11 +155,10 @@ abstract
     (Φ : Γ → CofProp)
     {B : res Γ Φ → Set}
     {A : Γ → Set}
-    (f : (xu : res Γ Φ) → B xu → A (xu .fst))
-    (e : Π (Equiv' f))
+    (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
-    isFib B → isFib A → isFib (Glue' Φ B A f)
-  FibGlue Φ {B} {A} f e β α .lift S r p ψ g x₀ =
+    isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
+  FibGlue Φ {B} {A} fe β α .lift S r p ψ g x₀ =
     record
     { comp = λ s →
       ( glue (λ us → compR s us .fst .fst) (compFix s .fst)
@@ -181,51 +182,58 @@ abstract
     }
     where
     open FibGlueId
-      S (Φ ∘ p) (f ∘ p ×id) (e ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
+      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
 
-  FibGlue Φ {B = B} {A = A} f e β α .vary S T σ r p ψ g x₀ s =
+  FibGlue Φ {B = B} {A = A} fe β α .vary S T σ r p ψ g x₀ s =
     glueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
     module T = FibGlueId
-      T (Φ ∘ p) (f ∘ p ×id) (e ∘ p ×id)
+      T (Φ ∘ p) (fe ∘ p ×id)
       (reindex B β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) ψ g x₀
     module S = FibGlueId
-      S (Φ ∘ p ∘ ⟪ σ ⟫) (f ∘ (p ∘ ⟪ σ ⟫) ×id) (e ∘ (p ∘ ⟪ σ ⟫) ×id)
+      S (Φ ∘ p ∘ ⟪ σ ⟫) (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
       (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r ψ (g ◇ ⟪ σ ⟫) x₀
+
+    f = λ su → fe su .fst
+    e = λ su → fe su .snd
 
     varyA : T.compA .comp (⟪ σ ⟫ s) .fst ≡ S.compA .comp s .fst
     varyA = α .vary S T σ r p ψ T.tubeA T.baseA s
 
     varyC₁ : ∀ uσs
-      → subst (curry (Fiber' f) (_ , uσs)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
     varyC₁ uσs = congdep (λ a → e (p (⟪ σ ⟫ s) , uσs) a .fst) varyA
 
     varyC₂ : ∀ uσs {fib₀ fib₁} (i : Int)
-      → subst (curry (Fiber' f) (_ , uσs)) varyA fib₀ ≡ fib₁
-      → subst (curry (Fiber' f) (_ , uσs)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i) ≡ S.C₂ s uσs fib₁ .at i
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA fib₀ ≡ fib₁
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i)
+        ≡ S.C₂ s uσs fib₁ .at i
     varyC₂ uσs i p =
       congdep₂ (λ a fib → e (_ , uσs) a .snd fib .at i) varyA p
 
-    varyR : ∀ uσs →
-      subst (curry (Fiber' f) (_ , uσs)) varyA (T.compR (⟪ σ ⟫ s) uσs .fst) ≡ S.compR s uσs .fst
+    varyR : ∀ uσs
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.compR (⟪ σ ⟫ s) uσs .fst)
+        ≡ S.compR s uσs .fst
     varyR uσs =
       trans
         (cong
-          (λ δ → δ .lift int I (λ _ → ((_ , uσs) , _)) _ (S.tubeR _ uσs) (S.baseR _ uσs) .comp O .fst)
-          (reindexFiber (f ∘ p ×id) (reindex B β (p ×id)) (reindex A α (p ∘ fst))
-            (λ {(s , uσs) → (⟪ σ ⟫ s , uσs)})))
+          (λ δ →
+            δ .lift int I (λ _ → (((s , uσs) , _) , _)) _
+              (S.tubeR _ uσs) (S.baseR _ uσs) .comp O .fst)
+          (reindexFiber (reindex B β (p ×id)) (reindex A α (p ∘ fst))
+            (λ {(s , uσs) → ⟪ σ ⟫ s , uσs})))
         (congdep₂
           (λ {a (φ' , g' , x') →
-            FibFiber (f ∘ p ×id) (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
-              (λ _ → ((_ , uσs) , a)) φ' g' x' .comp O .fst})
+            FibFiber (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
+              (λ _ → (((_ , uσs) , _) , a)) φ' g' x' .comp O .fst})
           varyA
           (boxEqDep int varyA
             (cong (λ φ' → ψ ∨ φ') (≈Equivariant σ r s))
             (takeOutCof ψ (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
-              (λ u → funextDep varyA λ i →
+              (λ u → funextDepCod varyA λ i →
                 varyC₂ uσs i
                   (FiberExtDep varyA refl (λ _ → refl)))
-              (λ {refl refl → funextDep varyA λ i →
+              (λ {refl refl → funextDepCod varyA λ i →
                 varyC₂ uσs i
                   (FiberExtDep varyA refl (λ _ → refl))}))
             I
@@ -249,13 +257,12 @@ abstract
     (Φ : Γ → CofProp)
     {B : res Γ Φ → Set}
     {A : Γ → Set}
-    (f : (xu : res Γ Φ) → B xu → A (xu .fst))
-    (e : Π (Equiv' f))
+    (fe : Π (Equiv' B (A ∘ fst)))
     (β : isFib B)
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Glue' Φ B A f) (FibGlue Φ f e β α) ρ
-    ≡ FibGlue (Φ ∘ ρ) (f ∘ ρ ×id) (e ∘ ρ ×id) (reindex B β (ρ ×id)) (reindex A α ρ)
-  reindexGlue Φ {B} {A} f e β α ρ =
+    reindex (Glue' Φ B A (equivFun fe)) (FibGlue Φ fe β α) ρ
+    ≡ FibGlue (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex B β (ρ ×id)) (reindex A α ρ)
+  reindexGlue Φ {B} {A} fe β α ρ =
     fibExt λ _ _ _ _ _ _ _ → glueExt (λ _ → refl) refl

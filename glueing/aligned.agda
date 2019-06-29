@@ -25,14 +25,13 @@ FibSGlue :
   (Φ : Γ → CofProp)
   {A : res Γ Φ → Set}
   {B : Γ → Set}
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Π (Equiv' f))
+  (fe : Π (Equiv' A (B ∘ fst)))
   → ---------------
-  isFib A → isFib B → isFib (SGlue' Φ A B f)
-FibSGlue {a} {Γ} Φ {A} {B} f equiv α β =
-  realign Φ (SGlue' Φ A B f)
-    (subst isFib (SGlueStrictness' Φ f) α)
-    (Misaligned.FibSGlue Φ f equiv α β)
+  isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
+FibSGlue {a} {Γ} Φ {A} {B} fe α β =
+  realign Φ (SGlue' Φ A B (equivFun fe))
+    (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
+    (Misaligned.FibSGlue Φ fe α β)
 
 FibSGlueStrictness :
   {ℓ : Level}
@@ -40,62 +39,54 @@ FibSGlueStrictness :
   (Φ : Γ → CofProp)
   {A : res Γ Φ → Set}
   {B : Γ → Set}
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Π (Equiv' f))
+  (fe : Π (Equiv' A (B ∘ fst)))
   (α : isFib A) (β : isFib B)
   → ---------------
-  subst isFib (SGlueStrictness' Φ f) α ≡ reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) fst
-FibSGlueStrictness Φ {A} {B} f equiv α β =
+  subst isFib (SGlueStrictness' Φ (equivFun fe)) α
+  ≡ reindex (SGlue' Φ A B (equivFun fe)) (FibSGlue Φ fe α β) fst
+FibSGlueStrictness Φ {A} {B} fe α β =
   symm
-    (isRealigned Φ (SGlue' Φ A B f)
-      (subst isFib (SGlueStrictness' Φ f) α)
-      (Misaligned.FibSGlue Φ f equiv α β))
+    (isRealigned Φ (SGlue' Φ A B (equivFun fe))
+      (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
+      (Misaligned.FibSGlue Φ fe α β))
 
 SGlueFib :
   ∀{a}{Γ : Set a}
   (Φ : Γ → CofProp)
   (Aα : Fib (res Γ Φ))
   (Bβ : Fib Γ)
-  (f : (xu : res Γ Φ) → Aα .fst xu → Bβ .fst (xu .fst))
-  (equiv : Π (Equiv' f))
-  → ---------------
-  Fib Γ
-SGlueFib {a} {Γ} Φ (A , α) (B , β) f equiv =
-  (SGlue' Φ A B f , FibSGlue Φ f equiv α β)
+  (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
+  → Fib Γ
+SGlueFib {a} {Γ} Φ (A , α) (B , β) fe = (_ , FibSGlue Φ fe α β)
 
 SGlueFibStrictness :
   ∀{ℓ}{Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (Aα : Fib (res Γ Φ))
   (Bβ : Fib Γ)
-  (f : (xu : res Γ Φ) → Aα .fst xu → Bβ .fst (xu .fst))
-  (equiv : Π (Equiv' f))
-  → Aα ≡ reindex' (SGlueFib Φ Aα Bβ f equiv) fst
-SGlueFibStrictness Φ (A , α) (B , β) f equiv =
-  Σext (SGlueStrictness' Φ f) (FibSGlueStrictness Φ f equiv α β)
+  (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
+  → Aα ≡ reindex' (SGlueFib Φ Aα Bβ fe) fst
+SGlueFibStrictness Φ (A , α) (B , β) fe =
+  Σext (SGlueStrictness' Φ (equivFun fe)) (FibSGlueStrictness Φ fe α β)
 
 reindexSGlue :
   ∀ {ℓ} {Δ Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : res Γ Φ → Set}
   {B : Γ → Set}
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-  (equiv : Π (Equiv' f))
+  (fe : Π (Equiv' A (B ∘ fst)))
   (α : isFib A) (β : isFib B)
   (ρ : Δ → Γ)
-  → reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) ρ
-    ≡ FibSGlue (Φ ∘ ρ) (f ∘ (ρ ×id)) (equiv ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
-reindexSGlue Φ {A} {B} f equiv α β ρ =
+  → reindex (SGlue' Φ A B (equivFun fe)) (FibSGlue Φ fe α β) ρ
+    ≡ FibSGlue (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
+reindexSGlue Φ {A} {B} fe α β ρ =
   trans
-    (cong₂ (realign (Φ ∘ ρ) (SGlue' Φ A B f ∘ ρ))
-      (reindexSubst (ρ ×id) (SGlueStrictness' Φ f) (SGlueStrictness' (Φ ∘ ρ) (f ∘ (ρ ×id))) α)
-      (Misaligned.reindexSGlue Φ f equiv α β ρ))
-    (reindexRealign  Φ (SGlue' Φ A B f)
-      (subst isFib (SGlueStrictness' Φ f) α)
-      (Misaligned.FibSGlue Φ f equiv α β)
+    (cong₂ (realign (Φ ∘ ρ) (SGlue' Φ A B (equivFun fe) ∘ ρ))
+      (reindexSubst (ρ ×id)
+        (SGlueStrictness' Φ (equivFun fe))
+        (SGlueStrictness' (Φ ∘ ρ) (equivFun fe ∘ (ρ ×id))) α)
+      (Misaligned.reindexSGlue Φ fe α β ρ))
+    (reindexRealign Φ (SGlue' Φ A B (equivFun fe))
+      (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
+      (Misaligned.FibSGlue Φ fe α β)
       ρ)
-  where
-  reindexSubst : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set}
-   (ρ : Δ → Γ)(P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
-    → reindex A' (subst isFib P α) ρ ≡ subst isFib Q (reindex A α ρ)
-  reindexSubst ρ refl refl α = refl

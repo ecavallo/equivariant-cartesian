@@ -19,8 +19,6 @@ postulate
   ⟨_⟩ : Shape → Set
   ⟪_⟫ : {I J : Shape} → ShapeHom I J → ⟨ I ⟩ → ⟨ J ⟩
 
-  cntd : (S : Shape) (P : ⟨ S ⟩ → Set) → ((s : ⟨ S ⟩) → P s ⊎ ¬ (P s)) → (r s : ⟨ S ⟩) → P r → P s
-
   int : Shape
 
 Int = ⟨ int ⟩

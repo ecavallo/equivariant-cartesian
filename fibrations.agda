@@ -71,6 +71,11 @@ reindex A α ρ =
 reindex' : ∀{a a'}{Δ : Set a}{Γ : Set a'}(Aα : Fib Γ)(ρ : Δ → Γ) → Fib Δ
 reindex' (A , α) ρ = (A ∘ ρ , reindex A α ρ)
 
+reindexSubst : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set}
+ (ρ : Δ → Γ)(P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
+  → reindex A' (subst isFib P α) ρ ≡ subst isFib Q (reindex A α ρ)
+reindexSubst ρ refl refl α = refl
+
 ----------------------------------------------------------------------
 -- Reindexing is functorial
 ----------------------------------------------------------------------

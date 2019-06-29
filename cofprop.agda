@@ -35,6 +35,9 @@ postulate
 
   cofIsProp : (φ : CofProp) → (u v : [ φ ]) → u ≡ v
 
+  cntd : (S : Shape) (φ ψ : ⟨ S ⟩ → CofProp)
+    → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]
+
   ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) → (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
@@ -56,7 +59,7 @@ _◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : B → Set ℓ''}
 (f ◆ b) a = f a b
 
 _◇_ : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} {D : C → Set ℓ'''}
-  → (A → (i : C) → D i) → (f : B → C) → (A → (i : B) → D (f i))
+  → (A → (i : C) → D i) → (σ : B → C) → (A → (i : B) → D (σ i))
 (f ◇ σ) a b = f a (σ b)
   
 
@@ -78,15 +81,14 @@ res Γ Φ = Σ x ∈ Γ , [ Φ x ]
 _⌣_ : ∀ {ℓ} {A : Set ℓ} → □ A → □ A → Set ℓ
 (φ , f) ⌣ (ψ , g) = (u : [ φ ]) (v : [ ψ ]) → f u ≡ g v
 
-∨-rec : ∀ {ℓ}
+∨-rec : ∀ {ℓ} {A : Set ℓ}
   (φ ψ : CofProp)
-  {A : Set ℓ}
   (f : [ φ ] → A)
   (g : [ ψ ] → A)
   (p : (φ , f) ⌣ (ψ , g))
   → ---------------------------
   [ φ ∨ ψ ] → A
-∨-rec φ ψ {A = A} f g p = ∥∥-rec _ h q where
+∨-rec {A = A} φ ψ f g p = ∥∥-rec _ h q where
 
   h : [ φ ] ⊎ [ ψ ] → A
   h (inl u) = f u
@@ -127,7 +129,7 @@ OI-rec r f g =
     trans
       (congdep f (cofIsProp φ u u'))
       (trans
-        (symm (subst-cong-assoc P (∣_∣ ∘ inl) (cofIsProp φ u u') _))
+        (symm (substCongAssoc P (∣_∣ ∘ inl) (cofIsProp φ u u') _))
         (cong (λ r → subst P r (f u))
           (uip (trunc ∣ inl u ∣ ∣ inl u' ∣) (cong (∣_∣ ∘ inl) (cofIsProp φ u u')))))
   q (inl u) (inr v) = p u v
@@ -140,7 +142,7 @@ OI-rec r f g =
     trans
       (congdep g (cofIsProp ψ v v'))
       (trans
-        (symm (subst-cong-assoc P (∣_∣ ∘ inr) (cofIsProp ψ v v') _))
+        (symm (substCongAssoc P (∣_∣ ∘ inr) (cofIsProp ψ v v') _))
         (cong (λ r → subst P r (g v))
           (uip (trunc ∣ inr v ∣ ∣ inr v' ∣) (cong (∣_∣ ∘ inr) (cofIsProp ψ v v')))))
 

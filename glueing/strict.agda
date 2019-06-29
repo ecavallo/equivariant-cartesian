@@ -121,7 +121,7 @@ sunglue-boundary φ {A} {B} f u a =
       (trans
         (congdep (λ p → cod ∘ p .snd .to) (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u))
         (symm
-          (subst-cong-assoc (λ D → D → B) fst
+          (substCongAssoc (λ D → D → B) fst
             (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u) _)))
       refl)
   where
@@ -169,34 +169,36 @@ SGlueStrictness' Φ {A} {B} f =
 
 module Misaligned where
 
-  FibSGlue :
-    ∀{a}{Γ : Set a}
-    (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set}
-    {B : Γ → Set}
-    (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-    (equiv : Π (Equiv' f))
-    → ---------------
-    isFib A → isFib B → isFib (SGlue' Φ A B f)
-  FibSGlue {a} {Γ} Φ {A} {B} f equiv α β =
-    FibIso
-      (SGlue' Φ A B f)
-      (Glue' Φ A B f)
-      (strictifyGlueIso' Φ f)
-      (FibGlue Φ f equiv α β)
+  abstract
 
-  reindexSGlue :
-    ∀ {ℓ} {Δ Γ : Set ℓ}
-    (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set}
-    {B : Γ → Set}
-    (f : (xu : res Γ Φ) → A xu → B (xu .fst))
-    (equiv : Π (Equiv' f))
-    (α : isFib A) (β : isFib B)
-    (ρ : Δ → Γ)
-    → reindex (SGlue' Φ A B f) (FibSGlue Φ f equiv α β) ρ
-      ≡ FibSGlue (Φ ∘ ρ) (f ∘ (ρ ×id)) (equiv ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
-  reindexSGlue Φ {A} {B} f equiv α β ρ =
-    cong
-      (FibIso (SGlue' Φ A B f ∘ ρ) (Glue' Φ A B f ∘ ρ) (strictifyGlueIso' Φ f ∘ ρ))
-      (reindexGlue Φ f equiv α β ρ)
+    FibSGlue :
+      ∀{a}{Γ : Set a}
+      (Φ : Γ → CofProp)
+      {A : res Γ Φ → Set}
+      {B : Γ → Set}
+      (fe : Π (Equiv' A (B ∘ fst)))
+      → ---------------
+      isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
+    FibSGlue {a} {Γ} Φ {A} {B} fe α β =
+      FibIso
+        (SGlue' Φ A B (equivFun fe))
+        (Glue' Φ A B (equivFun fe))
+        (strictifyGlueIso' Φ (equivFun fe))
+        (FibGlue Φ fe α β)
+
+    reindexSGlue :
+      ∀ {ℓ} {Δ Γ : Set ℓ}
+      (Φ : Γ → CofProp)
+      {A : res Γ Φ → Set}
+      {B : Γ → Set}
+      (fe : Π (Equiv' A (B ∘ fst)))
+      (α : isFib A) (β : isFib B)
+      (ρ : Δ → Γ)
+      → reindex (SGlue' Φ A B (equivFun fe)) (FibSGlue Φ fe α β) ρ
+        ≡ FibSGlue (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
+    reindexSGlue Φ {A} {B} fe α β ρ =
+      cong
+        (FibIso (SGlue' Φ A B f ∘ ρ) (Glue' Φ A B f ∘ ρ) (strictifyGlueIso' Φ f ∘ ρ))
+        (reindexGlue Φ fe α β ρ)
+      where
+      f = equivFun fe
