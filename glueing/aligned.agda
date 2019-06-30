@@ -72,7 +72,7 @@ SGlueFibStrictness Φ (A , α) (B , β) fe =
 
 abstract
   reindexSGlue :
-    ∀ {ℓ} {Δ Γ : Set ℓ}
+    ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {A : res Γ Φ → Set}
     {B : Γ → Set}

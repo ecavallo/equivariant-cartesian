@@ -15,10 +15,16 @@ open import Data.products
 _∨'_ : ∀ {ℓ} {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
 (φ ∨' ψ) x = φ x ∨ ψ x
 
+inl' : ∀ {ℓ} {Γ : Set ℓ} (φ ψ : Γ → CofProp) → res Γ φ → res Γ (φ ∨' ψ)
+inl' φ ψ (x , u) = x , ∣ inl u ∣
+
+inr' : ∀ {ℓ} {Γ : Set ℓ} (φ ψ : Γ → CofProp) → res Γ ψ → res Γ (φ ∨' ψ)
+inr' φ ψ (x , u) = x , ∣ inr u ∣
+
 module FibUnionId (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
   {A : res ⟨ S ⟩ (φ₀ ∨' φ₁) → Set}
-  (α₀ : isFib (A ∘ id× (∣_∣ ∘ inl)))
-  (α₁ : isFib (A ∘ id× (∣_∣ ∘ inr)))
+  (α₀ : isFib (A ∘ inl' φ₀ φ₁))
+  (α₁ : isFib (A ∘ inr' φ₀ φ₁))
   (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
   (u : ∀ s → [ φ₀ s ∨ φ₁ s ])
   (r : ⟨ S ⟩) (ψ : CofProp)
@@ -67,8 +73,8 @@ abstract
 
   module FibUnion {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
     {A : res Γ (λ x → φ₀ x ∨ φ₁ x) → Set}
-    (α₀ : isFib (A ∘ id× (∣_∣ ∘ inl)))
-    (α₁ : isFib (A ∘ id× (∣_∣ ∘ inr)))
+    (α₀ : isFib (A ∘ inl' φ₀ φ₁))
+    (α₁ : isFib (A ∘ inr' φ₀ φ₁))
     (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
     where
 
@@ -81,8 +87,8 @@ abstract
       where
       open FibUnionId S (φ₀ ∘ fst ∘ p)  (φ₁ ∘ fst ∘ p)
         {A = A ∘ (fst ∘ p) ×id}
-        (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((fst ∘ p) ×id))
-        (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((fst ∘ p) ×id))
+        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
+        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
         (cong (λ Aα → reindex' Aα ((fst ∘ p) ×id)) eqFib)
         (snd ∘ p)
         r ψ f x₀
@@ -102,7 +108,7 @@ abstract
                   (cong
                     (λ eq →
                       subst (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s))) eq
-                        (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s))))
+                        (reindex (A ∘ inl' φ₀ φ₁) α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s))))
                     (uip
                       (cong (λ u' → u' ∘ ⟪ σ ⟫) (funext λ t → trunc _ (p t .snd)))
                       (funext λ s → trunc _ (p (⟪ σ ⟫ s) .snd))))
@@ -117,7 +123,7 @@ abstract
                       (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' (⟪ σ ⟫ s))))
                       (λ u' α → reindex _ α ⟪ σ ⟫)
                       (funext λ t → trunc ∣ inl (u₀ t) ∣ (p t .snd))
-                      (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ (λ t → p t .fst , u₀ t))))))
+                      (reindex (A ∘ inl' φ₀ φ₁) α₀ (λ t → p t .fst , u₀ t))))))
               (subst (λ u' → isFib (λ t → A (p t .fst , u' t))) (funext λ s → trunc _ _)
                 (reindex _ α₀ (λ t → p t .fst , u₀ t))
                 .vary S T σ r id ψ f x₀ s)))
@@ -132,7 +138,7 @@ abstract
                   (cong
                     (λ eq →
                       subst (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s))) eq
-                        (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s))))
+                        (reindex (A ∘ inr' φ₀ φ₁) α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s))))
                     (uip
                       (cong (λ u' → u' ∘ ⟪ σ ⟫) (funext λ t → trunc _ (p t .snd)))
                       (funext λ s → trunc _ (p (⟪ σ ⟫ s) .snd))))
@@ -147,7 +153,7 @@ abstract
                       (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' (⟪ σ ⟫ s))))
                       (λ u' α → reindex _ α ⟪ σ ⟫)
                       (funext λ t → trunc ∣ inr (u₁ t) ∣ (p t .snd))
-                      (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ (λ t → p t .fst , u₁ t))))))
+                      (reindex (A ∘ inr' φ₀ φ₁) α₁ (λ t → p t .fst , u₁ t))))))
               (subst (λ u' → isFib (λ t → A (p t .fst , u' t))) (funext λ s → trunc _ _)
                 (reindex _ α₁ (λ t → p t .fst , u₁ t))
                 .vary S T σ r id ψ f x₀ s)))
@@ -155,27 +161,27 @@ abstract
       where
       module S = FibUnionId S (φ₀ ∘ fst ∘ p ∘ ⟪ σ ⟫)  (φ₁ ∘ fst ∘ p ∘ ⟪ σ ⟫)
         {A = A ∘ (fst ∘ p ∘ ⟪ σ ⟫) ×id}
-        (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
-        (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
+        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
+        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
         (cong (λ Aα → reindex' Aα ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) eqFib)
         (snd ∘ p ∘ ⟪ σ ⟫)
         r ψ (f ◇ ⟪ σ ⟫) x₀
 
       module T = FibUnionId T (φ₀ ∘ fst ∘ p)  (φ₁ ∘ fst ∘ p)
         {A = A ∘ (fst ∘ p) ×id}
-        (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((fst ∘ p) ×id))
-        (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((fst ∘ p) ×id))
+        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
+        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
         (cong (λ Aα → reindex' Aα ((fst ∘ p) ×id)) eqFib)
         (snd ∘ p)
         (⟪ σ ⟫ r) ψ f x₀
 
-    left : reindex A fib (id× (∣_∣ ∘ inl)) ≡ α₀
+    left : reindex A fib (inl' φ₀ φ₁) ≡ α₀
     left = fibExt λ S r p ψ f x₀ s →
       let
         open FibUnionId S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
           {A = A ∘ (fst ∘ p) ×id}
-          (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((fst ∘ p) ×id))
-          (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((fst ∘ p) ×id))
+          (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
+          (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
           (cong (λ Aα → reindex' Aα ((fst ∘ p) ×id)) eqFib)
           (λ s → ∣ inl (p s .snd) ∣)
           r ψ f x₀
@@ -191,16 +197,16 @@ abstract
             (cntd S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (λ s → ∣ inl (p s .snd) ∣))
             (∣ inl (λ s → p s .snd) ∣)))
 
-    left' : reindex' (A , fib) (id× (∣_∣ ∘ inl)) ≡ (_ , α₀)
+    left' : reindex' (A , fib) (inl' φ₀ φ₁) ≡ (_ , α₀)
     left' = Σext refl left
 
-    right : reindex A fib (id× (∣_∣ ∘ inr)) ≡ α₁
+    right : reindex A fib (inr' φ₀ φ₁) ≡ α₁
     right = fibExt λ S r p ψ f x₀ s →
       let
         open FibUnionId S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
           {A = A ∘ (fst ∘ p) ×id}
-          (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((fst ∘ p) ×id))
-          (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((fst ∘ p) ×id))
+          (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
+          (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
           (cong (λ Aα → reindex' Aα ((fst ∘ p) ×id)) eqFib)
           (λ s → ∣ inr (p s .snd) ∣)
           r ψ f x₀
@@ -216,13 +222,13 @@ abstract
             (cntd S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (λ s → ∣ inr (p s .snd) ∣))
             (∣ inr (λ s → p s .snd) ∣)))
 
-    right' : reindex' (A , fib) (id× (∣_∣ ∘ inr)) ≡ (_ , α₁)
+    right' : reindex' (A , fib) (inr' φ₀ φ₁) ≡ (_ , α₁)
     right' = Σext refl right
 
   reindexFibUnion : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
     {A : res Γ (λ x → φ₀ x ∨ φ₁ x) → Set}
-    (α₀ : isFib (A ∘ id× (∣_∣ ∘ inl)))
-    (α₁ : isFib (A ∘ id× (∣_∣ ∘ inr)))
+    (α₀ : isFib (A ∘ inl' φ₀ φ₁))
+    (α₁ : isFib (A ∘ inr' φ₀ φ₁))
     (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
     (ρ : Δ → Γ)
     → reindex A (FibUnion.fib φ₀ φ₁ α₀ α₁ eqFib) (ρ ×id)
@@ -234,8 +240,8 @@ abstract
       (λ eqFib' →
         FibUnionId.compSys S (φ₀ ∘ ρ ∘ fst ∘ p)  (φ₁ ∘ ρ ∘ fst ∘ p)
           {A = A ∘ (ρ ∘ fst ∘ p) ×id}
-          (reindex (A ∘ id× (∣_∣ ∘ inl)) α₀ ((ρ ∘ fst ∘ p) ×id))
-          (reindex (A ∘ id× (∣_∣ ∘ inr)) α₁ ((ρ ∘ fst ∘ p) ×id))
+          (reindex (A ∘ inl' φ₀ φ₁) α₀ ((ρ ∘ fst ∘ p) ×id))
+          (reindex (A ∘ inr' φ₀ φ₁) α₁ ((ρ ∘ fst ∘ p) ×id))
           eqFib'
           (snd ∘ p)
           r ψ f x₀ s
