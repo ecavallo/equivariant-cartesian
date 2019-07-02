@@ -12,6 +12,6 @@ Note: Some files, particularly `glueing.core`, take time to check (up to a minut
 
 [2] Steve Awodey. A Quillen model structure on the category of cartesian cubical sets. 2019. https://github.com/awodey/math/blob/master/QMS/qms.pdf
 
-[3] Ian Orton and Andrew M. Pitts Axioms for Modelling Cubical Type theory in a Topos. In Logical Methods in Computer Science, Volume 14, Issue 4. 2018.
+[3] Ian Orton and Andrew M. Pitts. Axioms for Modelling Cubical Type theory in a Topos. In Logical Methods in Computer Science, Volume 14, Issue 4. 2018.
 
-[4] Daniel R. Licata, Ian Orton, Andrew M. Pitts, and Bas Spitters. Internal Universes in Models of Homotopy Type Theory. In FSCD, volume 108 of LIPIcs, pages 22:1–22:17. Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik, 2018.
+[4] Daniel R. Licata, Ian Orton, Andrew M. Pitts, and Bas Spitters. Internal Universes in Models of Homotopy Type Theory. In FSCD, volume 108 of LIPIcs, pages 22:1–22:17. Schloss Dagstuhl - Leibniz-Zentrum fuer Informatik. 2018.
