@@ -9,7 +9,7 @@ operations on these.
 module cofprop where
 
 open import prelude
-open import interval
+open import shape
 
 infixr 4 _∨_
 infix  5 _↗_

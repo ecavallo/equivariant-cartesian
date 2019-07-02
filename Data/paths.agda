@@ -7,7 +7,7 @@ Fibrancy of Path types.
 module Data.paths where
 
 open import prelude
-open import interval
+open import shape
 open import cofprop
 open import fibrations
 

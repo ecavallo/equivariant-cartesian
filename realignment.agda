@@ -7,7 +7,7 @@ Realign a fibration structure.
 module realignment where
 
 open import prelude
-open import interval
+open import shape
 open import cofprop
 open import fibrations
 

@@ -7,7 +7,7 @@ Fibrancy of Σ-types.
 module Data.products where
 
 open import prelude
-open import interval
+open import shape
 open import cofprop
 open import fibrations
 

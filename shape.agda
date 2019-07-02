@@ -1,10 +1,10 @@
 {-
 
-Definition of the interval and Path types.
+Definition of shapes and Path types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module interval where
+module shape where
 
 open import prelude
 
