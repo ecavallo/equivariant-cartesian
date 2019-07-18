@@ -166,7 +166,7 @@ OI-elim r f g =
 ∨-elimEq φ ψ p q =
   ∨-elim φ ψ _ p q (λ _ _ → uipImp)
 
-takeOutCof : {A : Set} (φ φ₀ φ₁ : CofProp)
+takeOutCof : ∀ {ℓ} {A : Set ℓ} (φ φ₀ φ₁ : CofProp)
   {f₀ : [ φ ∨ φ₀ ] → A} {f₁ : [ φ ∨ φ₁ ] → A}
   → (∀ u → f₀ (∣ inl u ∣) ≡ f₁ (∣ inl u ∣))
   → (∀ v₀ v₁ → f₀ ∣ inr v₀ ∣ ≡ f₁ ∣ inr v₁ ∣)

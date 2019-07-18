@@ -129,6 +129,17 @@ substCongAssoc :
   subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
 substCongAssoc _ _ refl _ = refl
 
+substTrans :
+  {ℓ ℓ' : Level}
+  {A : Set ℓ}
+  (B : A → Set ℓ')
+  {x y z : A}
+  (q : y ≡ z) (p : x ≡ y)
+  {b : B x}
+  → ------------------------------------------
+  subst B (trans q p) b ≡ subst B q (subst B p b)
+substTrans B refl refl = refl
+
 substNaturality : ∀ {ℓ ℓ' ℓ''}
   {A : Set ℓ} (B : A → Set ℓ') (C : A → Set ℓ'')
   (η : ∀ a → B a → C a)

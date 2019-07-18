@@ -195,30 +195,51 @@ abstract
           (λ {refl → refl})
         )
 
+abstract
   coerce : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
     → (r s : ⟨ S ⟩) → A r → A s
   coerce S α r s a =
-    α .lift S r id (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .comp s .fst
+    α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .comp s .fst
 
   coerceCap : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
     → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
   coerceCap S α r a =
-    α .lift S r id (int ∋ O ≈ I) O≠I (a , λ v → O≠I v) .cap
+    α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .cap
 
-  coerceEquiv : (S : Shape) {A : ⟨ S ⟩ → Set}
-    (α : isFib A) (r s : ⟨ S ⟩)
-    → Equiv (A r) (A s)
-  coerceEquiv S {A} α r s =
-    coerce S
-      (FibEquiv (reindex _ α (λ _ → r)) (reindex _ α id))
+  varyCoerce : (S T : Shape) (σ : ShapeHom S T)
+    {A : ⟨ T ⟩ → Set} (α : isFib A) (r s : ⟨ S ⟩)
+    → ∀ a → coerce T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) a ≡ coerce S (reindex A α ⟪ σ ⟫) r s a
+  varyCoerce S T σ α r s a =
+    α .vary S T σ r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) s
+
+
+coerceEquiv : (S : Shape) {A : ⟨ S ⟩ → Set}
+  (α : isFib A) (r s : ⟨ S ⟩)
+  → Equiv (A r) (A s)
+coerceEquiv S {A} α r s =
+  coerce S
+    (FibEquiv (reindex A α (λ _ → r)) α)
+    r s
+    (idEquiv (reindex A α (λ _ → r)))
+
+coerceEquivCap : (S : Shape) {A : ⟨ S ⟩ → Set}
+  (α : isFib A) (r : ⟨ S ⟩)
+  → coerceEquiv S α r r ≡ idEquiv (reindex A α (λ _ → r))
+coerceEquivCap S {A} α r =
+  coerceCap S
+    (FibEquiv (reindex A α (λ _ → r)) α)
+    r
+    (idEquiv (reindex A α (λ _ → r)))
+
+varyCoerceEquiv : (S T : Shape) (σ : ShapeHom S T)
+  {A : ⟨ T ⟩ → Set} (α : isFib A) (r s : ⟨ S ⟩)
+  → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex A α ⟪ σ ⟫) r s
+varyCoerceEquiv S T σ {A = A} α r s =
+  trans
+    (cong
+      (λ β → coerce S {A = λ i → Equiv (A (⟪ σ ⟫ r)) (A (⟪ σ ⟫ i))} β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
+      (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫))
+    (varyCoerce S T σ
+      (FibEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α)
       r s
-      (idEquiv (reindex _ α (λ _ → r)))
-
-  coerceEquivCap : (S : Shape) {A : ⟨ S ⟩ → Set}
-    (α : isFib A) (r : ⟨ S ⟩)
-    → coerceEquiv S α r r ≡ idEquiv (reindex _ α (λ _ → r))
-  coerceEquivCap S {A} α r =
-    coerceCap S
-      (FibEquiv (reindex _ α (λ _ → r)) (reindex _ α id))
-      r
-      (idEquiv (reindex _ α (λ _ → r)))
+      (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
