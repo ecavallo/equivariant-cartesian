@@ -4,9 +4,9 @@ This code is adapted from [the code accompanying Ian Orton's thesis](https://www
 
 The axioms required of the ambient category can be found in `postulate` blocks in the `prelude`, `shape`, `cofprop`, and `strictness-axioms` files. (The changes, relative to the "standard" cartesian cubical set model, are all in `shape` and `cofprop`). We assume a type `Shape` of composition shapes, with decoding `⟨_⟩ : Shape → Set`, and a type of shape morphisms. A fibration provides composites from `r : ⟨ S ⟩` to `s : ⟨ S ⟩` for every shape `S` in a way stable under shape morphisms (i.e., equivariantly). The standard cartesian cubical set model is recovered by taking `Shape` to have a single object which decodes to the interval and only identity morphisms. 
 
-We do not handle the construction of a fibrant universe of fibrations, which would require the use of *crisp type theory* as described by Licata et al. [4]. We do show in `large-composition` that open boxes of fibrations have composites, using the usual construction from `Glue` types; this would be used to prove the fibrancy of such a universe. (This part is incomplete, as we have not shown the stability of the type composites under reindexing.)
+We do not handle the construction of a fibrant universe of fibrations, which would require the use of *crisp type theory* as described by Licata et al. [4]. We do show in `large-composition` that open boxes of fibrations have composites, using the usual construction from `Glue` types; this would be used to prove the fibrancy of such a universe. (This part is incomplete, as we have not shown the stability of the type composites under reindexing, but this should not be significantly different from the non-equivariant case.)
 
-Note: Some files, particularly `glueing.core`, take time to check (up to a minute on my machine). This is mostly spent checking that the fibration structures for the type formers are stable under reindexing, which is generally true up to definitional equality but time-consuming for Agda to check.
+Note: Some files, particularly `glueing.core` and `large-composition`, take a long time to check.
 
 [1] Carlo Angiuli, Guillaume Brunerie, Thierry Coquand, Kuen-Bang Hou (Favonia), Robert Harper, and Daniel R. Licata. Syntax and Models of Cartesian Cubical Type Theory. 2019. https://github.com/dlicata335/cart-cube
 
