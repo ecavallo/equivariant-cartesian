@@ -1,10 +1,10 @@
 {-
 
-"Large" composition of fibrant types
+Fibration extension property
 
 -}
 {-# OPTIONS --rewriting #-}
-module large-composition where
+module fibration-extension where
 
 open import prelude
 open import shape
@@ -196,4 +196,4 @@ module _ {ℓ} {Γ : Set ℓ}
           varyEquiv)
         (funext λ x → funext λ u → funext λ v → uipImp))
 
--- EC: TODO stability of large composition under substitution in the context Γ
+-- EC: TODO stability of FEP under substitution in the context Γ
