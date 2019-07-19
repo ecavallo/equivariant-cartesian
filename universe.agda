@@ -30,7 +30,7 @@ postulate
   ∘ˢassoc : {S T V W : Shape} (ν : ShapeHom V W) (τ : ShapeHom T V) (σ : ShapeHom S T)
     → (ν ∘ˢ τ) ∘ˢ σ ≡ ν ∘ˢ (τ ∘ˢ σ)
 
-  {-# REWRITE ⟪idˢ⟫ ⟪∘ˢ⟫ ∘ˢidˢ idˢ∘ˢ #-}
+  {-# REWRITE ⟪idˢ⟫ ⟪∘ˢ⟫ ∘ˢidˢ idˢ∘ˢ ∘ˢassoc #-}
 
 module Tiny (@♭ S : Shape) where
 
@@ -154,7 +154,7 @@ PSh` : {S T : Shape} → ShapeHom S T → PSh T → PSh S
 PSh` σ P =
   record
   { set = λ τ → P .set (σ ∘ˢ τ)
-  ; mor = λ ν d → subst (P .set) (∘ˢassoc σ _ ν) (P .mor ν d)
+  ; mor = λ ν d → P .mor ν d
   }
 
 PSh*` : {S T : Shape} → ShapeHom S T → PSh* T → PSh* S
@@ -167,9 +167,9 @@ record U : Set₁ where
   field
     El : Set
     fib : (@♭ S : Shape) → √ S (PSh* S)
+    base : (@♭ S : Shape) → √` S pr₁ (fib S) ≡ R S (isFib' S) El
     stable : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) →
       √ShapeHom σ (fib S) ≡ √` T (PSh*` σ) (fib T)
-    base : (@♭ S : Shape) → √` S pr₁ (fib S) ≡ R S (isFib' S) El
 
 open U public
 
@@ -240,3 +240,24 @@ pr₁Lfib S =
 
 decode : ∀ {ℓ} {Γ : Set ℓ} → (Γ → U) → Fib Γ
 decode = reindex' (El , υ)
+
+encode : {@♭ ℓ : Level} {@♭ Γ : Set ℓ} → @♭ (Fib Γ) → (Γ → U)
+encode {Γ = Γ} (A , α) =
+  λ x →
+  record
+  { El = A x
+  ; fib = λ (@♭ S) → g S x
+  ; base = λ (@♭ S) → appCong (bas S)
+  ; stable = λ (@♭ S T σ) → appCong (stab S T σ)
+  }
+  where
+  f : (@♭ S : Shape) → (⟨ S ⟩ → Γ) → PSh* S
+  f S p = isFib' S (A ∘ p) , reindex A α p
+
+  g : (@♭ S : Shape) → Γ → √ S (PSh* S)
+  g S = R S (f S)
+
+  bas : (@♭ S : Shape) → √` S pr₁ ∘ g S ≡ R S (isFib' S) ∘ A
+  bas S = trans (R℘ S A (isFib' S)) (cong (R S) (symm (L√ S fst (g S))))
+  stab : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ShapeHom σ ∘ g S ≡ √` T (PSh*` σ) ∘ g T
+  stab S T σ = trans (symm (√R T (PSh*` σ) (f T))) (ShapeHomR σ (f S))
