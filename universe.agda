@@ -17,21 +17,6 @@ open import equivs
 open import glueing
 open import union
 
-postulate
-  idˢ : {S : Shape} → ShapeHom S S
-  ⟪idˢ⟫ : {S : Shape} → ⟪ idˢ {S = S} ⟫ ≡ id
-
-  _∘ˢ_ : {S T V : Shape} → ShapeHom T V → ShapeHom S T → ShapeHom S V
-  ⟪∘ˢ⟫ : {S T V : Shape} (τ : ShapeHom T V) (σ : ShapeHom S T) → ⟪ τ ∘ˢ σ ⟫ ≡ ⟪ τ ⟫ ∘ ⟪ σ ⟫
-
-  ∘ˢidˢ : {S T : Shape} (σ : ShapeHom S T) → σ ∘ˢ idˢ ≡ σ
-  idˢ∘ˢ : {S T : Shape} (σ : ShapeHom S T) → idˢ ∘ˢ σ  ≡ σ
-
-  ∘ˢassoc : {S T V W : Shape} (ν : ShapeHom V W) (τ : ShapeHom T V) (σ : ShapeHom S T)
-    → (ν ∘ˢ τ) ∘ˢ σ ≡ ν ∘ˢ (τ ∘ˢ σ)
-
-  {-# REWRITE ⟪idˢ⟫ ⟪∘ˢ⟫ ∘ˢidˢ idˢ∘ˢ ∘ˢassoc #-}
-
 module Tiny (@♭ S : Shape) where
 
   postulate
@@ -129,135 +114,243 @@ module _ {@♭ S T : Shape} (@♭ σ : ShapeHom S T) where
   ShapeHomR g =
     cong (R T) (LShapeHom (R S g))
 
-record PSh (S : Shape) : Set₁ where
-  field
-    set : {T : Shape} (σ : ShapeHom T S) → Set
-    mor : {V T : Shape} {σ : ShapeHom T S} (τ : ShapeHom V T)
-      → set σ → set (σ ∘ˢ τ)
-
-open PSh public
-
-isFib' : (S : Shape) → (⟨ S ⟩ → Set) → PSh S
-isFib' S A =
-  record
-  { set = λ {T} σ → isFib (A ∘ ⟪ σ ⟫)
-  ; mor = λ τ α → reindex _ α ⟪ τ ⟫
-  }
-
 Set* : Set₁
 Set* = Σ Set id
 
-PSh* : Shape → Set₁
-PSh* S = Σ P ∈ PSh S , P .set idˢ
+record Span : Set₁ where
+  field
+    Src : Set
+    Dst : Set
+    Rel : Src → Dst → Set
 
-PSh` : {S T : Shape} → ShapeHom S T → PSh T → PSh S
-PSh` σ P =
+open Span public
+
+record Witness (D : Span) : Set₁ where
+  field
+    src : D .Src
+    dst : D .Dst
+    rel : D .Rel src dst
+
+open Witness public
+
+Span* : Set₁
+Span* = Σ D ∈ Span , Witness D
+
+src* : Span* → Set*
+src* (D , W) = (D .Src , W .src)
+
+dst* : Span* → Set*
+dst* (D , W) = (D .Dst , W .dst)
+
+substSpan : ∀ {ℓ} {A : Set ℓ} (D : A → Span)
+  {x y : A} (p : x ≡ y)
+  → Witness (D x) → Witness (D y)
+substSpan D {x} p w =
   record
-  { set = λ τ → P .set (σ ∘ˢ τ)
-  ; mor = λ ν d → P .mor ν d
+  { src = subst (Src ∘ D) p (w .src)
+  ; dst = subst (Dst ∘ D) p (w .dst)
+  ; rel = j p
   }
+  where
+  j : ∀ {y} (p : x ≡ y)
+    → D y .Rel (subst (Src ∘ D) p (w .src)) (subst (Dst ∘ D) p (w .dst))
+  j refl = w .rel
 
-PSh*` : {S T : Shape} → ShapeHom S T → PSh* T → PSh* S
-PSh*` σ (P , c) = (PSh` σ P , P .mor σ c)
+hasLifts : (S : Shape) (A : ⟨ S ⟩ → Set) → Set
+hasLifts S A = ∀ r φ f x₀ → Comp S r A φ f x₀
 
-pr₁ : {S : Shape} → PSh* S → PSh S
-pr₁ = fst
+hasVaries : (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set) → Span
+hasVaries S T σ A =
+  record
+  { Src = hasLifts T A
+  ; Dst = hasLifts S (A ∘ ⟪ σ ⟫)
+  ; Rel = λ cT cS → ∀ r φ f x₀ s →
+    cT (⟪ σ ⟫ r) φ f x₀ .comp (⟪ σ ⟫ s) .fst ≡ cS r φ (f ◇ ⟪ σ ⟫) x₀ .comp s .fst
+  }
 
 record U : Set₁ where
   field
     El : Set
-    fib : (@♭ S : Shape) → √ S (PSh* S)
-    base : (@♭ S : Shape) → √` S pr₁ (fib S) ≡ R S (isFib' S) El
-    stable : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) →
-      √ShapeHom σ (fib S) ≡ √` T (PSh*` σ) (fib T)
+    lifts : (@♭ S : Shape) → √ S Set*
+    liftsBase : (@♭ S : Shape) → √` S fst (lifts S) ≡ R S (hasLifts S) El
+
+    varies : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ T Span*
+    variesBase : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+      → √` T fst (varies S T σ) ≡ R T (hasVaries S T σ) El
+    variesSrc : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+      → √` T src* (varies S T σ) ≡ lifts T
+    variesDst : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+      → √` T dst* (varies S T σ) ≡ √ShapeHom σ (lifts S)
 
 open U public
 
-pr₁Lfib : (@♭ S : Shape) → pr₁ ∘ L S (λ A → A .fib S) ≡ isFib' S ∘ (_∘_ El)
-pr₁Lfib S =
+UExt : {A B : U} → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies → A ≡ B
+UExt {A = A} {B} refl refl refl =
+  cong
+    (λ {(cBase , vBase , vSrc , vDst) → record
+      { El = A .El
+      ; lifts = A .lifts
+      ; liftsBase = cBase
+      ; varies = A .varies
+      ; variesBase = vBase
+      ; variesSrc = vSrc
+      ; variesDst = vDst
+      }})
+    (×ext
+      (funext {B = λ (@♭ _) → _} λ (@♭ S) → uipImp)
+      (×ext
+        (funext {B = λ (@♭ _) → _} λ (@♭ S) →
+          funext {B = λ (@♭ _) → _} λ (@♭ T) →
+          funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp)
+        (×ext
+          (funext {B = λ (@♭ _) → _} λ (@♭ S) →
+            funext {B = λ (@♭ _) → _} λ (@♭ T) →
+            funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp)
+          (funext {B = λ (@♭ _) → _} λ (@♭ S) →
+            funext {B = λ (@♭ _) → _} λ (@♭ T) →
+            funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp))))
+
+fstLlifts : (@♭ S : Shape) → fst ∘ L S (λ A → A .lifts S) ≡ hasLifts S ∘ (_∘_ El)
+fstLlifts S =
   trans
     (cong (L S)
       (trans
-        (symm (R℘ S El (isFib' S)))
-        (funext (λ A → A .base S))))
-    (L√ S pr₁ (λ A → A .fib S))
+        (symm (R℘ S El (hasLifts S)))
+        (funext (λ A → A .liftsBase S))))
+    (L√ S fst (λ A → A .lifts S))
+
+getLifts : (@♭ S : Shape) (C : ⟨ S ⟩ → U) → hasLifts S (El ∘ C)
+getLifts S C = coe (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
+
+Llifts : (@♭ S : Shape) (C : ⟨ S ⟩ → U)
+  → L S (λ A → A .lifts S) C ≡ (hasLifts S (El ∘ C) , getLifts S C)
+Llifts S C = Σext (appCong (fstLlifts S)) refl
+
+fstLvaries : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+  → fst ∘ L T (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (_∘_ El)
+fstLvaries S T σ =
+  trans
+    (cong (L T)
+      (trans
+        (symm (R℘ T El (hasVaries S T σ)))
+        (funext (λ A → A .variesBase S T σ))))
+    (L√ T fst (λ A → A .varies S T σ))
+
+srcLvaries : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U)
+  → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
+srcLvaries S T σ C =
+  appCong
+    (trans
+      (trans
+        (funext (Llifts T))
+        (cong (L T) (funext (λ A → A .variesSrc S T σ))))
+      (L√ T src* (λ A → A .varies S T σ)))
+
+dstLvaries : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U)
+  → dst* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))
+dstLvaries S T σ C =
+  appCong
+    {f = λ C → dst* (L T (λ A → A .varies S T σ) C)}
+    {g = λ C → (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))}
+    (trans
+      (trans
+        (trans
+          (cong (_∘_ ◆ (_∘_ ◆ ⟪ σ ⟫)) (funext (Llifts S)))
+          (LShapeHom σ (λ A → A .lifts S)))
+        (cong (L T) (funext (λ A → A .variesDst S T σ))))
+      (L√ T dst* (λ A → A .varies S T σ)))
+
+getVaries : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U)
+  → hasVaries S T σ (El ∘ C) .Rel (getLifts T C) (getLifts S (C ∘ ⟪ σ ⟫))
+getVaries S T σ C =
+  subst
+    (uncurry (hasVaries S T σ (El ∘ C) .Rel))
+    (×ext
+       (trans
+         (Σeq₂' (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
+         (substCongAssoc id (λ D → D C .Src) (fstLvaries S T σ) _))
+       (trans
+         (Σeq₂' (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ)))
+         (substCongAssoc id (λ D → D C .Dst) (fstLvaries S T σ) _)))
+    (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
 
 υ : isFib El
 υ .lift =
-  ShapeIsDiscrete λ (@♭ S) →
-  λ r p →
-  subst (λ P → P p .set idˢ)
-    (pr₁Lfib S)
-    (L S (λ A → A .fib S) p .snd)
-    .lift S r id
+  ShapeIsDiscrete λ (@♭ S) → λ r C → getLifts S C r
 υ .vary =
   ShapeIsDiscrete λ (@♭ S) →
   ShapeIsDiscrete λ (@♭ T) →
   ShapeHomIsDiscrete λ (@♭ σ) →
-  λ r p φ f x₀ s →
-  let
-    stableLemma : PSh*` σ ∘ L T (λ A → A .fib T) ≡ L S (λ A → A .fib S) ∘ (_∘_ ◆ ⟪ σ ⟫)
-    stableLemma =
-      trans
-        (trans
-          (LShapeHom σ (λ A → A .fib S))
-          (cong (L T) (symm (funext (λ A → A .stable S T σ)))))
-        (L√ T (PSh*` σ) (λ A → A .fib T))
-  in
-  trans
-    (cong
-      (λ c → c .lift S r id φ (f ◇ ⟪ σ ⟫) x₀ .comp s .fst)
-      (symm
-        (substCongAssoc
-          id
-          (λ P → P (p ∘ ⟪ σ ⟫) .set idˢ)
-          (pr₁Lfib S)
-          (L S (λ A → A .fib S) (p ∘ ⟪ σ ⟫) .snd))))
-    (trans
-      (cong
-        (λ c → c .lift S r id φ (f ◇ ⟪ σ ⟫) x₀ .comp s .fst)
-        (trans
-          (cong
-            (λ {(c , eq) → coe eq (c .snd)})
-            {x = _ , cong (λ P → P p .set (σ ∘ˢ idˢ)) (pr₁Lfib T)}
-            {y = _ , cong (λ P → P (p ∘ ⟪ σ ⟫) .set idˢ) (pr₁Lfib S)}
-            (Σext (appCong stableLemma) uipImp))
-          (trans
-            (substCongAssoc
-              id
-              (λ P → P p .set (σ ∘ˢ idˢ))
-              (pr₁Lfib T)
-              (PSh*` σ (L T (λ A → A .fib T) p) .snd))
-            (substNaturality
-              (λ P → P p .set idˢ)
-              (λ P → P p .set (σ ∘ˢ idˢ))
-              (λ P t → PSh*` σ (P p , t) .snd)
-              (pr₁Lfib T)
-              ((L T (λ A → A .fib T) p) .snd)))))
-      (subst (λ P → P p .set idˢ) (pr₁Lfib T)
-        (L T (λ A → A .fib T) p .snd)
-        .vary S T σ r id φ f x₀ s))
+  λ r C → getVaries S T σ C r
 
 decode : ∀ {ℓ} {Γ : Set ℓ} → (Γ → U) → Fib Γ
 decode = reindex' (El , υ)
 
-encode : {@♭ ℓ : Level} {@♭ Γ : Set ℓ} → @♭ (Fib Γ) → (Γ → U)
+encode : ∀ {@♭ ℓ} {@♭ Γ : Set ℓ} → @♭ (Fib Γ) → (Γ → U)
 encode {Γ = Γ} (A , α) =
   λ x →
   record
   { El = A x
-  ; fib = λ (@♭ S) → g S x
-  ; base = λ (@♭ S) → appCong (bas S)
-  ; stable = λ (@♭ S T σ) → appCong (stab S T σ)
+
+  ; lifts = λ (@♭ S) → Rl S x
+  ; liftsBase = λ (@♭ S) →
+    appCong (trans (R℘ S A (hasLifts S)) (cong (R S) (symm (L√ S fst (Rl S)))))
+  ; varies = λ (@♭ S T σ) → Rv S T σ x
+  ; variesBase = λ (@♭ S T σ) →
+    appCong (trans (R℘ T A (hasVaries S T σ)) (cong (R T) (symm (L√ T fst (Rv S T σ)))))
+  ; variesSrc = λ (@♭ S T σ) →
+    appCong
+      (cong (R T)
+        {x = L T (R T (λ x → (src* ∘ L T id) x) ∘ Rv S T σ)}
+        (symm (L√ T src* (Rv S T σ))))
+  ; variesDst = λ (@♭ S T σ) →
+    appCong
+      (trans
+        (symm (ShapeHomR σ (l S)))
+        (cong (R T)
+          {x = L T (R T (λ x → (dst* ∘ L T id) x) ∘ Rv S T σ)}
+          (symm (L√ T dst* (Rv S T σ)))))
   }
   where
-  f : (@♭ S : Shape) → (⟨ S ⟩ → Γ) → PSh* S
-  f S p = isFib' S (A ∘ p) , reindex A α p
+  l : (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Set*
+  l S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
-  g : (@♭ S : Shape) → Γ → √ S (PSh* S)
-  g S = R S (f S)
+  Rl : (@♭ S : Shape) → Γ → √ S Set*
+  Rl S = R S (l S)
 
-  bas : (@♭ S : Shape) → √` S pr₁ ∘ g S ≡ R S (isFib' S) ∘ A
-  bas S = trans (R℘ S A (isFib' S)) (cong (R S) (symm (L√ S fst (g S))))
-  stab : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ShapeHom σ ∘ g S ≡ √` T (PSh*` σ) ∘ g T
-  stab S T σ = trans (symm (√R T (PSh*` σ) (f T))) (ShapeHomR σ (f S))
+  v : ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span*
+  v S T σ p =
+    ( hasVaries S T σ (A ∘ p)
+    , record
+      { src = λ r → α .lift T r p
+      ; dst = λ r → α .lift S r (p ∘ ⟪ σ ⟫)
+      ; rel = λ r → α .vary S T σ r p
+      }
+    )
+
+  Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T Span*
+  Rv S T σ = R T (v S T σ)
+
+decodeEncode : {@♭ ℓ : Level} {@♭ Γ : Set ℓ} (@♭ Aα : Fib Γ) → decode (encode Aα) ≡ Aα
+decodeEncode {Γ = Γ} Aα =
+  Σext refl
+    (fibExt
+      (ShapeIsDiscrete λ (@♭ S) r p φ f x₀ s →
+        cong
+          {A = Σ C ∈ Set* , C .fst ≡ hasLifts S (A ∘ p)}
+          (λ {(C , eq) → coe eq (C .snd) r φ f x₀ .comp s .fst})
+          {x = _ , appCong (fstLlifts S)}
+          {y = _ , refl}
+          (Σext (lemma S p) uipImp)))
+  where
+  A = Aα .fst
+  α = Aα .snd
+
+  lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → Γ)
+    → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
+  lemma S p =
+    trans
+      (appCong
+        (L℘ S id (R S {B = Set*} (λ p → hasLifts S (A ∘ p) , λ r → α .lift S r p))))
+      (appCong (symm (L℘ S id (λ C → C .lifts S))))
+

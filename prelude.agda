@@ -174,7 +174,7 @@ appCong :
   (p : f ≡ g)
   → -----------
   f x ≡ g x
-appCong refl = refl
+appCong p = cong (λ h → h _) p
 
 adjustSubstEq :
   {ℓ ℓ' : Level}
