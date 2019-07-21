@@ -104,14 +104,6 @@ abstract
     varyA : reshapeComp σ T.compA ≡ S.compA
     varyA = compExt (α .vary S T σ r p φ T.tubeA T.baseA)
 
-  FibΣ' :
-    {Γ : Set}
-     (A : Fib Γ)
-    (B : Fib (Σ x ∈ Γ , fst A x))
-    → -----------
-    Fib Γ
-  FibΣ' (A , α) (B , β) = Σ' A B , FibΣ {A = A} {B = B} α β
-
   ----------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing
   ----------------------------------------------------------------------
@@ -125,3 +117,20 @@ abstract
     → ----------------------
     reindex (Σ' A B) (FibΣ {B = B} α β) ρ ≡ FibΣ {B = B ∘ (ρ ×id)} (reindex A α ρ) (reindex B β (ρ ×id))
   reindexΣ A B α β ρ = fibExt λ _ _ _ _ _ _ _ → refl
+
+FibΣ' : ∀ {ℓ}
+  {Γ : Set ℓ}
+   (A : Fib Γ)
+  (B : Fib (Σ x ∈ Γ , fst A x))
+  → -----------
+  Fib Γ
+FibΣ' (A , α) (B , β) = Σ' A B , FibΣ {A = A} {B = B} α β
+
+reindexΣ' : ∀ {ℓ ℓ'}
+  {Δ : Set ℓ} {Γ : Set ℓ'}
+  (Aα : Fib Γ)
+  (Bβ : Fib (Σ Γ (Aα .fst)))
+  (ρ : Δ → Γ)
+  → ----------------------
+  reindex' (FibΣ' Aα Bβ) ρ ≡ FibΣ' (reindex' Aα ρ) (reindex' Bβ (ρ ×id))
+reindexΣ' (A , α) (B , β) ρ = Σext refl (reindexΣ A B α β ρ)

@@ -103,14 +103,6 @@ abstract
     varyA : (a : A (p (⟪ σ ⟫ s))) → reshapeComp σ (T.compA _ a) ≡ S.compA _ a
     varyA a = compExt (α .vary S T σ s p (int ∋ O ≈ I) (T.tubeA _ a) (T.baseA _ a))
 
-  FibΠ' :
-    {Γ : Set}
-    (A : Fib Γ)
-    (B : Fib (Σ x ∈ Γ , fst A x))
-    → -----------
-    Fib Γ
-  FibΠ' (A , α) (B , β) = (Π' A B , FibΠ {A = A} {B = B} α β)
-
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------
@@ -124,3 +116,20 @@ abstract
     → ----------------------
     reindex (Π' A B) (FibΠ {B = B} α β) ρ ≡ FibΠ {B = B ∘ (ρ ×id)} (reindex A α ρ) (reindex B β (ρ ×id))
   reindexΠ A B α β ρ = fibExt λ _ _ _ _ _ _ _ → refl
+
+FibΠ' : ∀ {ℓ}
+  {Γ : Set ℓ}
+  (A : Fib Γ)
+  (B : Fib (Σ x ∈ Γ , fst A x))
+  → -----------
+  Fib Γ
+FibΠ' (A , α) (B , β) = (Π' A B , FibΠ {A = A} {B = B} α β)
+
+reindexΠ' : ∀ {ℓ ℓ'}
+  {Δ : Set ℓ} {Γ : Set ℓ'}
+  (Aα : Fib Γ)
+  (Bβ : Fib (Σ Γ (Aα .fst)))
+  (ρ : Δ → Γ)
+  → ----------------------
+  reindex' (FibΠ' Aα Bβ) ρ ≡ FibΠ' (reindex' Aα ρ) (reindex' Bβ (ρ ×id))
+reindexΠ' (A , α) (B , β) ρ = Σext refl (reindexΠ A B α β ρ)
