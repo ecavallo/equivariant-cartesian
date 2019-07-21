@@ -15,15 +15,17 @@ open import fibrations
 -- Dependent products
 ----------------------------------------------------------------------
 
-Σ' : ∀{a}{Γ : Set a}(A : Γ → Set)(B : Σ Γ A → Set) → Γ → Set
+Σ' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Σ Γ A → Set ℓ'')
+  → Γ → Set (ℓ' ⊔ ℓ'')
 Σ' A B x = Σ a ∈ A x , B (x , a)
 
-_×'_ : ∀{a}{Γ : Set a}(A : Γ → Set)(B : Γ → Set) → Γ → Set
+_×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set ℓ'')
+  → Γ → Set (ℓ' ⊔ ℓ'')
 (A ×' B) x = A x × B x
 
 
-module FibΣId
-  (S : Shape) {A : ⟨ S ⟩ → Set} {B : Σ ⟨ S ⟩ A → Set}
+module FibΣId {ℓ ℓ'}
+  (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (r : ⟨ S ⟩) (φ : CofProp) (f : [ φ ] → (s : ⟨ S ⟩) → Σ (A s) (curry B s))
   (x₀ : Σ (A r) (curry B r) [ φ ↦ f ◆ r ])
@@ -61,10 +63,10 @@ module FibΣId
     compB = β .lift S r q φ tubeB baseB
 
 abstract
-  FibΣ : ∀ {ℓ}
+  FibΣ : ∀ {ℓ ℓ' ℓ''}
     {Γ : Set ℓ}
-    {A : Γ → Set}
-    {B : (Σ x ∈ Γ , A x) → Set}
+    {A : Γ → Set ℓ'}
+    {B : (Σ x ∈ Γ , A x) → Set ℓ''}
     (α : isFib A)
     (β : isFib B)
     → -----------
@@ -107,10 +109,10 @@ abstract
   ----------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexΣ : ∀ {ℓ ℓ'}
+  reindexΣ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
-    (A : Γ → Set)
-    (B : Σ Γ A → Set)
+    (A : Γ → Set ℓ'')
+    (B : Σ Γ A → Set ℓ''')
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
@@ -118,18 +120,18 @@ abstract
     reindex (Σ' A B) (FibΣ {B = B} α β) ρ ≡ FibΣ {B = B ∘ (ρ ×id)} (reindex A α ρ) (reindex B β (ρ ×id))
   reindexΣ A B α β ρ = fibExt λ _ _ _ _ _ _ _ → refl
 
-FibΣ' : ∀ {ℓ}
+FibΣ' : ∀ {ℓ ℓ' ℓ''}
   {Γ : Set ℓ}
-   (A : Fib Γ)
-  (B : Fib (Σ x ∈ Γ , fst A x))
+  (A : Fib ℓ' Γ)
+  (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
   → -----------
-  Fib Γ
+  Fib (ℓ' ⊔ ℓ'') Γ
 FibΣ' (A , α) (B , β) = Σ' A B , FibΣ {A = A} {B = B} α β
 
-reindexΣ' : ∀ {ℓ ℓ'}
+reindexΣ' : ∀ {ℓ ℓ' ℓ'' ℓ'''}
   {Δ : Set ℓ} {Γ : Set ℓ'}
-  (Aα : Fib Γ)
-  (Bβ : Fib (Σ Γ (Aα .fst)))
+  (Aα : Fib ℓ'' Γ)
+  (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)
   → ----------------------
   reindex' (FibΣ' Aα Bβ) ρ ≡ FibΣ' (reindex' Aα ρ) (reindex' Bβ (ρ ×id))

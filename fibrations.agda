@@ -14,8 +14,8 @@ open import cofprop
 -- Composition structure
 ----------------------------------------------------------------------
 
-record Comp (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set) (φ : CofProp)
-  (f : [ φ ] → Π A) (x₀ : A r [ φ ↦ f ◆ r ]) : Set
+record Comp {ℓ} (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ)
+  (φ : CofProp) (f : [ φ ] → Π A) (x₀ : A r [ φ ↦ f ◆ r ]) : Set ℓ
   where
   field
     comp : (s : ⟨ S ⟩) → A s [ φ ↦ f ◆ s ]
@@ -23,8 +23,8 @@ record Comp (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set) (φ : CofProp)
 
 open Comp public
 
-reshapeComp : {S T : Shape} (σ : ShapeHom S T)
-  → ∀ {r A φ f x₀}
+reshapeComp : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
+  → ∀ {r} → {A : ⟨ T ⟩ → Set ℓ} → ∀ {φ f x₀}
   → Comp T (⟪ σ ⟫ r) A φ f x₀
   → Comp S r (A ∘ ⟪ σ ⟫) φ (f ◇ ⟪ σ ⟫) x₀
 reshapeComp σ w =
@@ -33,8 +33,8 @@ reshapeComp σ w =
   ; cap = w .cap
   }
 
-compExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set} {φ : CofProp}
-  {f : [ φ ] → Π A} {x₀ : A r [ φ ↦ f ◆ r ]}
+compExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+  {φ : CofProp} {f : [ φ ] → Π A} {x₀ : A r [ φ ↦ f ◆ r ]}
   {co co' : Comp S r A φ f x₀}
   → (∀ s → co .comp s .fst ≡ co' .comp s .fst)
   → co ≡ co'
@@ -46,7 +46,7 @@ compExt p =
 ----------------------------------------------------------------------
 -- Fibrations
 ----------------------------------------------------------------------
-record isFib {ℓ} {Γ : Set ℓ} (A : Γ → Set) : Set ℓ where
+record isFib {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
   field
     lift : ∀ S r p φ f x₀ → Comp S r (A ∘ p) φ f x₀
     vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p φ f x₀ s
@@ -55,23 +55,24 @@ record isFib {ℓ} {Γ : Set ℓ} (A : Γ → Set) : Set ℓ where
 
 open isFib public
 
-Fib : ∀{a}(Γ : Set a) → Set (lsuc lzero ⊔ a)
-Fib {a} Γ = Σ (Γ → Set) isFib
+Fib : ∀ {ℓ} (ℓ' : Level) (Γ : Set ℓ) → Set (ℓ ⊔ lsuc ℓ')
+Fib ℓ' Γ = Σ (Γ → Set ℓ') isFib
 
 ----------------------------------------------------------------------
 -- Fibrations can be reindexed
 ----------------------------------------------------------------------
-reindex : ∀{a a'}{Δ : Set a}{Γ : Set a'}(A : Γ → Set)(α : isFib A)(ρ : Δ → Γ) → isFib (A ∘ ρ)
+reindex : ∀{ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (A : Γ → Set ℓ'')
+  (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
 reindex A α ρ =
   record
   { lift = λ S r p → α .lift S r (ρ ∘ p)
   ; vary = λ S T σ r p → α .vary S T σ r (ρ ∘ p)
   }
 
-reindex' : ∀{a a'}{Δ : Set a}{Γ : Set a'}(Aα : Fib Γ)(ρ : Δ → Γ) → Fib Δ
+reindex' : ∀{ℓ ℓ' ℓ''}{Δ : Set ℓ}{Γ : Set ℓ'}(Aα : Fib ℓ'' Γ)(ρ : Δ → Γ) → Fib ℓ'' Δ
 reindex' (A , α) ρ = (A ∘ ρ , reindex A α ρ)
 
-reindexSubst : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set}
+reindexSubst : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set ℓ''}
  (ρ : Δ → Γ)(P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
   → reindex A' (subst isFib P α) ρ ≡ subst isFib Q (reindex A α ρ)
 reindexSubst ρ refl refl α = refl
@@ -79,31 +80,30 @@ reindexSubst ρ refl refl α = refl
 ----------------------------------------------------------------------
 -- Reindexing is functorial
 ----------------------------------------------------------------------
-reindexAlongId : ∀{a}{Γ : Set a}{A : Γ → Set}{α : isFib A} → α ≡ reindex A α id
+reindexAlongId : ∀{ℓ ℓ'} {Γ : Set ℓ}{A : Γ → Set ℓ'}{α : isFib A} → α ≡ reindex A α id
 reindexAlongId = refl
 
 reindexComp :
-  ∀{a b c}{Γ₁ : Set a}{Γ₂ : Set b}{Γ₃ : Set c}{A : Γ₃ → Set}{α : isFib A}
-  (f : Γ₁ → Γ₂)(g : Γ₂ → Γ₃)
+  ∀{ℓ ℓ' ℓ'' ℓ'''} {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''} {A : Γ₃ → Set ℓ'''}
+  {α : isFib A} (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
   → ----------------------
   reindex A α (g ∘ f) ≡ reindex (A ∘ g) (reindex A α g) f
 reindexComp g f = refl
 
-reindexAlongId' : ∀{a}{Γ : Set a}{A : Fib Γ} → reindex' A id ≡ A
+reindexAlongId' : ∀{ℓ ℓ'} {Γ : Set ℓ} {Aα : Fib ℓ' Γ} → reindex' Aα id ≡ Aα
 reindexAlongId' = refl
 
-reindexComp' :
-  ∀{a b c}{Γ₁ : Set a}{Γ₂ : Set b}{Γ₃ : Set c}
-  {A : Fib Γ₃}
+reindexComp' : ∀{ℓ ℓ' ℓ'' ℓ'''} {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''}
+  {Aα : Fib ℓ''' Γ₃}
   (f : Γ₁ → Γ₂)(g : Γ₂ → Γ₃)
   → ----------------------
-  reindex' A (g ∘ f) ≡ reindex' (reindex' A g) f
+  reindex' Aα (g ∘ f) ≡ reindex' (reindex' Aα g) f
 reindexComp' g f = refl
 
 ----------------------------------------------------------------------
 -- An extensionality principle for fibration structures
 ----------------------------------------------------------------------
-fibExt : ∀{ℓ}{Γ : Set ℓ}{A : Γ → Set}{α α' : isFib A} →
+fibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
   ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (φ : CofProp)
   (f : [ φ ] → Π (A ∘ p)) (x₀ : A (p r) [ φ ↦ f ◆ r ])
     → (s : ⟨ S ⟩) → α .lift S r p φ f x₀ .comp s .fst ≡ α' .lift S r p φ f x₀ .comp s .fst)
@@ -121,7 +121,7 @@ fibExt {Γ = Γ} {A} {α} {α'} q =
 ----------------------------------------------------------------------
 -- Terminal object is fibrant
 ----------------------------------------------------------------------
-FibUnit : {Γ : Set} → isFib(λ(_ : Γ) → Unit)
+FibUnit : ∀ {ℓ} {Γ : Set ℓ} → isFib (λ(_ : Γ) → Unit)
 FibUnit .lift _ _ _ _ _ (unit , _) .comp _ = (unit , λ _ → refl)
 FibUnit .lift _ _ _ _ _ (unit , _) .cap = refl
 FibUnit .vary _ _ _ _ _ _ _ (unit , _) _ = refl
@@ -129,17 +129,17 @@ FibUnit .vary _ _ _ _ _ _ _ (unit , _) _ = refl
 ----------------------------------------------------------------------
 -- Initial object is fibrant
 ----------------------------------------------------------------------
-Fib∅ : {Γ : Set} → isFib(λ(_ : Γ) → ∅)
+Fib∅ : ∀ {ℓ} {Γ : Set ℓ} → isFib (λ(_ : Γ) → ∅)
 Fib∅ .lift _ _ _ _ _ (() , _)
 Fib∅ .vary _ _ _ _ _ _ _ (() , _)
 
 ----------------------------------------------------------------------
 -- Fibrations are closed under isomorphism
 ----------------------------------------------------------------------
-_≅'_ : ∀{a}{Γ : Set a}(A B : Γ → Set) → Set a
-_≅'_ {_} {Γ} A B = (x : Γ) → A x ≅ B x
+_≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
+_≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
-FibIso : ∀{a}{Γ : Set a}(A B : Γ → Set) → (A ≅' B) → isFib B → isFib A
+FibIso : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
 FibIso A B iso β .lift S r p φ f (a₀ , ex) =
   record
   { comp = λ s →
@@ -173,7 +173,7 @@ FibIso A B iso β .vary S T σ r p φ f (a₀ , ex) s =
 -- Lemmas for proving equality of compositions
 ----------------------------------------------------------------------
 
-boxEq : (S : Shape) {A : ⟨ S ⟩ → Set}
+boxEq : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   {φ₀ φ₁ : CofProp} (φ : φ₀ ≡ φ₁)
   {f₀ : [ φ₀ ] → Π A} {f₁ : [ φ₁ ] → Π A}
   (f : ∀ u v → f₀ u ≡ f₁ v)
@@ -193,7 +193,7 @@ boxEq S {A} {φ₀} refl f r x =
           x)
         (funext λ _ → uipImp)))
 
-boxEqDep : (S : Shape) {B : Set} {A : B → ⟨ S ⟩ → Set} 
+boxEqDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'} 
   {b₀ b₁ : B} (b : b₀ ≡ b₁)
   {φ₀ φ₁ : CofProp} (φ : φ₀ ≡ φ₁)
   {f₀ : [ φ₀ ] → Π (A b₀)} {f₁ : [ φ₁ ] → Π (A b₁)}

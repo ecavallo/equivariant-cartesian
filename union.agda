@@ -24,8 +24,8 @@ inr' φ ψ (x , u) = x , ∣ inr u ∣
 ----------------------------------------------------------------------
 -- Equality of fibration structures on a union of families
 ----------------------------------------------------------------------
-unionFibExt : ∀ {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {A : res Γ (φ₀ ∨' φ₁) → Set} {α₀ α₁ : isFib A}
+unionFibExt : ∀ {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
+  {A : res Γ (φ₀ ∨' φ₁) → Set ℓ'} {α₀ α₁ : isFib A}
   → reindex A α₀ (inl' φ₀ φ₁) ≡ reindex A α₁ (inl' φ₀ φ₁)
   → reindex A α₀ (inr' φ₀ φ₁) ≡ reindex A α₁ (inr' φ₀ φ₁)
   → α₀ ≡ α₁
@@ -70,8 +70,8 @@ unionFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
                 eq₁))
             (moveEq (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _) α₀))
 
-unionFibExt' : ∀ {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {Aα₀ Aα₁ : Fib (res Γ (φ₀ ∨' φ₁))}
+unionFibExt' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
+  {Aα₀ Aα₁ : Fib ℓ' (res Γ (φ₀ ∨' φ₁))}
   → reindex' Aα₀ (inl' φ₀ φ₁) ≡ reindex' Aα₁ (inl' φ₀ φ₁)
   → reindex' Aα₀ (inr' φ₀ φ₁) ≡ reindex' Aα₁ (inr' φ₀ φ₁)
   → Aα₀ ≡ Aα₁
@@ -89,12 +89,12 @@ unionFibExt' {Γ = Γ} φ₀ φ₁ {Aα₀} {Aα₁} eq₀ eq₁ =
         (Σeq₂' eq₀ refl)
         (Σeq₂' eq₁ refl))
 
-----------------------------------------------------------------------
+-- ----------------------------------------------------------------------
 -- Deriving a fibrancy structure on a union
 ----------------------------------------------------------------------
 
-module FibUnionId (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
-  (A : res ⟨ S ⟩ (φ₀ ∨' φ₁) → Set)
+module FibUnionId {ℓ} (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
+  (A : res ⟨ S ⟩ (φ₀ ∨' φ₁) → Set ℓ)
   (α₀ : isFib (A ∘ inl' φ₀ φ₁))
   (α₁ : isFib (A ∘ inr' φ₀ φ₁))
   (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
@@ -141,8 +141,8 @@ module FibUnionId (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
           (reindex _ α₁ (λ s → s , u₁ s))
           .lift S r id ψ f x₀ .cap)
 
-module FibUnion {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  (A : res Γ (φ₀ ∨' φ₁) → Set)
+module FibUnion {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
+  (A : res Γ (φ₀ ∨' φ₁) → Set ℓ')
   (α₀ : isFib (A ∘ inl' φ₀ φ₁))
   (α₁ : isFib (A ∘ inr' φ₀ φ₁))
   (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
@@ -291,8 +291,8 @@ module FibUnion {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
             (cntd S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (λ s → ∣ inr (p s .snd) ∣))
             (∣ inr (λ s → p s .snd) ∣)))
 
-reindexUnion : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
-  (A : res Γ (φ₀ ∨' φ₁) → Set)
+reindexUnion : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
+  (A : res Γ (φ₀ ∨' φ₁) → Set ℓ'')
   (α₀ : isFib (A ∘ inl' φ₀ φ₁))
   (α₁ : isFib (A ∘ inr' φ₀ φ₁))
   (eqFib : reindex' (_ , α₀) (id× fst) ≡ reindex' (_ , α₁) (id× snd))
@@ -309,8 +309,8 @@ reindexUnion φ₀ φ₁ A α₀ α₁ eqFib ρ =
       (symm (FibUnion.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
       (cong (reindex (A ∘ inr' φ₀ φ₁) ◆ (ρ ×id)) (FibUnion.right φ₀ φ₁ A α₀ α₁ eqFib)))
 
-module UnionFib {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  (Aα₀ : Fib (res Γ φ₀)) (Aα₁ : Fib (res Γ φ₁))
+module UnionFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
+  (Aα₀ : Fib ℓ' (res Γ φ₀)) (Aα₁ : Fib ℓ' (res Γ φ₁))
   (eqFib : reindex' Aα₀ (id× fst) ≡ reindex' Aα₁ (id× snd))
   where
 
@@ -326,7 +326,7 @@ module UnionFib {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       eqFib
 
   abstract
-    fib : Fib (res Γ (φ₀ ∨' φ₁))
+    fib : Fib ℓ' (res Γ (φ₀ ∨' φ₁))
     fib = (_ , F.fib)
 
     left : reindex' fib (inl' φ₀ φ₁) ≡ Aα₀
@@ -335,8 +335,8 @@ module UnionFib {ℓ} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
     right : reindex' fib (inr' φ₀ φ₁) ≡ Aα₁
     right = cong (λ f → Aα₁ .fst , f) F.right
 
-reindexUnion' : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
-  (Aα₀ : Fib (res Γ φ₀)) (Aα₁ : Fib (res Γ φ₁))
+reindexUnion' : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
+  (Aα₀ : Fib ℓ'' (res Γ φ₀)) (Aα₁ : Fib ℓ'' (res Γ φ₁))
   (eqFib : reindex' Aα₀ (id× fst) ≡ reindex' Aα₁ (id× snd))
   (ρ : Δ → Γ)
   → reindex' (UnionFib.fib φ₀ φ₁ Aα₀ Aα₁ eqFib) (ρ ×id)

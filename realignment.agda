@@ -11,9 +11,9 @@ open import shape
 open import cofprop
 open import fibrations
 
-module RealignId (S : Shape)
+module RealignId {ℓ} (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)
-  (A : ⟨ S ⟩ → Set)
+  (A : ⟨ S ⟩ → Set ℓ)
   (β : isFib {Γ = res ⟨ S ⟩ Φ} (A ∘ fst))
   (α : isFib A)
   (r : ⟨ S ⟩) (ψ : CofProp) (f : [ ψ ] → Π A)
@@ -42,10 +42,10 @@ module RealignId (S : Shape)
 
 abstract
 
-  realign :
-    ∀{ℓ}{Γ : Set ℓ}
+  realign : ∀ {ℓ ℓ'}
+    {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    (A : Γ → Set)
+    (A : Γ → Set ℓ')
     (β : isFib {Γ = res Γ Φ} (A ∘ fst))
     (α : isFib A)
     → ---------------
@@ -85,10 +85,10 @@ abstract
       RealignId T (Φ ∘ p) (A ∘ p)
         (reindex (A ∘ fst) β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) ψ f x₀
 
-  isRealigned :
-    ∀{ℓ}{Γ : Set ℓ}
+  isRealigned : ∀ {ℓ ℓ'}
+    {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    (A : Γ → Set)
+    (A : Γ → Set ℓ')
     (β : isFib {Γ = res Γ Φ} (A ∘ fst))
     (α : isFib A)
     → ---------------
@@ -101,10 +101,10 @@ abstract
       in
       symm (compA .comp s .snd ∣ inr (λ s → p s .snd) ∣)
 
-  reindexRealign :
-    ∀{ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexRealign : ∀{ℓ ℓ' ℓ''}
+    {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    (A : Γ → Set)
+    (A : Γ → Set ℓ'')
     (β : isFib {Γ = res Γ Φ} (A ∘ fst))
     (α : isFib A)
     (ρ : Δ → Γ)
