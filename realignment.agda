@@ -1,14 +1,13 @@
 {-
 
-Realign a fibration structure.
+Realign a fibration structure to agree with another on some cofibration
 
 -}
 {-# OPTIONS --rewriting #-}
 module realignment where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 
 module RealignId {ℓ} (S : Shape)

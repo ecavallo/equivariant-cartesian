@@ -4,11 +4,10 @@ Fibrancy of Π-types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module Data.functions where
+module type-formers.functions where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 
 ----------------------------------------------------------------------

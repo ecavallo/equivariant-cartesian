@@ -4,11 +4,10 @@ Fibrancy of Σ-types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module Data.products where
+module type-formers.products where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 
 ----------------------------------------------------------------------
@@ -35,7 +34,7 @@ module FibΣId {ℓ ℓ'}
   tubeA u i = f u i .fst
 
   baseA : A r [ φ ↦ tubeA ◆ r ]
-  baseA = (x₀ .fst .fst , λ u → Σeq₁ (x₀ .snd u))
+  baseA = (x₀ .fst .fst , λ u → cong fst (x₀ .snd u))
 
   compA = α .lift S r id φ tubeA baseA
 

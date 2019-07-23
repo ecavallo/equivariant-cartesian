@@ -6,15 +6,14 @@ Realigning strict glue.
 {-# OPTIONS --rewriting #-}
 module glueing.aligned where
 
-open import glueing.core
-open import glueing.strict
-
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 open import equivs
 open import realignment
+
+open import glueing.weak
+open import glueing.strict
 
 ----------------------------------------------------------------------
 -- Realigning strict glue

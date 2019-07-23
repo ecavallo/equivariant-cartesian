@@ -239,96 +239,6 @@ data _⊎_ {ℓ m : Level}(A : Set ℓ)(B : Set m) : Set (ℓ ⊔ m) where
   inr : B → A ⊎ B
 
 ----------------------------------------------------------------------
--- Propositional truncation
-----------------------------------------------------------------------
-
-postulate
-  ∥_∥ : ∀ {ℓ} → Set ℓ → Set ℓ
-
-module _ {ℓ : Level} {A : Set ℓ} where
-  postulate
-    ∣_∣ : A → ∥ A ∥
-
-    trunc : (t u : ∥ A ∥) → t ≡ u
-
-    ∥∥-rec : ∀ {ℓ'}
-      (P : Set ℓ')
-      (f : A → P)
-      (p : ∀ a b → f a ≡ f b)
-      → ---------------
-      ∥ A ∥ → P
-
-    ∥∥-rec-β : ∀ {ℓ'} (P : Set ℓ') f p → (a : A)
-      → ∥∥-rec P f p ∣ a ∣ ≡ f a
-
-    ∥∥-elim : ∀ {ℓ'}
-      (P : ∥ A ∥ → Set ℓ')
-      (f : (a : A) → P ∣ a ∣)
-      (p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
-      → ---------------
-      (t : ∥ A ∥) → P t
-
-    ∥∥-elim-β : ∀ {ℓ'} (P : ∥ A ∥ → Set ℓ') f p → (a : A)
-      → ∥∥-elim P f p ∣ a ∣ ≡ f a
-
-    {-# REWRITE ∥∥-rec-β ∥∥-elim-β #-}
-
-----------------------------------------------------------------------
--- Truncated disjunction
-----------------------------------------------------------------------
-
-∥⊎∥-rec : ∀ {ℓ ℓ' ℓ''}
-  {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''}
-  (pA : (a a' : A) → a ≡ a')
-  (pB : (b b' : B) → b ≡ b')
-  (f : A → C)
-  (g : B → C)
-  (p : ∀ a b → f a ≡ g b)
-  → ∥ A ⊎ B ∥ → C
-∥⊎∥-rec pA pB f g p =
-  ∥∥-rec _
-    (λ {(inl a) → f a ; (inr b) → g b})
-    (λ
-      { (inl a) (inl a') → cong f (pA a a')
-      ; (inl a) (inr b') → p a b'
-      ; (inr b) (inl a') → symm (p a' b)
-      ; (inr b) (inr b') → cong g (pB b b')
-      })
-
-∥⊎∥-elim : ∀ {ℓ ℓ' ℓ''}
-  {A : Set ℓ} {B : Set ℓ'}
-  (pA : (a a' : A) → a ≡ a')
-  (pB : (b b' : B) → b ≡ b')
-  (C : ∥ A ⊎ B ∥ → Set ℓ'')
-  (f : (a : A) → C ∣ inl a ∣)
-  (g : (b : B) → C ∣ inr b ∣)
-  (p : ∀ a b → subst C (trunc _ _) (f a) ≡ g b)
-  → (t : ∥ A ⊎ B ∥) → C t
-∥⊎∥-elim pA pB C f g p =
-  ∥∥-elim _
-    (λ {(inl a) → f a ; (inr b) → g b})
-    (λ
-      { (inl a) (inl a') →
-        trans
-          (trans
-            (congdep f (pA a a'))
-            (symm (substCongAssoc C (∣_∣ ∘ inl) (pA a a') _)))
-          (cong (λ q → subst C q (f a)) (uip (trunc _ _) (cong (∣_∣ ∘ inl) (pA a a'))))
-      ; (inl a) (inr b') → p a b'
-      ; (inr b) (inl a') →
-        adjustSubstEq C
-          refl (trunc ∣ inl a' ∣ ∣ inr b ∣)
-          (trunc ∣ inr b ∣ ∣ inl a' ∣) refl
-          (symm (p a' b))
-      ; (inr b) (inr b') →
-        trans
-          (trans
-            (congdep g (pB b b'))
-            (symm (substCongAssoc C (∣_∣ ∘ inr) (pB b b') _)))
-          (cong (λ q → subst C q (g b)) (uip (trunc _ _) (cong (∣_∣ ∘ inr) (pB b b'))))
-      })
-
-----------------------------------------------------------------------
 -- Dependent products
 ----------------------------------------------------------------------
 record Σ {ℓ m : Level} (A : Set ℓ) (B : A → Set m) : Set (ℓ ⊔ m) where
@@ -380,34 +290,14 @@ id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
   (x , y) ≡ (x' , y')
 Σext refl refl = refl
 
-Σeq₁ :
-  {ℓ ℓ' : Level}
-  {A  : Set ℓ}
-  {B : A → Set ℓ'}
-  {x y : Σ A B}
-  (p : x ≡ y)
-  → --------------
-  fst x ≡ fst y
-Σeq₁ refl = refl
-
 Σeq₂ :
-  {ℓ ℓ' : Level}
-  {A  : Set ℓ}
-  {B : A → Set ℓ'}
-  {x y : Σ A B}
-  (p : x ≡ y)
-  → --------------
-  subst B (Σeq₁ p) (x .snd) ≡ y .snd
-Σeq₂ refl = refl
-
-Σeq₂' :
   {ℓ ℓ' : Level}
   {A  : Set ℓ}
   {B : A → Set ℓ'}
   {x y : Σ A B}
   (p : x ≡ y) (q : x .fst ≡ y .fst)
   → subst B q (x .snd) ≡ y .snd
-Σeq₂' refl refl = refl
+Σeq₂ refl refl = refl
 
 uncurry : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   → (∀ a b → C a b)
@@ -425,34 +315,13 @@ curry f a b = f (a , b)
 Π : ∀ {ℓ ℓ'} {A : Set ℓ} → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
 Π B = (a : _) → B a
 
-Π′ : ∀ {ℓ ℓ'} {A : Set ℓ}
-  {B C : A → Set ℓ'}
-  → ---------------------------------
-  ((a : A) → B a → C a) → Π B → Π C
-Π′ F p a = F a (p a)
+_◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : B → Set ℓ''}
+       → (A → (i : B) → C i) → (i : B) → A → C i
+(f ◆ b) a = f a b
 
-postulate
-  funext :
-     {ℓ  ℓ' : Level}
-     {A : Set ℓ}
-     {B : A → Set ℓ'}
-     {f g : (x : A) → B x}
-     → ----------------------------
-     ((x : A) → f x ≡ g x) → f ≡ g
-
-funextDepDom : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : Set ℓ''}
-  {a₀ a₁ : A} (p : a₀ ≡ a₁)
-  {f₀ : B a₀ → C} {f₁ : B a₁ → C}
-  → (∀ b → f₀ b ≡ f₁ (subst B p b))
-  → subst (λ a → B a → C) p f₀ ≡ f₁
-funextDepDom refl = funext
-
-funextDepCod : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → Set ℓ''}
-  {a₀ a₁ : A} (p : a₀ ≡ a₁)
-  {f₀ : B → C a₀} {f₁ : B → C a₁}
-  → (∀ b → subst C p (f₀ b) ≡ f₁ b)
-  → subst (λ a → B → C a) p f₀ ≡ f₁
-funextDepCod refl = funext
+_◇_ : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} {D : C → Set ℓ'''}
+  → (A → (i : C) → D i) → (g : B → C) → (A → (i : B) → D (g i))
+(f ◇ g) a b = f a (g b)
 
 ----------------------------------------------------------------------
 -- Isomorphism

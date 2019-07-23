@@ -4,12 +4,10 @@ Axioms related to strictifying Glue types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module strictness-axioms where
+module axioms.strictness where
 
 open import prelude
-open import shape
-open import cofprop
-open import fibrations
+open import axioms.cofprop
 
 ----------------------------------------------------------------------
 -- Strictifying

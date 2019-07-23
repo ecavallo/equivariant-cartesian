@@ -7,11 +7,8 @@ Constructing a universe that classifies fibrations
 module universe.core where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
-
-open import universe.axioms
 
 open Tiny
 
@@ -184,10 +181,10 @@ getVaries S T σ C =
       (uncurry (hasVaries S T σ (El ∘ C) .Rel))
       (×ext
          (trans
-           (Σeq₂' (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
+           (Σeq₂ (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
            (substCongAssoc id (λ D → D C .Src) (fstLvaries S T σ) _))
          (trans
-           (Σeq₂' (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ)))
+           (Σeq₂ (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ)))
            (substCongAssoc id (λ D → D C .Dst) (fstLvaries S T σ) _)))
       (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
   }

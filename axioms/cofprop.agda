@@ -6,13 +6,14 @@ operations on these.
 -}
 {-# OPTIONS --rewriting #-}
 
-module cofprop where
+module axioms.cofprop where
 
 open import prelude
-open import shape
+open import axioms.funext
+open import axioms.truncation
+open import axioms.shape
 
 infixr 4 _∨_
-infix  5 _↗_
 
 ----------------------------------------------------------------------
 -- Cofibrant propositions
@@ -45,47 +46,26 @@ postulate
     → all T Φ ≡ all S (Φ ∘ ⟪ σ ⟫)
 
 ----------------------------------------------------------------------
--- Cofibrant-partial function classifier
+-- Shorthands
 ----------------------------------------------------------------------
 
 ∂ : Int → CofProp
 ∂ i = int ∋ i ≈ O ∨ int ∋ i ≈ I
 
-_↗_ : ∀ {ℓ} {A : Set ℓ} {ϕ : Set} → (ϕ → A) → A → Set ℓ
-f ↗ x = (u : _) → f u ≡ x
-
-_◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : B → Set ℓ''}
-       → (A → (i : B) → C i) → (i : B) → A → C i
-(f ◆ b) a = f a b
-
-_◇_ : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''} {D : C → Set ℓ'''}
-  → (A → (i : C) → D i) → (σ : B → C) → (A → (i : B) → D (σ i))
-(f ◇ σ) a b = f a (σ b)
-  
-
 _[_↦_] : ∀ {ℓ} (A : Set ℓ) (φ : CofProp) → ([ φ ] → A) → Set ℓ
-A [ φ ↦ f ] = Σ a ∈ A , f ↗ a
+A [ φ ↦ f ] = Σ a ∈ A , ∀ u → f u ≡ a
 
-----------------------------------------------------------------------
--- Restricting a context by a cofibrant propositions
-----------------------------------------------------------------------
 res : ∀ {ℓ} (Γ : Set ℓ) (Φ : Γ → CofProp) → Set ℓ
 res Γ Φ = Σ x ∈ Γ , [ Φ x ]
 
 ----------------------------------------------------------------------
--- Compatible partial functions
+-- Combining compatible partial functions
 ----------------------------------------------------------------------
-□ : ∀ {ℓ} → Set ℓ → Set ℓ
-□ A = Σ φ ∈ CofProp , ([ φ ] → A)
-
-_⌣_ : ∀ {ℓ} {A : Set ℓ} → □ A → □ A → Set ℓ
-(φ , f) ⌣ (ψ , g) = (u : [ φ ]) (v : [ ψ ]) → f u ≡ g v
-
 ∨-rec : ∀ {ℓ} {A : Set ℓ}
   (φ ψ : CofProp)
   (f : [ φ ] → A)
   (g : [ ψ ] → A)
-  (p : (φ , f) ⌣ (ψ , g))
+  (p : ∀ u v → f u ≡ g v)
   → ---------------------------
   [ φ ∨ ψ ] → A
 ∨-rec {A = A} φ ψ f g p = ∥∥-rec _ h q where

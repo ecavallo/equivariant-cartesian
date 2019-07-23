@@ -1,16 +1,14 @@
 {-
 
-Composition structures on the union of partially defined types
+Composition structures on the union of partially defined types (i.e., a system of types)
 
 -}
 {-# OPTIONS --rewriting #-}
-module union where
+module type-formers.union where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
-open import Data.products
 
 _∨'_ : ∀ {ℓ} {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
 (φ ∨' ψ) x = φ x ∨ ψ x
@@ -86,8 +84,8 @@ unionFibExt' {Γ = Γ} φ₀ φ₁ {Aα₀} {Aα₁} eq₀ eq₁ =
   lemma refl =
     cong (λ β → Aα₁ .fst , β)
       (unionFibExt φ₀ φ₁
-        (Σeq₂' eq₀ refl)
-        (Σeq₂' eq₁ refl))
+        (Σeq₂ eq₀ refl)
+        (Σeq₂ eq₁ refl))
 
 -- ----------------------------------------------------------------------
 -- Deriving a fibrancy structure on a union
@@ -123,7 +121,7 @@ module FibUnionId {ℓ} (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
           (Σext
             (funext λ _ → trunc _ _)
             (trans
-              (Σeq₂'
+              (Σeq₂
                 (cong (λ Aα' → reindex' Aα' (λ s → (s , u₀ s , u₁ s))) eqFib)
                 (cong (λ u' s → A (s , u' s)) (funext λ _ → trunc _ _)))
               (substCongAssoc isFib (λ u' s → A (s , u' s))

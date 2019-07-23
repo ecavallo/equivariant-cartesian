@@ -7,12 +7,11 @@ Definitions of contractible, fibers, equivalences.
 module equivs where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
-open import Data.paths
-open import Data.products
-open import Data.functions
+open import type-formers.paths
+open import type-formers.products
+open import type-formers.functions
 
 ----------------------------------------------------------------------
 -- IsContr

@@ -7,15 +7,12 @@ Fibration extension property
 module fibration-extension where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
-open import Data.functions
-open import Data.paths
-open import Data.products
 open import equivs
 open import glueing
-open import union
+open import type-formers.products
+open import type-formers.union
 
 module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
@@ -97,7 +94,7 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
       (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
       (cong (λ t → F .fst ((x , u) , t)) (symm eq))
       (cong (λ Bβ → Bβ .fst (x , u)) match)
-      (Σeq₂'
+      (Σeq₂
         (cong (λ Bβ → (Bβ .fst (x , u) , reindex' Bβ (λ _ → (x , u)) .snd)) match)
         (cong (λ Bβ → Bβ .fst (x , u)) match))
       (coerceEquiv S (reindex' F (λ i → ((x , u) , i)) .snd) (s x) (r x))

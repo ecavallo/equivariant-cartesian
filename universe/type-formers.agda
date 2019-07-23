@@ -4,17 +4,15 @@ Showing the universe is closed under type formers
 
 -}
 {-# OPTIONS --rewriting #-}
-module universe.types where
+module universe.type-formers where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 
-open import Data.products
-open import Data.functions
+open import type-formers.products
+open import type-formers.functions
 
-open import universe.axioms
 open import universe.core
 
 ----------------------------------------------------------------------

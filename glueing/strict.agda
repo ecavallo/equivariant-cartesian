@@ -1,20 +1,17 @@
 {-
 
-Strict Glue types.
+Strict Glue types and their (unaligned) fibrancy.
 
 -}
 {-# OPTIONS --rewriting #-}
 module glueing.strict where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 open import equivs
-open import Data.paths
-open import Data.products
-open import strictness-axioms
-open import glueing.core
+
+open import glueing.weak
 
 ----------------------------------------------------------------------
 -- Strict glueing
@@ -34,6 +31,7 @@ includeA φ {A} {B} f u a =
   where
   moveA : (v : [ φ ]) → A u → A v
   moveA v = subst A (cofIsProp φ _ _)
+  
   moveMove : (v : [ φ ]) → (u , a) ≡ (v , moveA v a)
   moveMove v = Σext (cofIsProp φ _ _) refl
 

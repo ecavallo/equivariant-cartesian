@@ -1,15 +1,13 @@
 {-
 
-Axioms used to construct a universe,
-along with some immediate consequences
+Tinyness of shapes. These axioms are only used for the universe.
 
 -}
 {-# OPTIONS --rewriting #-}
-module universe.axioms where
+module axioms.tiny where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms.shape
 
 ----------------------------------------------------------------------
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)

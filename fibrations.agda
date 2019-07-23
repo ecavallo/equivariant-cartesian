@@ -7,8 +7,7 @@ Definition of composition and fibrations.
 module fibrations where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 
 ----------------------------------------------------------------------
 -- Composition structure
@@ -185,7 +184,7 @@ boxEq : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
 boxEq S {A} {φ₀} refl f r x =
   Σext refl
     (cong
-      {A = Σ p ∈ (([ φ₀ ] → Π A) × A r) , (p .fst ◆ r ↗ p .snd)}
+      {A = Σ p ∈ (([ φ₀ ] → Π A) × A r) , ∀ u → p .fst u r ≡ p .snd}
       (λ {((f' , a') , eq) → (f' , (a' , eq))})
       (Σext
         (×ext

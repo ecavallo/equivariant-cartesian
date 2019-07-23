@@ -4,16 +4,34 @@ Fibrancy of Path types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module Data.paths where
+module type-formers.paths where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 
-----------------------------------------------------------------------
--- Path types
-----------------------------------------------------------------------
+record _~_ {ℓ} {A : Set ℓ}(a a' : A) : Set ℓ where
+  constructor path
+  field
+    at : Int → A
+    atO : at O ≡ a
+    atI : at I ≡ a'
+
+open _~_ public
+
+eqToPath : ∀{ℓ} {A : Set ℓ} {x y : A} → x ≡ y → x ~ y
+eqToPath {x = x} p = path (λ _ → x) refl p
+
+refl~ : ∀{ℓ} {A : Set ℓ} (a : A) → a ~ a
+refl~ a = eqToPath refl
+
+PathExt : ∀{ℓ} {A : Set ℓ} {a a' : A} {p q : a ~ a'}
+  → (∀ i → p .at i ≡ q .at i) → p ≡ q
+PathExt {A = A} {a} {a'} t =
+  cong
+    {A = Σ (Int → A) λ p → Σ (p O ≡ a) (λ _ → p I ≡ a')}
+    (λ {(l , l₀ , l₁) → path l l₀ l₁})
+    (Σext (funext t) (Σext uipImp uipImp))
 
 Path' : ∀{ℓ ℓ'}{Γ : Set ℓ}(A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
 Path' A (x , (a , a')) = a ~ a'

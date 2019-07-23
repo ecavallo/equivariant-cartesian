@@ -1,19 +1,18 @@
 {-
 
-Definition of (weak) Glue and their (unaligned) fibrancy.
+Definition of weak Glue types and their (unaligned) fibrancy.
 
 -}
 {-# OPTIONS --rewriting #-}
-module glueing.core where
+module glueing.weak where
 
 open import prelude
-open import shape
-open import cofprop
+open import axioms
 open import fibrations
 open import equivs
-open import Data.functions
-open import Data.paths
-open import Data.products
+open import type-formers.functions
+open import type-formers.paths
+open import type-formers.products
 
 ----------------------------------------------------------------------
 -- Glueing
