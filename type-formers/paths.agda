@@ -36,7 +36,7 @@ PathExt {A = A} {a} {a'} t =
 Path' : ∀{ℓ ℓ'}{Γ : Set ℓ}(A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
 Path' A (x , (a , a')) = a ~ a'
 
-module FibPathId {ℓ}
+module PathIsFibId {ℓ}
   (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {a₀ : Π A} {a₁ : Π A}
   (α : isFib A)
   (r : ⟨ S ⟩) (φ : CofProp) (f : [ φ ] → (s : ⟨ S ⟩) → a₀ s ~ a₁ s)
@@ -69,13 +69,13 @@ module FibPathId {ℓ}
     compA = α .lift S r id (φ ∨ ∂ i) tubeA baseA
 
 abstract
-  FibPath :
+  PathIsFib :
     ∀{ℓ ℓ'} {Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     (α : isFib A)
     → -----------
     isFib (Path' A)
-  FibPath {A = A} α .lift S r p φ f x₀ =
+  PathIsFib {A = A} α .lift S r p φ f x₀ =
     record
     { comp = λ s →
       ( path
@@ -87,9 +87,9 @@ abstract
     ; cap = PathExt λ i → compA i .cap
     }
     where
-    open FibPathId S (reindex A α (fst ∘ p)) r φ f x₀
+    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
 
-  FibPath {A = A} α .vary S T σ r p φ f x₀ s =
+  PathIsFib {A = A} α .vary S T σ r p φ f x₀ s =
     PathExt λ i →
     trans
       (cong
@@ -104,8 +104,8 @@ abstract
           (funext λ _ → uipImp)))
       (α .vary S T σ r (fst ∘ p) (φ ∨ ∂ i) (T.tubeA i) (T.baseA i) s)
     where
-    module T = FibPathId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) φ f x₀
-    module S = FibPathId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r φ (f ◇ ⟪ σ ⟫) x₀
+    module T = PathIsFibId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) φ f x₀
+    module S = PathIsFibId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r φ (f ◇ ⟪ σ ⟫) x₀
 
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
@@ -116,5 +116,5 @@ abstract
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Path' A) (FibPath α) (ρ ×id) ≡ FibPath (reindex A α ρ)
-  reindexPath A α ρ = fibExt λ _ _ _ _ _ _ _ → refl
+    reindex (Path' A) (PathIsFib α) (ρ ×id) ≡ PathIsFib (reindex A α ρ)
+  reindexPath A α ρ = isFibExt λ _ _ _ _ _ _ _ → refl

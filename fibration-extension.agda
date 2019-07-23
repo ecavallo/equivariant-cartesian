@@ -18,7 +18,7 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
@@ -31,14 +31,14 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
   -- We want to isolate the parts that depend essentially on r and s, so that we can
   -- prove equivariance more easily. Those parts are parameters to this module.
   module Template (ψ : Γ → CofProp)
-    (ψMatch : reindex' F (ats ∘ fst') ≡ reindex' X₀ fst)
+    (ψMatch : reindexFib F (ats ∘ fst') ≡ reindexFib X₀ fst)
     (φEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x))
     (equivMatch : ∀ x → (u : [ φ x ]) (v : [ ψ x ]) →
       subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , v)) ψMatch) (φEquiv x u)
-      ≡ idEquiv (reindex' X₀ (λ _ → x) .snd))
+      ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd))
     where
 
-    module F = UnionFib φ ψ (reindex' F ats) (reindex' X₀ fst) ψMatch
+    module F = FibUnion φ ψ (reindexFib F ats) (reindexFib X₀ fst) ψMatch
     open F public
 
     equiv : Π (Equiv' (fib .fst) (X₀ .fst ∘ fst))
@@ -51,7 +51,7 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
         (λ v →
           subst (Equiv ◆ X₀ .fst x)
             (cong (λ Bβ → Bβ .fst (x , v)) (symm right))
-            (idEquiv (reindex' X₀ (λ _ → x) .snd)))
+            (idEquiv (reindexFib X₀ (λ _ → x) .snd)))
         (λ u v →
           trans
             (trans
@@ -72,44 +72,44 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
               (trunc _ _)
               _))
 
-  rsMatch : reindex' F (ats ∘ fst') ≡ reindex' X₀ fst
+  rsMatch : reindexFib F (ats ∘ fst') ≡ reindexFib X₀ fst
   rsMatch =
     (trans
-      (cong (reindex' ◆ fst') match)
-      (cong (reindex' F) (funext λ {(x , u , eq) → Σext refl (symm eq)})))
+      (cong (reindexFib ◆ fst') match)
+      (cong (reindexFib F) (funext λ {(x , u , eq) → Σext refl (symm eq)})))
 
   rsEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x)
   rsEquiv x u =
     subst (Equiv (F .fst ((x , u) , s x)))
       (cong (λ Bβ → Bβ .fst (x , u)) match)
-      (coerceEquiv S (reindex' F (λ i → ((x , u) , i)) .snd) (s x) (r x))
+      (coerceEquiv S (reindexFib F (λ i → ((x , u) , i)) .snd) (s x) (r x))
 
   rsEquivMatch : (x : Γ) (u : [ φ x ]) (eq : r x ≡ s x) →
     subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch) (rsEquiv x u)
-    ≡ idEquiv (reindex' X₀ (λ _ → x) .snd)
+    ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd)
   rsEquivMatch x u eq =
     lemma
-      (reindex' F (λ _ → (x , u) , r x) .snd)
-      (reindex' X₀ (λ _ → x) .snd)
+      (reindexFib F (λ _ → (x , u) , r x) .snd)
+      (reindexFib X₀ (λ _ → x) .snd)
       (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
       (cong (λ t → F .fst ((x , u) , t)) (symm eq))
       (cong (λ Bβ → Bβ .fst (x , u)) match)
       (Σeq₂
-        (cong (λ Bβ → (Bβ .fst (x , u) , reindex' Bβ (λ _ → (x , u)) .snd)) match)
+        (cong (λ Bβ → (Bβ .fst (x , u) , reindexFib Bβ (λ _ → (x , u)) .snd)) match)
         (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (coerceEquiv S (reindex' F (λ i → ((x , u) , i)) .snd) (s x) (r x))
+      (coerceEquiv S (reindexFib F (λ i → ((x , u) , i)) .snd) (s x) (r x))
       (trans
-        (coerceEquivCap S (reindex' F (λ i → ((x , u) , i)) .snd) (r x))
+        (coerceEquivCap S (reindexFib F (λ i → ((x , u) , i)) .snd) (r x))
         (trans
           (congdep
-            (λ t → coerceEquiv S (reindex' F (λ i → (x , u) , i) .snd) t (r x))
+            (λ t → coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) t (r x))
             (symm eq))
           (symm
             (substCongAssoc
-              (Equiv ◆ fst (reindex' F (λ _ → (x , u) , r x)) tt)
+              (Equiv ◆ fst (reindexFib F (λ _ → (x , u) , r x)) tt)
               (λ t → F .fst ((x , u) , t))
               (symm eq)
-              (coerceEquiv S (reindex' F (λ i → (x , u) , i) .snd) (s x) (r x))))))
+              (coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))))))
     where
     lemma : {A B G : Set ℓ'}
       (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
@@ -126,7 +126,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
   where
 
   module _ (s : Γ → ⟨ S ⟩) where
@@ -134,15 +134,15 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
     open Box S r φ F X₀ match s
 
     LargeComp : Fib ℓ' Γ
-    LargeComp = SGlueFib (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv
+    LargeComp = FibSGlue (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv
 
     -- EC: slow
-    LargeCompMatch : reindex' F ats ≡ reindex' LargeComp fst
+    LargeCompMatch : reindexFib F ats ≡ reindexFib LargeComp fst
     LargeCompMatch =
       trans
         (cong
-          (reindex' ◆ inl' φ (λ x → S ∋ r x ≈ s x))
-          (SGlueFibStrictness (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv))
+          (reindexFib ◆ inl' φ (λ x → S ∋ r x ≈ s x))
+          (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv))
 
         (symm left)
 
@@ -150,9 +150,9 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   LargeCap : LargeComp r ≡ X₀
   LargeCap =
     trans
-      (cong (reindex' ◆ f₀) right)
-      (cong (reindex' ◆ (inr' φ (λ x → S ∋ r x ≈ r x) ∘ f₀))
-        (symm (SGlueFibStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv)))
+      (cong (reindexFib ◆ f₀) right)
+      (cong (reindexFib ◆ (inr' φ (λ x → S ∋ r x ≈ r x) ∘ f₀))
+        (symm (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv)))
     where
     open Box S r φ F X₀ match r
 
@@ -163,27 +163,27 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (res Γ φ × ⟨ T ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindex' X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
-  module S = Box S r φ (reindex' F (id× ⟪ σ ⟫)) X₀ match s
+  module S = Box S r φ (reindexFib F (id× ⟪ σ ⟫)) X₀ match s
   module T = Box T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)
 
   varyEquiv : T.rsEquiv ≡ S.rsEquiv
   varyEquiv = funext λ x → funext λ u →
     cong
       (subst (Equiv (F .fst ((x , u) , ⟪ σ ⟫ (s x)))) (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (varyCoerceEquiv S T σ (reindex' F (λ i → (x , u) , i) .snd) (s x) (r x))
+      (varyCoerceEquiv S T σ (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))
 
   -- EC: slow
   LargeVary
     : LargeComp T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)
-      ≡ LargeComp S r φ (reindex' F (id× ⟪ σ ⟫)) X₀ match s
+      ≡ LargeComp S r φ (reindexFib F (id× ⟪ σ ⟫)) X₀ match s
   LargeVary =
     cong
       (λ {(((ψ , ψMatch) , φEquiv) , equivMatch) →
-        SGlueFib (λ x → φ x ∨ ψ x)
+        FibSGlue (λ x → φ x ∨ ψ x)
           (S.Template.fib ψ ψMatch φEquiv equivMatch)
           X₀
           (S.Template.equiv ψ ψMatch φEquiv equivMatch)})

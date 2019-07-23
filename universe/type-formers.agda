@@ -18,13 +18,13 @@ open import universe.core
 ----------------------------------------------------------------------
 -- The universe is closed under Σ-types
 ----------------------------------------------------------------------
-FibΣUniversal : ∀ {@♭ ℓ} →
+ΣIsFibUniversal : ∀ {@♭ ℓ} →
   isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ{ (A , B) → Σ x ∈ El A , El (B x) })
-FibΣUniversal =
-  FibΣ (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
+ΣIsFibUniversal =
+  ΣIsFib (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
 
 sigma : ∀ {@♭ ℓ} (a : U ℓ) (b : El a → U ℓ) → U ℓ
-sigma a b = encode (_ , FibΣUniversal) (a , b)
+sigma a b = encode (_ , ΣIsFibUniversal) (a , b)
 
 sigma' : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
@@ -33,29 +33,29 @@ sigma' a b x = sigma (a x) (curry b x)
 
 decodeSigma : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
-  → decode (sigma' a b) ≡ FibΣ' (decode a) (decode b)
+  → decode (sigma' a b) ≡ FibΣ (decode a) (decode b)
 decodeSigma {ℓ' = ℓ'} a b =
   trans
-    (reindexΣ'
+    (reindexFibΣ
       {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
-      (reindex' (El , υ) fst)
-      (reindex' (El , υ) (λ {((A , B) , a) → B a}))
+      (reindexFib (El , υ) fst)
+      (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
       (λ x → (a x , curry b x)))
     (cong
-      (reindex' ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , FibΣUniversal))}
-      (decodeEncode (_ , FibΣUniversal)))
+      (reindexFib ◆ λ x → (a x , curry b x))
+      {x = decode (encode (_ , ΣIsFibUniversal))}
+      (decodeEncode (_ , ΣIsFibUniversal)))
 
 ----------------------------------------------------------------------
 -- The universe is closed under Π-types
 ----------------------------------------------------------------------
-FibΠUniversal : ∀ {@♭ ℓ} →
+ΠIsFibUniversal : ∀ {@♭ ℓ} →
   isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ{ (A , B) → (x : El A) → El (B x)})
-FibΠUniversal =
-  FibΠ (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
+ΠIsFibUniversal =
+  ΠIsFib (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
 
 pi : ∀ {@♭ ℓ} → (a : U ℓ) (b : El a → U ℓ) → U ℓ
-pi a b = encode (_ , FibΠUniversal) (a , b)
+pi a b = encode (_ , ΠIsFibUniversal) (a , b)
 
 pi' : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
@@ -64,17 +64,17 @@ pi' a b x = pi (a x) (curry b x)
 
 decodePi : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
-  → decode (pi' a b) ≡ FibΠ' (decode a) (decode b)
+  → decode (pi' a b) ≡ FibΠ (decode a) (decode b)
 decodePi {ℓ' = ℓ'} a b =
   trans
-    (reindexΠ'
+    (reindexFibΠ
       {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
-      (reindex' (El , υ) fst)
-      (reindex' (El , υ) (λ {((A , B) , a) → B a}))
+      (reindexFib (El , υ) fst)
+      (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
       (λ x → (a x , curry b x)))
     (cong
-      (reindex' ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , FibΠUniversal))}
-      (decodeEncode (_ , FibΠUniversal)))
+      (reindexFib ◆ λ x → (a x , curry b x))
+      {x = decode (encode (_ , ΠIsFibUniversal))}
+      (decodeEncode (_ , ΠIsFibUniversal)))
 
 -- TODO other types

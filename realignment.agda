@@ -93,7 +93,7 @@ abstract
     → ---------------
     reindex A (realign Φ A β α) fst ≡ β
   isRealigned {ℓ} {Γ} Φ A β α =
-    fibExt λ S r p ψ f x₀ s →
+    isFibExt λ S r p ψ f x₀ s →
       let
         open RealignId S (Φ ∘ fst ∘ p) (A ∘ fst ∘ p)
           (reindex (A ∘ fst) β ((fst ∘ p) ×id)) (reindex A α (fst ∘ p)) r ψ f x₀
@@ -110,4 +110,4 @@ abstract
     → ---------------
     reindex A (realign Φ A β α) ρ
     ≡ realign (Φ ∘ ρ) (A ∘ ρ) (reindex (A ∘ fst) β (ρ ×id)) (reindex A α ρ)
-  reindexRealign  Φ A β α ρ = fibExt λ S r p ψ f x₀ s → refl
+  reindexRealign  Φ A β α ρ = isFibExt λ S r p ψ f x₀ s → refl

@@ -226,7 +226,7 @@ Lvaries {ℓ} S T σ C =
   λ r C → getVaries S T σ C .rel r
 
 decode : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
-decode = reindex' (El , υ)
+decode = reindexFib (El , υ)
 
 ----------------------------------------------------------------------
 -- Any fibration induces a map into U
@@ -284,7 +284,7 @@ decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
   → decode (encode Aα) ≡ Aα
 decodeEncode {ℓ' = ℓ'} {Γ} Aα =
   Σext refl
-    (fibExt
+    (isFibExt
       (ShapeIsDiscrete λ (@♭ S) r p φ f x₀ s →
         cong
           {A = Σ C ∈ Set* ℓ' , C .fst ≡ hasLifts S (A ∘ p)}
@@ -304,10 +304,10 @@ decodeEncode {ℓ' = ℓ'} {Γ} Aα =
         (L℘ S id (R S {B = Set* ℓ'} (FibLifts (A , α) S))))
       (appCong (symm (L℘ S id (λ C → C .lifts S))))
 
-encodeReindex' : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
+encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
   (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)
-  → encode (reindex' Aα ρ) x ≡ encode Aα (ρ x)
-encodeReindex' {ℓ'' = ℓ''} {Γ} Aα ρ x =
+  → encode (reindexFib Aα ρ) x ≡ encode Aα (ρ x)
+encodeReindexFib {ℓ'' = ℓ''} {Γ} Aα ρ x =
   UExt
     refl
     (funext {B = λ (@♭ _) → _} λ (@♭ S) →
@@ -351,4 +351,4 @@ encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') 
 encodeDecode {ℓ' = ℓ'} {Γ} C = funext λ x →
   trans
     (encodeEl (C x))
-    (encodeReindex' (El , υ) C x)
+    (encodeReindexFib (El , υ) C x)

@@ -17,7 +17,7 @@ open import fibrations
   → Γ → Set (ℓ' ⊔ ℓ'')
 Π' A B x = (a : A x) → B (x , a)
 
-module FibΠId {ℓ ℓ'}
+module ΠIsFibId {ℓ ℓ'}
   (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (r : ⟨ S ⟩) (φ : CofProp) (f : [ φ ] → (s : ⟨ S ⟩) → Π (curry B s))
@@ -51,7 +51,7 @@ module FibΠId {ℓ ℓ'}
       compB = β .lift S r q φ tubeB baseB
 
 abstract
-  FibΠ :
+  ΠIsFib :
     ∀{ℓ ℓ' ℓ''}{Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     {B : (Σ x ∈ Γ , A x) → Set ℓ''}
@@ -59,7 +59,7 @@ abstract
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  FibΠ {Γ = Γ} {A} {B} α β .lift S r p φ f x₀ =
+  ΠIsFib {Γ = Γ} {A} {B} α β .lift S r p φ f x₀ =
     record
     { comp = λ s →
       ( (λ a →
@@ -80,9 +80,9 @@ abstract
           (compB r a (compA r a) .cap))
     }
     where
-    open FibΠId S (reindex A α p) (reindex B β (p ×id)) r φ f x₀
+    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r φ f x₀
 
-  FibΠ {Γ = Γ} {A} {B} α β .vary S T σ r p φ f x₀ s =
+  ΠIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p φ f x₀ s =
     funext λ a →
     trans
       (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
@@ -97,8 +97,8 @@ abstract
           (T.tubeB _ a (T.compA _ a)) (T.baseB _ a (T.compA _ a))
           s))
     where
-    module T = FibΠId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) φ f x₀
-    module S = FibΠId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀
+    module T = ΠIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) φ f x₀
+    module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀
 
     varyA : (a : A (p (⟪ σ ⟫ s))) → reshapeComp σ (T.compA _ a) ≡ S.compA _ a
     varyA a = compExt (α .vary S T σ s p (int ∋ O ≈ I) (T.tubeA _ a) (T.baseA _ a))
@@ -114,22 +114,22 @@ abstract
     (β : isFib B)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Π' A B) (FibΠ {B = B} α β) ρ ≡ FibΠ {B = B ∘ (ρ ×id)} (reindex A α ρ) (reindex B β (ρ ×id))
-  reindexΠ A B α β ρ = fibExt λ _ _ _ _ _ _ _ → refl
+    reindex (Π' A B) (ΠIsFib α β) ρ ≡ ΠIsFib (reindex A α ρ) (reindex B β (ρ ×id))
+  reindexΠ A B α β ρ = isFibExt λ _ _ _ _ _ _ _ → refl
 
-FibΠ' : ∀ {ℓ ℓ' ℓ''}
+FibΠ : ∀ {ℓ ℓ' ℓ''}
   {Γ : Set ℓ}
   (A : Fib ℓ' Γ)
   (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
-FibΠ' (A , α) (B , β) = (Π' A B , FibΠ {A = A} {B = B} α β)
+FibΠ (A , α) (B , β) = (Π' A B , ΠIsFib α β)
 
-reindexΠ' : ∀ {ℓ ℓ' ℓ'' ℓ'''}
+reindexFibΠ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
   {Δ : Set ℓ} {Γ : Set ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)
   → ----------------------
-  reindex' (FibΠ' Aα Bβ) ρ ≡ FibΠ' (reindex' Aα ρ) (reindex' Bβ (ρ ×id))
-reindexΠ' (A , α) (B , β) ρ = Σext refl (reindexΠ A B α β ρ)
+  reindexFib (FibΠ Aα Bβ) ρ ≡ FibΠ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
+reindexFibΠ (A , α) (B , β) ρ = Σext refl (reindexΠ A B α β ρ)

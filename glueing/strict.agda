@@ -56,7 +56,7 @@ includeAIso φ {A} {B} w u = iso
     parEq {a} {a'} eq u' = subst (λ u' → a u' ≡ a' u') (cofIsProp φ u u') eq
 
     fg≡id : (gl : Glue φ A B w) → (includeA φ w u (gl .dom u)) ≡ gl
-    fg≡id gl = glueExt (parEq prfIr) (gl .match u)
+    fg≡id gl = GlueExt (parEq prfIr) (gl .match u)
 
 SGlue : ∀ {ℓ}
   (φ : CofProp)
@@ -169,7 +169,7 @@ module Misaligned where
 
   abstract
 
-    FibSGlue : ∀ {ℓ ℓ'}
+    SGlueIsFib : ∀ {ℓ ℓ'}
       {Γ : Set ℓ}
       (Φ : Γ → CofProp)
       {A : res Γ Φ → Set ℓ'}
@@ -177,12 +177,12 @@ module Misaligned where
       (fe : Π (Equiv' A (B ∘ fst)))
       → ---------------
       isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
-    FibSGlue {a} {Γ} Φ {A} {B} fe α β =
-      FibIso
+    SGlueIsFib {a} {Γ} Φ {A} {B} fe α β =
+      isomorphicIsFib
         (SGlue' Φ A B (equivFun fe))
         (Glue' Φ A B (equivFun fe))
         (strictifyGlueIso' Φ (equivFun fe))
-        (FibGlue Φ fe α β)
+        (GlueIsFib Φ fe α β)
 
     reindexSGlue : ∀ {ℓ ℓ' ℓ''}
       {Δ : Set ℓ} {Γ : Set ℓ'}
@@ -192,11 +192,11 @@ module Misaligned where
       (fe : Π (Equiv' A (B ∘ fst)))
       (α : isFib A) (β : isFib B)
       (ρ : Δ → Γ)
-      → reindex (SGlue' Φ A B (equivFun fe)) (FibSGlue Φ fe α β) ρ
-        ≡ FibSGlue (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
+      → reindex (SGlue' Φ A B (equivFun fe)) (SGlueIsFib Φ fe α β) ρ
+        ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
     reindexSGlue Φ {A} {B} fe α β ρ =
       cong
-        (FibIso (SGlue' Φ A B f ∘ ρ) (Glue' Φ A B f ∘ ρ) (strictifyGlueIso' Φ f ∘ ρ))
+        (isomorphicIsFib (SGlue' Φ A B f ∘ ρ) (Glue' Φ A B f ∘ ρ) (strictifyGlueIso' Φ f ∘ ρ))
         (reindexGlue Φ fe α β ρ)
       where
       f = equivFun fe
