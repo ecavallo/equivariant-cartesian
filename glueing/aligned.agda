@@ -21,25 +21,24 @@ open import realignment
 ----------------------------------------------------------------------
 
 abstract
-  FibSGlue :
-    ∀{a}{Γ : Set a}
+  FibSGlue : ∀ {ℓ ℓ'}
+    {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set}
-    {B : Γ → Set}
+    {A : res Γ Φ → Set ℓ'}
+    {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     → ---------------
     isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
-  FibSGlue {a} {Γ} Φ {A} {B} fe α β =
+  FibSGlue {Γ = Γ} Φ {A} {B} fe α β =
     realign Φ (SGlue' Φ A B (equivFun fe))
       (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
       (Misaligned.FibSGlue Φ fe α β)
 
-  FibSGlueStrictness :
-    {ℓ : Level}
+  FibSGlueStrictness : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set}
-    {B : Γ → Set}
+    {A : res Γ Φ → Set ℓ'}
+    {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
     → ---------------
@@ -51,20 +50,20 @@ abstract
         (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
         (Misaligned.FibSGlue Φ fe α β))
 
-SGlueFib :
-  ∀{a}{Γ : Set a}
+SGlueFib : ∀ {ℓ ℓ'}
+  {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (Aα : Fib (res Γ Φ))
-  (Bβ : Fib Γ)
+  (Aα : Fib ℓ' (res Γ Φ))
+  (Bβ : Fib ℓ' Γ)
   (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
-  → Fib Γ
-SGlueFib {a} {Γ} Φ (A , α) (B , β) fe = (_ , FibSGlue Φ fe α β)
+  → Fib ℓ' Γ
+SGlueFib {Γ = Γ} Φ (A , α) (B , β) fe = (_ , FibSGlue Φ fe α β)
 
-SGlueFibStrictness :
-  ∀{ℓ}{Γ : Set ℓ}
+SGlueFibStrictness : ∀ {ℓ ℓ'}
+  {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (Aα : Fib (res Γ Φ))
-  (Bβ : Fib Γ)
+  (Aα : Fib ℓ' (res Γ Φ))
+  (Bβ : Fib ℓ' Γ)
   (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
   → Aα ≡ reindex' (SGlueFib Φ Aα Bβ fe) fst
 SGlueFibStrictness Φ (A , α) (B , β) fe =
@@ -72,10 +71,10 @@ SGlueFibStrictness Φ (A , α) (B , β) fe =
 
 abstract
   reindexSGlue :
-    ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
+    ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set}
-    {B : Γ → Set}
+    {A : res Γ Φ → Set ℓ''}
+    {B : Γ → Set ℓ''}
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)

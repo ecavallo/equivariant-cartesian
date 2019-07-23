@@ -17,11 +17,11 @@ open import equivs
 open import glueing
 open import union
 
-module Box {ℓ} {Γ : Set ℓ}
+module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib (res Γ φ × ⟨ S ⟩))
-  (X₀ : Fib Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
+  (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
+  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
@@ -114,7 +114,7 @@ module Box {ℓ} {Γ : Set ℓ}
               (symm eq)
               (coerceEquiv S (reindex' F (λ i → (x , u) , i) .snd) (s x) (r x))))))
     where
-    lemma : {A B G : Set}
+    lemma : {A B G : Set ℓ'}
       (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
       (eqAG : A ≡ G) (eqAB : A ≡ B) (eqBG : B ≡ G)
       (eqβγ : subst (λ D → isFib (λ _ → D)) eqBG β ≡ γ)
@@ -125,18 +125,18 @@ module Box {ℓ} {Γ : Set ℓ}
 
   open Template (λ x → S ∋ r x ≈ s x) rsMatch rsEquiv rsEquivMatch public
 
-module _ {ℓ} {Γ : Set ℓ}
+module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib (res Γ φ × ⟨ S ⟩))
-  (X₀ : Fib Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
+  (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
+  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , r x}) ≡ reindex' X₀ fst)
   where
 
   module _ (s : Γ → ⟨ S ⟩) where
 
     open Box S r φ F X₀ match s
 
-    LargeComp : Fib Γ
+    LargeComp : Fib ℓ' Γ
     LargeComp = SGlueFib (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv
 
     -- EC: slow
@@ -162,11 +162,11 @@ module _ {ℓ} {Γ : Set ℓ}
     f₀ : Γ → res Γ (λ x → S ∋ r x ≈ r x)
     f₀ x = x , refl
 
-module _ {ℓ} {Γ : Set ℓ}
+module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib (res Γ φ × ⟨ T ⟩))
-  (X₀ : Fib Γ) (match : reindex' F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindex' X₀ fst)
+  (F : Fib ℓ' (res Γ φ × ⟨ T ⟩))
+  (X₀ : Fib ℓ' Γ) (match : reindex' F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindex' X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 

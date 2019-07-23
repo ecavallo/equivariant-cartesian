@@ -18,14 +18,14 @@ open import Data.functions
 -- IsContr
 ----------------------------------------------------------------------
 
-IsContr : Set → Set
+IsContr : ∀ {ℓ} → Set ℓ → Set ℓ
 IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 
-IsContr' : ∀ {ℓ} {Γ : Set ℓ} → (Γ → Set) → (Γ → Set)
+IsContr' : ∀ {ℓ ℓ'} {Γ : Set ℓ} → (Γ → Set ℓ') → (Γ → Set ℓ')
 IsContr' A x = IsContr (A x)
 
 abstract
-  FibIsContr : ∀ {ℓ} {Γ : Set ℓ} {A : Γ → Set}
+  FibIsContr : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A : Γ → Set ℓ'}
     → isFib A → isFib (IsContr' A)
   FibIsContr {A = A} α =
     FibΣ
@@ -34,8 +34,8 @@ abstract
         (reindex A α fst)
         (reindex (Path' A) (FibPath α) (λ {((x , a₀) , a) → x , a , a₀})))
 
-  reindexIsContr : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set}
+  reindexIsContr : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+    {A : Γ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → reindex (IsContr' A) (FibIsContr α) ρ ≡ FibIsContr (reindex A α ρ)
@@ -55,22 +55,23 @@ abstract
 -- Fiber type
 ----------------------------------------------------------------------
 
-Fiber : {A B : Set} (f : A → B) (b : B) → Set
-Fiber {A} f b = Σ a ∈ A , f a ~ b
+Fiber : ∀ {ℓ} {A : Set ℓ} {B : Set ℓ} (f : A → B) (b : B) → Set ℓ
+Fiber f b = Σ a ∈ _ , f a ~ b
 
-Fiber' : ∀ {ℓ} {Γ : Set ℓ} (A B : Γ → Set) → Σ (Σ x ∈ Γ , (A x → B x)) (B ∘ fst) → Set
+Fiber' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ')
+  → Σ (Σ x ∈ Γ , (A x → B x)) (B ∘ fst) → Set ℓ'
 Fiber' A B = Σ' (A ∘ fst ∘ fst) (λ {(((x , f) , b) , a) → Path' B (x , f a , b)})
 
 abstract
-  FibFiber : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set}
+  FibFiber : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
     → isFib A → isFib B → isFib (Fiber' A B)
   FibFiber {A = A} {B} α β =
     FibΣ
       (reindex A α (fst ∘ fst))
       (reindex (Path' B) (FibPath β) (λ {(((x , f) , b) , a) → (x , f a , b)}))
 
-  reindexFiber : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set} {B : Γ → Set}
+  reindexFiber : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+    {A B : Γ → Set ℓ''}
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (Fiber' A B) (FibFiber α β) (ρ ×id ×id) ≡ FibFiber (reindex A α ρ) (reindex B β ρ)
@@ -83,26 +84,29 @@ abstract
         (reindexPath _ _ ρ))
       (reindexΣ _ _ _ _ (ρ ×id ×id))
 
-FiberExt : {A B : Set} {f : A → B} {b : B} {x y : Fiber f b}
+FiberExt : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} {x y : Fiber f b}
   → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
 FiberExt refl p = Σext refl (PathExt p)
 
-FiberExtDep : {A B : Set} {f : A → B} {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
+FiberExtDep : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b b' : B} (p : b ≡ b')
+  {x : Fiber f b} {y : Fiber f b'}
   → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → subst (Fiber f) p x ≡ y
 FiberExtDep refl = FiberExt
 
-eqToFiber : {A B : Set} {f : A → B} {b : B} (a : A) → f a ≡ b → Fiber f b
+eqToFiber : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} (a : A) → f a ≡ b → Fiber f b
 eqToFiber a eq = (a , eqToPath eq)
 
-fiberPathEq : {A B : Set} {f : A → B} {b : B} {x y : Fiber f b}
+fiberPathEq : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} {x y : Fiber f b}
   → x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
 fiberPathEq refl _ = refl
 
-fiberPathEqDep : {A B : Set} {f : A → B} {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
+fiberPathEqDep : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b b' : B} (p : b ≡ b')
+  {x : Fiber f b} {y : Fiber f b'}
   → subst (Fiber f) p x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
 fiberPathEqDep refl refl _ = refl
 
-fiberDomEqDep :  {A B : Set} {f : A → B} {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
+fiberDomEqDep : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b b' : B} (p : b ≡ b')
+  {x : Fiber f b} {y : Fiber f b'}
   → subst (Fiber f) p x ≡ y → x .fst ≡ y .fst
 fiberDomEqDep refl refl = refl
 
@@ -110,19 +114,19 @@ fiberDomEqDep refl refl = refl
 -- Equivalences
 ----------------------------------------------------------------------
 
-IsEquiv : {A B : Set} → (A → B) → Set
+IsEquiv : ∀ {ℓ} {A B : Set ℓ} → (A → B) → Set ℓ
 IsEquiv f = ∀ b → IsContr (Fiber f b)
 
-IsEquiv' : ∀ {ℓ} {Γ : Set ℓ} (A B : Γ → Set) → (Σ Γ (λ x → A x → B x) → Set)
+IsEquiv' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ')
+  → Σ Γ (λ x → A x → B x) → Set ℓ'
 IsEquiv' A B = Π' (B ∘ fst) (IsContr' (Fiber' A B))
 
-FibIsEquiv : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set}
+FibIsEquiv : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
   → isFib A → isFib B → isFib (IsEquiv' A B)
 FibIsEquiv {A = A} {B} α β =
   FibΠ (reindex B β fst) (FibIsContr (FibFiber α β))
 
-reindexIsEquiv : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
-  {A : Γ → Set} {B : Γ → Set}
+reindexIsEquiv : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
   (α : isFib A) (β : isFib B)
   (ρ : Δ → Γ)
   → reindex (IsEquiv' A B) (FibIsEquiv α β) (ρ ×id) ≡ FibIsEquiv (reindex A α ρ) (reindex B β ρ)
@@ -134,24 +138,23 @@ reindexIsEquiv {A = A} {B} α β ρ =
         (reindexIsContr (FibFiber α β) (ρ ×id ×id))))
     (reindexΠ _ _ _ _ (ρ ×id))
 
-Equiv : (A B : Set) → Set
+Equiv : ∀ {ℓ} (A B : Set ℓ) → Set ℓ
 Equiv A B = Σ (A → B) IsEquiv
 
-Equiv' : ∀ {ℓ} {Γ : Set ℓ} (A B : Γ → Set) → (Γ → Set)
+Equiv' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
 Equiv' A B = Σ' (Π' A (B ∘ fst)) (IsEquiv' A B)
 
-equivFun : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set}
+equivFun : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
   → Π (Equiv' A B) → Π (Π' A (B ∘ fst))
 equivFun fe x = fe x .fst
 
 abstract
-  FibEquiv : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set}
+  FibEquiv : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
     → isFib A → isFib B → isFib (Equiv' A B)
   FibEquiv {A = A} {B} α β =
     FibΣ (FibΠ α (reindex B β fst)) (FibIsEquiv α β)
 
-  reindexEquiv : ∀ {ℓ ℓ'} {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set} {B : Γ → Set}
+  reindexEquiv : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (Equiv' A B) (FibEquiv α β) ρ ≡ FibEquiv (reindex A α ρ) (reindex B β ρ)
@@ -167,7 +170,7 @@ abstract
 ----------------------------------------------------------------------
 
 abstract
-  idEquiv : {A : Set} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
+  idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
   idEquiv α .fst = λ a → a
   idEquiv α .snd a .fst = (a , refl~ a)
   idEquiv α .snd a .snd (a' , p) =
@@ -196,24 +199,24 @@ abstract
         )
 
 abstract
-  coerce : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
+  coerce : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r s : ⟨ S ⟩) → A r → A s
   coerce S α r s a =
     α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .comp s .fst
 
-  coerceCap : (S : Shape) {A : ⟨ S ⟩ → Set} (α : isFib A)
+  coerceCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
   coerceCap S α r a =
     α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .cap
 
-  varyCoerce : (S T : Shape) (σ : ShapeHom S T)
-    {A : ⟨ T ⟩ → Set} (α : isFib A) (r s : ⟨ S ⟩)
+  varyCoerce : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
+    {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
     → ∀ a → coerce T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) a ≡ coerce S (reindex A α ⟪ σ ⟫) r s a
   varyCoerce S T σ α r s a =
     α .vary S T σ r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) s
 
 
-coerceEquiv : (S : Shape) {A : ⟨ S ⟩ → Set}
+coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r s : ⟨ S ⟩)
   → Equiv (A r) (A s)
 coerceEquiv S {A} α r s =
@@ -222,7 +225,7 @@ coerceEquiv S {A} α r s =
     r s
     (idEquiv (reindex A α (λ _ → r)))
 
-coerceEquivCap : (S : Shape) {A : ⟨ S ⟩ → Set}
+coerceEquivCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r : ⟨ S ⟩)
   → coerceEquiv S α r r ≡ idEquiv (reindex A α (λ _ → r))
 coerceEquivCap S {A} α r =
@@ -231,13 +234,13 @@ coerceEquivCap S {A} α r =
     r
     (idEquiv (reindex A α (λ _ → r)))
 
-varyCoerceEquiv : (S T : Shape) (σ : ShapeHom S T)
-  {A : ⟨ T ⟩ → Set} (α : isFib A) (r s : ⟨ S ⟩)
+varyCoerceEquiv : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
+  {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
   → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex A α ⟪ σ ⟫) r s
 varyCoerceEquiv S T σ {A = A} α r s =
   trans
     (cong
-      (λ β → coerce S {A = λ i → Equiv (A (⟪ σ ⟫ r)) (A (⟪ σ ⟫ i))} β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
+      (λ β → coerce S  β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
       (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫))
     (varyCoerce S T σ
       (FibEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α)

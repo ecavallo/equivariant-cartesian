@@ -18,10 +18,9 @@ open import Data.products
 ----------------------------------------------------------------------
 -- Glueing
 ----------------------------------------------------------------------
-record Glue (Φ : CofProp)
-  (T : [ Φ ] → Set)
-  (A : Set)
-  (f : (u : [ Φ ]) → T u → A) : Set
+record Glue {ℓ} (Φ : CofProp)
+  (T : [ Φ ] → Set ℓ) (A : Set ℓ)
+  (f : (u : [ Φ ]) → T u → A) : Set ℓ
   where
   constructor glue
   field
@@ -32,19 +31,19 @@ record Glue (Φ : CofProp)
 open Glue public
 
 Glue' :
-  ∀{a}{Γ : Set a}
+  ∀{ℓ ℓ'} {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (B : res Γ Φ → Set)
-  (A : Γ → Set)
+  (B : res Γ Φ → Set ℓ')
+  (A : Γ → Set ℓ')
   (f : (xu : res Γ Φ) → B xu → A (xu .fst))
   → ---------------
-  Γ → Set
+  Γ → Set ℓ'
 Glue' Φ B A f x = Glue (Φ x) (λ u → B (x , u)) (A x) (λ u → f (x , u))
 
-glueExt :
+glueExt : ∀ {ℓ}
   {Φ : CofProp}
-  {B : [ Φ ] → Set}
-  {A : Set}
+  {B : [ Φ ] → Set ℓ}
+  {A : Set ℓ}
   {f : (u : [ Φ ]) → B u → A}
   {g g' : Glue Φ B A f}
   (p : ∀ us → g .dom us ≡ g' .dom us)
@@ -56,11 +55,11 @@ glueExt {g = glue _ a _} p refl =
     (λ {(t , ft≡a) → glue t a ft≡a})
     (Σext (funext p) (funext (λ _ → uipImp)))
 
-module FibGlueId
+module FibGlueId {ℓ}
   (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)
-  {B : res ⟨ S ⟩ Φ → Set}
-  {A : ⟨ S ⟩ → Set}
+  {B : res ⟨ S ⟩ Φ → Set ℓ}
+  {A : ⟨ S ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
   (r : ⟨ S ⟩) (ψ : CofProp) (g : [ ψ ] → (s : ⟨ S ⟩) → Glue' Φ B A (equivFun fe) s)
@@ -151,10 +150,10 @@ module FibGlueId
 
 abstract
 
-  FibGlue : ∀ {ℓ} {Γ : Set ℓ}
+  FibGlue : ∀ {ℓ ℓ'} {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {B : res Γ Φ → Set}
-    {A : Γ → Set}
+    {B : res Γ Φ → Set ℓ'}
+    {A : Γ → Set ℓ'}
     (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
@@ -184,7 +183,7 @@ abstract
     open FibGlueId
       S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
 
-  FibGlue Φ {B = B} {A = A} fe β α .vary S T σ r p ψ g x₀ s =
+  FibGlue Φ {B} {A} fe β α .vary S T σ r p ψ g x₀ s =
     glueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
     module T = FibGlueId
@@ -252,11 +251,11 @@ abstract
           I
           varyA)
 
-  reindexGlue : ∀ {ℓ ℓ'}
+  reindexGlue : ∀ {ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    {B : res Γ Φ → Set}
-    {A : Γ → Set}
+    {B : res Γ Φ → Set ℓ''}
+    {A : Γ → Set ℓ''}
     (fe : Π (Equiv' B (A ∘ fst)))
     (β : isFib B)
     (α : isFib A)

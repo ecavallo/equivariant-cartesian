@@ -174,7 +174,7 @@ appCong :
   (p : f ≡ g)
   → -----------
   f x ≡ g x
-appCong refl = refl
+appCong p = cong (λ h → h _) p
 
 adjustSubstEq :
   {ℓ ℓ' : Level}
@@ -457,7 +457,7 @@ funextDepCod refl = funext
 ----------------------------------------------------------------------
 -- Isomorphism
 ----------------------------------------------------------------------
-record _≅_ (A B : Set) : Set where
+record _≅_ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
  field
   to   : A → B
   from : B → A

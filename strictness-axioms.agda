@@ -15,46 +15,46 @@ open import fibrations
 -- Strictifying
 ----------------------------------------------------------------------
 postulate
- reIm :
+ reIm : ∀ {ℓ}
   (φ : CofProp)
-  (A : [ φ ] → Set)
-  (B : Set)
+  (A : [ φ ] → Set ℓ)
+  (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   → ----------------------
-  Σ B' ∈ Set , Σ m' ∈ B' ≅ B , ((u : [ φ ]) → (A u , m u) ≡ (B' , m'))
+  Σ B' ∈ Set ℓ , Σ m' ∈ B' ≅ B , ((u : [ φ ]) → (A u , m u) ≡ (B' , m'))
 
-strictify :
+strictify : ∀ {ℓ}
   (φ : CofProp)
-  (A : [ φ ] → Set)
-  (B : Set)
+  (A : [ φ ] → Set ℓ)
+  (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   → ----------------------
-  Set
+  Set ℓ
 strictify φ A B m = reIm φ A B m .fst
 
-isoB :
+isoB : ∀ {ℓ}
   (φ : CofProp)
-  (A : [ φ ] → Set)
-  (B : Set)
+  (A : [ φ ] → Set ℓ)
+  (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   → ----------------------
   strictify φ A B m ≅ B
 isoB φ A B m = reIm φ A B m .snd .fst
 
-restrictsToA :
+restrictsToA : ∀ {ℓ}
   (φ : CofProp)
-  (A : [ φ ] → Set)
-  (B : Set)
+  (A : [ φ ] → Set ℓ)
+  (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   (u : [ φ ])
   → ----------------------
   A u ≡ strictify φ A B m
 restrictsToA φ A B m u = cong fst (reIm φ A B m .snd .snd u)
 
-restrictsToM :
+restrictsToM : ∀ {ℓ}
   (φ : CofProp)
-  (A : [ φ ] → Set)
-  (B : Set)
+  (A : [ φ ] → Set ℓ)
+  (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   (u : [ φ ])
   → ----------------------
