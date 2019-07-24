@@ -249,9 +249,6 @@ record Σ {ℓ m : Level} (A : Set ℓ) (B : A → Set m) : Set (ℓ ⊔ m) wher
 
 open Σ public
 
-_&_ : ∀ {ℓ m : Level} {A : Set ℓ} {B : A → Set m} (a : A) → B a → Σ A B
-_&_ = _,_
-
 syntax Σ A (λ x → B) = Σ x ∈ A , B
 
 _×_ : {ℓ m : Level} → Set ℓ → Set m → Set (ℓ ⊔ m)
