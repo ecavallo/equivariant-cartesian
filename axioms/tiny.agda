@@ -7,6 +7,7 @@ Tinyness of shapes. These axioms are only used for the universe.
 module axioms.tiny where
 
 open import prelude
+open import axioms.funext
 open import axioms.shape
 
 ----------------------------------------------------------------------
@@ -111,3 +112,87 @@ module _ {@♭ S T : Shape} (@♭ σ : ShapeHom S T) where
     → √ShapeHom ∘ R S g ≡ R T (g ∘ (_∘_ ◆ ⟪ σ ⟫))
   ShapeHomR g =
     cong (R T) (LShapeHom (R S g))
+
+----------------------------------------------------------------------
+-- (Dependent) exponentiation by a shape commutes with coproducts
+----------------------------------------------------------------------
+
+Shape→⊎♭ : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ A : Set ℓ} {@♭ B : Set ℓ'}
+  → ((⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) ≅ (⟨ S ⟩ → A ⊎ B)
+Shape→⊎♭ S {A} {B} =
+  record
+  { to = forward
+  ; from = L S back
+  ; inv₁ = funext back∘forward
+  ; inv₂ = trans (cong (L S) (funext forward∘back)) (L√ S forward back)
+  }
+  where
+  forward = [ _∘_ inl , _∘_ inr ]
+  back = [ R S inl , R S inr ]
+
+  forward∘back : (c : A ⊎ B) → √` S forward (back c) ≡ R S id c
+  forward∘back (inl a) = appCong (trans (R℘ S inl id) (√R S forward inl))
+  forward∘back (inr b) = appCong (trans (R℘ S inr id) (√R S forward inr))
+
+  back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L S back (forward d) ≡ d
+  back∘forward (inl f) = appCong (L℘ S back inl)
+  back∘forward (inr g) = appCong (L℘ S back inr)
+
+Shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''} (@♭ S : Shape)
+    {@♭ A : Set ℓ} {@♭ A' : Set ℓ'}
+    {@♭ B : Set ℓ''} {@♭ B' : Set ℓ'''}
+    (f : A → A') (g : B → B')
+    (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B))
+    → Shape→⊎♭ S .to ((_∘_ f ⊎` _∘_ g) p) ≡ (f ⊎` g) ∘ (Shape→⊎♭ S .to p)
+Shape→⊎♭` S f g (inl _) = refl
+Shape→⊎♭` S f g (inr _) = refl
+
+Shape→⊎♭∇ : ∀ {@♭ ℓ} (@♭ S : Shape) {@♭ A : Set ℓ}
+  (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → A))
+  → ∇ ∘ Shape→⊎♭ S .to p ≡ ∇ p
+Shape→⊎♭∇ S (inl _) = refl
+Shape→⊎♭∇ S (inr _) = refl
+
+Shape→⊎ : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape)
+  {A : ⟨ S ⟩ → Set ℓ} {B : ⟨ S ⟩ → Set ℓ'}
+  → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π A ⊎ Π B
+Shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
+  where
+  Setₗ = Σ AB ∈ Set ℓ × Set ℓ' , AB .fst
+  Setᵣ = Σ AB ∈ Set ℓ × Set ℓ' , AB .snd
+
+  iso = Shape→⊎♭ S
+
+  AB : ⟨ S ⟩ → Set ℓ × Set ℓ'
+  AB s = (A s , B s)
+
+  h' : ⟨ S ⟩ → Setₗ ⊎ Setᵣ
+  h' s = ((_,_ (AB s)) ⊎` (_,_ (AB s))) (h s)
+
+  fsth' : ∀ s → ∇ ((fst ⊎` fst) (h' s)) ≡ AB s
+  fsth' s with h s
+  fsth' s | inl _ = refl
+  fsth' s | inr _ = refl
+
+  fromNatural : (_∘_ fst ⊎` _∘_ fst) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
+  fromNatural =
+    trans
+      (trans
+        (cong (iso .from ∘ _∘_ (fst ⊎` fst)) (appCong (iso .inv₂)))
+        (cong (iso .from) (Shape→⊎♭` S fst fst (iso .from h'))))
+      (symm (appCong (iso .inv₁)))
+
+  fsttest : ∇ ((_∘_ fst ⊎` _∘_ fst) (Shape→⊎♭ S .from h')) ≡ AB
+  fsttest =
+    trans
+      (trans
+        (trans
+          (funext fsth')
+          (cong (_∘_ ∇) (appCong (iso .inv₂))))
+        (symm (Shape→⊎♭∇ S (iso .from ((fst ⊎` fst) ∘ h')))))
+      (cong ∇ fromNatural)
+
+  main : Π A ⊎ Π B
+  main with Shape→⊎♭ S .from h' | fsttest
+  main | inl f | eq = inl λ s → coe (cong fst (appCong eq)) (f s .snd)
+  main | inr g | eq = inr λ s → coe (cong snd (appCong eq)) (g s .snd)

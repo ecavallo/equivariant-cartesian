@@ -12,9 +12,6 @@ open import fibrations
 
 open Tiny
 
-Set* : ∀ ℓ → Set (lsuc ℓ)
-Set* ℓ = Σ (Set ℓ) id
-
 record Span ℓ : Set (lsuc ℓ) where
   field
     Src : Set ℓ
