@@ -182,8 +182,8 @@ Shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
         (cong (iso .from) (Shape→⊎♭` S fst fst (iso .from h'))))
       (symm (appCong (iso .inv₁)))
 
-  fsttest : ∇ ((_∘_ fst ⊎` _∘_ fst) (Shape→⊎♭ S .from h')) ≡ AB
-  fsttest =
+  baseEq : ∇ ((_∘_ fst ⊎` _∘_ fst) (Shape→⊎♭ S .from h')) ≡ AB
+  baseEq =
     trans
       (trans
         (trans
@@ -193,6 +193,6 @@ Shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
       (cong ∇ fromNatural)
 
   main : Π A ⊎ Π B
-  main with Shape→⊎♭ S .from h' | fsttest
+  main with Shape→⊎♭ S .from h' | baseEq
   main | inl f | eq = inl λ s → coe (cong fst (appCong eq)) (f s .snd)
   main | inr g | eq = inr λ s → coe (cong snd (appCong eq)) (g s .snd)
