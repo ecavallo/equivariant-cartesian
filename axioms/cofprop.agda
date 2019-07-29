@@ -36,7 +36,7 @@ postulate
 
   cofIsProp : (φ : CofProp) → (u v : [ φ ]) → u ≡ v
 
-  cntd : (S : Shape) (φ ψ : ⟨ S ⟩ → CofProp)
+  shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → CofProp)
     → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]
 
   ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) → (r s : ⟨ S ⟩)
