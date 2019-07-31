@@ -83,18 +83,12 @@ UExt {A = A} {B} refl refl refl =
       ; variesDst = vDst
       }})
     (×ext
-      (funext {B = λ (@♭ _) → _} λ (@♭ S) → uipImp)
+      (funext♭ λ S → uipImp)
       (×ext
-        (funext {B = λ (@♭ _) → _} λ (@♭ S) →
-          funext {B = λ (@♭ _) → _} λ (@♭ T) →
-          funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp)
+        (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp)
         (×ext
-          (funext {B = λ (@♭ _) → _} λ (@♭ S) →
-            funext {B = λ (@♭ _) → _} λ (@♭ T) →
-            funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp)
-          (funext {B = λ (@♭ _) → _} λ (@♭ S) →
-            funext {B = λ (@♭ _) → _} λ (@♭ T) →
-            funext {B = λ (@♭ _) → _} λ (@♭ σ) → uipImp))))
+          (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp)
+          (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp))))
 
 ----------------------------------------------------------------------
 -- Extracting lifts from a map into U
@@ -307,25 +301,21 @@ encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set 
 encodeReindexFib {ℓ'' = ℓ''} {Γ} Aα ρ x =
   UExt
     refl
-    (funext {B = λ (@♭ _) → _} λ (@♭ S) →
+    (funext♭ λ S →
       appCong (R℘ S {C = Set* ℓ''} ρ (FibLifts Aα S)))
-    (funext {B = λ (@♭ _) → _} λ (@♭ S) →
-      funext {B = λ (@♭ _) → _} λ (@♭ T) →
-      funext {B = λ (@♭ _) → _} λ (@♭ σ) →
+    (funext♭ λ S → funext♭ λ T → funext♭ λ σ → 
       appCong (R℘ T {C = Span* ℓ''} ρ (FibVaries Aα S T σ)))
 
 encodeEl : ∀ {@♭ ℓ} → (C : U ℓ) → encode (El , υ) C ≡ C
 encodeEl {ℓ} C =
   UExt
     refl
-    (funext {B = λ (@♭ _) → _} λ (@♭ S) →
+    (funext♭ λ S →
       appCong
         (cong (R S)
           {y = L S (λ D → D .lifts S)}
           (symm (funext (Llifts S)))))
-    (funext {B = λ (@♭ _) → _} λ (@♭ S) →
-      funext {B = λ (@♭ _) → _} λ (@♭ T) →
-      funext {B = λ (@♭ _) → _} λ (@♭ σ) →
+    (funext♭ λ S → funext♭ λ T → funext♭ λ σ → 
       appCong
         (cong (R T)
           {x = FibVaries (El , υ) S T σ}

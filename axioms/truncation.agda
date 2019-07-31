@@ -42,3 +42,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
       → ∥∥-elim P f p ∣ a ∣ ≡ f a
 
     {-# REWRITE ∥∥-rec-β ∥∥-elim-β #-}
+
+∥_∥` : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'}
+  → (A → B) → ∥ A ∥ → ∥ B ∥
+∥_∥` f = ∥∥-rec _ (∣_∣ ∘ f) (λ _ _ → trunc _ _)

@@ -10,6 +10,7 @@ open import prelude
 open import axioms.funext
 open import axioms.truncation
 open import axioms.shape
+open import axioms.cofprop
 
 ----------------------------------------------------------------------
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)
@@ -127,8 +128,8 @@ shape→⊎♭ S {A} {B} =
   ; inv₂ = trans (cong (L S) (funext forward∘back)) (L√ S forward back)
   }
   where
-  forward = [ _∘_ inl , _∘_ inr ]
-  back = [ R S inl , R S inr ]
+  forward = [ _∘_ inl ∣ _∘_ inr ]
+  back = [ R S inl ∣ R S inr ]
 
   forward∘back : (c : A ⊎ B) → √` S forward (back c) ≡ R S id c
   forward∘back (inl a) = appCong (trans (R℘ S inl id) (√R S forward inl))
@@ -196,3 +197,41 @@ shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
   main with shape→⊎♭ S .from h' | baseEq
   main | inl f | eq = inl λ s → coe (cong fst (appCong eq)) (f s .snd)
   main | inr g | eq = inr λ s → coe (cong snd (appCong eq)) (g s .snd)
+
+-- ----------------------------------------------------------------------
+-- -- In progress
+-- ----------------------------------------------------------------------
+
+-- module _ (@♭ S : Shape) where
+
+--   record U∀ : Set₁ where
+--     field
+--       A : Set
+--       All : √ S (Set* lzero)
+--       AllBase : √` S fst All ≡ R S Π A
+
+--   encode : (A : ⟨ S ⟩ → Set) → (s : ⟨ S ⟩) (u : A s) → U∀
+--   encode =
+--     λ A s u → 
+--     record
+--     { A = A s
+--     ; All = R S al (A s , u)
+--     ; AllBase = trans (appCong (R℘ S fst Π)) (appCong (√R S fst al)) }
+--     where
+--     al : (⟨ S ⟩ → Set* lzero) → Set* lzero
+--     al Aa = (Π (fst ∘ Aa) , snd ∘ Aa)
+
+--   decode : (C : (s : ⟨ S ⟩) → U∀) → Π (U∀.A ∘ C)
+--   decode C =
+--     coe
+--       (appCong fstLemma)
+--       (L S U∀.All C .snd)
+--     where
+--     fstLemma : fst ∘ L S U∀.All ≡ Π ∘ (_∘_ U∀.A)
+--     fstLemma =
+--       trans
+--         (cong (L S)
+--           (trans
+--             (symm (R℘ S U∀.A Π))
+--             (funext U∀.AllBase)))
+--         (L√ S fst U∀.All)

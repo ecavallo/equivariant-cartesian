@@ -27,3 +27,23 @@ funextDepCod : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → Set 
   → (∀ b → subst C p (f₀ b) ≡ f₁ b)
   → subst (λ a → B → C a) p f₀ ≡ f₁
 funextDepCod refl = funext
+
+funext♭ :
+   {@♭ ℓ : Level} {ℓ' : Level}
+   {@♭ A : Set ℓ}
+   {B : @♭ A → Set ℓ'}
+   {f g : (@♭ x : A) → B x}
+   → ----------------------------
+   ((@♭ x : A) → f x ≡ g x) → f ≡ g
+funext♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
+  cong (λ k (@♭ a) → k (in♭ a)) (funext h')
+  where
+  B' : ♭ A → Set ℓ'
+  B' (in♭ a) = B a
+
+  f' g' : (a : ♭ A) → B' a
+  f' (in♭ a) = f a
+  g' (in♭ a) = g a
+
+  h' : (a : ♭ A) → f' a ≡ g' a
+  h' (in♭ a) = h a
