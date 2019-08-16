@@ -6,6 +6,8 @@ We extend the work of Orton and Pitts to accommodate cartesian cubical set model
 
 The axioms required of the ambient category can be found in the `axioms` folder. The significant changes, relative to the "standard" cartesian cubical set model, are all in `shape`, `cofprop`, and `tiny`. We assume a type `Shape` of composition shapes, with decoding `⟨_⟩ : Shape → Set`, and a type of shape morphisms. A fibration (as defined in `fibrations`) provides composites from `r : ⟨ S ⟩` to `s : ⟨ S ⟩` for every shape `S` in a way stable under shape morphisms (i.e., equivariantly). The standard cartesian cubical set model is recovered by taking `Shape` to have a single object which decodes to the interval and only identity morphisms. The intended equivariant model is obtained by taking `Shape` to be the restriction of the cube category to isomorphisms.
 
+The construction of the universe is currently not quite complete; we have not shown that it is fibrant. However, this should be a more-or-less straightforward consequence of the Fibration Extension Property, which we have proven (`fibration-extension`).
+
 Warning: Some files, particularly `glueing.weak` and `fibration-extension`, take a long time to check.
 
 [1] Carlo Angiuli, Guillaume Brunerie, Thierry Coquand, Kuen-Bang Hou (Favonia), Robert Harper, and Daniel R. Licata. Syntax and Models of Cartesian Cubical Type Theory. 2019. https://github.com/dlicata335/cart-cube.
