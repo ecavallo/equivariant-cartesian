@@ -94,10 +94,10 @@ UExt {A = A} {B} refl refl refl =
 -- Extracting lifts from a map into U
 ----------------------------------------------------------------------
 fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
-  fst ∘ L S {A = U ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (_∘_ El)
+  fst ∘ L S {A = U ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
 fstLlifts S =
   trans
-    (cong (L S)
+    (cong♭ (L S)
       (trans
         (symm (R℘ S El (hasLifts S)))
         (funext (λ A → A .liftsBase S))))
@@ -114,10 +114,10 @@ Llifts S C = Σext (appCong (fstLlifts S)) refl
 -- Extracting equivariance from a map into U
 ----------------------------------------------------------------------
 fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-  → fst ∘ L T {A = U ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (_∘_ El)
+  → fst ∘ L T {A = U ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
 fstLvaries S T σ =
   trans
-    (cong (L T)
+    (cong♭ (L T)
       (trans
         (symm (R℘ T El (hasVaries S T σ)))
         (funext (λ A → A .variesBase S T σ))))
@@ -130,7 +130,7 @@ srcLvaries S T σ C =
     (trans
       (trans
         (funext (Llifts T))
-        (cong (L T) (funext (λ A → A .variesSrc S T σ))))
+        (cong♭ (L T) (funext (λ A → A .variesSrc S T σ))))
       (L√ T src* (λ A → A .varies S T σ)))
 
 dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
@@ -142,9 +142,9 @@ dstLvaries S T σ C =
     (trans
       (trans
         (trans
-          (cong (_∘_ ◆ (_∘_ ◆ ⟪ σ ⟫)) (funext (Llifts S)))
+          (cong (_∘ (_∘ ⟪ σ ⟫)) (funext (Llifts S)))
           (LShapeHom σ (λ A → A .lifts S)))
-        (cong (L T) (funext (λ A → A .variesDst S T σ))))
+        (cong♭ (L T) (funext (λ A → A .variesDst S T σ))))
       (L√ T dst* (λ A → A .varies S T σ)))
 
 substSpan : ∀ {ℓ ℓ'} {A : Set ℓ} (D : A → Span ℓ')
@@ -244,20 +244,20 @@ encode {ℓ' = ℓ'} {Γ} Aα =
   { El = Aα .fst x
   ; lifts = λ (@♭ S) → Rl S x
   ; liftsBase = λ (@♭ S) →
-    appCong (trans (R℘ S (Aα .fst) (hasLifts S)) (cong (R S) (symm (L√ S fst (Rl S)))))
+    appCong (trans (R℘ S (Aα .fst) (hasLifts S)) (cong♭ (R S) (symm (L√ S fst (Rl S)))))
   ; varies = λ (@♭ S T σ) → Rv S T σ x
   ; variesBase = λ (@♭ S T σ) →
-    appCong (trans (R℘ T (Aα .fst) (hasVaries S T σ)) (cong (R T) (symm (L√ T fst (Rv S T σ)))))
+    appCong (trans (R℘ T (Aα .fst) (hasVaries S T σ)) (cong♭ (R T) (symm (L√ T fst (Rv S T σ)))))
   ; variesSrc = λ (@♭ S T σ) →
     appCong
-      (cong (R T)
+      (cong♭ (R T)
         {x = L T (R T (λ x → (src* ∘ L T id) x) ∘ Rv S T σ)}
         (symm (L√ T src* (Rv S T σ))))
   ; variesDst = λ (@♭ S T σ) →
     appCong
       (trans
         (symm (ShapeHomR σ (FibLifts Aα S)))
-        (cong (R T)
+        (cong♭ (R T)
           {x = L T (R T (λ x → (dst* ∘ L T id) x) ∘ Rv S T σ)}
           (symm (L√ T dst* (Rv S T σ)))))
   }
@@ -312,27 +312,21 @@ encodeEl {ℓ} C =
     refl
     (funext♭ λ S →
       appCong
-        (cong (R S)
+        (cong♭ (R S)
           {y = L S (λ D → D .lifts S)}
           (symm (funext (Llifts S)))))
     (funext♭ λ S → funext♭ λ T → funext♭ λ σ → 
       appCong
-        (cong (R T)
-          {x = FibVaries (El , υ) S T σ}
-          {y = L T (λ D → D .varies S T σ)}
-          (symm (funext λ C → trans (lemma S T σ C) (Lvaries S T σ C)))))
-  where
-  -- not sure why this isn't reflexive
-  lemma : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
-    → (hasVaries S T σ (El ∘ C) , getVaries S T σ C) ≡ FibVaries (El , υ) S T σ C
-  lemma S T σ C =
-    cong
-      (λ w →
-        ( hasVaries S T σ (El ∘ C)
-        , record {src = getLifts T C; dst = getLifts S (C ∘ ⟪ σ ⟫); rel = w}
-        ))
-      (funext λ r → funext λ φ → funext λ f → funext λ x₀ → funext λ s →
-        uipImp)
+        (cong♭ (R T)
+          (symm (funext λ C → trans
+            (cong
+              (λ w →
+                ( hasVaries S T σ (El ∘ C)
+                , record {src = getLifts T C; dst = getLifts S (C ∘ ⟪ σ ⟫); rel = w}
+                ))
+              (funext λ r → funext λ φ → funext λ f → funext λ x₀ → funext λ s →
+                uipImp))
+            (Lvaries S T σ C)))))
         
 encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
 encodeDecode {ℓ' = ℓ'} {Γ} C = funext λ x →

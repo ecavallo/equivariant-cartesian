@@ -129,6 +129,14 @@ substCongAssoc :
   subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
 substCongAssoc _ _ refl _ = refl
 
+substConst :
+  {ℓ ℓ' : Level}
+  {A : Set ℓ}
+  {B : Set ℓ'}
+  {x y : A} (p : x ≡ y) (b : B)
+  → subst (λ _ → B) p b ≡ b
+substConst refl b = refl
+
 substTrans :
   {ℓ ℓ' : Level}
   {A : Set ℓ}
@@ -360,3 +368,25 @@ Set* ℓ = Σ (Set ℓ) id
 
 data ♭ {@♭ ℓ} (@♭ A : Set ℓ) : Set ℓ where
   in♭ : @♭ A → ♭ A
+
+cong♭ :
+  {@♭ ℓ ℓ' : Level}
+  {@♭ A : Set ℓ}
+  {@♭ B : Set ℓ'}
+  (f : @♭ A → B)
+  {@♭ x y : A}
+  (@♭ p : x ≡ y)
+  → -----------
+  f x ≡ f y
+cong♭ _ refl = refl
+
+appCong♭ :
+  {@♭ ℓ ℓ' : Level}
+  {@♭ A : Set ℓ}
+  {@♭ B : A → Set ℓ'}
+  {f g : (@♭ a : A) → B a}
+  {@♭ x : A}
+  (p : f ≡ g)
+  → -----------
+  f x ≡ g x
+appCong♭ p = cong (λ h → h _) p

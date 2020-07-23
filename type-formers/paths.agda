@@ -57,14 +57,13 @@ module PathIsFibId {ℓ}
           (λ {refl → funext λ s → f u s .atI}))
 
     baseA : A r [ φ ∨ ∂ i ↦ tubeA ◆ r ]
-    baseA =
-      ( x₀ .fst .at i
-      , ∨-elimEq φ (∂ i)
+    baseA .fst = x₀ .fst .at i
+    baseA .snd =
+      ∨-elimEq φ (∂ i)
         (λ u → cong (λ q → q .at i) (x₀ .snd u))
         (OI-elim i
           (λ {refl → symm (x₀ .fst .atO)})
           (λ {refl → symm (x₀ .fst .atI)}))
-      )
 
     compA = α .lift S r id (φ ∨ ∂ i) tubeA baseA
 
@@ -75,17 +74,19 @@ abstract
     (α : isFib A)
     → -----------
     isFib (Path' A)
-  PathIsFib {A = A} α .lift S r p φ f x₀ =
-    record
-    { comp = λ s →
-      ( path
-        (λ i → compA i .comp s .fst)
-        (symm (compA O .comp s .snd ∣ inr ∣ inl refl ∣ ∣))
-        (symm (compA I .comp s .snd ∣ inr ∣ inr refl ∣ ∣))
-      , λ u → PathExt λ i → compA i .comp s .snd ∣ inl u ∣
-      )
-    ; cap = PathExt λ i → compA i .cap
-    }
+  PathIsFib {A = A} α .lift S r p φ f x₀ .comp s .fst =
+    path
+      (λ i → compA i .comp s .fst)
+      (symm (compA O .comp s .snd ∣ inr ∣ inl refl ∣ ∣))
+      (symm (compA I .comp s .snd ∣ inr ∣ inr refl ∣ ∣))
+    where
+    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
+  PathIsFib {A = A} α .lift S r p φ f x₀ .comp s .snd u =
+    PathExt λ i → compA i .comp s .snd ∣ inl u ∣
+    where
+    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
+  PathIsFib {A = A} α .lift S r p φ f x₀ .cap =
+    PathExt λ i → compA i .cap
     where
     open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
 

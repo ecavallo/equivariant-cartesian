@@ -60,14 +60,14 @@ module Tiny (@♭ S : Shape) where
     R℘ : ∀ {@♭ ℓ ℓ' ℓ''}
       {@♭ A : Set ℓ} {@♭ B : Set ℓ'} {@♭ C : Set ℓ''}
       (@♭ g : A → B) (@♭ f : (⟨ S ⟩ → B) → C)
-      → R (f ∘ (_∘_ g)) ≡ R f ∘ g
+      → R (f ∘ (g ∘_)) ≡ R f ∘ g
 
   -- One-sided naturality of left transposition is derivable
   L℘ : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Set ℓ} {@♭ B : Set ℓ'} {@♭ C : Set ℓ''}
     (@♭ f : B → √ C) (@♭ g : A → B)
-    →  L f ∘ _∘_ g ≡ L (f ∘ g)
-  L℘ f g = cong L (R℘ g (L f))
+    → L f ∘ (g ∘_) ≡ L (f ∘ g)
+  L℘ f g = cong♭ L (R℘ g (L f))
 
   -- Functoriality of √ in the set argument
   √` : ∀ {@♭ ℓ ℓ'}
@@ -82,7 +82,7 @@ module Tiny (@♭ S : Shape) where
     → √` g ∘ R f ≡ R (g ∘ f)
   √R {A = A} {B} {C = C} g f =
     trans
-      (cong (R ∘ _∘_ g) (L℘ id (R f)))
+      (cong♭ (λ h → R (g ∘ h)) (L℘ id (R f)))
       (symm (R℘ (R f) (g ∘ L id)))
   -- The other naturality property of left transposition
   L√ : ∀ {@♭ ℓ ℓ' ℓ''}
@@ -90,7 +90,7 @@ module Tiny (@♭ S : Shape) where
     (@♭ g : B → C) (@♭ f : A → √ B)
     → ---------------------
     g ∘ L f  ≡ L (√` g ∘ f)
-  L√ g f = cong L (symm (√R g (L f)))
+  L√ g f = cong♭ L (symm (√R g (L f)))
 
 open Tiny
 
@@ -99,21 +99,21 @@ module _ {@♭ S T : Shape} (@♭ σ : ShapeHom S T) where
 
   √ShapeHom : ∀ {@♭ ℓ} {@♭ A : Set ℓ}
     → √ S A → √ T A
-  √ShapeHom = R T (L S id ∘ (_∘_ ◆ ⟪ σ ⟫))
+  √ShapeHom = R T (L S id ∘ (_∘ ⟪ σ ⟫))
 
   LShapeHom : ∀ {@♭ ℓ ℓ'} {@♭ A : Set ℓ} {@♭ B : Set ℓ'}
     (@♭ f : A → √ S B)
-    → L T (√ShapeHom ∘ f) ≡ L S f ∘ (_∘_ ◆ ⟪ σ ⟫)
+    → L T (√ShapeHom ∘ f) ≡ L S f ∘ (_∘ ⟪ σ ⟫)
   LShapeHom f =
     trans
-      (cong (_∘_ ◆ (_∘_ ◆ ⟪ σ ⟫)) (L℘ S id f))
+      (cong (_∘ (_∘ ⟪ σ ⟫)) (L℘ S id f))
       (symm (L℘ T √ShapeHom f))
 
   ShapeHomR : ∀ {@♭ ℓ ℓ'} {@♭ A : Set ℓ} {@♭ B : Set ℓ'}
     (@♭ g : (⟨ S ⟩ → A) → B)
-    → √ShapeHom ∘ R S g ≡ R T (g ∘ (_∘_ ◆ ⟪ σ ⟫))
+    → √ShapeHom ∘ R S g ≡ R T (g ∘ (_∘ ⟪ σ ⟫))
   ShapeHomR g =
-    cong (R T) (LShapeHom (R S g))
+    cong♭ (R T) (LShapeHom (R S g))
 
 ----------------------------------------------------------------------
 -- (Dependent) exponentiation by a shape commutes with coproducts
@@ -125,10 +125,10 @@ shape→⊎♭ S {A} {B} =
   { to = forward
   ; from = L S back
   ; inv₁ = funext back∘forward
-  ; inv₂ = trans (cong (L S) (funext forward∘back)) (L√ S forward back)
+  ; inv₂ = trans (cong♭ (L S) (funext forward∘back)) (L√ S forward back)
   }
   where
-  forward = [ _∘_ inl ∣ _∘_ inr ]
+  forward = [ inl ∘_ ∣ inr ∘_ ]
   back = [ R S inl ∣ R S inr ]
 
   forward∘back : (c : A ⊎ B) → √` S forward (back c) ≡ R S id c
@@ -144,7 +144,7 @@ shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''} (@♭ S : Shape)
     {@♭ B : Set ℓ''} {@♭ B' : Set ℓ'''}
     (f : A → A') (g : B → B')
     (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B))
-    → shape→⊎♭ S .to ((_∘_ f ⊎` _∘_ g) p) ≡ (f ⊎` g) ∘ (shape→⊎♭ S .to p)
+    → shape→⊎♭ S .to (((f ∘_) ⊎` (g ∘_)) p) ≡ (f ⊎` g) ∘ (shape→⊎♭ S .to p)
 shape→⊎♭` S f g (inl _) = refl
 shape→⊎♭` S f g (inr _) = refl
 
@@ -175,21 +175,21 @@ shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
   fsth' s | inl _ = refl
   fsth' s | inr _ = refl
 
-  fromNatural : (_∘_ fst ⊎` _∘_ fst) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
+  fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
   fromNatural =
     trans
       (trans
-        (cong (iso .from ∘ _∘_ (fst ⊎` fst)) (appCong (iso .inv₂)))
+        (cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂)))
         (cong (iso .from) (shape→⊎♭` S fst fst (iso .from h'))))
       (symm (appCong (iso .inv₁)))
 
-  baseEq : ∇ ((_∘_ fst ⊎` _∘_ fst) (shape→⊎♭ S .from h')) ≡ AB
+  baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ S .from h')) ≡ AB
   baseEq =
     trans
       (trans
         (trans
           (funext fsth')
-          (cong (_∘_ ∇) (appCong (iso .inv₂))))
+          (cong (∇ ∘_) (appCong (iso .inv₂))))
         (symm (shape→⊎♭∇ S (iso .from ((fst ⊎` fst) ∘ h')))))
       (cong ∇ fromNatural)
 
