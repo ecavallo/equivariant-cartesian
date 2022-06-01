@@ -39,20 +39,21 @@ Glue' :
   Γ → Set ℓ'
 Glue' Φ B A f x = Glue (Φ x) (λ u → B (x , u)) (A x) (λ u → f (x , u))
 
-GlueExt : ∀ {ℓ}
-  {Φ : CofProp}
-  {B : [ Φ ] → Set ℓ}
-  {A : Set ℓ}
-  {f : (u : [ Φ ]) → B u → A}
-  {g g' : Glue Φ B A f}
-  (p : ∀ us → g .dom us ≡ g' .dom us)
-  (q : g .cod ≡ g' .cod)
-  → ---------------
-  g ≡ g'
-GlueExt {g = glue _ a _} p refl =
-  cong
-    (λ {(t , ft≡a) → glue t a ft≡a})
-    (Σext (funext p) (funext (λ _ → uipImp)))
+abstract
+  GlueExt : ∀ {ℓ}
+    {Φ : CofProp}
+    {B : [ Φ ] → Set ℓ}
+    {A : Set ℓ}
+    {f : (u : [ Φ ]) → B u → A}
+    {g g' : Glue Φ B A f}
+    (p : ∀ us → g .dom us ≡ g' .dom us)
+    (q : g .cod ≡ g' .cod)
+    → ---------------
+    g ≡ g'
+  GlueExt {g = glue _ a _} p refl =
+    cong
+      (λ {(t , ft≡a) → glue t a ft≡a})
+      (Σext (funext p) (funext (λ _ → uipImp)))
 
 module GlueIsFibId {ℓ}
   (S : Shape)
@@ -136,19 +137,17 @@ module GlueIsFibId {ℓ}
             (λ {refl → funext λ _ → baseA .snd v}))
 
     baseFix : A s [ ψ ∨ Φ s ∨ S ∋ r ≈ s ↦ tubeFix ◆ I ]
-    baseFix =
-      ( compA .comp s .fst
-      , ∨-elimEq ψ (Φ s ∨ S ∋ r ≈ s)
+    baseFix .fst = compA .comp s .fst
+    baseFix .snd =
+      ∨-elimEq ψ (Φ s ∨ S ∋ r ≈ s)
         (λ v → compA .comp s .snd v)
         (∨-elimEq (Φ s) (S ∋ r ≈ s)
           (λ us → compR us .fst .snd .atI)
           (λ {refl → symm (compA .cap)}))
-      )
 
     compFix = α .lift int I (λ _ → s) (ψ ∨ Φ s ∨ S ∋ r ≈ s) tubeFix baseFix .comp O
 
 abstract
-
   GlueIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {B : res Γ Φ → Set ℓ'}
@@ -156,33 +155,33 @@ abstract
     (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
-  GlueIsFib Φ {B} {A} fe β α .lift S r p ψ g x₀ =
-    record
-    { comp = λ s →
-      ( glue (λ us → compR s us .fst .fst) (compFix s .fst)
-          (λ us → trans
-            (compFix s .snd ∣ inr ∣ inl us ∣ ∣)
-            (symm (compR s us .fst .snd .atO)))
-      , λ v →
-        GlueExt
-          (λ us → trans
-            (cong fst (compR s us .snd ∣ inl v ∣))
-            (cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .atO))))
-          (compFix s .snd ∣ inl v ∣)
-      )
-    ; cap =
+  GlueIsFib Φ {B} {A} fe β α .lift S r p ψ g x₀ = rec
+    where
+    open GlueIsFibId
+      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
+
+    rec : Comp S r _ ψ g x₀
+    rec .comp s .fst .dom us = compR s us .fst .fst
+    rec .comp s .fst .cod = compFix s .fst
+    rec .comp s .fst .match us =
+      trans
+        (compFix s .snd ∣ inr ∣ inl us ∣ ∣)
+        (symm (compR s us .fst .snd .atO))
+    rec .comp s .snd v =
+      GlueExt
+        (λ us → trans
+          (cong fst (compR s us .snd ∣ inl v ∣))
+          (cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .atO))))
+        (compFix s .snd ∣ inl v ∣)
+    rec .cap =
       GlueExt
         (λ ur →
           trans
             (cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .atO))
             (cong fst (symm (compR r ur .snd ∣ inr refl ∣))))
         (symm (compFix r .snd ∣ inr ∣ inr refl ∣ ∣))
-    }
-    where
-    open GlueIsFibId
-      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
 
-  GlueIsFib Φ {B} {A} fe β α .vary S T σ r p ψ g x₀ s =
+  GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p ψ g x₀ s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
     module T = GlueIsFibId
@@ -192,8 +191,11 @@ abstract
       S (Φ ∘ p ∘ ⟪ σ ⟫) (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
       (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r ψ (g ◇ ⟪ σ ⟫) x₀
 
-    f = λ su → fe su .fst
-    e = λ su → fe su .snd
+    f : (γu : res Γ Φ) → B γu → A (γu .fst)
+    f = fst ∘ fe
+
+    e : (γu : res Γ Φ) → IsEquiv (f γu)
+    e = snd ∘ fe
 
     varyA : T.compA .comp (⟪ σ ⟫ s) .fst ≡ S.compA .comp s .fst
     varyA = α .vary S T σ r p ψ T.tubeA T.baseA s
@@ -237,6 +239,7 @@ abstract
             I
             (varyC₁ uσs)))
 
+    varyFix : T.compFix (⟪ σ ⟫ s) .fst ≡ S.compFix s .fst
     varyFix =
       cong
         (λ {(φ' , g' , x') → α .lift int I (λ _ → p (⟪ σ ⟫ s)) φ' g' x' .comp O .fst})

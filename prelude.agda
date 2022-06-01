@@ -24,13 +24,14 @@ id x = x
 _∘_ :
   {ℓ m n : Level}
   {A : Set ℓ}
-  {B : Set m}
-  {C : B → Set n}
-  (g : (b : B) → C b)
-  (f : A → B)
+  {B : A → Set m}
+  {C : (a : A) → B a → Set n}
+  (g : {a : A} (b : B a) → C a b)
+  (f : (a : A) → B a)
   → -------------
-  (a : A) → C (f a)
+  (a : A) → C a (f a)
 (g ∘ f) x = g (f x)
+
 
 ----------------------------------------------------------------------
 -- Propositional equality
@@ -70,9 +71,9 @@ cong :
 cong _ refl = refl
 
 cong₂ :
-  {ℓ ℓ' : Level}
-  {A A' : Set ℓ}
-  {B : Set ℓ'}
+  {ℓ ℓ' ℓ'' : Level}
+  {A : Set ℓ} {A' : Set ℓ'}
+  {B : Set ℓ''}
   (f : A → A' → B)
   {x y  : A}
   {x' y' : A'}
@@ -102,6 +103,19 @@ congdep :
   → -----------
   subst B p (f x) ≡ f y
 congdep _ refl = refl
+
+congΣ :
+  {ℓ ℓ' ℓ'' : Level}
+  {A : Set ℓ} {A' : A → Set ℓ'}
+  {B : Set ℓ''}
+  (f : (a : A) → A' a → B)
+  {x y  : A}
+  {x' : A' x} {y' : A' y}
+  (p : x ≡ y)
+  (q : subst A' p x' ≡ y')
+  → --------------
+  f x x' ≡ f y y'
+congΣ _ refl refl = refl
 
 congdep₂ :
   {ℓ ℓ' ℓ'' : Level}

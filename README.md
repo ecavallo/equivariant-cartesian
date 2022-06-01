@@ -8,8 +8,6 @@ The axioms required of the ambient category can be found in the `axioms` folder.
 
 The construction of the universe is currently not quite complete; we have not shown that it is fibrant. However, this should be a more-or-less straightforward consequence of the Fibration Extension Property, which we have proven (`fibration-extension`).
 
-Warning: Some files, particularly `glueing.weak` and `fibration-extension`, take a long time to check.
-
 [1] Carlo Angiuli, Guillaume Brunerie, Thierry Coquand, Kuen-Bang Hou (Favonia), Robert Harper, and Daniel R. Licata. Syntax and Models of Cartesian Cubical Type Theory. 2019. https://github.com/dlicata335/cart-cube.
 
 [2] Steve Awodey. A Quillen model structure on the category of cartesian cubical sets. 2019. https://github.com/awodey/math/blob/master/QMS/qms.pdf.

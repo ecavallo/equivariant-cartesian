@@ -168,34 +168,34 @@ abstract
 -- Identity and coercion maps are equivalences
 ----------------------------------------------------------------------
 
-abstract
-  idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
-  idEquiv α .fst = λ a → a
-  idEquiv α .snd a .fst = (a , refl~ a)
-  idEquiv α .snd a .snd (a' , p) =
-    path
-      (λ i →
-        ( q i .comp O  .fst
-        , path (λ j → q i .comp j .fst) refl (q i .cap)
-        ))
-      (FiberExt
-        (trans (p .atO) (symm (q O .comp O .snd ∣ inl refl ∣)))
-        (λ j → symm (q O .comp j .snd ∣ inl refl ∣)))
-      (FiberExt
-        (symm (q I .comp O .snd ∣ inr refl ∣))
-        (λ j → symm (q I .comp j .snd ∣ inr refl ∣)))
-    where
-    q : (i : Int) → _
-    q i =
-      α .lift int I (λ _ → tt) (∂ i)
-        (OI-rec i
-          (λ {refl → p .at})
-          (λ {refl _ → a}))
-        ( a
-        , OI-elim i
-          (λ {refl → p .atI})
-          (λ {refl → refl})
-        )
+idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
+idEquiv α .fst a = a
+idEquiv α .snd a .fst = (a , refl~ a)
+idEquiv α .snd a .snd (a' , p) = h
+  where
+  q : (i : Int) → _
+  q i =
+    α .lift int I (λ _ → tt) (∂ i)
+      (OI-rec i
+        (λ {refl → p .at})
+        (λ {refl _ → a}))
+      ( a
+      , OI-elim i
+        (λ {refl → p .atI})
+        (λ {refl → refl})
+      )
+
+  h : (a' , p) ~ (a , refl~ a)
+  h .at i .fst = q i .comp O  .fst
+  h .at i .snd = path (λ j → q i .comp j .fst) refl (q i .cap)
+  h .atO =
+    FiberExt
+      (trans (p .atO) (symm (q O .comp O .snd ∣ inl refl ∣)))
+      (λ j → symm (q O .comp j .snd ∣ inl refl ∣))
+  h .atI =
+    FiberExt
+      (symm (q I .comp O .snd ∣ inr refl ∣))
+      (λ j → symm (q I .comp j .snd ∣ inr refl ∣))
 
 abstract
   coerce : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)

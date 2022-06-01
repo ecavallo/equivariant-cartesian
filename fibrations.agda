@@ -26,21 +26,19 @@ reshapeComp : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
   → ∀ {r} → {A : ⟨ T ⟩ → Set ℓ} → ∀ {φ f x₀}
   → Comp T (⟪ σ ⟫ r) A φ f x₀
   → Comp S r (A ∘ ⟪ σ ⟫) φ (f ◇ ⟪ σ ⟫) x₀
-reshapeComp σ w =
-  record
-  { comp = w .comp ∘ ⟪ σ ⟫
-  ; cap = w .cap
-  }
+reshapeComp σ w .comp = w .comp ∘ ⟪ σ ⟫
+reshapeComp σ w .cap = w .cap
 
-compExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
-  {φ : CofProp} {f : [ φ ] → Π A} {x₀ : A r [ φ ↦ f ◆ r ]}
-  {co co' : Comp S r A φ f x₀}
-  → (∀ s → co .comp s .fst ≡ co' .comp s .fst)
-  → co ≡ co'
-compExt p =
-  cong
-    (λ {(co , ca) → record {comp = co; cap = ca}})
-    (Σext (funext λ s → Σext (p s) (funext λ _ → uipImp)) uipImp)
+abstract
+  compExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+    {φ : CofProp} {f : [ φ ] → Π A} {x₀ : A r [ φ ↦ f ◆ r ]}
+    {co co' : Comp S r A φ f x₀}
+    → (∀ s → co .comp s .fst ≡ co' .comp s .fst)
+    → co ≡ co'
+  compExt p =
+    cong
+      (λ {(co , ca) → record {comp = co; cap = ca}})
+      (Σext (funext λ s → Σext (p s) (funext λ _ → uipImp)) uipImp)
 
 ----------------------------------------------------------------------
 -- Fibrations
@@ -62,14 +60,12 @@ Fib ℓ' Γ = Σ (Γ → Set ℓ') isFib
 ----------------------------------------------------------------------
 reindex : ∀{ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (A : Γ → Set ℓ'')
   (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
-reindex A α ρ =
-  record
-  { lift = λ S r p → α .lift S r (ρ ∘ p)
-  ; vary = λ S T σ r p → α .vary S T σ r (ρ ∘ p)
-  }
+reindex A α ρ .lift S r p = α .lift S r (ρ ∘ p)
+reindex A α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
 reindexFib : ∀{ℓ ℓ' ℓ''}{Δ : Set ℓ}{Γ : Set ℓ'}(Aα : Fib ℓ'' Γ)(ρ : Δ → Γ) → Fib ℓ'' Δ
-reindexFib (A , α) ρ = (A ∘ ρ , reindex A α ρ)
+reindexFib (A , α) ρ .fst = A ∘ ρ
+reindexFib (A , α) ρ .snd = reindex A α ρ
 
 reindexSubst : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set ℓ''}
  (ρ : Δ → Γ)(P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
@@ -102,20 +98,21 @@ reindexComp' g f = refl
 ----------------------------------------------------------------------
 -- An extensionality principle for fibration structures
 ----------------------------------------------------------------------
-isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
-  ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (φ : CofProp)
-  (f : [ φ ] → Π (A ∘ p)) (x₀ : A (p r) [ φ ↦ f ◆ r ])
-    → (s : ⟨ S ⟩) → α .lift S r p φ f x₀ .comp s .fst ≡ α' .lift S r p φ f x₀ .comp s .fst)
-  → α ≡ α'
-isFibExt {Γ = Γ} {A} {α} {α'} q =
-  cong
-    (λ {(l , u) → record {lift = l; vary = u}})
-    (Σext
-      (funext λ S → funext λ r → funext λ p → funext λ φ → funext λ f → funext λ x₀ →
-        compExt (q S r p φ f x₀))
-      (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p →
-        funext λ φ → funext λ f → funext λ x₀ → funext λ s →
-          uipImp))
+abstract
+  isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
+    ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (φ : CofProp)
+    (f : [ φ ] → Π (A ∘ p)) (x₀ : A (p r) [ φ ↦ f ◆ r ])
+      → (s : ⟨ S ⟩) → α .lift S r p φ f x₀ .comp s .fst ≡ α' .lift S r p φ f x₀ .comp s .fst)
+    → α ≡ α'
+  isFibExt {Γ = Γ} {A} {α} {α'} q =
+    cong
+      (λ {(l , u) → record {lift = l; vary = u}})
+      (Σext
+        (funext λ S → funext λ r → funext λ p → funext λ φ → funext λ f → funext λ x₀ →
+          compExt (q S r p φ f x₀))
+        (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p →
+          funext λ φ → funext λ f → funext λ x₀ → funext λ s →
+            uipImp))
 
 ----------------------------------------------------------------------
 -- Terminal object is fibrant
@@ -139,20 +136,7 @@ _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ �
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
 isomorphicIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
-isomorphicIsFib A B iso β .lift S r p φ f (a₀ , ex) =
-  record
-  { comp = λ s →
-    ( iso (p s) .from (inB .comp s .fst)
-    , λ u →
-      trans
-        (cong (iso (p s) .from) (inB .comp s .snd u))
-        (symm (appCong (iso (p s) .inv₁)))
-    )
-  ; cap =
-    trans
-      (appCong (iso (p r) .inv₁))
-      (cong (iso (p r) .from) (inB .cap))
-  }
+isomorphicIsFib A B iso β .lift S r p φ f (a₀ , ex) = rec
   where
   tube : [ φ ] → Π (B ∘ p)
   tube u i = iso (p i) .to (f u i)
@@ -161,6 +145,18 @@ isomorphicIsFib A B iso β .lift S r p φ f (a₀ , ex) =
   base = (iso (p r) .to a₀ , λ u → cong (iso (p r) .to) (ex u))
 
   inB = β .lift S r p φ tube base
+
+  rec : Comp S r _ φ f (a₀ , ex)
+  rec .comp s .fst = iso (p s) .from (inB .comp s .fst)
+  rec .comp s .snd u =
+    trans
+      (cong (iso (p s) .from) (inB .comp s .snd u))
+      (symm (appCong (iso (p s) .inv₁)))
+  rec .cap =
+    trans
+      (appCong (iso (p r) .inv₁))
+      (cong (iso (p r) .from) (inB .cap))
+
 isomorphicIsFib A B iso β .vary S T σ r p φ f (a₀ , ex) s =
   cong (iso (p (⟪ σ ⟫ s)) .from)
     (β .vary S T σ r p φ
@@ -192,7 +188,7 @@ boxEq S {A} {φ₀} refl f r x =
           x)
         (funext λ _ → uipImp)))
 
-boxEqDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'} 
+boxEqDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
   {b₀ b₁ : B} (b : b₀ ≡ b₁)
   {φ₀ φ₁ : CofProp} (φ : φ₀ ≡ φ₁)
   {f₀ : [ φ₀ ] → Π (A b₀)} {f₁ : [ φ₁ ] → Π (A b₁)}

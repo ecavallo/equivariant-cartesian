@@ -136,7 +136,6 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
     LargeComp : Fib ℓ' Γ
     LargeComp = FibSGlue (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv
 
-    -- EC: slow
     LargeCompMatch : reindexFib F ats ≡ reindexFib LargeComp fst
     LargeCompMatch =
       trans
@@ -146,7 +145,6 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
 
         (symm left)
 
-  -- EC: slow
   LargeCap : LargeComp r ≡ X₀
   LargeCap =
     trans
@@ -176,21 +174,21 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
       (subst (Equiv (F .fst ((x , u) , ⟪ σ ⟫ (s x)))) (cong (λ Bβ → Bβ .fst (x , u)) match))
       (varyCoerceEquiv S T σ (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))
 
-  -- EC: slow
   LargeVary
     : LargeComp T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)
       ≡ LargeComp S r φ (reindexFib F (id× ⟪ σ ⟫)) X₀ match s
   LargeVary =
-    cong
-      (λ {(((ψ , ψMatch) , φEquiv) , equivMatch) →
+    congΣ
+      (λ ((ψ , ψMatch) , φEquiv) equivMatch →
         FibSGlue (λ x → φ x ∨ ψ x)
           (S.Template.fib ψ ψMatch φEquiv equivMatch)
           X₀
-          (S.Template.equiv ψ ψMatch φEquiv equivMatch)})
-      (Σext
-        (×ext
-          (Σext (funext λ x → ≈Equivariant σ (r x) (s x)) uipImp)
-          varyEquiv)
-        (funext λ x → funext λ u → funext λ v → uipImp))
+          (S.Template.equiv ψ ψMatch φEquiv equivMatch))
+      {x' = T.rsEquivMatch}
+      {y' = S.rsEquivMatch}
+      (×ext
+        (Σext (funext λ x → ≈Equivariant σ (r x) (s x)) uipImp)
+        varyEquiv)
+      (funext λ x → funext λ u → funext λ v → uipImp)
 
 -- EC: TODO stability of FEP under substitution in the context Γ

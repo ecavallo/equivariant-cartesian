@@ -114,18 +114,16 @@ module UnionIsFibId {ℓ} (S : Shape) (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
           (reindex _ α₁ (λ s → s , u₁ s))
           .lift S r id ψ f x₀ .comp s)
       (λ u₀ u₁ →
-        cong
-          (λ {(u' , α') →
+        congΣ
+          (λ u' α' →
             subst (λ u' → isFib (λ s → A (s , u' s))) (funext λ s → trunc (u' s) _) α'
-              .lift S r id ψ f x₀ .comp s})
-          (Σext
-            (funext λ _ → trunc _ _)
-            (trans
-              (Σeq₂
-                (cong (λ Aα' → reindexFib Aα' (λ s → (s , u₀ s , u₁ s))) eqFib)
-                (cong (λ u' s → A (s , u' s)) (funext λ _ → trunc _ _)))
-              (substCongAssoc isFib (λ u' s → A (s , u' s))
-                (funext λ s → trunc _ _) _))))
+              .lift S r id ψ f x₀ .comp s)
+          (funext λ _ → trunc _ _)
+          (trans
+            (Σeq₂
+              (cong (λ Aα' → reindexFib Aα' (λ s → (s , u₀ s , u₁ s))) eqFib)
+              (cong (λ u' s → A (s , u' s)) (funext λ _ → trunc _ _)))
+            (substCongAssoc isFib (λ u' s → A (s , u' s)) (funext λ s → trunc _ _) _)))
 
   capSys : (u : [ all S φ₀ ∨ all S φ₁ ]) → compSys r u .fst ≡ x₀ .fst
   capSys =

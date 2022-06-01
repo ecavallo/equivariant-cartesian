@@ -24,7 +24,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
     ∥∥-rec : ∀ {ℓ'}
       (P : Set ℓ')
       (f : A → P)
-      (p : ∀ a b → f a ≡ f b)
+      .(p : ∀ a b → f a ≡ f b)
       → ---------------
       ∥ A ∥ → P
 
@@ -34,7 +34,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
     ∥∥-elim : ∀ {ℓ'}
       (P : ∥ A ∥ → Set ℓ')
       (f : (a : A) → P ∣ a ∣)
-      (p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
+      .(p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
       → ---------------
       (t : ∥ A ∥) → P t
 

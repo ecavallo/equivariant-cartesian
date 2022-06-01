@@ -65,20 +65,19 @@ res Γ Φ = Σ x ∈ Γ , [ Φ x ]
   (φ ψ : CofProp)
   (f : [ φ ] → A)
   (g : [ ψ ] → A)
-  (p : ∀ u v → f u ≡ g v)
+  .(p : ∀ u v → f u ≡ g v)
   → ---------------------------
   [ φ ∨ ψ ] → A
-∨-rec {A = A} φ ψ f g p = ∥∥-rec _ h q where
-
+∨-rec {A = A} φ ψ f g p =
+  ∥∥-rec _ h λ
+    { (inl _) (inl _) → cong f (cofIsProp φ _ _)
+    ; (inl u) (inr v) → p u v
+    ; (inr v) (inl u) → symm (p u v)
+    ; (inr _) (inr _) → cong g (cofIsProp ψ _ _)}
+  where
   h : [ φ ] ⊎ [ ψ ] → A
   h (inl u) = f u
   h (inr v) = g v
-
-  q : (z z' : [ φ ] ⊎ [ ψ ]) → h z ≡ h z'
-  q (inl _) (inl _) = cong f (cofIsProp φ _ _)
-  q (inl u) (inr v) = p u v
-  q (inr v) (inl u) = symm (p u v)
-  q (inr _) (inr _) = cong g (cofIsProp ψ _ _)
 
 OI-rec : ∀ {ℓ}
   (r : Int)
@@ -95,36 +94,37 @@ OI-rec r f g =
   (P : [ φ ∨ ψ ] → Set ℓ)
   (f : (u : [ φ ]) → P ∣ inl u ∣)
   (g : (v : [ ψ ]) → P ∣ inr v ∣)
-  (p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
+  .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
   → ---------------------------
   (w : [ φ ∨ ψ ]) → P w
-∨-elim φ ψ P f g p = ∥∥-elim _ h q
+∨-elim φ ψ P f g p =
+  ∥∥-elim _ h λ
+    { (inl u) (inl u') →
+      trans
+        (congdep f (cofIsProp φ u u'))
+        (trans
+          (symm (substCongAssoc P (∣_∣ ∘ inl) (cofIsProp φ u u') _))
+          (cong (λ r → subst P r (f u))
+            (uip (trunc ∣ inl u ∣ ∣ inl u' ∣) (cong (∣_∣ ∘ inl) (cofIsProp φ u u')))))
+    ; (inl u) (inr v) →
+      p u v
+    ; (inr v) (inl u) →
+      adjustSubstEq P
+        refl (trunc ∣ inl u ∣ ∣ inr v ∣)
+        (trunc ∣ inr v ∣ ∣ inl u ∣) refl
+        (symm (p u v))
+    ; (inr v) (inr v') →
+      trans
+        (congdep g (cofIsProp ψ v v'))
+        (trans
+          (symm (substCongAssoc P (∣_∣ ∘ inr) (cofIsProp ψ v v') _))
+          (cong (λ r → subst P r (g v))
+            (uip (trunc ∣ inr v ∣ ∣ inr v' ∣) (cong (∣_∣ ∘ inr) (cofIsProp ψ v v')))))
+    }
   where
   h : (z : [ φ ] ⊎ [ ψ ]) → P ∣ z ∣
   h (inl u) = f u
   h (inr v) = g v
-
-  q : (z z' :  [ φ ] ⊎ [ ψ ]) → subst P (trunc _ _) (h z) ≡ h z'
-  q (inl u) (inl u') =
-    trans
-      (congdep f (cofIsProp φ u u'))
-      (trans
-        (symm (substCongAssoc P (∣_∣ ∘ inl) (cofIsProp φ u u') _))
-        (cong (λ r → subst P r (f u))
-          (uip (trunc ∣ inl u ∣ ∣ inl u' ∣) (cong (∣_∣ ∘ inl) (cofIsProp φ u u')))))
-  q (inl u) (inr v) = p u v
-  q (inr v) (inl u) =
-    adjustSubstEq P
-      refl (trunc ∣ inl u ∣ ∣ inr v ∣)
-      (trunc ∣ inr v ∣ ∣ inl u ∣) refl
-      (symm (p u v))
-  q (inr v) (inr v') =
-    trans
-      (congdep g (cofIsProp ψ v v'))
-      (trans
-        (symm (substCongAssoc P (∣_∣ ∘ inr) (cofIsProp ψ v v') _))
-        (cong (λ r → subst P r (g v))
-          (uip (trunc ∣ inr v ∣ ∣ inr v' ∣) (cong (∣_∣ ∘ inr) (cofIsProp ψ v v')))))
 
 OI-elim : ∀ {ℓ}
   (r : Int)
