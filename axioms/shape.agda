@@ -1,6 +1,7 @@
 {-
 
-Definition of shapes and Path types.
+Postulates a type of shapes, types of homomorphisms between shapes,
+and the interval shape
 
 -}
 {-# OPTIONS --rewriting #-}

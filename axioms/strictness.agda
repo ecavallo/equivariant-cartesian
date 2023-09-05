@@ -1,5 +1,7 @@
 {-
 
+Po
+
 Axioms related to strictifying Glue types.
 
 -}

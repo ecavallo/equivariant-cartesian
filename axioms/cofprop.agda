@@ -1,7 +1,7 @@
 {-
 
-Definition of the universe of cofibrant propositions and basic
-operations on these.
+Definition of the universe of cofibrational propositions and basic
+operations involving these.
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -16,7 +16,7 @@ open import axioms.shape
 infixr 4 _∨_
 
 ----------------------------------------------------------------------
--- Cofibrant propositions
+-- Cofibrational propositions
 ----------------------------------------------------------------------
 
 postulate
@@ -55,8 +55,8 @@ postulate
 _[_↦_] : ∀ {ℓ} (A : Set ℓ) (φ : CofProp) → ([ φ ] → A) → Set ℓ
 A [ φ ↦ f ] = Σ a ∈ A , ∀ u → f u ≡ a
 
-res : ∀ {ℓ} (Γ : Set ℓ) (Φ : Γ → CofProp) → Set ℓ
-res Γ Φ = Σ x ∈ Γ , [ Φ x ]
+_,[_] : ∀ {ℓ} (Γ : Set ℓ) (Φ : Γ → CofProp) → Set ℓ
+Γ ,[ Φ ] = Σ x ∈ Γ , [ Φ x ]
 
 ----------------------------------------------------------------------
 -- Combining compatible partial functions
@@ -69,15 +69,11 @@ res Γ Φ = Σ x ∈ Γ , [ Φ x ]
   → ---------------------------
   [ φ ∨ ψ ] → A
 ∨-rec {A = A} φ ψ f g p =
-  ∥∥-rec _ h λ
+  ∥∥-rec _ [ f ∣ g ] λ
     { (inl _) (inl _) → cong f (cofIsProp φ _ _)
     ; (inl u) (inr v) → p u v
     ; (inr v) (inl u) → symm (p u v)
     ; (inr _) (inr _) → cong g (cofIsProp ψ _ _)}
-  where
-  h : [ φ ] ⊎ [ ψ ] → A
-  h (inl u) = f u
-  h (inr v) = g v
 
 OI-rec : ∀ {ℓ}
   (r : Int)
@@ -87,7 +83,8 @@ OI-rec : ∀ {ℓ}
   → ---------------------------
   [ int ∋ r ≈ O ∨ int ∋ r ≈ I ] → A
 OI-rec r f g =
-  ∨-rec (int ∋ r ≈ O) (int ∋ r ≈ I) f g (λ {refl r≡I → O≠I r≡I})
+  ∨-rec (int ∋ r ≈ O) (int ∋ r ≈ I) f g
+    (λ u v → O≠I (trans v (symm u)))
 
 ∨-elim : ∀ {ℓ}
   (φ ψ : CofProp)
@@ -97,34 +94,15 @@ OI-rec r f g =
   .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
   → ---------------------------
   (w : [ φ ∨ ψ ]) → P w
-∨-elim φ ψ P f g p =
-  ∥∥-elim _ h λ
-    { (inl u) (inl u') →
-      trans
-        (congdep f (cofIsProp φ u u'))
-        (trans
-          (symm (substCongAssoc P (∣_∣ ∘ inl) (cofIsProp φ u u') _))
-          (cong (λ r → subst P r (f u))
-            (uip (trunc ∣ inl u ∣ ∣ inl u' ∣) (cong (∣_∣ ∘ inl) (cofIsProp φ u u')))))
-    ; (inl u) (inr v) →
-      p u v
-    ; (inr v) (inl u) →
-      adjustSubstEq P
-        refl (trunc ∣ inl u ∣ ∣ inr v ∣)
-        (trunc ∣ inr v ∣ ∣ inl u ∣) refl
-        (symm (p u v))
-    ; (inr v) (inr v') →
-      trans
-        (congdep g (cofIsProp ψ v v'))
-        (trans
-          (symm (substCongAssoc P (∣_∣ ∘ inr) (cofIsProp ψ v v') _))
-          (cong (λ r → subst P r (g v))
-            (uip (trunc ∣ inr v ∣ ∣ inr v' ∣) (cong (∣_∣ ∘ inr) (cofIsProp ψ v v')))))
-    }
+∨-elim φ ψ P f g p w =
+  subst P (trunc _ _) (∨-recΣ w .snd)
   where
-  h : (z : [ φ ] ⊎ [ ψ ]) → P ∣ z ∣
-  h (inl u) = f u
-  h (inr v) = g v
+  ∨-recΣ : [ φ ∨ ψ ] → Σ _ P
+  ∨-recΣ =
+    ∨-rec φ ψ
+      (λ u → ∣ inl u ∣ , f u)
+      (λ v → ∣ inr v ∣ , g v)
+      (λ u v → Σext (trunc _ _) (p u v))
 
 OI-elim : ∀ {ℓ}
   (r : Int)
@@ -148,7 +126,7 @@ OI-elim r f g =
 
 takeOutCof : ∀ {ℓ} {A : Set ℓ} (φ φ₀ φ₁ : CofProp)
   {f₀ : [ φ ∨ φ₀ ] → A} {f₁ : [ φ ∨ φ₁ ] → A}
-  → (∀ u → f₀ (∣ inl u ∣) ≡ f₁ (∣ inl u ∣))
+  → (∀ u → f₀ ∣ inl u ∣ ≡ f₁ ∣ inl u ∣)
   → (∀ v₀ v₁ → f₀ ∣ inr v₀ ∣ ≡ f₁ ∣ inr v₁ ∣)
   → (∀ uv₀ uv₁ → f₀ uv₀ ≡ f₁ uv₁)
 takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =

@@ -150,35 +150,25 @@ dstLvaries S T σ C =
 substSpan : ∀ {ℓ ℓ'} {A : Set ℓ} (D : A → Span ℓ')
   {x y : A} (p : x ≡ y)
   → Witness (D x) → Witness (D y)
-substSpan D {x} p w =
-  record
-  { src = subst (Src ∘ D) p (w .src)
-  ; dst = subst (Dst ∘ D) p (w .dst)
-  ; rel = j p
-  }
-  where
-  j : ∀ {y} (p : x ≡ y)
-    → D y .Rel (subst (Src ∘ D) p (w .src)) (subst (Dst ∘ D) p (w .dst))
-  j refl = w .rel
+substSpan D {x} p w .src = subst (Src ∘ D) p (w .src)
+substSpan D {x} p w .dst = subst (Dst ∘ D) p (w .dst)
+substSpan D {x} refl w .rel = w .rel
 
 getVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
   → Witness (hasVaries S T σ (El ∘ C))
-getVaries S T σ C =
-  record
-  { src = getLifts T C
-  ; dst = getLifts S (C ∘ ⟪ σ ⟫)
-  ; rel =
-    subst
-      (uncurry (hasVaries S T σ (El ∘ C) .Rel))
-      (×ext
-         (trans
-           (Σeq₂ (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
-           (substCongAssoc id (λ D → D C .Src) (fstLvaries S T σ) _))
-         (trans
-           (Σeq₂ (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ)))
-           (substCongAssoc id (λ D → D C .Dst) (fstLvaries S T σ) _)))
-      (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
-  }
+getVaries S T σ C .src = getLifts T C
+getVaries S T σ C .dst = getLifts S (C ∘ ⟪ σ ⟫)
+getVaries S T σ C .rel =
+  subst
+    (uncurry (hasVaries S T σ (El ∘ C) .Rel))
+    (×ext
+       (trans
+         (Σeq₂ (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
+         (substCongAssoc id (λ D → D C .Src) (fstLvaries S T σ) _))
+       (trans
+         (Σeq₂ (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ)))
+         (substCongAssoc id (λ D → D C .Dst) (fstLvaries S T σ) _)))
+    (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
 
 Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
   → L T (λ A → A .varies S T σ) C ≡ (hasVaries S T σ (El ∘ C) , getVaries S T σ C)
@@ -228,39 +218,14 @@ FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
 FibVaries : ∀ {ℓ ℓ'} {Γ : Set ℓ} → Fib ℓ' Γ
   → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ'
-FibVaries (A , α) S T σ p =
-  ( hasVaries S T σ (A ∘ p)
-  , record
-    { src = λ r → α .lift T r p
-    ; dst = λ r → α .lift S r (p ∘ ⟪ σ ⟫)
-    ; rel = λ r → α .vary S T σ r p
-    }
-  )
+FibVaries (A , α) S T σ p .fst =
+  hasVaries S T σ (A ∘ p)
+FibVaries (A , α) S T σ p .snd .src r = α .lift T r p
+FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
+FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
 encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} → @♭ (Fib ℓ' Γ) → (Γ → U ℓ')
-encode {ℓ' = ℓ'} {Γ} Aα =
-  λ x →
-  record
-  { El = Aα .fst x
-  ; lifts = λ (@♭ S) → Rl S x
-  ; liftsBase = λ (@♭ S) →
-    appCong (trans (R℘ S (Aα .fst) (hasLifts S)) (cong♭ (R S) (symm (L√ S fst (Rl S)))))
-  ; varies = λ (@♭ S T σ) → Rv S T σ x
-  ; variesBase = λ (@♭ S T σ) →
-    appCong (trans (R℘ T (Aα .fst) (hasVaries S T σ)) (cong♭ (R T) (symm (L√ T fst (Rv S T σ)))))
-  ; variesSrc = λ (@♭ S T σ) →
-    appCong
-      (cong♭ (R T)
-        {x = L T (R T (λ x → (src* ∘ L T id) x) ∘ Rv S T σ)}
-        (symm (L√ T src* (Rv S T σ))))
-  ; variesDst = λ (@♭ S T σ) →
-    appCong
-      (trans
-        (symm (ShapeHomR σ (FibLifts Aα S)))
-        (cong♭ (R T)
-          {x = L T (R T (λ x → (dst* ∘ L T id) x) ∘ Rv S T σ)}
-          (symm (L√ T dst* (Rv S T σ)))))
-  }
+encode {ℓ' = ℓ'} {Γ} Aα = encoding
   where
   Rl : (@♭ S : Shape) → Γ → √ S (Set* ℓ')
   Rl S = R S (FibLifts Aα S)
@@ -268,7 +233,28 @@ encode {ℓ' = ℓ'} {Γ} Aα =
   Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
   Rv S T σ = R T (FibVaries Aα S T σ)
 
-----------------------------------------------------------------------
+  encoding : Γ → U ℓ'
+  encoding x .El = Aα .fst x
+  encoding x .lifts S = Rl S x
+  encoding x .liftsBase S =
+    appCong (trans (R℘ S (Aα .fst) (hasLifts S)) (cong♭ (R S) (symm (L√ S fst (Rl S)))))
+  encoding x .varies S T σ = Rv S T σ x
+  encoding x .variesBase S T σ =
+    appCong (trans (R℘ T (Aα .fst) (hasVaries S T σ)) (cong♭ (R T) (symm (L√ T fst (Rv S T σ)))))
+  encoding x .variesSrc S T σ =
+    appCong
+      (cong♭ (R T)
+        {x = L T (R T (λ x → (src* ∘ L T id) x) ∘ Rv S T σ)}
+        (symm (L√ T src* (Rv S T σ))))
+  encoding x .variesDst S T σ =
+    appCong
+      (trans
+        (symm (ShapeHomR σ (FibLifts Aα S)))
+        (cong♭ (R T)
+          {x = L T (R T (λ x → (dst* ∘ L T id) x) ∘ Rv S T σ)}
+          (symm (L√ T dst* (Rv S T σ)))))
+
+
 -- Inverse conditions for the correspondence between Fib Γ and Γ → U
 ----------------------------------------------------------------------
 decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
@@ -303,7 +289,7 @@ encodeReindexFib {ℓ'' = ℓ''} {Γ} Aα ρ x =
     refl
     (funext♭ λ S →
       appCong (R℘ S {C = Set* ℓ''} ρ (FibLifts Aα S)))
-    (funext♭ λ S → funext♭ λ T → funext♭ λ σ → 
+    (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
       appCong (R℘ T {C = Span* ℓ''} ρ (FibVaries Aα S T σ)))
 
 encodeEl : ∀ {@♭ ℓ} → (C : U ℓ) → encode (El , υ) C ≡ C
@@ -315,7 +301,7 @@ encodeEl {ℓ} C =
         (cong♭ (R S)
           {y = L S (λ D → D .lifts S)}
           (symm (funext (Llifts S)))))
-    (funext♭ λ S → funext♭ λ T → funext♭ λ σ → 
+    (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
       appCong
         (cong♭ (R T)
           (symm (funext λ C → trans
@@ -327,7 +313,7 @@ encodeEl {ℓ} C =
               (funext λ r → funext λ φ → funext λ f → funext λ x₀ → funext λ s →
                 uipImp))
             (Lvaries S T σ C)))))
-        
+
 encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
 encodeDecode {ℓ' = ℓ'} {Γ} C = funext λ x →
   trans

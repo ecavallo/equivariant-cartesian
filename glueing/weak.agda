@@ -32,9 +32,9 @@ open Glue public
 Glue' :
   ∀{ℓ ℓ'} {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (B : res Γ Φ → Set ℓ')
+  (B : Γ ,[ Φ ] → Set ℓ')
   (A : Γ → Set ℓ')
-  (f : (xu : res Γ Φ) → B xu → A (xu .fst))
+  (f : (xu : Γ ,[ Φ ]) → B xu → A (xu .fst))
   → ---------------
   Γ → Set ℓ'
 Glue' Φ B A f x = Glue (Φ x) (λ u → B (x , u)) (A x) (λ u → f (x , u))
@@ -58,7 +58,7 @@ abstract
 module GlueIsFibId {ℓ}
   (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)
-  {B : res ⟨ S ⟩ Φ → Set ℓ}
+  {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
@@ -150,7 +150,7 @@ module GlueIsFibId {ℓ}
 abstract
   GlueIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {B : res Γ Φ → Set ℓ'}
+    {B : Γ ,[ Φ ] → Set ℓ'}
     {A : Γ → Set ℓ'}
     (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
@@ -191,10 +191,10 @@ abstract
       S (Φ ∘ p ∘ ⟪ σ ⟫) (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
       (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r ψ (g ◇ ⟪ σ ⟫) x₀
 
-    f : (γu : res Γ Φ) → B γu → A (γu .fst)
+    f : (γu : Γ ,[ Φ ]) → B γu → A (γu .fst)
     f = fst ∘ fe
 
-    e : (γu : res Γ Φ) → IsEquiv (f γu)
+    e : (γu : Γ ,[ Φ ]) → IsEquiv (f γu)
     e = snd ∘ fe
 
     varyA : T.compA .comp (⟪ σ ⟫ s) .fst ≡ S.compA .comp s .fst
@@ -256,7 +256,7 @@ abstract
   reindexGlue : ∀ {ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    {B : res Γ Φ → Set ℓ''}
+    {B : Γ ,[ Φ ] → Set ℓ''}
     {A : Γ → Set ℓ''}
     (fe : Π (Equiv' B (A ∘ fst)))
     (β : isFib B)

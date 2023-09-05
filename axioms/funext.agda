@@ -1,6 +1,6 @@
 {-
 
-Function extensionality
+Function extensionality axiom and basic consequences
 
 -}
 {-# OPTIONS --rewriting #-}

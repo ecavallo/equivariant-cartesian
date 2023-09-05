@@ -132,9 +132,9 @@ abstract
 SGlue' : ∀ {ℓ ℓ'}
   {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (A : res Γ Φ → Set ℓ')
+  (A : Γ ,[ Φ ] → Set ℓ')
   (B : Γ → Set ℓ')
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
+  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   Γ → Set ℓ'
 SGlue' Φ A B f x = SGlue (Φ x) (λ u → A (x , u)) (B x) (λ u → f (x , u))
@@ -142,9 +142,9 @@ SGlue' Φ A B f x = SGlue (Φ x) (λ u → A (x , u)) (B x) (λ u → f (x , u))
 strictifyGlueIso' : ∀{ℓ ℓ'}
   {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  {A : res Γ Φ → Set ℓ'}
+  {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
+  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   SGlue' Φ A B f ≅' Glue' Φ A B f
 strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (λ u → f (x , u))
@@ -152,9 +152,9 @@ strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (λ u → f (x , u))
 SGlueStrictness' : ∀ {ℓ ℓ'}
   {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  {A : res Γ Φ → Set ℓ'}
+  {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
-  (f : (xu : res Γ Φ) → A xu → B (xu .fst))
+  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   A ≡ SGlue' Φ A B f ∘ fst
 SGlueStrictness' Φ {A} {B} f =
@@ -165,7 +165,7 @@ module Misaligned where
   GlueIsFib→SGlueIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     → ---------------
@@ -180,7 +180,7 @@ module Misaligned where
   SGlueIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     → ---------------
@@ -195,7 +195,7 @@ module Misaligned where
   reindexSGlue : ∀ {ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ''}
+    {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)

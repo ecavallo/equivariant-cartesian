@@ -13,7 +13,7 @@ open import fibrations
 module RealignId {ℓ} (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)
   (A : ⟨ S ⟩ → Set ℓ)
-  (β : isFib {Γ = res ⟨ S ⟩ Φ} (A ∘ fst))
+  (β : isFib {Γ = ⟨ S ⟩ ,[ Φ ]} (A ∘ fst))
   (α : isFib A)
   (r : ⟨ S ⟩) (ψ : CofProp) (f : [ ψ ] → Π A)
   (x₀ : A r [ ψ ↦ f ◆ r ])
@@ -45,7 +45,7 @@ abstract
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ')
-    (β : isFib {Γ = res Γ Φ} (A ∘ fst))
+    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
     isFib A
@@ -88,7 +88,7 @@ abstract
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ')
-    (β : isFib {Γ = res Γ Φ} (A ∘ fst))
+    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
     reindex A (realign Φ A β α) fst ≡ β
@@ -104,7 +104,7 @@ abstract
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ'')
-    (β : isFib {Γ = res Γ Φ} (A ∘ fst))
+    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     (ρ : Δ → Γ)
     → ---------------

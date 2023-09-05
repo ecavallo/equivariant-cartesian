@@ -23,7 +23,7 @@ abstract
   SGlueIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     → ---------------
@@ -36,7 +36,7 @@ abstract
   SGlueIsFibStrictness : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
@@ -52,7 +52,7 @@ abstract
 FibSGlue : ∀ {ℓ ℓ'}
   {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (Aα : Fib ℓ' (res Γ Φ))
+  (Aα : Fib ℓ' (Γ ,[ Φ ]))
   (Bβ : Fib ℓ' Γ)
   (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
   → Fib ℓ' Γ
@@ -61,7 +61,7 @@ FibSGlue {Γ = Γ} Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
 FibSGlueStrictness : ∀ {ℓ ℓ'}
   {Γ : Set ℓ}
   (Φ : Γ → CofProp)
-  (Aα : Fib ℓ' (res Γ Φ))
+  (Aα : Fib ℓ' (Γ ,[ Φ ]))
   (Bβ : Fib ℓ' Γ)
   (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
   → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
@@ -72,7 +72,7 @@ abstract
   reindexSGlue :
     ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    {A : res Γ Φ → Set ℓ''}
+    {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)

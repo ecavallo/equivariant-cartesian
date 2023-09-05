@@ -17,12 +17,12 @@ open import type-formers.union
 module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
+  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
   (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
-  ats : res Γ φ → res Γ φ × ⟨ S ⟩
+  ats : Γ ,[ φ ] → Γ ,[ φ ] × ⟨ S ⟩
   ats (x , u) = (x , u) , s x
 
   fst' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
@@ -125,7 +125,7 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
 module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib ℓ' (res Γ φ × ⟨ S ⟩))
+  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
   (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
   where
 
@@ -154,13 +154,13 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
     where
     open Box S r φ F X₀ match r
 
-    f₀ : Γ → res Γ (λ x → S ∋ r x ≈ r x)
+    f₀ : Γ → Γ ,[ (λ x → S ∋ r x ≈ r x) ]
     f₀ x = x , refl
 
 module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
-  (F : Fib ℓ' (res Γ φ × ⟨ T ⟩))
+  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ T ⟩))
   (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
