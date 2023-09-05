@@ -195,5 +195,5 @@ shape→⊎ {ℓ} {ℓ'} S {A} {B} h = main
 
   main : Π A ⊎ Π B
   main with shape→⊎♭ S .from h' | baseEq
-  main | inl f | eq = inl λ s → coe (cong fst (appCong eq)) (f s .snd)
-  main | inr g | eq = inr λ s → coe (cong snd (appCong eq)) (g s .snd)
+  main | inl f | eq = inl λ s → subst fst (appCong eq) (f s .snd)
+  main | inr g | eq = inr λ s → subst snd (appCong eq) (g s .snd)

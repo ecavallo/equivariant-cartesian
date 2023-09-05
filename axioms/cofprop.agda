@@ -1,6 +1,6 @@
 {-
 
-Definition of the universe of cofibrational propositions and basic
+Definition of the universe of propositional cofibrations and basic
 operations involving these.
 
 -}
@@ -16,7 +16,7 @@ open import axioms.shape
 infixr 4 _∨_
 
 ----------------------------------------------------------------------
--- Cofibrational propositions
+-- Propositional cofibrations
 ----------------------------------------------------------------------
 
 postulate
@@ -34,7 +34,7 @@ postulate
 
   {-# REWRITE [≈] [∨] [all] #-}
 
-  cofIsProp : (φ : CofProp) → (u v : [ φ ]) → u ≡ v
+  cofIsProp : (φ : CofProp) → isProp [ φ ]
 
   shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → CofProp)
     → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]

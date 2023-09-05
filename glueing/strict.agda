@@ -60,7 +60,7 @@ abstract
     (f : (u : [ φ ]) → A u → B)
     → ---------------
     Set ℓ
-  SGlue φ A B f = strictify φ A (Glue φ A B f) (includeAIso φ f)
+  SGlue φ A B f = realign φ A (Glue φ A B f) (includeAIso φ f)
 
   strictifyGlueIso : ∀ {ℓ}
     (φ : CofProp)

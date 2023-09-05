@@ -19,7 +19,7 @@ module _ {ℓ : Level} {A : Set ℓ} where
   postulate
     ∣_∣ : A → ∥ A ∥
 
-    trunc : (t u : ∥ A ∥) → t ≡ u
+    trunc : isProp ∥ A ∥
 
     ∥∥-rec : ∀ {ℓ'}
       (P : Set ℓ')

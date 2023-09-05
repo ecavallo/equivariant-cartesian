@@ -41,7 +41,7 @@ module RealignId {ℓ} (S : Shape)
 
 abstract
 
-  realign : ∀ {ℓ ℓ'}
+  realignIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ')
@@ -49,7 +49,7 @@ abstract
     (α : isFib A)
     → ---------------
     isFib A
-  realign Φ A β α .lift S r p ψ f x₀ =
+  realignIsFib Φ A β α .lift S r p ψ f x₀ =
     record
     { comp = λ s →
       ( compA .comp s .fst
@@ -59,7 +59,7 @@ abstract
     }
     where
     open RealignId S (Φ ∘ p) (A ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) r ψ f x₀
-  realign Φ A β α .vary S T σ r p ψ f x₀ s =
+  realignIsFib Φ A β α .vary S T σ r p ψ f x₀ s =
     trans
       (cong
         (λ {(φ , f , x₀) → α .lift S r (p ∘ ⟪ σ ⟫) φ f x₀ .comp s .fst})
@@ -91,7 +91,7 @@ abstract
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
-    reindex A (realign Φ A β α) fst ≡ β
+    reindex A (realignIsFib Φ A β α) fst ≡ β
   isRealigned {ℓ} {Γ} Φ A β α =
     isFibExt λ S r p ψ f x₀ s →
       let
@@ -100,7 +100,7 @@ abstract
       in
       symm (compA .comp s .snd ∣ inr (λ s → p s .snd) ∣)
 
-  reindexRealign : ∀{ℓ ℓ' ℓ''}
+  reindexRealignIsFib : ∀{ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ'')
@@ -108,6 +108,6 @@ abstract
     (α : isFib A)
     (ρ : Δ → Γ)
     → ---------------
-    reindex A (realign Φ A β α) ρ
-    ≡ realign (Φ ∘ ρ) (A ∘ ρ) (reindex (A ∘ fst) β (ρ ×id)) (reindex A α ρ)
-  reindexRealign  Φ A β α ρ = isFibExt λ S r p ψ f x₀ s → refl
+    reindex A (realignIsFib Φ A β α) ρ
+    ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex (A ∘ fst) β (ρ ×id)) (reindex A α ρ)
+  reindexRealignIsFib Φ A β α ρ = isFibExt λ S r p ψ f x₀ s → refl
