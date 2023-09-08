@@ -2,6 +2,9 @@
 
 Realign a fibration structure to agree with another on some cofibration
 
+TODO: package with Set-realignment to get a proof that fibrations (not just their structures) can be
+realigned
+
 -}
 {-# OPTIONS --rewriting #-}
 module fibration.realignment where
