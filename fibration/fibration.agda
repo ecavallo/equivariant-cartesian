@@ -115,23 +115,9 @@ abstract
             uipImp))
 
 ----------------------------------------------------------------------
--- Terminal object is fibrant
+-- Fibration structures can be transferred across isomorphisms
 ----------------------------------------------------------------------
-UnitIsFib : ∀ {ℓ} {Γ : Set ℓ} → isFib (λ(_ : Γ) → Unit)
-UnitIsFib .lift _ _ _ _ _ (unit , _) .comp _ = (unit , λ _ → refl)
-UnitIsFib .lift _ _ _ _ _ (unit , _) .cap = refl
-UnitIsFib .vary _ _ _ _ _ _ _ (unit , _) _ = refl
 
-----------------------------------------------------------------------
--- Initial object is fibrant
-----------------------------------------------------------------------
-∅IsFib : ∀ {ℓ} {Γ : Set ℓ} → isFib (λ(_ : Γ) → ∅)
-∅IsFib .lift _ _ _ _ _ (() , _)
-∅IsFib .vary _ _ _ _ _ _ _ (() , _)
-
-----------------------------------------------------------------------
--- Fibrations are closed under isomorphism
-----------------------------------------------------------------------
 _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
