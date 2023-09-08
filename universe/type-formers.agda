@@ -10,8 +10,8 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-open import type-formers.products
-open import type-formers.functions
+open import type-formers.pi
+open import type-formers.sigma
 
 open import universe.core
 

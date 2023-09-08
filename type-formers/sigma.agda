@@ -1,18 +1,14 @@
 {-
 
-Fibrancy of Σ-types.
+Fibration structure on Σ-types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module type-formers.products where
+module type-formers.sigma where
 
 open import prelude
 open import axioms
 open import fibration.fibration
-
-----------------------------------------------------------------------
--- Dependent products
-----------------------------------------------------------------------
 
 Σ' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Σ Γ A → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')

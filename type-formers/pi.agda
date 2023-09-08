@@ -1,18 +1,15 @@
 {-
 
-Fibrancy of Π-types.
+Fibration structure on Π-types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module type-formers.functions where
+module type-formers.pi where
 
 open import prelude
 open import axioms
 open import fibration.fibration
 
-----------------------------------------------------------------------
--- Dependent functions
-----------------------------------------------------------------------
 Π' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ}(A : Γ → Set ℓ')(B : (Σ x ∈ Γ , A x) → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
 Π' A B x = (a : A x) → B (x , a)
