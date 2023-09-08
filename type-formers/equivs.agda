@@ -4,11 +4,11 @@ Definitions of contractible, fibers, equivalences.
 
 -}
 {-# OPTIONS --rewriting #-}
-module equivs where
+module type-formers.equivs where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 open import type-formers.paths
 open import type-formers.products
 open import type-formers.functions

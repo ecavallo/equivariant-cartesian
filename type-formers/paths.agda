@@ -8,7 +8,7 @@ module type-formers.paths where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 record _~_ {ℓ} {A : Set ℓ}(a a' : A) : Set ℓ where
   constructor path

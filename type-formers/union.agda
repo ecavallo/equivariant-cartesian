@@ -8,7 +8,7 @@ module type-formers.union where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 _∨'_ : ∀ {ℓ} {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
 (φ ∨' ψ) x = φ x ∨ ψ x

@@ -8,7 +8,7 @@ module type-formers.products where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 ----------------------------------------------------------------------
 -- Dependent products

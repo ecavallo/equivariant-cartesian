@@ -8,11 +8,11 @@ module glueing.weak where
 
 open import prelude
 open import axioms
-open import fibrations
-open import equivs
+open import fibration.fibration
 open import type-formers.functions
 open import type-formers.paths
 open import type-formers.products
+open import type-formers.equivs
 
 ----------------------------------------------------------------------
 -- Glueing

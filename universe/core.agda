@@ -8,7 +8,7 @@ module universe.core where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 open Tiny
 

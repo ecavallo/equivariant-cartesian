@@ -4,7 +4,7 @@ Definition of composition and fibrations.
 
 -}
 {-# OPTIONS --rewriting #-}
-module fibrations where
+module fibration.fibration where
 
 open import prelude
 open import axioms

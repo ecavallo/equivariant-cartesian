@@ -8,9 +8,9 @@ module glueing.aligned where
 
 open import prelude
 open import axioms
-open import fibrations
-open import equivs
-open import realignment
+open import fibration.fibration
+open import fibration.realignment
+open import type-formers.equivs
 
 open import glueing.weak
 open import glueing.strict

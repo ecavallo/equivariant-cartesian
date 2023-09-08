@@ -8,7 +8,7 @@ module universe.type-formers where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 open import type-formers.products
 open import type-formers.functions

@@ -8,8 +8,8 @@ module glueing.strict where
 
 open import prelude
 open import axioms
-open import fibrations
-open import equivs
+open import fibration.fibration
+open import type-formers.equivs
 
 open import glueing.weak
 

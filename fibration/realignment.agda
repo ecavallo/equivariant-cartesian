@@ -4,11 +4,11 @@ Realign a fibration structure to agree with another on some cofibration
 
 -}
 {-# OPTIONS --rewriting #-}
-module realignment where
+module fibration.realignment where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 module RealignId {ℓ} (S : Shape)
   (Φ : ⟨ S ⟩ → CofProp)

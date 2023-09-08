@@ -8,7 +8,7 @@ module type-formers.functions where
 
 open import prelude
 open import axioms
-open import fibrations
+open import fibration.fibration
 
 ----------------------------------------------------------------------
 -- Dependent functions
@@ -73,7 +73,7 @@ abstract
           (symm (congdep (f u s) (compA s a .cap)))
       )
     ; cap =
-      funext λ a → 
+      funext λ a →
       trans
         (congdep (x₀ .fst) (compA r a .cap))
         (cong (subst (curry B (p r)) (compA r a .cap))

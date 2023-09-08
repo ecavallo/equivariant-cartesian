@@ -4,15 +4,15 @@ Fibration extension property
 
 -}
 {-# OPTIONS --rewriting #-}
-module fibration-extension where
+module fibration.extension where
 
 open import prelude
 open import axioms
-open import fibrations
-open import equivs
-open import glueing
+open import fibration.fibration
 open import type-formers.products
 open import type-formers.union
+open import type-formers.equivs
+open import glueing
 
 module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)

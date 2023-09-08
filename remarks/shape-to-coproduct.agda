@@ -3,6 +3,9 @@
   Derives from external tinyness of the shape S that dependent exponentation by
   S commutes with coproducts.
 
+  This argument relies on the fact that the universe of crisp types is closed under coproducts.
+  TODO elaborate
+
 -}
 {-# OPTIONS --rewriting #-}
 module remarks.shape-to-coproduct where
