@@ -87,7 +87,7 @@ OI-rec : ∀ {ℓ}
   [ int ∋ r ≈ O ∨ int ∋ r ≈ I ] → A
 OI-rec r f g =
   ∨-rec (int ∋ r ≈ O) (int ∋ r ≈ I) f g
-    (λ u v → O≠I (trans v (symm u)))
+    (λ u v → O≠I (symm u ∙ v))
 
 ∨-elim : ∀ {ℓ}
   (φ ψ : CofProp)
@@ -135,9 +135,9 @@ takeOutCof : ∀ {ℓ} {A : Set ℓ} (φ φ₀ φ₁ : CofProp)
 takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
   ∨-elim φ φ₀ _
     (λ u₀ → ∨-elimEq φ φ₁
-      (λ u₁ → trans (p u₁) (cong f₀ (trunc _ _)))
-      (λ v₁ → trans (cong f₁ (trunc _ _)) (p u₀)))
+      (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
+      (λ v₁ → p u₀ ∙ (cong f₁ (trunc _ _))))
     (λ v₀ → ∨-elimEq φ φ₁
-      (λ u₁ → trans (p u₁) (cong f₀ (trunc _ _)))
+      (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
       (λ v₁ → q v₀ v₁))
     (λ _ _ → funext λ _ → uipImp)

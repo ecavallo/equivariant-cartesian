@@ -35,16 +35,16 @@ decodeSigma : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
   → decode (sigma' a b) ≡ FibΣ (decode a) (decode b)
 decodeSigma {ℓ' = ℓ'} a b =
-  trans
-    (reindexFibΣ
-      {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
-      (reindexFib (El , υ) fst)
-      (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
-      (λ x → (a x , curry b x)))
-    (cong
-      (reindexFib ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΣIsFibUniversal))}
-      (decodeEncode (_ , ΣIsFibUniversal)))
+  cong
+    (reindexFib ◆ λ x → (a x , curry b x))
+    {x = decode (encode (_ , ΣIsFibUniversal))}
+    (decodeEncode (_ , ΣIsFibUniversal))
+  ∙
+  reindexFibΣ
+    {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
+    (reindexFib (El , υ) fst)
+    (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
+    (λ x → (a x , curry b x))
 
 ----------------------------------------------------------------------
 -- The universe is closed under Π-types
@@ -66,15 +66,15 @@ decodePi : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ}
   (a : Γ → U ℓ') (b : Σ Γ (El ∘ a) → U ℓ')
   → decode (pi' a b) ≡ FibΠ (decode a) (decode b)
 decodePi {ℓ' = ℓ'} a b =
-  trans
-    (reindexFibΠ
-      {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
-      (reindexFib (El , υ) fst)
-      (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
-      (λ x → (a x , curry b x)))
-    (cong
-      (reindexFib ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΠIsFibUniversal))}
-      (decodeEncode (_ , ΠIsFibUniversal)))
+  cong
+    (reindexFib ◆ λ x → (a x , curry b x))
+    {x = decode (encode (_ , ΠIsFibUniversal))}
+    (decodeEncode (_ , ΠIsFibUniversal))
+  ∙
+  reindexFibΠ
+    {Γ = Σ A ∈ U ℓ' , (El A → U ℓ')}
+    (reindexFib (El , υ) fst)
+    (reindexFib (El , υ) (λ {((A , B) , a) → B a}))
+    (λ x → (a x , curry b x))
 
 -- TODO other types

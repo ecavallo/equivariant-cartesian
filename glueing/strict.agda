@@ -111,11 +111,11 @@ abstract
     symm
       (appdep
         (restrictsToA φ A (Glue φ A B f) (includeAIso φ f) u)
-        (trans
-          (congdep (λ p → cod ∘ p .snd .to) (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u))
-          (symm
-            (substCongAssoc (λ D → D → B) fst
-              (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u) _)))
+        (symm
+          (substCongAssoc (λ D → D → B) fst
+            (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u) _)
+         ∙
+         congdep (λ p → cod ∘ p .snd .to) (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u))
         refl)
     where
     appdep : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : Set ℓ''}

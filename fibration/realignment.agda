@@ -63,22 +63,21 @@ abstract
     where
     open RealignId S (Φ ∘ p) (A ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) r ψ f x₀
   realignIsFib Φ A β α .vary S T σ r p ψ f x₀ s =
-    trans
-      (cong
-        (λ {(φ , f , x₀) → α .lift S r (p ∘ ⟪ σ ⟫) φ f x₀ .comp s .fst})
-        (boxEq S
-          (cong (λ φ → ψ ∨ φ) (allEquivariant σ (Φ ∘ p)))
-          (takeOutCof ψ (all T (Φ ∘ p)) (all S (Φ ∘ p ∘ ⟪ σ ⟫))
-            (λ _ → refl)
-            (λ uS uT → funext λ i →
-              trans
-                (cong
-                  (λ w → β .lift S r (λ s → p (⟪ σ ⟫ s) , w s) ψ (f ◇ ⟪ σ ⟫) x₀ .comp i .fst)
-                  (funext λ s → cofIsProp (Φ (p (⟪ σ ⟫ s))) _ _))
-                (β .vary S T σ r (λ s → p s , uS s) ψ f x₀ i)))
-          r
-          refl))
-      (α .vary S T σ r p (ψ ∨ all T (Φ ∘ p)) T.f' T.x₀' s)
+    α .vary S T σ r p (ψ ∨ all T (Φ ∘ p)) T.f' T.x₀' s
+    ∙
+    cong
+      (λ {(φ , f , x₀) → α .lift S r (p ∘ ⟪ σ ⟫) φ f x₀ .comp s .fst})
+      (boxEq S
+        (cong (λ φ → ψ ∨ φ) (allEquivariant σ (Φ ∘ p)))
+        (takeOutCof ψ (all T (Φ ∘ p)) (all S (Φ ∘ p ∘ ⟪ σ ⟫))
+          (λ _ → refl)
+          (λ uS uT → funext λ i →
+            β .vary S T σ r (λ s → p s , uS s) ψ f x₀ i
+            ∙ cong
+                (λ w → β .lift S r (λ s → p (⟪ σ ⟫ s) , w s) ψ (f ◇ ⟪ σ ⟫) x₀ .comp i .fst)
+                (funext λ s → cofIsProp (Φ (p (⟪ σ ⟫ s))) _ _)))
+        r
+        refl)
     where
     module S =
       RealignId S (Φ ∘ p ∘ ⟪ σ ⟫) (A ∘ p ∘ ⟪ σ ⟫)

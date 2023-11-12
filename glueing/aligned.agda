@@ -80,13 +80,13 @@ abstract
     → reindex (SGlue' Φ A B (equivFun fe)) (SGlueIsFib Φ fe α β) ρ
       ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
   reindexSGlue Φ {A} {B} fe α β ρ =
-    trans
-      (cong₂ (realignIsFib (Φ ∘ ρ) (SGlue' Φ A B (equivFun fe) ∘ ρ))
+    reindexRealignIsFib Φ (SGlue' Φ A B (equivFun fe))
+      (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
+      (Misaligned.SGlueIsFib Φ fe α β)
+      ρ
+    ∙
+    cong₂ (realignIsFib (Φ ∘ ρ) (SGlue' Φ A B (equivFun fe) ∘ ρ))
         (reindexSubst (ρ ×id)
           (SGlueStrictness' Φ (equivFun fe))
           (SGlueStrictness' (Φ ∘ ρ) (equivFun fe ∘ (ρ ×id))) α)
-        (Misaligned.reindexSGlue Φ fe α β ρ))
-      (reindexRealignIsFib Φ (SGlue' Φ A B (equivFun fe))
-        (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
-        (Misaligned.SGlueIsFib Φ fe α β)
-        ρ)
+        (Misaligned.reindexSGlue Φ fe α β ρ)

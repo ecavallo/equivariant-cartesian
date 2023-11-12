@@ -135,13 +135,11 @@ isomorphicIsFib A B iso β .lift S r p φ f (a₀ , ex) = rec
   rec : Comp S r _ φ f (a₀ , ex)
   rec .comp s .fst = iso (p s) .from (inB .comp s .fst)
   rec .comp s .snd u =
-    trans
-      (cong (iso (p s) .from) (inB .comp s .snd u))
-      (symm (appCong (iso (p s) .inv₁)))
+    symm (appCong (iso (p s) .inv₁))
+    ∙ cong (iso (p s) .from) (inB .comp s .snd u)
   rec .cap =
-    trans
-      (appCong (iso (p r) .inv₁))
-      (cong (iso (p r) .from) (inB .cap))
+    cong (iso (p r) .from) (inB .cap)
+    ∙ appCong (iso (p r) .inv₁)
 
 isomorphicIsFib A B iso β .vary S T σ r p φ f (a₀ , ex) s =
   cong (iso (p (⟪ σ ⟫ s)) .from)

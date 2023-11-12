@@ -92,18 +92,18 @@ abstract
 
   PathIsFib {A = A} α .vary S T σ r p φ f x₀ s =
     PathExt λ i →
-    trans
-      (cong
-        (λ {(t , m) → α .lift S r (fst ∘ p ∘ ⟪ σ ⟫) (φ ∨ ∂ i) t (T.baseA i .fst , m) .comp s .fst})
-        (Σext
-          (funext
-            (∨-elimEq φ (∂ i)
-              (λ u → refl)
-              (OI-elim i
-                (λ {refl → refl})
-                (λ {refl → refl}))))
-          (funext λ _ → uipImp)))
-      (α .vary S T σ r (fst ∘ p) (φ ∨ ∂ i) (T.tubeA i) (T.baseA i) s)
+    α .vary S T σ r (fst ∘ p) (φ ∨ ∂ i) (T.tubeA i) (T.baseA i) s
+    ∙
+    cong
+      (λ {(t , m) → α .lift S r (fst ∘ p ∘ ⟪ σ ⟫) (φ ∨ ∂ i) t (T.baseA i .fst , m) .comp s .fst})
+      (Σext
+        (funext
+          (∨-elimEq φ (∂ i)
+            (λ u → refl)
+            (OI-elim i
+              (λ {refl → refl})
+              (λ {refl → refl}))))
+        (funext λ _ → uipImp))
     where
     module T = PathIsFibId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) φ f x₀
     module S = PathIsFibId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r φ (f ◇ ⟪ σ ⟫) x₀

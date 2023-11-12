@@ -10,7 +10,7 @@ open import Agda.Primitive public
 
 infix  1 Σ
 infixr 3 _,_ _×_ _⊎_
-infixr 5 _∘_
+infixr 5 _∘_ _∙_
 
 ----------------------------------------------------------------------
 -- Identity function
@@ -40,15 +40,15 @@ open import Agda.Builtin.Equality public
 
 {-# BUILTIN REWRITE _≡_ #-}
 
-trans :
+_∙_ : -- transitivity
   {ℓ : Level}
   {A : Set ℓ}
   {x y z : A}
-  (q : y ≡ z)
   (p : x ≡ y)
+  (q : y ≡ z)
   → ---------
   x ≡ z
-trans q refl = q
+refl ∙ q = q
 
 symm :
   {ℓ : Level}
@@ -159,7 +159,7 @@ substTrans :
   (q : y ≡ z) (p : x ≡ y)
   {b : B x}
   → ------------------------------------------
-  subst B (trans q p) b ≡ subst B q (subst B p b)
+  subst B (p ∙ q) b ≡ subst B q (subst B p b)
 substTrans B refl refl = refl
 
 substNaturality : ∀ {ℓ ℓ' ℓ''}

@@ -39,16 +39,15 @@ abstract
     (ρ : Δ → Γ)
     → reindex (IsContr' A) (IsContrIsFib α) ρ ≡ IsContrIsFib (reindex A α ρ)
   reindexIsContr {A = A} α ρ =
-    trans
-      (cong (ΣIsFib (reindex A α ρ))
-        (trans
-          (cong
+    reindexΣ _ _ _ _ ρ
+    ∙
+    cong (ΣIsFib (reindex A α ρ))
+      (reindexΠ _ _ _ _ (ρ ×id)
+        ∙ cong
             (λ β →
               ΠIsFib (reindex A α (ρ ∘ fst))
                 (reindex (Path' (λ x → A (ρ x))) β (λ {((x , a₀) , a) → x , a , a₀})))
             (reindexPath _ _ ρ))
-          (reindexΠ _ _ _ _ (ρ ×id))))
-      (reindexΣ _ _ _ _ ρ)
 
 ----------------------------------------------------------------------
 -- Fiber type
@@ -75,13 +74,12 @@ abstract
     (ρ : Δ → Γ)
     → reindex (Fiber' A B) (FiberIsFib α β) (ρ ×id ×id) ≡ FiberIsFib (reindex A α ρ) (reindex B β ρ)
   reindexFiber {A = A} {B} α β ρ =
-    trans
-      (cong
+    reindexΣ _ _ _ _ (ρ ×id ×id)
+    ∙ cong
         (λ δ →
           ΣIsFib (reindex A α (ρ ∘ fst ∘ fst))
             (reindex (Path' (B ∘ ρ)) δ (λ {(((x , f) , b) , a) → (x , f a , b)})))
-        (reindexPath _ _ ρ))
-      (reindexΣ _ _ _ _ (ρ ×id ×id))
+        (reindexPath _ _ ρ)
 
 FiberExt : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} {x y : Fiber f b}
   → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
@@ -130,12 +128,10 @@ reindexIsEquiv : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ �
   (ρ : Δ → Γ)
   → reindex (IsEquiv' A B) (IsEquivIsFib α β) (ρ ×id) ≡ IsEquivIsFib (reindex A α ρ) (reindex B β ρ)
 reindexIsEquiv {A = A} {B} α β ρ =
-  trans
-    (cong (ΠIsFib (reindex B β (ρ ∘ fst)))
-      (trans
-        (cong IsContrIsFib (reindexFiber α β ρ))
-        (reindexIsContr (FiberIsFib α β) (ρ ×id ×id))))
-    (reindexΠ _ _ _ _ (ρ ×id))
+  reindexΠ _ _ _ _ (ρ ×id)
+  ∙ cong (ΠIsFib (reindex B β (ρ ∘ fst)))
+      (reindexIsContr (FiberIsFib α β) (ρ ×id ×id)
+        ∙ cong IsContrIsFib (reindexFiber α β ρ))
 
 Equiv : ∀ {ℓ} (A B : Set ℓ) → Set ℓ
 Equiv A B = Σ (A → B) IsEquiv
@@ -158,11 +154,10 @@ abstract
     (ρ : Δ → Γ)
     → reindex (Equiv' A B) (EquivIsFib α β) ρ ≡ EquivIsFib (reindex A α ρ) (reindex B β ρ)
   reindexEquiv α β ρ =
-    trans
-      (cong₂ ΣIsFib
+    reindexΣ _ _ _ _ ρ
+    ∙ cong₂ ΣIsFib
         (reindexΠ _ _ _ _ ρ)
-        (reindexIsEquiv α β ρ))
-      (reindexΣ _ _ _ _ ρ)
+        (reindexIsEquiv α β ρ)
 
 ----------------------------------------------------------------------
 -- Identity and coercion maps are equivalences
@@ -190,7 +185,7 @@ idEquiv α .snd a .snd (a' , p) = h
   h .at i .snd = path (λ j → q i .comp j .fst) refl (q i .cap)
   h .atO =
     FiberExt
-      (trans (p .atO) (symm (q O .comp O .snd ∣ inl refl ∣)))
+      (symm (q O .comp O .snd ∣ inl refl ∣) ∙ p .atO)
       (λ j → symm (q O .comp j .snd ∣ inl refl ∣))
   h .atI =
     FiberExt
@@ -237,11 +232,11 @@ varyCoerceEquiv : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
   {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
   → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex A α ⟪ σ ⟫) r s
 varyCoerceEquiv S T σ {A = A} α r s =
-  trans
-    (cong
-      (λ β → coerce S  β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
-      (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫))
-    (varyCoerce S T σ
-      (EquivIsFib (reindex A α (λ _ → ⟪ σ ⟫ r)) α)
-      r s
-      (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
+  varyCoerce S T σ
+    (EquivIsFib (reindex A α (λ _ → ⟪ σ ⟫ r)) α)
+    r s
+    (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)))
+  ∙
+  cong
+    (λ β → coerce S  β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
+    (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫)

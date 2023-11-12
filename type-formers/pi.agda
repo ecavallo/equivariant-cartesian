@@ -64,35 +64,32 @@ abstract
             (compA s a .cap)
             (compB s a (compA s a) .comp s .fst))
       , λ u → funext λ a →
-        trans
-          (cong (subst (curry B (p s)) (compA s a .cap))
-            (compB s a (compA s a) .comp s .snd u))
-          (symm (congdep (f u s) (compA s a .cap)))
+        symm (congdep (f u s) (compA s a .cap))
+        ∙ cong (subst (curry B (p s)) (compA s a .cap))
+            (compB s a (compA s a) .comp s .snd u)
       )
     ; cap =
       funext λ a →
-      trans
-        (congdep (x₀ .fst) (compA r a .cap))
-        (cong (subst (curry B (p r)) (compA r a .cap))
-          (compB r a (compA r a) .cap))
+      cong (subst (curry B (p r)) (compA r a .cap))
+        (compB r a (compA r a) .cap)
+      ∙ congdep (x₀ .fst) (compA r a .cap)
     }
     where
     open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r φ f x₀
 
   ΠIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p φ f x₀ s =
     funext λ a →
-    trans
-      (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
-        (cong (λ cA → S.q s a cA s .snd) (varyA a)) refl
-        (T.compA (⟪ σ ⟫ s) a .cap) (S.compA s a .cap)
-        (trans
-          (congdep (λ cA → S.compB s a cA .comp s .fst) (varyA a))
-          (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (varyA a) _))))
-      (cong
-        (subst (curry B (p (⟪ σ ⟫ s))) (T.compA _ a .cap))
-        (β .vary S T σ r (p ×id ∘ T.q _ a (T.compA _ a)) φ
-          (T.tubeB _ a (T.compA _ a)) (T.baseB _ a (T.compA _ a))
-          s))
+    cong
+      (subst (curry B (p (⟪ σ ⟫ s))) (T.compA _ a .cap))
+      (β .vary S T σ r (p ×id ∘ T.q _ a (T.compA _ a)) φ
+        (T.tubeB _ a (T.compA _ a)) (T.baseB _ a (T.compA _ a))
+        s)
+    ∙
+    adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
+      (cong (λ cA → S.q s a cA s .snd) (varyA a)) refl
+      (T.compA (⟪ σ ⟫ s) a .cap) (S.compA s a .cap)
+      (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (varyA a) _)
+        ∙ congdep (λ cA → S.compB s a cA .comp s .fst) (varyA a))
     where
     module T = ΠIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) φ f x₀
     module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀

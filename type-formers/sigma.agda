@@ -50,9 +50,8 @@ module ΣIsFibId {ℓ ℓ'}
         adjustSubstEq (curry B r)
           (cong fst (x₀ .snd u)) refl
           (cA .comp r .snd u) (symm (cA .cap))
-          (trans
-            (congdep snd (x₀ .snd u))
-            (symm (substCongAssoc (curry B r) fst (x₀ .snd u) _)))
+          (symm (substCongAssoc (curry B r) fst (x₀ .snd u) _)
+            ∙ congdep snd (x₀ .snd u))
       )
 
     compB = β .lift S r q φ tubeB baseB
@@ -85,15 +84,13 @@ abstract
   ΣIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p φ f x₀ s =
     Σext
       (α .vary S T σ r p φ T.tubeA T.baseA s)
-      (trans
-        (trans
-          (congdep (λ cA → S.compB cA .comp s .fst) varyA)
-          (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)))
-        (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
-          refl refl
-          (α .vary S T σ r p φ T.tubeA T.baseA s)
-          (cong (λ cA → S.q cA s .snd) varyA)
-          (β .vary S T σ r (p ×id ∘ T.q T.compA) φ (T.tubeB T.compA) (T.baseB T.compA) s)))
+      (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
+         refl refl
+         (α .vary S T σ r p φ T.tubeA T.baseA s)
+         (cong (λ cA → S.q cA s .snd) varyA)
+         (β .vary S T σ r (p ×id ∘ T.q T.compA) φ (T.tubeB T.compA) (T.baseB T.compA) s)
+       ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
+       ∙ congdep (λ cA → S.compB cA .comp s .fst) varyA)
     where
     module T = ΣIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) φ f x₀
     module S = ΣIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀
