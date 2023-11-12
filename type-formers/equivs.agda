@@ -201,18 +201,18 @@ abstract
   coerce : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r s : ⟨ S ⟩) → A r → A s
   coerce S α r s a =
-    α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .comp s .fst
+    α .lift S r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) .comp s .fst
 
   coerceCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
   coerceCap S α r a =
-    α .lift S r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) .cap
+    α .lift S r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) .cap
 
   varyCoerce : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
     {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
     → ∀ a → coerce T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) a ≡ coerce S (reindex A α ⟪ σ ⟫) r s a
   varyCoerce S T σ α r s a =
-    α .vary S T σ r id (int ∋ O ≈ I) (λ v _ → O≠I v) (a , λ v → O≠I v) s
+    α .vary S T σ r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) s
 
 
 coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}

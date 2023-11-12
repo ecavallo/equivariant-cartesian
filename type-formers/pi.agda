@@ -23,15 +23,15 @@ module ΠIsFibId {ℓ ℓ'}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    tubeA : [ int ∋ O ≈ I ] → Π A
-    tubeA O≡I _ = O≠I O≡I
+    tubeA : [ ⊥ ] → Π A
+    tubeA e _ = ∅-rec e
 
-    baseA : A s [ int ∋ O ≈ I ↦ tubeA ◆ s ]
-    baseA = (a , λ O≡I → O≠I O≡I)
+    baseA : A s [ ⊥ ↦ tubeA ◆ s ]
+    baseA = (a , λ ())
 
-    compA = α .lift S s id (int ∋ O ≈ I) tubeA baseA
+    compA = α .lift S s id ⊥ tubeA baseA
 
-    module _ (cA : Comp S s A (int ∋ O ≈ I) tubeA baseA) where
+    module _ (cA : Comp S s A ⊥ tubeA baseA) where
 
       q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
       q i = (i , cA .comp i .fst)
@@ -98,7 +98,7 @@ abstract
     module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀
 
     varyA : (a : A (p (⟪ σ ⟫ s))) → reshapeComp σ (T.compA _ a) ≡ S.compA _ a
-    varyA a = compExt (α .vary S T σ s p (int ∋ O ≈ I) (T.tubeA _ a) (T.baseA _ a))
+    varyA a = compExt (α .vary S T σ s p ⊥ (T.tubeA _ a) (T.baseA _ a))
 
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing

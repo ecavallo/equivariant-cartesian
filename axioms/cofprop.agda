@@ -26,13 +26,16 @@ postulate
   _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → CofProp
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
+  ⊥ : CofProp
+  [⊥] : [ ⊥ ] ≡ ∅
+
   _∨_ : CofProp → CofProp → CofProp
   [∨] : ∀ φ ψ → [ φ ∨ ψ ] ≡ ∥ [ φ ] ⊎ [ ψ ] ∥
 
   all : (S : Shape) → (⟨ S ⟩ → CofProp) → CofProp
   [all] : ∀ S φ → [ all S φ ] ≡ ((s : ⟨ S ⟩) → [ φ s ])
 
-  {-# REWRITE [≈] [∨] [all] #-}
+  {-# REWRITE [≈] [⊥] [∨] [all] #-}
 
   cofIsProp : (φ : CofProp) → isProp [ φ ]
 
