@@ -41,13 +41,11 @@ hasLifts : ∀ {ℓ} (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
 hasLifts S A = ∀ r box → Filler S r A box
 
 hasVaries : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
-hasVaries S T σ A =
-  record
-  { Src = hasLifts T A
-  ; Dst = hasLifts S (A ∘ ⟪ σ ⟫)
-  ; Rel = λ cT cS → ∀ r box s →
-    cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .fst ≡ cS r (reshapeBox σ box) .fill s .fst
-  }
+hasVaries S T σ A .Src = hasLifts T A
+hasVaries S T σ A .Dst = hasLifts S (A ∘ ⟪ σ ⟫)
+hasVaries S T σ A .Rel cT cS =
+  ∀ r box s →
+  cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .fst ≡ cS r (reshapeBox σ box) .fill s .fst
 
 ----------------------------------------------------------------------
 -- Definition of the universe

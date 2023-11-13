@@ -57,23 +57,26 @@ abstract
     (β : isFib B)
     → -----------
     isFib (Σ' A B)
-  ΣIsFib {Γ = Γ} {A} {B} α β .lift S r p box =
-    record
-    { fill = λ s →
-      ( (fillA .fill s .fst , fillB fillA .fill s .fst)
-      , λ u → Σext (fillA .fill s .snd u) (fillB fillA .fill s .snd u)
-      )
-    ; cap≡ =
-      Σext (fillA .cap≡)
-        (adjustSubstEq (curry B (p r))
-          refl (symm (fillA .cap≡))
-          (fillA .cap≡) refl
-          (fillB fillA .cap≡))
-    }
+  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .fst =
+    (fillA .fill s .fst , fillB fillA .fill s .fst)
     where
     open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
-  ΣIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p box s =
+  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .snd u =
+    Σext (fillA .fill s .snd u) (fillB fillA .fill s .snd u)
+    where
+    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+
+  ΣIsFib {A = A} {B} α β .lift S r p box .cap≡ =
+    Σext (fillA .cap≡)
+      (adjustSubstEq (curry B (p r))
+        refl (symm (fillA .cap≡))
+        (fillA .cap≡) refl
+        (fillB fillA .cap≡))
+    where
+    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+
+  ΣIsFib {A = A} {B} α β .vary S T σ r p box s =
     Σext
       (α .vary S T σ r p T.boxA s)
       (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))

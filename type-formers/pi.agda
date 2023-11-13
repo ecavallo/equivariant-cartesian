@@ -52,28 +52,30 @@ abstract
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  ΠIsFib {Γ = Γ} {A} {B} α β .lift S r p box =
-    record
-    { fill = λ s →
-      ( (λ a →
-          subst (curry B (p s))
-            (fillA s a .cap≡)
-            (fillB s a (fst ∘ fillA s a .fill) .fill s .fst))
-      , λ u → funext λ a →
-        symm (congdep (box .tube u s) (fillA s a .cap≡))
-        ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
-            (fillB s a (fst ∘ fillA s a .fill) .fill s .snd u)
-      )
-    ; cap≡ =
-      funext λ a →
-      cong (subst (curry B (p r)) (fillA r a .cap≡))
-        (fillB r a (fst ∘ fillA r a .fill) .cap≡)
-      ∙ congdep (box .cap .fst) (fillA r a .cap≡)
-    }
+  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .fst a =
+    subst (curry B (p s))
+      (fillA s a .cap≡)
+      (fillB s a (fst ∘ fillA s a .fill) .fill s .fst)
     where
     open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
-  ΠIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p box s =
+  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .snd u =
+    funext λ a →
+    symm (congdep (box .tube u s) (fillA s a .cap≡))
+    ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
+        (fillB s a (fst ∘ fillA s a .fill) .fill s .snd u)
+    where
+    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+
+  ΠIsFib {A = A} {B} α β .lift S r p box .cap≡ =
+    funext λ a →
+    cong (subst (curry B (p r)) (fillA r a .cap≡))
+      (fillB r a (fst ∘ fillA r a .fill) .cap≡)
+    ∙ congdep (box .cap .fst) (fillA r a .cap≡)
+    where
+    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+
+  ΠIsFib {A = A} {B} α β .vary S T σ r p box s =
     funext λ a →
     cong
       (subst (curry B (p (⟪ σ ⟫ s))) (T.fillA _ a .cap≡))
