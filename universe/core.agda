@@ -38,7 +38,7 @@ dst* : ∀ {ℓ} → Span* ℓ → Set* ℓ
 dst* (D , W) = (D .Dst , W .dst)
 
 hasLifts : ∀ {ℓ} (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
-hasLifts S A = ∀ r box → Filler S r A box
+hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
 
 hasVaries : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
 hasVaries S T σ A .Src = hasLifts T A

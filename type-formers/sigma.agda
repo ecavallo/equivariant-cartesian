@@ -30,7 +30,7 @@ module ΣIsFibId {ℓ ℓ'}
 
   fillA = α .lift S r id boxA
 
-  module _ (cA : Filler S r A boxA) where
+  module _ (cA : Filler boxA) where
 
     q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
     q s = (s , cA .fill s .fst)

@@ -180,7 +180,7 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (λ {refl → p .atI})
       (λ {refl → refl})
 
-  q : (i : ⟨ int ⟩) → Filler int I (λ _ → A) (qBox i)
+  q : (i : Int) → Filler (qBox i)
   q i = α .lift int I (λ _ → _) (qBox i)
 
   h : (a' , p) ~ (a , refl~ a)

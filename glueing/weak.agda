@@ -143,7 +143,7 @@ abstract
     open GlueIsFibId
       S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r box
 
-    rec : Filler S r _ box
+    rec : Filler box
     rec .fill s .fst .dom us = fillR s us .fst .fst
     rec .fill s .fst .cod = fillFix s .fst
     rec .fill s .fst .match us =

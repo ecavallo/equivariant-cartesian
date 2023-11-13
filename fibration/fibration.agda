@@ -65,7 +65,7 @@ abstract
 -- Solutions to individual lifting problems
 ----------------------------------------------------------------------
 
-record Filler {ℓ} (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ) (box : OpenBox S r A) : Set ℓ
+record Filler {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ} (box : OpenBox S r A) : Set ℓ
   where
   constructor makeFiller
   field
@@ -77,15 +77,15 @@ open Filler public
 reshapeFiller : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
   {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
   {box : OpenBox T (⟪ σ ⟫ r) A}
-  → Filler T (⟪ σ ⟫ r) A box
-  → Filler S r (A ∘ ⟪ σ ⟫) (reshapeBox σ box)
+  → Filler box
+  → Filler (reshapeBox σ box)
 reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
 abstract
   fillerExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box : OpenBox S r A}
-    {co co' : Filler S r A box}
+    {co co' : Filler box}
     → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
     → co ≡ co'
   fillerExt p =
@@ -95,7 +95,7 @@ abstract
 
   fillerCong : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box : OpenBox S r A}
-    {co co' : Filler S r A box}
+    {co co' : Filler box}
     → co ≡ co'
     → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
   fillerCong p s = cong fst (appCong (cong fill p))
@@ -107,7 +107,7 @@ abstract
 record isFib {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
   constructor makeFib
   field
-    lift : ∀ S r p box → Filler S r (A ∘ p) box
+    lift : ∀ S r p → (box : OpenBox S r (A ∘ p)) → Filler box
     vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p box s
       → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .fst
         ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .fst
@@ -185,7 +185,7 @@ isomorphicIsFib A B iso β .lift S r p box = filler
   where
   fillerB = β .lift S r p (mapBox (to ∘ iso ∘ p) box)
 
-  filler : Filler S r _ box
+  filler : Filler box
   filler .fill s .fst = iso (p s) .from (fillerB .fill s .fst)
   filler .fill s .snd u =
     symm (appCong (iso (p s) .inv₁))
