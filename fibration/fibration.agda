@@ -215,5 +215,14 @@ abstract
 _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
-isomorphicIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
-isomorphicIsFib A B iso β = retractIsFib A B (isoToRetract ∘ iso) β
+isomorphIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
+isomorphIsFib A B iso β = retractIsFib A B (isoToRetract ∘ iso) β
+
+reindexIsomorph : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+  {A B : Γ → Set ℓ''}
+  (retract : A ≅' B)
+  (β : isFib B)
+  (ρ : Δ → Γ)
+  → reindex A (isomorphIsFib A B retract β) ρ
+    ≡ isomorphIsFib (A ∘ ρ) (B ∘ ρ) (retract ∘ ρ) (reindex B β ρ)
+reindexIsomorph _ = reindexRetract _
