@@ -43,7 +43,7 @@ module ΠIsFibId {ℓ ℓ'}
 
       fillB = β .lift S r q boxB
 
-abstract
+opaque
   ΠIsFib :
     ∀{ℓ ℓ' ℓ''}{Γ : Set ℓ}
     {A : Γ → Set ℓ'}

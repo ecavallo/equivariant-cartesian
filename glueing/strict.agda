@@ -17,7 +17,7 @@ open import glueing.weak
 -- Strict glueing
 ----------------------------------------------------------------------
 
-abstract
+opaque
   includeA : ∀ {ℓ}
     (φ : CofProp)
     {A : [ φ ] → Set ℓ}

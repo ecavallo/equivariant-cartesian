@@ -37,7 +37,7 @@ Glue' :
   Γ → Set ℓ'
 Glue' Φ B A f x = Glue (Φ x) (λ u → B (x , u)) (A x) (λ u → f (x , u))
 
-abstract
+opaque
   GlueExt : ∀ {ℓ}
     {Φ : CofProp}
     {B : [ Φ ] → Set ℓ}
@@ -130,7 +130,7 @@ module GlueIsFibId {ℓ}
 
     fillFix = α .lift int I (λ _ → s) boxFix .fill O
 
-abstract
+opaque
   GlueIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ'}

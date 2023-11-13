@@ -23,7 +23,7 @@ IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 IsContr' : ∀ {ℓ ℓ'} {Γ : Set ℓ} → (Γ → Set ℓ') → (Γ → Set ℓ')
 IsContr' A x = IsContr (A x)
 
-abstract
+opaque
   IsContrIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A : Γ → Set ℓ'}
     → isFib A → isFib (IsContr' A)
   IsContrIsFib {A = A} α =
@@ -60,7 +60,7 @@ Fiber' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ')
   → Σ (Σ x ∈ Γ , (A x → B x)) (B ∘ fst) → Set ℓ'
 Fiber' A B = Σ' (A ∘ fst ∘ fst) (λ {(((x , f) , b) , a) → Path' B (x , f a , b)})
 
-abstract
+opaque
   FiberIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
     → isFib A → isFib B → isFib (Fiber' A B)
   FiberIsFib {A = A} {B} α β =
@@ -143,7 +143,7 @@ equivFun : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
   → Π (Equiv' A B) → Π (Π' A (B ∘ fst))
 equivFun fe x = fe x .fst
 
-abstract
+opaque
   EquivIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
     → isFib A → isFib B → isFib (Equiv' A B)
   EquivIsFib {A = A} {B} α β =
@@ -195,7 +195,7 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (symm (q I .fill O .snd ∣ inr refl ∣))
       (λ j → symm (q I .fill j .snd ∣ inr refl ∣))
 
-abstract
+opaque
   coerceBox : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r : ⟨ S ⟩) → A r → OpenBox S r A
   coerceBox S α r a .cof = ⊥

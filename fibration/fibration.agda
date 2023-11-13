@@ -39,7 +39,7 @@ mapBox f box .tube u i = f i (box .tube u i)
 mapBox f box .cap .fst = f _ (box .cap .fst)
 mapBox f box .cap .snd u = cong (f _) (box .cap .snd u)
 
-abstract
+opaque
   boxExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box box' : OpenBox S r A}
     → box .cof ≡ box' .cof
@@ -82,7 +82,7 @@ reshapeFiller : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
 reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
-abstract
+opaque
   fillerExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
@@ -162,7 +162,7 @@ reindexComp' g f = refl
 ----------------------------------------------------------------------
 -- An extensionality principle for fibration structures
 ----------------------------------------------------------------------
-abstract
+opaque
   isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
       → (s : ⟨ S ⟩) → α .lift S r p box .fill s .fst ≡ α' .lift S r p box .fill s .fst)
@@ -180,7 +180,7 @@ abstract
 Retract' : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
 Retract' {Γ = Γ} A B = (x : Γ) → Retract (A x) (B x)
 
-abstract
+opaque
   retractIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Retract' A B) → isFib B → isFib A
   retractIsFib A B retract β .lift S r p box = filler
     where

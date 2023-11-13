@@ -19,7 +19,7 @@ open import glueing.strict
 -- Realigning strict glue
 ----------------------------------------------------------------------
 
-abstract
+opaque
   SGlueIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
@@ -68,7 +68,8 @@ FibSGlueStrictness : ∀ {ℓ ℓ'}
 FibSGlueStrictness Φ (A , α) (B , β) fe =
   Σext (SGlueStrictness' Φ (equivFun fe)) (SGlueIsFibStrictness Φ fe α β)
 
-abstract
+opaque
+  unfolding SGlueIsFib
   reindexSGlue :
     ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)

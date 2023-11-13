@@ -37,7 +37,7 @@ PathExt {A = A} {a} {a'} t =
 Path' : ∀{ℓ ℓ'}{Γ : Set ℓ}(A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
 Path' A (x , (a , a')) = a ~ a'
 
-abstract
+opaque
   private
     ctxMap : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
       → Σ x ∈ Γ , A x × A x → Σ x ∈ Γ , Partial int ∂ (A ∘ fst) x

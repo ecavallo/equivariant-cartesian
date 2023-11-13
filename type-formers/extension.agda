@@ -48,7 +48,7 @@ module ExtensionIsFibId {ℓ}
 
     fillA = α .lift S r (_, z) boxA
 
-abstract
+opaque
   ExtensionIsFib :
     ∀ {ℓ ℓ'} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
     {Γ : Set ℓ}

@@ -39,8 +39,7 @@ module RealignId {ℓ} (S : Shape)
 
   fillA = α .lift S r id box' -- (ψ ∨ all S Φ) f' x₀'
 
-abstract
-
+opaque
   realignIsFib : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)

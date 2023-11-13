@@ -137,7 +137,7 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
   where
 
-  abstract
+  opaque
 
     fib : isFib A
     fib .lift S r p box =
@@ -312,7 +312,7 @@ module FibUnion {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       (Aα₁ .snd)
       eqFib
 
-  abstract
+  opaque
     fib : Fib ℓ' (Γ ,[ φ₀ ∨' φ₁ ])
     fib = (_ , F.fib)
 
