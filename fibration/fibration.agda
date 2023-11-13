@@ -1,6 +1,6 @@
 {-
 
-Definition of composition and fibrations.
+Defines fibration structures and fibrations.
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -10,45 +10,107 @@ open import prelude
 open import axioms
 
 ----------------------------------------------------------------------
--- Composition structure
+-- Open boxes
 ----------------------------------------------------------------------
 
-record Comp {ℓ} (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ)
-  (φ : CofProp) (f : [ φ ] → Π A) (x₀ : A r [ φ ↦ f ◆ r ]) : Set ℓ
+record OpenBox {ℓ} (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ) : Set ℓ
   where
+  constructor makeBox
   field
-    comp : (s : ⟨ S ⟩) → A s [ φ ↦ f ◆ s ]
-    cap : comp r .fst ≡ x₀ .fst
+    cof : CofProp
+    tube : [ cof ] → Π A
+    cap : A r [ cof ↦ tube ◆ r ]
 
-open Comp public
+open OpenBox public
 
-reshapeComp : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
-  → ∀ {r} → {A : ⟨ T ⟩ → Set ℓ} → ∀ {φ f x₀}
-  → Comp T (⟪ σ ⟫ r) A φ f x₀
-  → Comp S r (A ∘ ⟪ σ ⟫) φ (f ◇ ⟪ σ ⟫) x₀
-reshapeComp σ w .comp = w .comp ∘ ⟪ σ ⟫
-reshapeComp σ w .cap = w .cap
+reshapeBox : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
+  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
+  → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
+reshapeBox σ box .cof = box .cof
+reshapeBox σ box .tube = box .tube ◇ ⟪ σ ⟫
+reshapeBox σ box .cap = box .cap
+
+mapBox : ∀ {ℓ ℓ'} {S : Shape} {r : ⟨ S ⟩}
+  {A : ⟨ S ⟩ → Set ℓ} {B : ⟨ S ⟩ → Set ℓ'}
+  → (∀ s → A s → B s)
+  → OpenBox S r A → OpenBox S r B
+mapBox f box .cof = box .cof
+mapBox f box .tube u i = f i (box .tube u i)
+mapBox f box .cap .fst = f _ (box .cap .fst)
+mapBox f box .cap .snd u = cong (f _) (box .cap .snd u)
 
 abstract
-  compExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
-    {φ : CofProp} {f : [ φ ] → Π A} {x₀ : A r [ φ ↦ f ◆ r ]}
-    {co co' : Comp S r A φ f x₀}
-    → (∀ s → co .comp s .fst ≡ co' .comp s .fst)
-    → co ≡ co'
-  compExt p =
-    cong
-      (λ {(co , ca) → record {comp = co; cap = ca}})
-      (Σext (funext λ s → Σext (p s) (funext λ _ → uipImp)) uipImp)
+  boxExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+    {box box' : OpenBox S r A}
+    → box .cof ≡ box' .cof
+    → (∀ u v → box .tube u ≡ box' .tube v)
+    → box .cap .fst ≡ box' .cap .fst
+    → box ≡ box'
+  boxExt {box = box} refl q refl =
+    congΣ (λ t c → makeBox (box .cof) t (box .cap .fst , c))
+      (funext λ _ → q _ _)
+      (funext λ _ → uipImp)
+
+  boxExtDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
+    {b₀ b₁ : B} (b : b₀ ≡ b₁)
+    {r : ⟨ S ⟩}
+    {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
+    → box₀ .cof ≡ box₁ .cof
+    → (∀ u v → subst (λ b' → Π (A b')) b (box₀ .tube u) ≡ box₁ .tube v)
+    → subst (A ◆ r) b (box₀ .cap .fst) ≡ box₁ .cap .fst
+    → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
+  boxExtDep S refl f r x = boxExt f r x
 
 ----------------------------------------------------------------------
--- Fibrations
+-- Solutions to individual lifting problems
 ----------------------------------------------------------------------
-record isFib {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
+
+record Filler {ℓ} (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ) (box : OpenBox S r A) : Set ℓ
+  where
+  constructor makeFiller
   field
-    lift : ∀ S r p φ f x₀ → Comp S r (A ∘ p) φ f x₀
-    vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p φ f x₀ s
-      → lift T (⟪ σ ⟫ r) p φ f x₀ .comp (⟪ σ ⟫ s) .fst
-        ≡ lift S r (p ∘ ⟪ σ ⟫) φ (f ◇ ⟪ σ ⟫) x₀ .comp s .fst
+    fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube ◆ s ]
+    cap≡ : fill r .fst ≡ box .cap .fst
+
+open Filler public
+
+reshapeFiller : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
+  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
+  {box : OpenBox T (⟪ σ ⟫ r) A}
+  → Filler T (⟪ σ ⟫ r) A box
+  → Filler S r (A ∘ ⟪ σ ⟫) (reshapeBox σ box)
+reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
+reshapeFiller σ w .cap≡ = w .cap≡
+
+abstract
+  fillerExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+    {box : OpenBox S r A}
+    {co co' : Filler S r A box}
+    → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
+    → co ≡ co'
+  fillerExt p =
+    congΣ makeFiller
+      (funext λ s → Σext (p s) (funext λ _ → uipImp))
+      uipImp
+
+  fillerCong : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+    {box : OpenBox S r A}
+    {co co' : Filler S r A box}
+    → co ≡ co'
+    → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
+  fillerCong p s = cong fst (appCong (cong fill p))
+
+----------------------------------------------------------------------
+-- Equivariant fibrations
+----------------------------------------------------------------------
+
+record isFib {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
+  constructor makeFib
+  field
+    lift : ∀ S r p box → Filler S r (A ∘ p) box
+    vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p box s
+      → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .fst
+        ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .fst
 
 open isFib public
 
@@ -58,6 +120,7 @@ Fib ℓ' Γ = Σ (Γ → Set ℓ') isFib
 ----------------------------------------------------------------------
 -- Fibrations can be reindexed
 ----------------------------------------------------------------------
+
 reindex : ∀{ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (A : Γ → Set ℓ'')
   (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
 reindex A α ρ .lift S r p = α .lift S r (ρ ∘ p)
@@ -75,6 +138,7 @@ reindexSubst ρ refl refl α = refl
 ----------------------------------------------------------------------
 -- Reindexing is functorial
 ----------------------------------------------------------------------
+
 reindexAlongId : ∀{ℓ ℓ'} {Γ : Set ℓ}{A : Γ → Set ℓ'}{α : isFib A} → α ≡ reindex A α id
 reindexAlongId = refl
 
@@ -100,19 +164,14 @@ reindexComp' g f = refl
 ----------------------------------------------------------------------
 abstract
   isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
-    ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (φ : CofProp)
-    (f : [ φ ] → Π (A ∘ p)) (x₀ : A (p r) [ φ ↦ f ◆ r ])
-      → (s : ⟨ S ⟩) → α .lift S r p φ f x₀ .comp s .fst ≡ α' .lift S r p φ f x₀ .comp s .fst)
+    ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
+      → (s : ⟨ S ⟩) → α .lift S r p box .fill s .fst ≡ α' .lift S r p box .fill s .fst)
     → α ≡ α'
-  isFibExt {Γ = Γ} {A} {α} {α'} q =
-    cong
-      (λ {(l , u) → record {lift = l; vary = u}})
-      (Σext
-        (funext λ S → funext λ r → funext λ p → funext λ φ → funext λ f → funext λ x₀ →
-          compExt (q S r p φ f x₀))
-        (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p →
-          funext λ φ → funext λ f → funext λ x₀ → funext λ s →
-            uipImp))
+  isFibExt q =
+    congΣ makeFib
+      (funext λ S → funext λ r → funext λ p → funext λ box → fillerExt (q S r p box))
+      (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p → funext λ box → funext λ s →
+        uipImp)
 
 ----------------------------------------------------------------------
 -- Fibration structures can be transferred across isomorphisms
@@ -122,64 +181,18 @@ _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ �
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
 isomorphicIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
-isomorphicIsFib A B iso β .lift S r p φ f (a₀ , ex) = rec
+isomorphicIsFib A B iso β .lift S r p box = filler
   where
-  tube : [ φ ] → Π (B ∘ p)
-  tube u i = iso (p i) .to (f u i)
+  fillerB = β .lift S r p (mapBox (to ∘ iso ∘ p) box)
 
-  base : B (p r) [ φ ↦ tube ◆ r ]
-  base = (iso (p r) .to a₀ , λ u → cong (iso (p r) .to) (ex u))
-
-  inB = β .lift S r p φ tube base
-
-  rec : Comp S r _ φ f (a₀ , ex)
-  rec .comp s .fst = iso (p s) .from (inB .comp s .fst)
-  rec .comp s .snd u =
+  filler : Filler S r _ box
+  filler .fill s .fst = iso (p s) .from (fillerB .fill s .fst)
+  filler .fill s .snd u =
     symm (appCong (iso (p s) .inv₁))
-    ∙ cong (iso (p s) .from) (inB .comp s .snd u)
-  rec .cap =
-    cong (iso (p r) .from) (inB .cap)
+    ∙ cong (iso (p s) .from) (fillerB .fill s .snd u)
+  filler .cap≡ =
+    cong (iso (p r) .from) (fillerB .cap≡)
     ∙ appCong (iso (p r) .inv₁)
 
-isomorphicIsFib A B iso β .vary S T σ r p φ f (a₀ , ex) s =
-  cong (iso (p (⟪ σ ⟫ s)) .from)
-    (β .vary S T σ r p φ
-      (λ u i → iso (p i) .to (f u i))
-      ((iso (p (⟪ σ ⟫ r)) .to a₀ , λ u → cong (iso (p (⟪ σ ⟫ r)) .to) (ex u)))
-      s)
-
-----------------------------------------------------------------------
--- Lemmas for proving equality of compositions
-----------------------------------------------------------------------
-
-boxEq : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
-  {φ₀ φ₁ : CofProp} (φ : φ₀ ≡ φ₁)
-  {f₀ : [ φ₀ ] → Π A} {f₁ : [ φ₁ ] → Π A}
-  (f : ∀ u v → f₀ u ≡ f₁ v)
-  (r : ⟨ S ⟩)
-  {x₀ : A r [ φ₀ ↦ f₀ ◆ r ]} {x₁ : A r [ φ₁ ↦ f₁ ◆ r ]}
-  (x : x₀ .fst ≡ x₁ .fst)
-  → _≡_ {A = Σ φ ∈ CofProp , Σ f ∈ ([ φ ] → Π A) , A r [ φ ↦ f ◆ r ]}
-    (φ₀ , f₀ , x₀) (φ₁ , f₁ , x₁)
-boxEq S {A} {φ₀} refl f r x =
-  Σext refl
-    (cong
-      {A = Σ p ∈ (([ φ₀ ] → Π A) × A r) , ∀ u → p .fst u r ≡ p .snd}
-      (λ {((f' , a') , eq) → (f' , (a' , eq))})
-      (Σext
-        (×ext
-          (funext λ u → f u u)
-          x)
-        (funext λ _ → uipImp)))
-
-boxEqDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
-  {b₀ b₁ : B} (b : b₀ ≡ b₁)
-  {φ₀ φ₁ : CofProp} (φ : φ₀ ≡ φ₁)
-  {f₀ : [ φ₀ ] → Π (A b₀)} {f₁ : [ φ₁ ] → Π (A b₁)}
-  (f : ∀ u v → subst (λ b' → Π (A b')) b (f₀ u) ≡ f₁ v)
-  (r : ⟨ S ⟩)
-  {x₀ : A b₀ r [ φ₀ ↦ f₀ ◆ r ]} {x₁ : A b₁ r [ φ₁ ↦ f₁ ◆ r ]}
-  (x : subst (A ◆ r) b (x₀ .fst) ≡ x₁ .fst)
-  → subst (λ b → Σ φ ∈ CofProp , Σ f ∈ ([ φ ] → Π (A b)) , A b r [ φ ↦ f ◆ r ]) b (φ₀ , f₀ , x₀)
-    ≡ (φ₁ , f₁ , x₁)
-boxEqDep S refl φ f r x = boxEq S φ f r x
+isomorphicIsFib A B iso β .vary S T σ r p box s =
+  cong (iso _ .from) (β .vary S T σ r p (mapBox (to ∘ iso ∘ p) box) s)

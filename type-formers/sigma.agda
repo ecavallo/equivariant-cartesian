@@ -22,39 +22,31 @@ _×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set
 module ΣIsFibId {ℓ ℓ'}
   (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  (r : ⟨ S ⟩) (φ : CofProp) (f : [ φ ] → (s : ⟨ S ⟩) → Σ (A s) (curry B s))
-  (x₀ : Σ (A r) (curry B r) [ φ ↦ f ◆ r ])
+  (r : ⟨ S ⟩) (box : OpenBox S r (Σ' A B))
   where
 
-  tubeA : [ φ ] → Π A
-  tubeA u i = f u i .fst
+  boxA : OpenBox S r A
+  boxA = mapBox (λ _ → fst) box
 
-  baseA : A r [ φ ↦ tubeA ◆ r ]
-  baseA = (x₀ .fst .fst , λ u → cong fst (x₀ .snd u))
+  fillA = α .lift S r id boxA
 
-  compA = α .lift S r id φ tubeA baseA
-
-  module _ (cA : Comp S r A φ tubeA baseA) where
+  module _ (cA : Filler S r A boxA) where
 
     q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
-    q s = (s , cA .comp s .fst)
+    q s = (s , cA .fill s .fst)
 
-    tubeB : [ φ ] → Π (B ∘ q)
-    tubeB u i =
-      subst (curry B i) (cA .comp i .snd u) (f u i .snd)
+    boxB : OpenBox S r (B ∘ q)
+    boxB .cof = box .cof
+    boxB .tube u i = subst (curry B i) (cA .fill i .snd u) (box .tube u i .snd)
+    boxB .cap .fst = subst (curry B r) (symm (cA .cap≡)) (box .cap .fst .snd)
+    boxB .cap .snd u =
+      adjustSubstEq (curry B r)
+        (cong fst (box .cap .snd u)) refl
+        (cA .fill r .snd u) (symm (cA .cap≡))
+        (symm (substCongAssoc (curry B r) fst (box .cap .snd u) _)
+          ∙ congdep snd (box .cap .snd u))
 
-    baseB : B (q r) [ φ ↦ tubeB ◆ r ]
-    baseB =
-      ( subst (curry B r) (symm (cA .cap)) (x₀ .fst .snd)
-      , λ u →
-        adjustSubstEq (curry B r)
-          (cong fst (x₀ .snd u)) refl
-          (cA .comp r .snd u) (symm (cA .cap))
-          (symm (substCongAssoc (curry B r) fst (x₀ .snd u) _)
-            ∙ congdep snd (x₀ .snd u))
-      )
-
-    compB = β .lift S r q φ tubeB baseB
+    fillB = β .lift S r q boxB
 
 abstract
   ΣIsFib : ∀ {ℓ ℓ' ℓ''}
@@ -65,38 +57,38 @@ abstract
     (β : isFib B)
     → -----------
     isFib (Σ' A B)
-  ΣIsFib {Γ = Γ} {A} {B} α β .lift S r p φ f x₀ =
+  ΣIsFib {Γ = Γ} {A} {B} α β .lift S r p box =
     record
-    { comp = λ s →
-      ( (compA .comp s .fst , compB compA .comp s .fst)
-      , λ u → Σext (compA .comp s .snd u) (compB compA .comp s .snd u)
+    { fill = λ s →
+      ( (fillA .fill s .fst , fillB fillA .fill s .fst)
+      , λ u → Σext (fillA .fill s .snd u) (fillB fillA .fill s .snd u)
       )
-    ; cap =
-      Σext (compA .cap)
+    ; cap≡ =
+      Σext (fillA .cap≡)
         (adjustSubstEq (curry B (p r))
-          refl (symm (compA .cap))
-          (compA .cap) refl
-          (compB compA .cap))
+          refl (symm (fillA .cap≡))
+          (fillA .cap≡) refl
+          (fillB fillA .cap≡))
     }
     where
-    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r φ f x₀
+    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
-  ΣIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p φ f x₀ s =
+  ΣIsFib {Γ = Γ} {A} {B} α β .vary S T σ r p box s =
     Σext
-      (α .vary S T σ r p φ T.tubeA T.baseA s)
+      (α .vary S T σ r p T.boxA s)
       (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
          refl refl
-         (α .vary S T σ r p φ T.tubeA T.baseA s)
+         (α .vary S T σ r p T.boxA s)
          (cong (λ cA → S.q cA s .snd) varyA)
-         (β .vary S T σ r (p ×id ∘ T.q T.compA) φ (T.tubeB T.compA) (T.baseB T.compA) s)
+         (β .vary S T σ r (p ×id ∘ T.q T.fillA) (T.boxB T.fillA) s)
        ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
-       ∙ congdep (λ cA → S.compB cA .comp s .fst) varyA)
+       ∙ congdep (λ cA → S.fillB cA .fill s .fst) varyA)
     where
-    module T = ΣIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) φ f x₀
-    module S = ΣIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r φ (f ◇ ⟪ σ ⟫) x₀
+    module T = ΣIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
+    module S = ΣIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
 
-    varyA : reshapeComp σ T.compA ≡ S.compA
-    varyA = compExt (α .vary S T σ r p φ T.tubeA T.baseA)
+    varyA : reshapeFiller σ T.fillA ≡ S.fillA
+    varyA = fillerExt (α .vary S T σ r p T.boxA)
 
   ----------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing
@@ -110,7 +102,7 @@ abstract
     (ρ : Δ → Γ)
     → ----------------------
     reindex (Σ' A B) (ΣIsFib α β) ρ ≡ ΣIsFib (reindex A α ρ) (reindex B β (ρ ×id))
-  reindexΣ A B α β ρ = isFibExt λ _ _ _ _ _ _ _ → refl
+  reindexΣ A B α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΣ : ∀ {ℓ ℓ' ℓ''}
   {Γ : Set ℓ}

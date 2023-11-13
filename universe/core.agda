@@ -38,15 +38,15 @@ dst* : ∀ {ℓ} → Span* ℓ → Set* ℓ
 dst* (D , W) = (D .Dst , W .dst)
 
 hasLifts : ∀ {ℓ} (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
-hasLifts S A = ∀ r φ f x₀ → Comp S r A φ f x₀
+hasLifts S A = ∀ r box → Filler S r A box
 
 hasVaries : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
 hasVaries S T σ A =
   record
   { Src = hasLifts T A
   ; Dst = hasLifts S (A ∘ ⟪ σ ⟫)
-  ; Rel = λ cT cS → ∀ r φ f x₀ s →
-    cT (⟪ σ ⟫ r) φ f x₀ .comp (⟪ σ ⟫ s) .fst ≡ cS r φ (f ◇ ⟪ σ ⟫) x₀ .comp s .fst
+  ; Rel = λ cT cS → ∀ r box s →
+    cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .fst ≡ cS r (reshapeBox σ box) .fill s .fst
   }
 
 ----------------------------------------------------------------------
@@ -164,9 +164,7 @@ Lvaries {ℓ} S T σ C =
       (appCong (fstLvaries S T σ))
       (srcLvaries S T σ C)
       (dstLvaries S T σ C)
-      (λ _ _ →
-        funext λ r → funext λ φ → funext λ f →
-        funext λ x₀ → funext λ s → uipImp))
+      (λ _ _ → funext λ r → funext λ box → funext λ s → uipImp))
   where
   witnessExtLemma : {D D' : Span ℓ} (p : D ≡ D')
     {w : Witness D} {w' : Witness D'}
@@ -245,10 +243,10 @@ decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
 decodeEncode {ℓ' = ℓ'} {Γ} Aα =
   Σext refl
     (isFibExt
-      (ShapeIsDiscrete λ (@♭ S) r p φ f x₀ s →
+      (ShapeIsDiscrete λ (@♭ S) r p box s →
         cong
           {A = Σ C ∈ Set* ℓ' , C .fst ≡ hasLifts S (A ∘ p)}
-          (λ {(C , eq) → coe eq (C .snd) r φ f x₀ .comp s .fst})
+          (λ {(C , eq) → coe eq (C .snd) r box .fill s .fst})
           {x = _ , appCong (fstLlifts S)}
           {y = _ , refl}
           (Σext (lemma S p) uipImp)))
@@ -292,8 +290,7 @@ encodeEl {ℓ} C =
                   ( hasVaries S T σ (El ∘ C)
                   , record {src = getLifts T C; dst = getLifts S (C ∘ ⟪ σ ⟫); rel = w}
                   ))
-                (funext λ r → funext λ φ → funext λ f → funext λ x₀ → funext λ s →
-                  uipImp)))))
+                (funext λ r → funext λ box → funext λ s → uipImp)))))
 
 encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
 encodeDecode {ℓ' = ℓ'} {Γ} C = funext λ x →

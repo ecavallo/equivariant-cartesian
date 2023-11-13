@@ -2,6 +2,8 @@
 
 Fibrancy of Path types.
 
+TODO factor through extension types
+
 -}
 {-# OPTIONS --rewriting #-}
 module type-formers.paths where
@@ -39,33 +41,31 @@ Path' A (x , (a , a')) = a ~ a'
 module PathIsFibId {ℓ}
   (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {a₀ : Π A} {a₁ : Π A}
   (α : isFib A)
-  (r : ⟨ S ⟩) (φ : CofProp) (f : [ φ ] → (s : ⟨ S ⟩) → a₀ s ~ a₁ s)
-  (x₀ : (a₀ r ~ a₁ r) [ φ ↦ f ◆ r ])
+  (r : ⟨ S ⟩) (box : OpenBox S r (λ s → a₀ s ~ a₁ s))
   where
 
   module _ (i : Int) where
 
-    tubeA : [ φ ∨ ∂ i ] → (s : ⟨ S ⟩) → A s
-    tubeA =
-      ∨-rec φ (∂ i)
-        (λ u s → f u s .at i)
+    boxA : OpenBox S r A
+    boxA .cof = box .cof ∨ ∂ i
+    boxA .tube =
+      ∨-rec (box .cof) (∂ i)
+        (λ u s → box .tube u s .at i)
         (OI-rec i
           (λ {refl → a₀})
           (λ {refl → a₁}))
         (λ u → OI-elim i
-          (λ {refl → funext λ s → f u s .atO})
-          (λ {refl → funext λ s → f u s .atI}))
-
-    baseA : A r [ φ ∨ ∂ i ↦ tubeA ◆ r ]
-    baseA .fst = x₀ .fst .at i
-    baseA .snd =
-      ∨-elimEq φ (∂ i)
-        (λ u → cong (λ q → q .at i) (x₀ .snd u))
+          (λ {refl → funext λ s → box .tube u s .atO})
+          (λ {refl → funext λ s → box .tube u s .atI}))
+    boxA .cap .fst = box .cap .fst .at i
+    boxA .cap .snd =
+      ∨-elimEq (box .cof) (∂ i)
+        (λ u → cong (λ q → q .at i) (box .cap .snd u))
         (OI-elim i
-          (λ {refl → symm (x₀ .fst .atO)})
-          (λ {refl → symm (x₀ .fst .atI)}))
+          (λ {refl → symm (box .cap .fst .atO)})
+          (λ {refl → symm (box .cap .fst .atI)}))
 
-    compA = α .lift S r id (φ ∨ ∂ i) tubeA baseA
+    fillA = α .lift S r id boxA
 
 abstract
   PathIsFib :
@@ -74,39 +74,39 @@ abstract
     (α : isFib A)
     → -----------
     isFib (Path' A)
-  PathIsFib {A = A} α .lift S r p φ f x₀ .comp s .fst =
+  PathIsFib {A = A} α .lift S r p box .fill s .fst =
     path
-      (λ i → compA i .comp s .fst)
-      (symm (compA O .comp s .snd ∣ inr ∣ inl refl ∣ ∣))
-      (symm (compA I .comp s .snd ∣ inr ∣ inr refl ∣ ∣))
+      (λ i → fillA i .fill s .fst)
+      (symm (fillA O .fill s .snd ∣ inr ∣ inl refl ∣ ∣))
+      (symm (fillA I .fill s .snd ∣ inr ∣ inr refl ∣ ∣))
     where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
-  PathIsFib {A = A} α .lift S r p φ f x₀ .comp s .snd u =
-    PathExt λ i → compA i .comp s .snd ∣ inl u ∣
+    open PathIsFibId S (reindex A α (fst ∘ p)) r box
+  PathIsFib {A = A} α .lift S r p box .fill s .snd u =
+    PathExt λ i → fillA i .fill s .snd ∣ inl u ∣
     where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
-  PathIsFib {A = A} α .lift S r p φ f x₀ .cap =
-    PathExt λ i → compA i .cap
+    open PathIsFibId S (reindex A α (fst ∘ p)) r box
+  PathIsFib {A = A} α .lift S r p box .cap≡ =
+    PathExt λ i → fillA i .cap≡
     where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r φ f x₀
+    open PathIsFibId S (reindex A α (fst ∘ p)) r box
 
-  PathIsFib {A = A} α .vary S T σ r p φ f x₀ s =
+  PathIsFib {A = A} α .vary S T σ r p box s =
     PathExt λ i →
-    α .vary S T σ r (fst ∘ p) (φ ∨ ∂ i) (T.tubeA i) (T.baseA i) s
+    α .vary S T σ r (fst ∘ p) (T.boxA i) s
     ∙
-    cong
-      (λ {(t , m) → α .lift S r (fst ∘ p ∘ ⟪ σ ⟫) (φ ∨ ∂ i) t (T.baseA i .fst , m) .comp s .fst})
-      (Σext
-        (funext
-          (∨-elimEq φ (∂ i)
-            (λ u → refl)
+    cong (λ b → α .lift S r (fst ∘ p ∘ ⟪ σ ⟫) b .fill s .fst)
+      (boxExt
+        refl
+        (diagonalElim (box .cof ∨ ∂ i)
+          (∨-elimEq (box .cof) (∂ i)
+            (λ _ → refl)
             (OI-elim i
               (λ {refl → refl})
               (λ {refl → refl}))))
-        (funext λ _ → uipImp))
+        refl)
     where
-    module T = PathIsFibId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) φ f x₀
-    module S = PathIsFibId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r φ (f ◇ ⟪ σ ⟫) x₀
+    module T = PathIsFibId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) box
+    module S = PathIsFibId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r (reshapeBox σ box)
 
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
@@ -118,4 +118,4 @@ abstract
     (ρ : Δ → Γ)
     → ----------------------
     reindex (Path' A) (PathIsFib α) (ρ ×id) ≡ PathIsFib (reindex A α ρ)
-  reindexPath A α ρ = isFibExt λ _ _ _ _ _ _ _ → refl
+  reindexPath A α ρ = isFibExt λ _ _ _ _ _ → refl

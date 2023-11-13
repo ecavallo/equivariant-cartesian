@@ -166,48 +166,59 @@ abstract
 idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
 idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
-idEquiv α .snd a .snd (a' , p) = h
+idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
-  q : (i : Int) → _
-  q i =
-    α .lift int I (λ _ → tt) (∂ i)
-      (OI-rec i
-        (λ {refl → p .at})
-        (λ {refl _ → a}))
-      ( a
-      , OI-elim i
-        (λ {refl → p .atI})
-        (λ {refl → refl})
-      )
+  qBox : (i : Int) → OpenBox int I (λ _ → A)
+  qBox i .cof = ∂ i
+  qBox i .tube =
+    OI-rec i
+      (λ {refl → p .at})
+      (λ {refl _ → a})
+  qBox i .cap .fst = a
+  qBox i .cap .snd =
+    OI-elim i
+      (λ {refl → p .atI})
+      (λ {refl → refl})
+
+  q : (i : ⟨ int ⟩) → Filler int I (λ _ → A) (qBox i)
+  q i = α .lift int I (λ _ → _) (qBox i)
 
   h : (a' , p) ~ (a , refl~ a)
-  h .at i .fst = q i .comp O  .fst
-  h .at i .snd = path (λ j → q i .comp j .fst) refl (q i .cap)
+  h .at i .fst = q i .fill O  .fst
+  h .at i .snd = path (λ j → q i .fill j .fst) refl (q i .cap≡)
   h .atO =
     FiberExt
-      (symm (q O .comp O .snd ∣ inl refl ∣) ∙ p .atO)
-      (λ j → symm (q O .comp j .snd ∣ inl refl ∣))
+      (symm (q O .fill O .snd ∣ inl refl ∣) ∙ p .atO)
+      (λ j → symm (q O .fill j .snd ∣ inl refl ∣))
   h .atI =
     FiberExt
-      (symm (q I .comp O .snd ∣ inr refl ∣))
-      (λ j → symm (q I .comp j .snd ∣ inr refl ∣))
+      (symm (q I .fill O .snd ∣ inr refl ∣))
+      (λ j → symm (q I .fill j .snd ∣ inr refl ∣))
 
 abstract
+  coerceBox : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
+    → (r : ⟨ S ⟩) → A r → OpenBox S r A
+  coerceBox S α r a .cof = ⊥
+  coerceBox S α r a .tube v _ = ∅-rec v
+  coerceBox S α r a .cap .fst = a
+  coerceBox S α r a .cap .snd ()
+
   coerce : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r s : ⟨ S ⟩) → A r → A s
   coerce S α r s a =
-    α .lift S r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) .comp s .fst
+    α .lift S r id (coerceBox S α r a) .fill s .fst
 
   coerceCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
     → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
   coerceCap S α r a =
-    α .lift S r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) .cap
+    α .lift S r id (coerceBox S α r a) .cap≡
 
   varyCoerce : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
     {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
     → ∀ a → coerce T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) a ≡ coerce S (reindex A α ⟪ σ ⟫) r s a
   varyCoerce S T σ α r s a =
-    α .vary S T σ r id ⊥ (λ v _ → ∅-rec v) (a , λ v → ∅-rec v) s
+    α .vary S T σ r id _ s
+    ∙ cong (λ box → α .lift S r ⟪ σ ⟫ box .fill s .fst) (boxExt refl (λ ()) refl)
 
 
 coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}

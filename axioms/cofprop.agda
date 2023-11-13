@@ -107,6 +107,17 @@ OI-rec r f g =
       (λ v → ∣ inr v ∣ , g v)
       (λ u v → Σext (trunc _ _) (p u v))
 
+∨-elimProp : ∀ {ℓ}
+  (φ ψ : CofProp)
+  (P : [ φ ∨ ψ ] → Set ℓ)
+  (propP : ∀ uv → isProp (P uv))
+  (f : (u : [ φ ]) → P ∣ inl u ∣)
+  (g : (v : [ ψ ]) → P ∣ inr v ∣)
+  → ---------------------------
+  (w : [ φ ∨ ψ ]) → P w
+∨-elimProp φ ψ P propP f g =
+  ∨-elim φ ψ _ f g (λ _ _ → propP _ _ _)
+
 OI-elim : ∀ {ℓ}
   (r : Int)
   {A : [ int ∋ r ≈ O ∨ int ∋ r ≈ I ] → Set ℓ}
@@ -124,8 +135,8 @@ OI-elim r f g =
   → ((v : [ ψ ]) → f ∣ inr v ∣ ≡ g ∣ inr v ∣)
   → ---------------------------
   (w : [ φ ∨ ψ ]) → f w ≡ g w
-∨-elimEq φ ψ p q =
-  ∨-elim φ ψ _ p q (λ _ _ → uipImp)
+∨-elimEq φ ψ =
+  ∨-elimProp φ ψ _ (λ _ → uip)
 
 takeOutCof : ∀ {ℓ} {A : Set ℓ} (φ φ₀ φ₁ : CofProp)
   {f₀ : [ φ ∨ φ₀ ] → A} {f₁ : [ φ ∨ φ₁ ] → A}
@@ -141,3 +152,8 @@ takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
       (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
       (λ v₁ → q v₀ v₁))
     (λ _ _ → funext λ _ → uipImp)
+
+diagonalElim : ∀ {ℓ} (φ : CofProp) {P : [ φ ] → [ φ ] → Set ℓ}
+  → (∀ u → P u u)
+  → (∀ u v → P u v)
+diagonalElim φ {P = P} f u v = subst (P u) (cofIsProp φ u v) (f u)

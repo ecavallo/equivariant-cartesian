@@ -60,80 +60,75 @@ module GlueIsFibId {ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
-  (r : ⟨ S ⟩) (ψ : CofProp) (g : [ ψ ] → (s : ⟨ S ⟩) → Glue' Φ B A (equivFun fe) s)
-  (x₀ : Glue' Φ B A (equivFun fe) r [ ψ ↦ g ◆ r ])
+  (r : ⟨ S ⟩) (box : OpenBox S r (Glue' Φ B A (equivFun fe)))
   where
 
   f = λ su → fe su .fst
   e = λ su → fe su .snd
 
-  tubeA : [ ψ ] → (s : ⟨ S ⟩) → A s
-  tubeA v s = g v s .cod
+  boxA : OpenBox S r A
+  boxA = mapBox (λ _ → cod) box
 
-  baseA : A r [ ψ ↦ tubeA ◆ r ]
-  baseA = (x₀ .fst .cod , λ u → cong cod (x₀ .snd u))
-
-  compA = α .lift S r id ψ tubeA baseA
+  fillA = α .lift S r id boxA
 
   module _ (s : ⟨ S ⟩) where
 
     module _ (us : [ Φ s ]) where
 
-      C₁ = e (s , us) (compA .comp s .fst) .fst
-      C₂ = e (s , us) (compA .comp s .fst) .snd
+      C₁ = e (s , us) (fillA .fill s .fst) .fst
+      C₂ = e (s , us) (fillA .fill s .fst) .snd
 
-      fiberR : [ ψ ∨ S ∋ r ≈ s ] → Fiber (f (s , us)) (compA .comp s .fst)
+      fiberR : [ box .cof ∨ S ∋ r ≈ s ] → Fiber (f (s , us)) (fillA .fill s .fst)
       fiberR =
-        ∨-rec ψ (S ∋ r ≈ s)
+        ∨-rec (box .cof) (S ∋ r ≈ s)
           (λ v →
             eqToFiber
-              (g v s .dom us)
-              (g v s .match us ∙ compA .comp s .snd v))
+              (box .tube v s .dom us)
+              (box .tube v s .match us ∙ fillA .fill s .snd v))
           (λ {refl →
             eqToFiber
-              (x₀ .fst .dom us)
-              (x₀ .fst .match us ∙ symm (compA .cap))})
+              (box .cap .fst .dom us)
+              (box .cap .fst .match us ∙ symm (fillA .cap≡))})
           (λ {v refl →
             cong (uncurry eqToFiber)
-              (Σext (cong (λ g → g .dom us) (x₀ .snd v)) uipImp)})
+              (Σext (cong (λ g → g .dom us) (box .cap .snd v)) uipImp)})
 
-      tubeR : [ ψ ∨ S ∋ r ≈ s ] → Int → Fiber (f (s , us)) (compA .comp s .fst)
-      tubeR v≡ k = C₂ (fiberR v≡) .at k
+      boxR : OpenBox int I (λ _ → Fiber (f (s , us)) (fillA .fill s .fst))
+      boxR .cof = box .cof ∨ S ∋ r ≈ s
+      boxR .tube v≡ k = C₂ (fiberR v≡) .at k
+      boxR .cap .fst = C₁
+      boxR .cap .snd v≡ = C₂ (fiberR v≡) .atI
 
-      baseR : Fiber (f (s , us)) (compA .comp s .fst) [ ψ ∨ S ∋ r ≈ s ↦ tubeR ◆ I ]
-      baseR = ( C₁ , λ uv → C₂ (fiberR uv) .atI)
-
-      compR =
+      fillR =
         FiberIsFib β (reindex A α fst) .lift
-          int I (λ _ → (((s , us) , f (s , us)) , compA .comp s .fst)) (ψ ∨ S ∋ r ≈ s) tubeR baseR .comp O
+          int I (λ _ → (((s , us) , f (s , us)) , fillA .fill s .fst)) boxR .fill O
 
-    tubeFix : [ ψ ∨ Φ s ∨ S ∋ r ≈ s ] → Int → A s
-    tubeFix =
-      ∨-rec ψ (Φ s ∨ S ∋ r ≈ s)
-        (λ v _ → tubeA v s)
+    boxFix : OpenBox int I (λ _ → A s)
+    boxFix .cof = box .cof ∨ Φ s ∨ S ∋ r ≈ s
+    boxFix .tube =
+      ∨-rec (box .cof) (Φ s ∨ S ∋ r ≈ s)
+        (λ v _ → boxA .tube v s)
         (∨-rec (Φ s) (S ∋ r ≈ s)
-          (λ us i → compR us .fst .snd .at i)
-          (λ {refl _ → baseA .fst})
+          (λ us i → fillR us .fst .snd .at i)
+          (λ {refl _ → boxA .cap .fst})
           (λ {us refl → funext λ i →
-            fiberPathEq (symm (compR us .snd ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .atO) i
-            ∙ x₀ .fst .match us}))
+            fiberPathEq (symm (fillR us .snd ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .atO) i
+            ∙ box .cap .fst .match us}))
         (λ v →
           ∨-elimEq (Φ s) (S ∋ r ≈ s)
             (λ us → funext λ i →
-              symm (g v s .match us)
-              ∙ fiberPathEq (symm (C₂ us (fiberR us ∣ inl v ∣) .atO) ∙ compR us .snd ∣ inl v ∣) i)
-            (λ {refl → funext λ _ → baseA .snd v}))
-
-    baseFix : A s [ ψ ∨ Φ s ∨ S ∋ r ≈ s ↦ tubeFix ◆ I ]
-    baseFix .fst = compA .comp s .fst
-    baseFix .snd =
-      ∨-elimEq ψ (Φ s ∨ S ∋ r ≈ s)
-        (λ v → compA .comp s .snd v)
+              symm (box .tube v s .match us)
+              ∙ fiberPathEq (symm (C₂ us (fiberR us ∣ inl v ∣) .atO) ∙ fillR us .snd ∣ inl v ∣) i)
+            (λ {refl → funext λ _ → boxA .cap .snd v}))
+    boxFix .cap .fst = fillA .fill s .fst
+    boxFix .cap .snd =
+      ∨-elimEq (box .cof) (Φ s ∨ S ∋ r ≈ s)
+        (λ v → fillA .fill s .snd v)
         (∨-elimEq (Φ s) (S ∋ r ≈ s)
-          (λ us → compR us .fst .snd .atI)
-          (λ {refl → symm (compA .cap)}))
+          (λ us → fillR us .fst .snd .atI)
+          (λ {refl → symm (fillA .cap≡)}))
 
-    compFix = α .lift int I (λ _ → s) (ψ ∨ Φ s ∨ S ∋ r ≈ s) tubeFix baseFix .comp O
+    fillFix = α .lift int I (λ _ → s) boxFix .fill O
 
 abstract
   GlueIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ}
@@ -143,39 +138,39 @@ abstract
     (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
-  GlueIsFib Φ {B} {A} fe β α .lift S r p ψ g x₀ = rec
+  GlueIsFib Φ {B} {A} fe β α .lift S r p box = rec
     where
     open GlueIsFibId
-      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r ψ g x₀
+      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r box
 
-    rec : Comp S r _ ψ g x₀
-    rec .comp s .fst .dom us = compR s us .fst .fst
-    rec .comp s .fst .cod = compFix s .fst
-    rec .comp s .fst .match us =
-      symm (compR s us .fst .snd .atO)
-      ∙ compFix s .snd ∣ inr ∣ inl us ∣ ∣
-    rec .comp s .snd v =
+    rec : Filler S r _ box
+    rec .fill s .fst .dom us = fillR s us .fst .fst
+    rec .fill s .fst .cod = fillFix s .fst
+    rec .fill s .fst .match us =
+      symm (fillR s us .fst .snd .atO)
+      ∙ fillFix s .snd ∣ inr ∣ inl us ∣ ∣
+    rec .fill s .snd v =
       GlueExt
         (λ us →
           cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .atO))
-          ∙ cong fst (compR s us .snd ∣ inl v ∣))
-        (compFix s .snd ∣ inl v ∣)
-    rec .cap =
+          ∙ cong fst (fillR s us .snd ∣ inl v ∣))
+        (fillFix s .snd ∣ inl v ∣)
+    rec .cap≡ =
       GlueExt
         (λ ur →
-          cong fst (symm (compR r ur .snd ∣ inr refl ∣))
+          cong fst (symm (fillR r ur .snd ∣ inr refl ∣))
           ∙ cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .atO))
-        (symm (compFix r .snd ∣ inr ∣ inr refl ∣ ∣))
+        (symm (fillFix r .snd ∣ inr ∣ inr refl ∣ ∣))
 
-  GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p ψ g x₀ s =
+  GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p box s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
     module T = GlueIsFibId
       T (Φ ∘ p) (fe ∘ p ×id)
-      (reindex B β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) ψ g x₀
+      (reindex B β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) box
     module S = GlueIsFibId
       S (Φ ∘ p ∘ ⟪ σ ⟫) (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
-      (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r ψ (g ◇ ⟪ σ ⟫) x₀
+      (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r (reshapeBox σ box)
 
     f : (γu : Γ ,[ Φ ]) → B γu → A (γu .fst)
     f = fst ∘ fe
@@ -183,8 +178,8 @@ abstract
     e : (γu : Γ ,[ Φ ]) → IsEquiv (f γu)
     e = snd ∘ fe
 
-    varyA : T.compA .comp (⟪ σ ⟫ s) .fst ≡ S.compA .comp s .fst
-    varyA = α .vary S T σ r p ψ T.tubeA T.baseA s
+    varyA : T.fillA .fill (⟪ σ ⟫ s) .fst ≡ S.fillA .fill s .fst
+    varyA = α .vary S T σ r p T.boxA s
 
     varyC₁ : ∀ uσs
       → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
@@ -198,45 +193,41 @@ abstract
       congdep₂ (λ a fib → e (_ , uσs) a .snd fib .at i) varyA p
 
     varyR : ∀ uσs
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.compR (⟪ σ ⟫ s) uσs .fst)
-        ≡ S.compR s uσs .fst
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .fst)
+        ≡ S.fillR s uσs .fst
     varyR uσs =
       congdep₂
-        (λ {a (φ' , g' , x') →
+        (λ a box →
           FiberIsFib (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
-            (λ _ → (((_ , uσs) , _) , a)) φ' g' x' .comp O .fst})
+            (λ _ → (((_ , uσs) , _) , a)) box .fill O .fst)
         varyA
-        (boxEqDep int varyA
-          (cong (λ φ' → ψ ∨ φ') (≈Equivariant σ r s))
-          (takeOutCof ψ (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
+        (boxExtDep int varyA
+          (cong (box .cof ∨_) (≈Equivariant σ r s))
+          (takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
             (λ u → funextDepCod varyA λ i →
               varyC₂ uσs i
                 (FiberExtDep varyA refl (λ _ → refl)))
             (λ {refl refl → funextDepCod varyA λ i →
               varyC₂ uσs i
                 (FiberExtDep varyA refl (λ _ → refl))}))
-          I
           (varyC₁ uσs))
       ∙
       cong
-        (λ δ →
-          δ .lift int I (λ _ → (((s , uσs) , _) , _)) _
-            (S.tubeR _ uσs) (S.baseR _ uσs) .comp O .fst)
+        (λ δ → δ .lift int I (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill O .fst)
         (reindexFiber (reindex B β (p ×id)) (reindex A α (p ∘ fst))
           (λ {(s , uσs) → ⟪ σ ⟫ s , uσs}))
 
-    varyFix : T.compFix (⟪ σ ⟫ s) .fst ≡ S.compFix s .fst
+    varyFix : T.fillFix (⟪ σ ⟫ s) .fst ≡ S.fillFix s .fst
     varyFix =
       cong
-        (λ {(φ' , g' , x') → α .lift int I (λ _ → p (⟪ σ ⟫ s)) φ' g' x' .comp O .fst})
-        (boxEq int
-          (cong (λ φ' → ψ ∨ Φ (p (⟪ σ ⟫ s)) ∨ φ') (≈Equivariant σ r s))
-          (takeOutCof ψ (Φ (p (⟪ σ ⟫ s)) ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (Φ (p (⟪ σ ⟫ s)) ∨ S ∋ r ≈ s)
-            (λ v → refl)
+        (λ box' → α .lift int I (λ _ → p (⟪ σ ⟫ s)) box' .fill O .fst)
+        (boxExt
+          (cong (λ φ → box .cof ∨ Φ (p (⟪ σ ⟫ s)) ∨ φ) (≈Equivariant σ r s))
+          (takeOutCof (box .cof) (Φ (p (⟪ σ ⟫ s)) ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (Φ (p (⟪ σ ⟫ s)) ∨ S ∋ r ≈ s)
+            (λ _ → refl)
             (takeOutCof (Φ (p (⟪ σ ⟫ s))) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
               (λ uσs → funext (fiberPathEqDep varyA (varyR uσs)))
               (λ {refl refl → refl})))
-          I
           varyA)
 
   reindexGlue : ∀ {ℓ ℓ' ℓ''}
@@ -252,4 +243,4 @@ abstract
     reindex (Glue' Φ B A (equivFun fe)) (GlueIsFib Φ fe β α) ρ
     ≡ GlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex B β (ρ ×id)) (reindex A α ρ)
   reindexGlue Φ {B} {A} fe β α ρ =
-    isFibExt λ _ _ _ _ _ _ _ → GlueExt (λ _ → refl) refl
+    isFibExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
