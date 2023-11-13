@@ -2,8 +2,6 @@
 
 Fibrancy of Path types.
 
-TODO factor through extension types
-
 -}
 {-# OPTIONS --rewriting #-}
 module type-formers.paths where
@@ -11,6 +9,7 @@ module type-formers.paths where
 open import prelude
 open import axioms
 open import fibration.fibration
+open import type-formers.extension
 
 record _~_ {ℓ} {A : Set ℓ}(a a' : A) : Set ℓ where
   constructor path
@@ -38,75 +37,33 @@ PathExt {A = A} {a} {a'} t =
 Path' : ∀{ℓ ℓ'}{Γ : Set ℓ}(A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
 Path' A (x , (a , a')) = a ~ a'
 
-module PathIsFibId {ℓ}
-  (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {a₀ : Π A} {a₁ : Π A}
-  (α : isFib A)
-  (r : ⟨ S ⟩) (box : OpenBox S r (λ s → a₀ s ~ a₁ s))
-  where
-
-  module _ (i : Int) where
-
-    boxA : OpenBox S r A
-    boxA .cof = box .cof ∨ ∂ i
-    boxA .tube =
-      ∨-rec (box .cof) (∂ i)
-        (λ u s → box .tube u s .at i)
-        (OI-rec i
-          (λ {refl → a₀})
-          (λ {refl → a₁}))
-        (λ u → OI-elim i
-          (λ {refl → funext λ s → box .tube u s .atO})
-          (λ {refl → funext λ s → box .tube u s .atI}))
-    boxA .cap .fst = box .cap .fst .at i
-    boxA .cap .snd =
-      ∨-elimEq (box .cof) (∂ i)
-        (λ u → cong (λ q → q .at i) (box .cap .snd u))
-        (OI-elim i
-          (λ {refl → symm (box .cap .fst .atO)})
-          (λ {refl → symm (box .cap .fst .atI)}))
-
-    fillA = α .lift S r id boxA
-
 abstract
+  private
+    ctxMap : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
+      → Σ x ∈ Γ , A x × A x → Σ x ∈ Γ , Partial int ∂ (A ∘ fst) x
+    ctxMap A (γ , a₀ , a₁) = γ , λ i → OI-rec i (λ _ → a₀) (λ _ → a₁)
+
+    retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
+      → Retract' (Path' A) (Extension' int ∂ (A ∘ fst) ∘ ctxMap A)
+    retract A γ .sec p i .fst = p .at i
+    retract A γ .sec p i .snd = OI-elim i (λ {refl → symm (p .atO)}) (λ {refl → symm (p .atI)})
+    retract A γ .ret ex .at i = ex i .fst
+    retract A γ .ret ex .atO = symm (ex O .snd ∣ inl refl ∣)
+    retract A γ .ret ex .atI = symm (ex I .snd ∣ inr refl ∣)
+    retract A γ .inv = funext λ p → PathExt λ i → refl
+
   PathIsFib :
     ∀{ℓ ℓ'} {Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     (α : isFib A)
     → -----------
     isFib (Path' A)
-  PathIsFib {A = A} α .lift S r p box .fill s .fst =
-    path
-      (λ i → fillA i .fill s .fst)
-      (symm (fillA O .fill s .snd ∣ inr ∣ inl refl ∣ ∣))
-      (symm (fillA I .fill s .snd ∣ inr ∣ inr refl ∣ ∣))
-    where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r box
-  PathIsFib {A = A} α .lift S r p box .fill s .snd u =
-    PathExt λ i → fillA i .fill s .snd ∣ inl u ∣
-    where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r box
-  PathIsFib {A = A} α .lift S r p box .cap≡ =
-    PathExt λ i → fillA i .cap≡
-    where
-    open PathIsFibId S (reindex A α (fst ∘ p)) r box
-
-  PathIsFib {A = A} α .vary S T σ r p box s =
-    PathExt λ i →
-    α .vary S T σ r (fst ∘ p) (T.boxA i) s
-    ∙
-    cong (λ b → α .lift S r (fst ∘ p ∘ ⟪ σ ⟫) b .fill s .fst)
-      (boxExt
-        refl
-        (diagonalElim (box .cof ∨ ∂ i)
-          (∨-elimEq (box .cof) (∂ i)
-            (λ _ → refl)
-            (OI-elim i
-              (λ {refl → refl})
-              (λ {refl → refl}))))
-        refl)
-    where
-    module T = PathIsFibId T (reindex A α (fst ∘ p)) (⟪ σ ⟫ r) box
-    module S = PathIsFibId S (reindex A α (fst ∘ p ∘ ⟪ σ ⟫)) r (reshapeBox σ box)
+  PathIsFib {ℓ' = ℓ'} {Γ} {A} α =
+    retractIsFib
+      (Path' A)
+      (Extension' int ∂ (A ∘ fst) ∘ ctxMap A)
+      (retract A)
+      (reindex (Extension' int ∂ (A ∘ fst)) (ExtensionIsFib int ∂ (reindex A α fst)) (ctxMap A))
 
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
@@ -118,4 +75,15 @@ abstract
     (ρ : Δ → Γ)
     → ----------------------
     reindex (Path' A) (PathIsFib α) (ρ ×id) ≡ PathIsFib (reindex A α ρ)
-  reindexPath A α ρ = isFibExt λ _ _ _ _ _ → refl
+  reindexPath A α ρ =
+    reindexRetract
+      (retract A)
+      (reindex (Extension' int ∂ (A ∘ fst)) (ExtensionIsFib int ∂ (reindex A α fst)) (ctxMap A))
+      (ρ ×id)
+    ∙
+    cong₂
+      (retractIsFib (Path' (A ∘ ρ)) (Extension' int ∂ (A ∘ ρ ∘ fst) ∘ ctxMap (A ∘ ρ)))
+      (funext λ _ → retractExt (funext λ _ → funext λ _ → Σext refl (funext λ _ → uipImp)) refl)
+      (reindexComp (ExtensionIsFib int ∂ (reindex A α fst)) (ρ ×id) (ctxMap A)
+        ∙ cong (λ fib → reindex (Extension' int ∂ (A ∘ ρ ∘ fst)) fib (ctxMap (A ∘ ρ)))
+              (reindexExtension int ∂ (A ∘ fst) (reindex A α fst) ρ))

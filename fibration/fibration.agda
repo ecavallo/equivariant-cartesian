@@ -144,10 +144,10 @@ reindexAlongId = refl
 
 reindexComp :
   ∀{ℓ ℓ' ℓ'' ℓ'''} {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''} {A : Γ₃ → Set ℓ'''}
-  {α : isFib A} (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
+  (α : isFib A) (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
   → ----------------------
   reindex A α (g ∘ f) ≡ reindex (A ∘ g) (reindex A α g) f
-reindexComp g f = refl
+reindexComp α g f = refl
 
 reindexAlongId' : ∀{ℓ ℓ'} {Γ : Set ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
 reindexAlongId' = refl
@@ -174,25 +174,46 @@ abstract
         uipImp)
 
 ----------------------------------------------------------------------
--- Fibration structures can be transferred across isomorphisms
+-- A retract of a fibration is a fibration
+----------------------------------------------------------------------
+
+Retract' : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
+Retract' {Γ = Γ} A B = (x : Γ) → Retract (A x) (B x)
+
+abstract
+  retractIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Retract' A B) → isFib B → isFib A
+  retractIsFib A B retract β .lift S r p box = filler
+    where
+    fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
+    fillerB = β .lift S r p (mapBox (sec ∘ retract ∘ p) box)
+
+    filler : Filler box
+    filler .fill s .fst = retract (p s) .ret (fillerB .fill s .fst)
+    filler .fill s .snd u =
+      symm (appCong (retract (p s) .inv))
+      ∙ cong (retract (p s) .ret) (fillerB .fill s .snd u)
+    filler .cap≡ =
+      cong (retract (p r) .ret) (fillerB .cap≡)
+      ∙ appCong (retract (p r) .inv)
+
+  retractIsFib A B retract β .vary S T σ r p box s =
+    cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
+
+  reindexRetract : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+    {A B : Γ → Set ℓ''}
+    (retract : Retract' A B)
+    (β : isFib B)
+    (ρ : Δ → Γ)
+    → reindex A (retractIsFib A B retract β) ρ
+      ≡ retractIsFib (A ∘ ρ) (B ∘ ρ) (retract ∘ ρ) (reindex B β ρ)
+  reindexRetract retract β ρ = isFibExt λ _ _ _ _ _ → refl
+
+----------------------------------------------------------------------
+-- Corollary: fibration structures can be transferred across isomorphisms
 ----------------------------------------------------------------------
 
 _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
 isomorphicIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
-isomorphicIsFib A B iso β .lift S r p box = filler
-  where
-  fillerB = β .lift S r p (mapBox (to ∘ iso ∘ p) box)
-
-  filler : Filler box
-  filler .fill s .fst = iso (p s) .from (fillerB .fill s .fst)
-  filler .fill s .snd u =
-    symm (appCong (iso (p s) .inv₁))
-    ∙ cong (iso (p s) .from) (fillerB .fill s .snd u)
-  filler .cap≡ =
-    cong (iso (p r) .from) (fillerB .cap≡)
-    ∙ appCong (iso (p r) .inv₁)
-
-isomorphicIsFib A B iso β .vary S T σ r p box s =
-  cong (iso _ .from) (β .vary S T σ r p (mapBox (to ∘ iso ∘ p) box) s)
+isomorphicIsFib A B iso β = retractIsFib A B (isoToRetract ∘ iso) β

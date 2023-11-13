@@ -358,6 +358,25 @@ _◇_ : ∀ {ℓ ℓ' ℓ'' ℓ'''} {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''}
 (f ◇ g) a b = f a (g b)
 
 ----------------------------------------------------------------------
+-- Retracts
+----------------------------------------------------------------------
+record Retract {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
+ constructor makeRetract
+ field
+  sec : A → B
+  ret : B → A
+  inv : ret ∘ sec ≡ id
+
+open Retract public
+
+retractExt : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'}
+  {retract₀ retract₁ : Retract A B}
+  → retract₀ .sec ≡ retract₁ .sec
+  → retract₀ .ret ≡ retract₁ .ret
+  → retract₀ ≡ retract₁
+retractExt refl refl = cong (makeRetract _ _) uipImp
+
+----------------------------------------------------------------------
 -- Isomorphism
 ----------------------------------------------------------------------
 record _≅_ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
@@ -368,6 +387,12 @@ record _≅_ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
   inv₂ : to ∘ from ≡ id
 
 open _≅_ public
+
+isoToRetract : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'}
+  → A ≅ B → Retract A B
+isoToRetract iso .sec = iso .to
+isoToRetract iso .ret = iso .from
+isoToRetract iso .inv = iso .inv₁
 
 ----------------------------------------------------------------------
 -- Propositions
