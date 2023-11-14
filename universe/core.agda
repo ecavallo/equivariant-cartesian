@@ -256,7 +256,7 @@ decodeEncode {ℓ' = ℓ'} {Γ} Aα =
     → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
   lemma S p =
     appCong (symm (L℘ S id (λ C → C .lifts S)))
-    ∙ appCong (L℘ S id (R S {B = Set* ℓ'} (FibLifts (A , α) S)))
+    ∙ appCong (L℘ S id (R S {B = Set* ℓ'} (FibLifts Aα S)))
 
 encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
   (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)

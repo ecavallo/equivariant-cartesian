@@ -18,7 +18,6 @@ _×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set
   → Γ → Set (ℓ' ⊔ ℓ'')
 (A ×' B) x = A x × B x
 
-
 module ΣIsFibId {ℓ ℓ'}
   {S : Shape} {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
