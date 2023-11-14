@@ -166,7 +166,7 @@ idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
 idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
-  qBox : (i : Int) → OpenBox int I (λ _ → A)
+  qBox : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A)
   qBox i .cof = ∂ i
   qBox i .tube =
     OI-rec i
@@ -175,23 +175,23 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
   qBox i .cap .out = a
   qBox i .cap .out≡ =
     OI-elim i
-      (λ {refl → p .atI})
+      (λ {refl → p .at1})
       (λ {refl → refl})
 
-  q : (i : Int) → Filler (qBox i)
-  q i = α .lift int I (λ _ → _) (qBox i)
+  q : (i : 𝕀) → Filler (qBox i)
+  q i = α .lift 𝕚 1 (λ _ → _) (qBox i)
 
   h : (a' , p) ~ (a , refl~ a)
-  h .at i .fst = q i .fill O .out
+  h .at i .fst = q i .fill 0 .out
   h .at i .snd = path (λ j → q i .fill j .out) refl (q i .cap≡)
-  h .atO =
+  h .at0 =
     FiberExt
-      (symm (q O .fill O .out≡ ∣ inl refl ∣) ∙ p .atO)
-      (λ j → symm (q O .fill j .out≡ ∣ inl refl ∣))
-  h .atI =
+      (symm (q 0 .fill 0 .out≡ ∣ inl refl ∣) ∙ p .at0)
+      (λ j → symm (q 0 .fill j .out≡ ∣ inl refl ∣))
+  h .at1 =
     FiberExt
-      (symm (q I .fill O .out≡ ∣ inr refl ∣))
-      (λ j → symm (q I .fill j .out≡ ∣ inr refl ∣))
+      (symm (q 1 .fill 0 .out≡ ∣ inr refl ∣))
+      (λ j → symm (q 1 .fill j .out≡ ∣ inr refl ∣))
 
 coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r s : ⟨ S ⟩)

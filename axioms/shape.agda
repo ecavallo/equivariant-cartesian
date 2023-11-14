@@ -9,7 +9,6 @@ module axioms.shape where
 
 open import prelude
 open import axioms.funext
-
 ----------------------------------------------------------------------
 -- Shapes
 ----------------------------------------------------------------------
@@ -21,14 +20,26 @@ postulate
   ⟨_⟩ : Shape → Set
   ⟪_⟫ : {I J : Shape} → ShapeHom I J → ⟨ I ⟩ → ⟨ J ⟩
 
-  int : Shape
+  𝕚 : Shape -- interval shape
 
-Int = ⟨ int ⟩
+𝕀 = ⟨ 𝕚 ⟩
 
-postulate
-  O : Int
-  I : Int
-  O≠I   : ∀ {ℓ} {A : Set ℓ} → O ≡ I → A
+postulate -- interval endpoints
+  𝕚0 : 𝕀
+  𝕚1 : 𝕀
+  0≠1   : ∀ {ℓ} {A : Set ℓ} → 𝕚0 ≡ 𝕚1 → A
+
+----------------------------------------------------------------------
+-- Notation for interval endpoints
+----------------------------------------------------------------------
+
+open import Agda.Builtin.Nat
+
+fromNat : Nat → 𝕀
+fromNat 0 = 𝕚0
+fromNat (suc _) = 𝕚1
+
+{-# BUILTIN FROMNAT fromNat #-}
 
 ----------------------------------------------------------------------
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)
