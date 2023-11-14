@@ -24,8 +24,8 @@ inr' φ ψ (x , u) = x , ∣ inr u ∣
 ----------------------------------------------------------------------
 unionIsFibExt : ∀ {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
   {A : Γ ,[ φ₀ ∨' φ₁ ] → Set ℓ'} {α₀ α₁ : isFib A}
-  → reindex A α₀ (inl' φ₀ φ₁) ≡ reindex A α₁ (inl' φ₀ φ₁)
-  → reindex A α₀ (inr' φ₀ φ₁) ≡ reindex A α₁ (inr' φ₀ φ₁)
+  → reindex α₀ (inl' φ₀ φ₁) ≡ reindex α₁ (inl' φ₀ φ₁)
+  → reindex α₀ (inr' φ₀ φ₁) ≡ reindex α₁ (inr' φ₀ φ₁)
   → α₀ ≡ α₁
 unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
   isFibExt λ S r p box s →
@@ -39,7 +39,7 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
     move _ refl β = β .lift S r id box .fill s .out
 
     moveEq : (u : [ all S ((φ₀ ∨' φ₁) ∘ fst ∘ p) ]) (eq : u ≡ λ i → p i .snd) (β : isFib A)
-      → β .lift S r p box .fill s .out ≡ move u eq (reindex A β (λ i → p i .fst , u i))
+      → β .lift S r p box .fill s .out ≡ move u eq (reindex β (λ i → p i .fst , u i))
     moveEq _ refl β = refl
 
     lemma : [ all S (φ₀ ∘ fst ∘ p) ∨ all S (φ₁ ∘ fst ∘ p) ]
@@ -51,7 +51,7 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
           ∙ cong
                 (λ β →
                   move (λ s → ∣ inl (u₀ s) ∣) (funext λ _ → trunc _ _)
-                    (reindex _ β (λ i → p i .fst , u₀ i)))
+                    (reindex β (λ i → p i .fst , u₀ i)))
                 eq₀
           ∙ symm (moveEq (λ s → ∣ inl (u₀ s) ∣) (funext λ _ → trunc _ _) α₁))
         (λ u₁ →
@@ -59,7 +59,7 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
           ∙ cong
                 (λ β →
                   move (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _)
-                    (reindex _ β (λ i → p i .fst , u₁ i)))
+                    (reindex β (λ i → p i .fst , u₁ i)))
                 eq₁
           ∙ symm (moveEq (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _) α₁))
 
@@ -101,11 +101,11 @@ module UnionIsFibId {ℓ} {S : Shape} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
     ∨-rec (all S φ₀) (all S φ₁)
       (λ u₀ →
         subst (λ u' → isFib (λ s → A (s , u' s))) (funext λ s → trunc _ _)
-          (reindex _ α₀ (λ s → s , u₀ s))
+          (reindex α₀ (λ s → s , u₀ s))
           .lift S r id box .fill s)
       (λ u₁ →
         subst (λ u' → isFib (λ s → A (s , u' s))) (funext λ s → trunc _ _)
-          (reindex _ α₁ (λ s → s , u₁ s))
+          (reindex α₁ (λ s → s , u₁ s))
           .lift S r id box .fill s)
       (λ u₀ u₁ →
         congΣ
@@ -123,11 +123,11 @@ module UnionIsFibId {ℓ} {S : Shape} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
     ∨-elimEq (all S φ₀) (all S φ₁)
       (λ u₀ →
         subst (λ u' → isFib (λ s → A (s , u' s))) (funext λ s → trunc _ _)
-          (reindex _ α₀ (λ s → s , u₀ s))
+          (reindex α₀ (λ s → s , u₀ s))
           .lift S r id box .cap≡)
       (λ u₁ →
         subst (λ u' → isFib (λ s → A (s , u' s))) (funext λ s → trunc _ _)
-          (reindex _ α₁ (λ s → s , u₁ s))
+          (reindex α₁ (λ s → s , u₁ s))
           .lift S r id box .cap≡)
 
 module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
@@ -148,8 +148,8 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       where
       open UnionIsFibId (φ₀ ∘ fst ∘ p)  (φ₁ ∘ fst ∘ p)
         (A ∘ (fst ∘ p) ×id)
-        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
-        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
+        (reindex α₀ ((fst ∘ p) ×id))
+        (reindex α₁ ((fst ∘ p) ×id))
         (cong (λ Aα → reindexFib Aα ((fst ∘ p) ×id)) eqFib)
         box
 
@@ -159,27 +159,27 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
         {g = λ _ → S.fillSys s (shape→∨ S (φ₀ ∘ fst ∘ p ∘ ⟪ σ ⟫) (φ₁ ∘ fst ∘ p ∘ ⟪ σ ⟫) (snd ∘ p ∘ ⟪ σ ⟫)) .out}
         (λ u₀ →
           subst (λ u' → isFib (λ t → A (p t .fst , u' t))) (funext λ s → trunc _ _)
-            (reindex _ α₀ (λ t → p t .fst , u₀ t))
+            (reindex α₀ (λ t → p t .fst , u₀ t))
             .vary S T σ r id box s
           ∙
           cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
             (substNaturality
                   (λ u' → isFib (λ t → A (p t .fst , u' t)))
                   (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' (⟪ σ ⟫ s))))
-                  (λ u' α → reindex _ α ⟪ σ ⟫)
+                  (λ u' α → reindex α ⟪ σ ⟫)
                   (funext λ t → trunc ∣ inl (u₀ t) ∣ (p t .snd))
-                  (reindex (A ∘ inl' φ₀ φ₁) α₀ (λ t → p t .fst , u₀ t))
+                  (reindex α₀ (λ t → p t .fst , u₀ t))
              ∙
              substCongAssoc
                (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s)))
                (λ u' → u' ∘ ⟪ σ ⟫)
                (funext λ t → trunc _ _)
-               (reindex _ α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s)))
+               (reindex α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s)))
              ∙
              cong
                (λ eq →
                   subst (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s))) eq
-                    (reindex (A ∘ inl' φ₀ φ₁) α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s))))
+                    (reindex α₀ (λ s → p (⟪ σ ⟫ s) .fst , u₀ (⟪ σ ⟫ s))))
                (uip
                  (cong (λ u' → u' ∘ ⟪ σ ⟫) (funext λ t → trunc _ (p t .snd)))
                  (funext λ s → trunc _ (p (⟪ σ ⟫ s) .snd))))
@@ -189,27 +189,27 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
               (shape→∨ S (φ₀ ∘ fst ∘ p ∘ ⟪ σ ⟫) (φ₁ ∘ fst ∘ p ∘ ⟪ σ ⟫) (snd ∘ p ∘ ⟪ σ ⟫))))
         (λ u₁ →
           subst (λ u' → isFib (λ t → A (p t .fst , u' t))) (funext λ s → trunc _ _)
-            (reindex _ α₁ (λ t → p t .fst , u₁ t))
+            (reindex α₁ (λ t → p t .fst , u₁ t))
             .vary S T σ r id box s
           ∙
           cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
             (substNaturality
               (λ u' → isFib (λ t → A (p t .fst , u' t)))
               (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' (⟪ σ ⟫ s))))
-              (λ u' α → reindex _ α ⟪ σ ⟫)
+              (λ u' α → reindex α ⟪ σ ⟫)
               (funext λ t → trunc ∣ inr (u₁ t) ∣ (p t .snd))
-              (reindex (A ∘ inr' φ₀ φ₁) α₁ (λ t → p t .fst , u₁ t))
+              (reindex α₁ (λ t → p t .fst , u₁ t))
              ∙
              substCongAssoc
                (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s)))
                (λ u' → u' ∘ ⟪ σ ⟫)
                (funext λ t → trunc _ _)
-               (reindex _ α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s)))
+               (reindex α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s)))
              ∙
              cong
                (λ eq →
                  subst (λ u' → isFib (λ s → A (p (⟪ σ ⟫ s) .fst , u' s))) eq
-                   (reindex (A ∘ inr' φ₀ φ₁) α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s))))
+                   (reindex α₁ (λ s → p (⟪ σ ⟫ s) .fst , u₁ (⟪ σ ⟫ s))))
                    (uip
                      (cong (λ u' → u' ∘ ⟪ σ ⟫) (funext λ t → trunc _ (p t .snd)))
                      (funext λ s → trunc _ (p (⟪ σ ⟫ s) .snd))))
@@ -221,25 +221,25 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       where
       module S = UnionIsFibId (φ₀ ∘ fst ∘ p ∘ ⟪ σ ⟫)  (φ₁ ∘ fst ∘ p ∘ ⟪ σ ⟫)
         (A ∘ (fst ∘ p ∘ ⟪ σ ⟫) ×id)
-        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
-        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
+        (reindex α₀ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
+        (reindex α₁ ((fst ∘ p ∘ ⟪ σ ⟫) ×id))
         (cong (λ Aα → reindexFib Aα ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) eqFib)
         (reshapeBox σ box)
 
       module T = UnionIsFibId (φ₀ ∘ fst ∘ p)  (φ₁ ∘ fst ∘ p)
         (A ∘ (fst ∘ p) ×id)
-        (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
-        (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
+        (reindex α₀ ((fst ∘ p) ×id))
+        (reindex α₁ ((fst ∘ p) ×id))
         (cong (λ Aα → reindexFib Aα ((fst ∘ p) ×id)) eqFib)
         box
 
-    left : reindex A fib (inl' φ₀ φ₁) ≡ α₀
+    left : reindex fib (inl' φ₀ φ₁) ≡ α₀
     left = isFibExt λ S r p box s →
       let
         open UnionIsFibId (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
           (A ∘ (fst ∘ p) ×id)
-          (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
-          (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
+          (reindex α₀ ((fst ∘ p) ×id))
+          (reindex α₁ ((fst ∘ p) ×id))
           (cong (λ Aα → reindexFib Aα ((fst ∘ p) ×id)) eqFib)
           box
       in
@@ -250,17 +250,17 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       ∙
       cong
         (λ eq →
-          subst (λ u' → isFib (λ s → A (p s .fst , u' s))) eq (reindex _ α₀ p)
+          subst (λ u' → isFib (λ s → A (p s .fst , u' s))) eq (reindex α₀ p)
             .lift S r id box .fill s .out)
         (uip (funext λ _ → trunc _ _) refl)
 
-    right : reindex A fib (inr' φ₀ φ₁) ≡ α₁
+    right : reindex fib (inr' φ₀ φ₁) ≡ α₁
     right = isFibExt λ S r p box s →
       let
         open UnionIsFibId (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
           (A ∘ (fst ∘ p) ×id)
-          (reindex (A ∘ inl' φ₀ φ₁) α₀ ((fst ∘ p) ×id))
-          (reindex (A ∘ inr' φ₀ φ₁) α₁ ((fst ∘ p) ×id))
+          (reindex α₀ ((fst ∘ p) ×id))
+          (reindex α₁ ((fst ∘ p) ×id))
           (cong (λ Aα → reindexFib Aα ((fst ∘ p) ×id)) eqFib)
           box
       in
@@ -271,7 +271,7 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       ∙
       cong
         (λ eq →
-          subst (λ u' → isFib (λ s → A (p s .fst , u' s))) eq (reindex _ α₁ p)
+          subst (λ u' → isFib (λ s → A (p s .fst , u' s))) eq (reindex α₁ p)
             .lift S r id box .fill s .out)
         (uip (funext λ _ → trunc _ _) refl)
 
@@ -281,14 +281,14 @@ reindexUnion : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ 
   (α₁ : isFib (A ∘ inr' φ₀ φ₁))
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
   (ρ : Δ → Γ)
-  → reindex A (UnionIsFib.fib φ₀ φ₁ A α₀ α₁ eqFib) (ρ ×id)
+  → reindex (UnionIsFib.fib φ₀ φ₁ A α₀ α₁ eqFib) (ρ ×id)
     ≡ UnionIsFib.fib (φ₀ ∘ ρ) (φ₁ ∘ ρ) (A ∘ ρ ×id)
-      (reindex _ α₀ (ρ ×id)) (reindex _ α₁ (ρ ×id)) (cong (reindexFib ◆ (ρ ×id)) eqFib)
+      (reindex α₀ (ρ ×id)) (reindex α₁ (ρ ×id)) (cong (reindexFib ◆ (ρ ×id)) eqFib)
 reindexUnion φ₀ φ₁ A α₀ α₁ eqFib ρ =
   unionIsFibExt (φ₀ ∘ ρ) (φ₁ ∘ ρ)
-    (cong (reindex (A ∘ inl' φ₀ φ₁) ◆ (ρ ×id)) (UnionIsFib.left φ₀ φ₁ A α₀ α₁ eqFib)
+    (cong (reindex ◆ (ρ ×id)) (UnionIsFib.left φ₀ φ₁ A α₀ α₁ eqFib)
       ∙ symm (UnionIsFib.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
-    (cong (reindex (A ∘ inr' φ₀ φ₁) ◆ (ρ ×id)) (UnionIsFib.right φ₀ φ₁ A α₀ α₁ eqFib)
+    (cong (reindex ◆ (ρ ×id)) (UnionIsFib.right φ₀ φ₁ A α₀ α₁ eqFib)
       ∙ symm (UnionIsFib.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
 
 module FibUnion {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)

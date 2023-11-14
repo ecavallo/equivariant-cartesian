@@ -31,24 +31,24 @@ opaque
     ΣIsFib
       α
       (ΠIsFib
-        (reindex A α fst)
-        (reindex (Path' A) (PathIsFib α) (λ {((x , a₀) , a) → x , a , a₀})))
+        (reindex α fst)
+        (reindex (PathIsFib α) (λ {((x , a₀) , a) → x , a , a₀})))
 
   reindexIsContr : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
-    → reindex (IsContr' A) (IsContrIsFib α) ρ ≡ IsContrIsFib (reindex A α ρ)
+    → reindex (IsContrIsFib α) ρ ≡ IsContrIsFib (reindex α ρ)
   reindexIsContr {A = A} α ρ =
-    reindexΣ _ _ _ _ ρ
+    reindexΣ _ _ ρ
     ∙
-    cong (ΣIsFib (reindex A α ρ))
-      (reindexΠ _ _ _ _ (ρ ×id)
+    cong (ΣIsFib (reindex α ρ))
+      (reindexΠ _ _ (ρ ×id)
         ∙ cong
             (λ β →
-              ΠIsFib (reindex A α (ρ ∘ fst))
-                (reindex (Path' (λ x → A (ρ x))) β (λ {((x , a₀) , a) → x , a , a₀})))
-            (reindexPath _ _ ρ))
+              ΠIsFib (reindex α (ρ ∘ fst))
+                (reindex β (λ {((x , a₀) , a) → x , a , a₀})))
+            (reindexPath _ ρ))
 
 ----------------------------------------------------------------------
 -- Fiber type
@@ -66,21 +66,21 @@ opaque
     → isFib A → isFib B → isFib (Fiber' A B)
   FiberIsFib {A = A} {B} α β =
     ΣIsFib
-      (reindex A α (fst ∘ fst))
-      (reindex (Path' B) (PathIsFib β) (λ {(((x , f) , b) , a) → (x , f a , b)}))
+      (reindex α (fst ∘ fst))
+      (reindex (PathIsFib β) (λ {(((x , f) , b) , a) → (x , f a , b)}))
 
   reindexFiber : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     {A B : Γ → Set ℓ''}
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
-    → reindex (Fiber' A B) (FiberIsFib α β) (ρ ×id ×id) ≡ FiberIsFib (reindex A α ρ) (reindex B β ρ)
+    → reindex (FiberIsFib α β) (ρ ×id ×id) ≡ FiberIsFib (reindex α ρ) (reindex β ρ)
   reindexFiber {A = A} {B} α β ρ =
-    reindexΣ _ _ _ _ (ρ ×id ×id)
+    reindexΣ _ _ (ρ ×id ×id)
     ∙ cong
         (λ δ →
-          ΣIsFib (reindex A α (ρ ∘ fst ∘ fst))
-            (reindex (Path' (B ∘ ρ)) δ (λ {(((x , f) , b) , a) → (x , f a , b)})))
-        (reindexPath _ _ ρ)
+          ΣIsFib (reindex α (ρ ∘ fst ∘ fst))
+            (reindex δ (λ {(((x , f) , b) , a) → (x , f a , b)})))
+        (reindexPath β ρ)
 
 FiberExt : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} {x y : Fiber f b}
   → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
@@ -122,15 +122,15 @@ IsEquiv' A B = Π' (B ∘ fst) (IsContr' (Fiber' A B))
 IsEquivIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
   → isFib A → isFib B → isFib (IsEquiv' A B)
 IsEquivIsFib {A = A} {B} α β =
-  ΠIsFib (reindex B β fst) (IsContrIsFib (FiberIsFib α β))
+  ΠIsFib (reindex β fst) (IsContrIsFib (FiberIsFib α β))
 
 reindexIsEquiv : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
   (α : isFib A) (β : isFib B)
   (ρ : Δ → Γ)
-  → reindex (IsEquiv' A B) (IsEquivIsFib α β) (ρ ×id) ≡ IsEquivIsFib (reindex A α ρ) (reindex B β ρ)
+  → reindex (IsEquivIsFib α β) (ρ ×id) ≡ IsEquivIsFib (reindex α ρ) (reindex β ρ)
 reindexIsEquiv {A = A} {B} α β ρ =
-  reindexΠ _ _ _ _ (ρ ×id)
-  ∙ cong (ΠIsFib (reindex B β (ρ ∘ fst)))
+  reindexΠ _ _ (ρ ×id)
+  ∙ cong (ΠIsFib (reindex β (ρ ∘ fst)))
       (reindexIsContr (FiberIsFib α β) (ρ ×id ×id)
         ∙ cong IsContrIsFib (reindexFiber α β ρ))
 
@@ -148,17 +148,14 @@ opaque
   EquivIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
     → isFib A → isFib B → isFib (Equiv' A B)
   EquivIsFib {A = A} {B} α β =
-    ΣIsFib (ΠIsFib α (reindex B β fst)) (IsEquivIsFib α β)
+    ΣIsFib (ΠIsFib α (reindex β fst)) (IsEquivIsFib α β)
 
   reindexEquiv : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
-    → reindex (Equiv' A B) (EquivIsFib α β) ρ ≡ EquivIsFib (reindex A α ρ) (reindex B β ρ)
+    → reindex (EquivIsFib α β) ρ ≡ EquivIsFib (reindex α ρ) (reindex β ρ)
   reindexEquiv α β ρ =
-    reindexΣ _ _ _ _ ρ
-    ∙ cong₂ ΣIsFib
-        (reindexΠ _ _ _ _ ρ)
-        (reindexIsEquiv α β ρ)
+    reindexΣ _ _ ρ ∙ cong₂ ΣIsFib (reindexΠ _ _ ρ) (reindexIsEquiv α β ρ)
 
 ----------------------------------------------------------------------
 -- Identity and coercion maps are equivalences
@@ -201,28 +198,28 @@ coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   → Equiv (A r) (A s)
 coerceEquiv S {A} α r s =
   coerce S r
-    (EquivIsFib (reindex A α (λ _ → r)) α)
-    (idEquiv (reindex A α (λ _ → r)))
+    (EquivIsFib (reindex α (λ _ → r)) α)
+    (idEquiv (reindex α (λ _ → r)))
     s
 
 opaque
   coerceEquivCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
     (α : isFib A) (r : ⟨ S ⟩)
-    → coerceEquiv S α r r ≡ idEquiv (reindex A α (λ _ → r))
+    → coerceEquiv S α r r ≡ idEquiv (reindex α (λ _ → r))
   coerceEquivCap S {A} α r =
     coerceCap S r
-      (EquivIsFib (reindex A α (λ _ → r)) α)
-      (idEquiv (reindex A α (λ _ → r)))
+      (EquivIsFib (reindex α (λ _ → r)) α)
+      (idEquiv (reindex α (λ _ → r)))
 
   coerceEquivVary : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
     {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
-    → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex A α ⟪ σ ⟫) r s
+    → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex α ⟪ σ ⟫) r s
   coerceEquivVary S T σ {A = A} α r s =
     coerceVary S T σ r
-      (EquivIsFib (reindex A α (λ _ → ⟪ σ ⟫ r)) α)
-      (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)))
+      (EquivIsFib (reindex α (λ _ → ⟪ σ ⟫ r)) α)
+      (idEquiv (reindex α (λ _ → ⟪ σ ⟫ r)))
       s
     ∙
     cong
-      (λ β → coerce S r β (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))) s)
-      (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫)
+      (λ β → coerce S r β (idEquiv (reindex α (λ _ → ⟪ σ ⟫ r))) s)
+      (reindexEquiv (reindex α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫)

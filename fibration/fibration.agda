@@ -119,32 +119,32 @@ Fib ℓ' Γ = Σ (Γ → Set ℓ') isFib
 -- Fibrations can be reindexed
 ----------------------------------------------------------------------
 
-reindex : ∀{ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (A : Γ → Set ℓ'')
+reindex : ∀{ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A : Γ → Set ℓ''}
   (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
-reindex A α ρ .lift S r p = α .lift S r (ρ ∘ p)
-reindex A α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
+reindex α ρ .lift S r p = α .lift S r (ρ ∘ p)
+reindex α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
 reindexFib : ∀{ℓ ℓ' ℓ''}{Δ : Set ℓ}{Γ : Set ℓ'}(Aα : Fib ℓ'' Γ)(ρ : Δ → Γ) → Fib ℓ'' Δ
 reindexFib (A , α) ρ .fst = A ∘ ρ
-reindexFib (A , α) ρ .snd = reindex A α ρ
+reindexFib (A , α) ρ .snd = reindex α ρ
 
 reindexSubst : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set ℓ''}
  (ρ : Δ → Γ)(P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
-  → reindex A' (subst isFib P α) ρ ≡ subst isFib Q (reindex A α ρ)
+  → reindex (subst isFib P α) ρ ≡ subst isFib Q (reindex α ρ)
 reindexSubst ρ refl refl α = refl
 
 ----------------------------------------------------------------------
 -- Reindexing is functorial
 ----------------------------------------------------------------------
 
-reindexAlongId : ∀{ℓ ℓ'} {Γ : Set ℓ}{A : Γ → Set ℓ'}{α : isFib A} → α ≡ reindex A α id
+reindexAlongId : ∀{ℓ ℓ'} {Γ : Set ℓ}{A : Γ → Set ℓ'}{α : isFib A} → α ≡ reindex α id
 reindexAlongId = refl
 
 reindexComp :
   ∀{ℓ ℓ' ℓ'' ℓ'''} {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''} {A : Γ₃ → Set ℓ'''}
   (α : isFib A) (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
   → ----------------------
-  reindex A α (g ∘ f) ≡ reindex (A ∘ g) (reindex A α g) f
+  reindex α (g ∘ f) ≡ reindex (reindex α g) f
 reindexComp α g f = refl
 
 reindexAlongId' : ∀{ℓ ℓ'} {Γ : Set ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
@@ -179,8 +179,8 @@ Retract' : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔
 Retract' {Γ = Γ} A B = (x : Γ) → Retract (A x) (B x)
 
 opaque
-  retractIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Retract' A B) → isFib B → isFib A
-  retractIsFib A B retract β .lift S r p box = filler
+  retractIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'} → (Retract' A B) → isFib B → isFib A
+  retractIsFib retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
     fillerB = β .lift S r p (mapBox (sec ∘ retract ∘ p) box)
@@ -194,7 +194,7 @@ opaque
       cong (retract (p r) .ret) (fillerB .cap≡)
       ∙ appCong (retract (p r) .inv)
 
-  retractIsFib A B retract β .vary S T σ r p box s =
+  retractIsFib retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
   reindexRetract : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
@@ -202,8 +202,8 @@ opaque
     (retract : Retract' A B)
     (β : isFib B)
     (ρ : Δ → Γ)
-    → reindex A (retractIsFib A B retract β) ρ
-      ≡ retractIsFib (A ∘ ρ) (B ∘ ρ) (retract ∘ ρ) (reindex B β ρ)
+    → reindex (retractIsFib retract β) ρ
+      ≡ retractIsFib (retract ∘ ρ) (reindex β ρ)
   reindexRetract retract β ρ = isFibExt λ _ _ _ _ _ → refl
 
 ----------------------------------------------------------------------
@@ -213,14 +213,14 @@ opaque
 _≅'_ : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
 _≅'_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
 
-isomorphIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ') → (A ≅' B) → isFib B → isFib A
-isomorphIsFib A B iso β = retractIsFib A B (isoToRetract ∘ iso) β
+isomorphIsFib : ∀{ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'} → (A ≅' B) → isFib B → isFib A
+isomorphIsFib iso β = retractIsFib (isoToRetract ∘ iso) β
 
 reindexIsomorph : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
   {A B : Γ → Set ℓ''}
-  (retract : A ≅' B)
+  (iso : A ≅' B)
   (β : isFib B)
   (ρ : Δ → Γ)
-  → reindex A (isomorphIsFib A B retract β) ρ
-    ≡ isomorphIsFib (A ∘ ρ) (B ∘ ρ) (retract ∘ ρ) (reindex B β ρ)
+  → reindex (isomorphIsFib iso β) ρ
+    ≡ isomorphIsFib (iso ∘ ρ) (reindex β ρ)
 reindexIsomorph _ = reindexRetract _

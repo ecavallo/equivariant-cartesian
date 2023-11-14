@@ -100,7 +100,7 @@ module GlueIsFibId {ℓ}
       boxR .cap .out≡ v≡ = C₂ (fiberR v≡) .atI
 
       fillR =
-        FiberIsFib β (reindex A α fst) .lift
+        FiberIsFib β (reindex α fst) .lift
           int I (λ _ → (((s , us) , f (s , us)) , fillA .fill s .out)) boxR .fill O
 
     boxFix : OpenBox int I (λ _ → A s)
@@ -140,7 +140,7 @@ opaque
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
   GlueIsFib Φ {B} {A} fe β α .lift S r p box = rec
     where
-    open GlueIsFibId (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) box
+    open GlueIsFibId (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p) box
 
     rec : Filler box
     rec .fill s .out .dom us = fillR s us .out .fst
@@ -164,9 +164,9 @@ opaque
   GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p box s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
-    module T = GlueIsFibId (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) box
+    module T = GlueIsFibId (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p) box
     module S = GlueIsFibId (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
-      (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
+      (reindex β ((p ∘ ⟪ σ ⟫) ×id)) (reindex α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
 
     f : (γu : Γ ,[ Φ ]) → B γu → A (γu .fst)
     f = fst ∘ fe
@@ -194,7 +194,7 @@ opaque
     varyR uσs =
       congdep₂
         (λ a box →
-          FiberIsFib (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
+          FiberIsFib (reindex β (p ×id)) (reindex α (p ∘ fst)) .lift int I
             (λ _ → (((_ , uσs) , _) , a)) box .fill O .out)
         varyA
         (boxExtDep varyA
@@ -210,7 +210,7 @@ opaque
       ∙
       cong
         (λ δ → δ .lift int I (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill O .out)
-        (reindexFiber (reindex B β (p ×id)) (reindex A α (p ∘ fst))
+        (reindexFiber (reindex β (p ×id)) (reindex α (p ∘ fst))
           (λ {(s , uσs) → ⟪ σ ⟫ s , uσs}))
 
     varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
@@ -236,7 +236,7 @@ opaque
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Glue' Φ B A (equivFun fe)) (GlueIsFib Φ fe β α) ρ
-    ≡ GlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex B β (ρ ×id)) (reindex A α ρ)
-  reindexGlue Φ {B} {A} fe β α ρ =
+    reindex (GlueIsFib Φ fe β α) ρ
+    ≡ GlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex β (ρ ×id)) (reindex α ρ)
+  reindexGlue Φ fe β α ρ =
     isFibExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl

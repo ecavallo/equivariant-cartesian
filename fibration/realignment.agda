@@ -58,7 +58,7 @@ opaque
     ; cap≡ = fillA .cap≡
     }
     where
-    open RealignId (Φ ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) box
+    open RealignId (Φ ∘ p) (reindex β (p ×id)) (reindex α p) box
   realignIsFib Φ A β α .vary S T σ r p box s =
     α .vary S T σ r p T.box' s
     ∙
@@ -76,32 +76,32 @@ opaque
     where
     module S =
       RealignId (Φ ∘ p ∘ ⟪ σ ⟫)
-        (reindex (A ∘ fst) β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
-    module T = RealignId (Φ ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) box
+        (reindex β ((p ∘ ⟪ σ ⟫) ×id)) (reindex α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
+    module T = RealignId (Φ ∘ p) (reindex β (p ×id)) (reindex α p) box
 
   isRealigned : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
     (Φ : Γ → CofProp)
-    (A : Γ → Set ℓ')
+    {A : Γ → Set ℓ'}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
-    reindex A (realignIsFib Φ A β α) fst ≡ β
-  isRealigned {ℓ} {Γ} Φ A β α =
+    reindex (realignIsFib Φ A β α) fst ≡ β
+  isRealigned Φ β α =
     isFibExt λ S r p box s →
       let
-        open RealignId (Φ ∘ fst ∘ p) (reindex (A ∘ fst) β ((fst ∘ p) ×id)) (reindex A α (fst ∘ p)) box
+        open RealignId (Φ ∘ fst ∘ p) (reindex β ((fst ∘ p) ×id)) (reindex α (fst ∘ p)) box
       in
       symm (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
 
   reindexRealignIsFib : ∀{ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
-    (A : Γ → Set ℓ'')
+    {A : Γ → Set ℓ''}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     (ρ : Δ → Γ)
     → ---------------
-    reindex A (realignIsFib Φ A β α) ρ
-    ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex (A ∘ fst) β (ρ ×id)) (reindex A α ρ)
-  reindexRealignIsFib Φ A β α ρ = isFibExt λ S r p box s → refl
+    reindex (realignIsFib Φ A β α) ρ
+    ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex β (ρ ×id)) (reindex α ρ)
+  reindexRealignIsFib Φ β α ρ = isFibExt λ S r p box s → refl

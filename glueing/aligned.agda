@@ -42,10 +42,10 @@ opaque
     (α : isFib A) (β : isFib B)
     → ---------------
     subst isFib (SGlueStrictness' Φ (equivFun fe)) α
-    ≡ reindex (SGlue' Φ A B (equivFun fe)) (SGlueIsFib Φ fe α β) fst
+    ≡ reindex (SGlueIsFib Φ fe α β) fst
   SGlueIsFibStrictness Φ {A} {B} fe α β =
     symm
-      (isRealigned Φ (SGlue' Φ A B (equivFun fe))
+      (isRealigned Φ
         (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
         (Misaligned.SGlueIsFib Φ fe α β))
 
@@ -78,10 +78,10 @@ opaque
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
-    → reindex (SGlue' Φ A B (equivFun fe)) (SGlueIsFib Φ fe α β) ρ
-      ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
+    → reindex (SGlueIsFib Φ fe α β) ρ
+      ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex α (ρ ×id)) (reindex β ρ)
   reindexSGlue Φ {A} {B} fe α β ρ =
-    reindexRealignIsFib Φ (SGlue' Φ A B (equivFun fe))
+    reindexRealignIsFib Φ
       (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
       (Misaligned.SGlueIsFib Φ fe α β)
       ρ

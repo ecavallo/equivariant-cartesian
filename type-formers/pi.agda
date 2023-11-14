@@ -44,30 +44,30 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .out a =
+  ΠIsFib {B = B} α β .lift S r p box .fill s .out a =
     subst (curry B (p s))
       (fillA s a .cap≡)
       (fillB s a (out ∘ fillA s a .fill) .fill s .out)
     where
-    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
+  ΠIsFib {B = B} α β .lift S r p box .fill s .out≡ u =
     funext λ a →
     symm (congdep (box .tube u s) (fillA s a .cap≡))
     ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
         (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
     where
-    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΠIsFib {A = A} {B} α β .lift S r p box .cap≡ =
+  ΠIsFib {B = B} α β .lift S r p box .cap≡ =
     funext λ a →
     cong (subst (curry B (p r)) (fillA r a .cap≡))
       (fillB r a (out ∘ fillA r a .fill) .cap≡)
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
     where
-    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΠIsFib {A = A} {B} α β .vary S T σ r p box s =
+  ΠIsFib {B = B} α β .vary S T σ r p box s =
     funext λ a →
     cong
       (subst (curry B (p (⟪ σ ⟫ s))) (T.fillA _ a .cap≡))
@@ -79,25 +79,25 @@ opaque
       (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA a)))
     where
-    module T = ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
-    module S = ΠIsFibId (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
+    module T = ΠIsFibId (reindex α p) (reindex β (p ×id)) box
+    module S = ΠIsFibId (reindex α (p ∘ ⟪ σ ⟫)) (reindex β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
-    varyA : (a : A (p (⟪ σ ⟫ s))) (i : ⟨ S ⟩) → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
-    varyA = coerceVary S T σ s (reindex A α p)
+    varyA : ∀ a i → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
+    varyA = coerceVary S T σ s (reindex α p)
 
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------
   reindexΠ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
-    (A : Γ → Set ℓ'')
-    (B : Σ Γ A → Set ℓ''')
+    {A : Γ → Set ℓ''}
+    {B : Σ Γ A → Set ℓ'''}
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Π' A B) (ΠIsFib α β) ρ ≡ ΠIsFib (reindex A α ρ) (reindex B β (ρ ×id))
-  reindexΠ A B α β ρ = isFibExt λ _ _ _ _ _ → refl
+    reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
+  reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΠ : ∀ {ℓ ℓ' ℓ''}
   {Γ : Set ℓ}
@@ -114,4 +114,4 @@ reindexFibΠ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
   (ρ : Δ → Γ)
   → ----------------------
   reindexFib (FibΠ Aα Bβ) ρ ≡ FibΠ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
-reindexFibΠ (A , α) (B , β) ρ = Σext refl (reindexΠ A B α β ρ)
+reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠ α β ρ)

@@ -57,26 +57,26 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Σ' A B)
-  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out =
+  ΣIsFib α β .lift S r p box .fill s .out =
     (fillA .fill s .out , fillB fillA .fill s .out)
     where
-    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
+  ΣIsFib α β .lift S r p box .fill s .out≡ u =
     Σext (fillA .fill s .out≡ u) (fillB fillA .fill s .out≡ u)
     where
-    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΣIsFib {A = A} {B} α β .lift S r p box .cap≡ =
+  ΣIsFib {B = B} α β .lift S r p box .cap≡ =
     Σext (fillA .cap≡)
       (adjustSubstEq (curry B (p r))
         refl (symm (fillA .cap≡))
         (fillA .cap≡) refl
         (fillB fillA .cap≡))
     where
-    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΣIsFib {A = A} {B} α β .vary S T σ r p box s =
+  ΣIsFib {B = B} α β .vary S T σ r p box s =
     Σext
       (α .vary S T σ r p T.boxA s)
       (adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
@@ -87,8 +87,8 @@ opaque
        ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
     where
-    module T = ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
-    module S = ΣIsFibId (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
+    module T = ΣIsFibId (reindex α p) (reindex β (p ×id)) box
+    module S = ΣIsFibId (reindex α (p ∘ ⟪ σ ⟫)) (reindex β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
     varyA : reshapeFiller σ T.fillA ≡ S.fillA
     varyA = fillerExt (α .vary S T σ r p T.boxA)
@@ -98,14 +98,14 @@ opaque
   ----------------------------------------------------------------------
   reindexΣ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
     {Δ : Set ℓ} {Γ : Set ℓ'}
-    (A : Γ → Set ℓ'')
-    (B : Σ Γ A → Set ℓ''')
+    {A : Γ → Set ℓ''}
+    {B : Σ Γ A → Set ℓ'''}
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Σ' A B) (ΣIsFib α β) ρ ≡ ΣIsFib (reindex A α ρ) (reindex B β (ρ ×id))
-  reindexΣ A B α β ρ = isFibExt λ _ _ _ _ _ → refl
+    reindex (ΣIsFib α β) ρ ≡ ΣIsFib (reindex α ρ) (reindex β (ρ ×id))
+  reindexΣ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΣ : ∀ {ℓ ℓ' ℓ''}
   {Γ : Set ℓ}
@@ -122,4 +122,4 @@ reindexFibΣ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
   (ρ : Δ → Γ)
   → ----------------------
   reindexFib (FibΣ Aα Bβ) ρ ≡ FibΣ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
-reindexFibΣ (A , α) (B , β) ρ = Σext refl (reindexΣ A B α β ρ)
+reindexFibΣ (_ , α) (_ , β) ρ = Σext refl (reindexΣ α β ρ)

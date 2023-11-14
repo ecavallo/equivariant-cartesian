@@ -55,27 +55,27 @@ opaque
     {A : Γ × ⟨ Z ⟩ → Set ℓ'}
     (α : isFib A)
     → isFib (Extension' Z Φ A)
-  ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out z .out =
+  ExtensionIsFib Z Φ α .lift S r p box .fill s .out z .out =
     fillA z .fill s .out
     where
-    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
+    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
 
-  ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out z .out≡ v =
+  ExtensionIsFib Z Φ  α .lift S r p box .fill s .out z .out≡ v =
     fillA z .fill s .out≡ ∣ inr v ∣
     where
-    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
+    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
 
-  ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out≡ u =
+  ExtensionIsFib Z Φ α .lift S r p box .fill s .out≡ u =
     funext λ z → restrictExt (fillA z .fill s .out≡ ∣ inl u ∣)
     where
-    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
+    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
 
-  ExtensionIsFib Z Φ {A = A} α .lift S r p box .cap≡ =
+  ExtensionIsFib Z Φ α .lift S r p box .cap≡ =
     funext λ z → restrictExt (fillA z .cap≡)
     where
-    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
+    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
 
-  ExtensionIsFib Z Φ {A = A} α .vary S T σ r p box s =
+  ExtensionIsFib Z Φ α .vary S T σ r p box s =
     funext λ z →
     restrictExt
       (α .vary S T σ r (((fst ∘ p) ×id) ∘ (_, z)) (T.boxA z) s
@@ -85,18 +85,18 @@ opaque
                 (∨-elimEq (box .cof) (Φ z) (λ _ → refl) (λ _ → refl)))
               refl))
     where
-    module T = ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
-    module S = ExtensionIsFibId (reindex A α ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
+    module T = ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
+    module S = ExtensionIsFibId (reindex α ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
   ----------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------
   reindexExtension :
-    ∀ {ℓ ℓ' ℓ''} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
+    ∀ {ℓ ℓ' ℓ''} {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
     {Δ : Set ℓ} {Γ : Set ℓ'}
-    (A : Γ × ⟨ Z ⟩ → Set ℓ'')
+    {A : Γ × ⟨ Z ⟩ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Extension' Z Φ A) (ExtensionIsFib Z Φ α) (ρ ×id) ≡ ExtensionIsFib Z Φ (reindex A α (ρ ×id))
-  reindexExtension Z Φ A α ρ = isFibExt λ _ _ _ _ _ → refl
+    reindex (ExtensionIsFib Z Φ α) (ρ ×id) ≡ ExtensionIsFib Z Φ (reindex α (ρ ×id))
+  reindexExtension α ρ = isFibExt λ _ _ _ _ _ → refl

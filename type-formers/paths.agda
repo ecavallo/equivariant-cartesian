@@ -59,31 +59,26 @@ opaque
     → -----------
     isFib (Path' A)
   PathIsFib {ℓ' = ℓ'} {Γ} {A} α =
-    retractIsFib
-      (Path' A)
-      (Extension' int ∂ (A ∘ fst) ∘ ctxMap A)
-      (retract A)
-      (reindex (Extension' int ∂ (A ∘ fst)) (ExtensionIsFib int ∂ (reindex A α fst)) (ctxMap A))
+    retractIsFib (retract A) (reindex (ExtensionIsFib int ∂ (reindex α fst)) (ctxMap A))
 
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------
   reindexPath :
     ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
-    (A : Γ → Set ℓ'')
+    {A : Γ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (Path' A) (PathIsFib α) (ρ ×id) ≡ PathIsFib (reindex A α ρ)
-  reindexPath A α ρ =
+    reindex (PathIsFib α) (ρ ×id) ≡ PathIsFib (reindex α ρ)
+  reindexPath {A = A} α ρ =
     reindexRetract
       (retract A)
-      (reindex (Extension' int ∂ (A ∘ fst)) (ExtensionIsFib int ∂ (reindex A α fst)) (ctxMap A))
+      (reindex (ExtensionIsFib int ∂ (reindex α fst)) (ctxMap A))
       (ρ ×id)
     ∙
     cong₂
-      (retractIsFib (Path' (A ∘ ρ)) (Extension' int ∂ (A ∘ ρ ∘ fst) ∘ ctxMap (A ∘ ρ)))
+      retractIsFib
       (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
-      (reindexComp (ExtensionIsFib int ∂ (reindex A α fst)) (ρ ×id) (ctxMap A)
-        ∙ cong (λ fib → reindex (Extension' int ∂ (A ∘ ρ ∘ fst)) fib (ctxMap (A ∘ ρ)))
-              (reindexExtension int ∂ (A ∘ fst) (reindex A α fst) ρ))
+      (reindexComp (ExtensionIsFib int ∂ (reindex α fst)) (ρ ×id) (ctxMap A)
+        ∙ cong (λ fib → reindex fib (ctxMap (A ∘ ρ))) (reindexExtension (reindex α fst) ρ))

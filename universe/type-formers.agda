@@ -21,7 +21,7 @@ open import universe.core
 ΣIsFibUniversal : ∀ {@♭ ℓ} →
   isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ{ (A , B) → Σ x ∈ El A , El (B x) })
 ΣIsFibUniversal =
-  ΣIsFib (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
+  ΣIsFib (reindex υ fst) (reindex υ (λ {((A , B) , a) → B a}))
 
 sigma : ∀ {@♭ ℓ} (a : U ℓ) (b : El a → U ℓ) → U ℓ
 sigma a b = encode (_ , ΣIsFibUniversal) (a , b)
@@ -52,7 +52,7 @@ decodeSigma {ℓ' = ℓ'} a b =
 ΠIsFibUniversal : ∀ {@♭ ℓ} →
   isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ{ (A , B) → (x : El A) → El (B x)})
 ΠIsFibUniversal =
-  ΠIsFib (reindex El υ fst) (reindex El υ (λ {((A , B) , a) → B a}))
+  ΠIsFib (reindex υ fst) (reindex υ (λ {((A , B) , a) → B a}))
 
 pi : ∀ {@♭ ℓ} → (a : U ℓ) (b : El a → U ℓ) → U ℓ
 pi a b = encode (_ , ΠIsFibUniversal) (a , b)

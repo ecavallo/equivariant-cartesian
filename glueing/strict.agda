@@ -172,8 +172,6 @@ module Misaligned where
     isFib (Glue' Φ A B (equivFun fe)) → isFib (SGlue' Φ A B (equivFun fe))
   GlueIsFib→SGlueIsFib Φ {A} {B} fe γ =
     isomorphIsFib
-      (SGlue' Φ A B (equivFun fe))
-      (Glue' Φ A B (equivFun fe))
       (strictifyGlueIso' Φ (equivFun fe))
       γ
 
@@ -187,8 +185,6 @@ module Misaligned where
     isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
   SGlueIsFib Φ {A} {B} fe α β =
     isomorphIsFib
-      (SGlue' Φ A B (equivFun fe))
-      (Glue' Φ A B (equivFun fe))
       (strictifyGlueIso' Φ (equivFun fe))
       (GlueIsFib Φ fe α β)
 
@@ -200,8 +196,8 @@ module Misaligned where
     (fe : Π (Equiv' A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
-    → reindex (SGlue' Φ A B (equivFun fe)) (SGlueIsFib Φ fe α β) ρ
-      ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex A α (ρ ×id)) (reindex B β ρ)
+    → reindex (SGlueIsFib Φ fe α β) ρ
+      ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex α (ρ ×id)) (reindex β ρ)
   reindexSGlue Φ {A} {B} fe α β ρ =
     reindexIsomorph (strictifyGlueIso' Φ (equivFun fe)) _ ρ
     ∙ cong (GlueIsFib→SGlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id)) (reindexGlue Φ fe α β ρ)
