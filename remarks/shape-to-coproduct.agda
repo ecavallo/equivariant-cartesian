@@ -28,15 +28,15 @@ module _ (@♭ S : Shape) where
     { to = forward
     ; from = L S back
     ; inv₁ = funext back∘forward
-    ; inv₂ = trans (cong♭ (L S) (funext forward∘back)) (L√ S forward back)
+    ; inv₂ = L√ S forward back ∙ cong♭ (L S) (funext forward∘back)
     }
     where
     forward = [ inl ∘_ ∣ inr ∘_ ]
     back = [ R S inl ∣ R S inr ]
 
     forward∘back : (c : A ⊎ B) → √` S forward (back c) ≡ R S id c
-    forward∘back (inl a) = appCong (trans (R℘ S inl id) (√R S forward inl))
-    forward∘back (inr b) = appCong (trans (R℘ S inr id) (√R S forward inr))
+    forward∘back (inl a) = appCong (√R S forward inl ∙ R℘ S inl id)
+    forward∘back (inr b) = appCong (√R S forward inr ∙ R℘ S inr id)
 
     back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L S back (forward d) ≡ d
     back∘forward (inl f) = appCong (L℘ S back inl)
@@ -80,21 +80,16 @@ module _ (@♭ S : Shape) where
 
     fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
     fromNatural =
-      trans
-        (trans
-          (cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂)))
-          (cong (iso .from) (shape→⊎♭` fst fst (iso .from h'))))
-        (sym (appCong (iso .inv₁)))
+      sym (appCong (iso .inv₁))
+      ∙ cong (iso .from) (shape→⊎♭` fst fst (iso .from h'))
+      ∙ cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂))
 
     baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ .from h')) ≡ AB
     baseEq =
-      trans
-        (trans
-          (trans
-            (funext fsth')
-            (cong (∇ ∘_) (appCong (iso .inv₂))))
-          (sym (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))))
-        (cong ∇ fromNatural)
+      cong ∇ fromNatural
+      ∙ sym (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))
+      ∙ cong (∇ ∘_) (appCong (iso .inv₂))
+      ∙ funext fsth'
 
     main : Π A ⊎ Π B
     main with shape→⊎♭ .from h' | baseEq
