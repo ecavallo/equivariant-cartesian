@@ -27,7 +27,7 @@ postulate
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
   ⊥ : CofProp
-  [⊥] : [ ⊥ ] ≡ ∅
+  [⊥] : [ ⊥ ] ≡ 𝟘
 
   _∨_ : CofProp → CofProp → CofProp
   [∨] : ∀ φ ψ → [ φ ∨ ψ ] ≡ ∥ [ φ ] ⊎ [ ψ ] ∥

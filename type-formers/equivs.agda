@@ -161,7 +161,7 @@ opaque
 -- Identity and coercion maps are equivalences
 ----------------------------------------------------------------------
 
-idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = Unit} (λ _ → A) → Equiv A A
+idEquiv : ∀ {ℓ} {A : Set ℓ} → isFib {Γ = 𝟙} (λ _ → A) → Equiv A A
 idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
 idEquiv {A = A} α .snd a .snd (a' , p) = h

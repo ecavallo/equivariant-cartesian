@@ -14,7 +14,7 @@ module _ {ℓ} (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isF
 
   coerceBox : OpenBox S r A
   coerceBox .cof = ⊥
-  coerceBox .tube e _ = ∅-rec e
+  coerceBox .tube e _ = 𝟘-rec e
   coerceBox .cap .out = a
   coerceBox .cap .out≡ ()
 
