@@ -45,11 +45,11 @@ opaque
 
     retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
       → Retract' (Path' A) (Extension' int ∂ (A ∘ fst) ∘ ctxMap A)
-    retract A γ .sec p i .fst = p .at i
-    retract A γ .sec p i .snd = OI-elim i (λ {refl → symm (p .atO)}) (λ {refl → symm (p .atI)})
-    retract A γ .ret ex .at i = ex i .fst
-    retract A γ .ret ex .atO = symm (ex O .snd ∣ inl refl ∣)
-    retract A γ .ret ex .atI = symm (ex I .snd ∣ inr refl ∣)
+    retract A γ .sec p i .out = p .at i
+    retract A γ .sec p i .out≡ = OI-elim i (λ {refl → symm (p .atO)}) (λ {refl → symm (p .atI)})
+    retract A γ .ret ex .at i = ex i .out
+    retract A γ .ret ex .atO = symm (ex O .out≡ ∣ inl refl ∣)
+    retract A γ .ret ex .atI = symm (ex I .out≡ ∣ inr refl ∣)
     retract A γ .inv = funext λ p → PathExt λ i → refl
 
   PathIsFib :
@@ -83,7 +83,7 @@ opaque
     ∙
     cong₂
       (retractIsFib (Path' (A ∘ ρ)) (Extension' int ∂ (A ∘ ρ ∘ fst) ∘ ctxMap (A ∘ ρ)))
-      (funext λ _ → retractExt (funext λ _ → funext λ _ → Σext refl (funext λ _ → uipImp)) refl)
+      (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
       (reindexComp (ExtensionIsFib int ∂ (reindex A α fst)) (ρ ×id) (ctxMap A)
         ∙ cong (λ fib → reindex (Extension' int ∂ (A ∘ ρ ∘ fst)) fib (ctxMap (A ∘ ρ)))
               (reindexExtension int ∂ (A ∘ fst) (reindex A α fst) ρ))

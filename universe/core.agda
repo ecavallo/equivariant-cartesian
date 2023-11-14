@@ -45,7 +45,7 @@ hasVaries S T σ A .Src = hasLifts T A
 hasVaries S T σ A .Dst = hasLifts S (A ∘ ⟪ σ ⟫)
 hasVaries S T σ A .Rel cT cS =
   ∀ r box s →
-  cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .fst ≡ cS r (reshapeBox σ box) .fill s .fst
+  cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out ≡ cS r (reshapeBox σ box) .fill s .out
 
 ----------------------------------------------------------------------
 -- Definition of the universe
@@ -244,7 +244,7 @@ decodeEncode {ℓ' = ℓ'} {Γ} Aα =
       (ShapeIsDiscrete λ (@♭ S) r p box s →
         cong
           {A = Σ C ∈ Set* ℓ' , C .fst ≡ hasLifts S (A ∘ p)}
-          (λ {(C , eq) → coe eq (C .snd) r box .fill s .fst})
+          (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
           {x = _ , appCong (fstLlifts S)}
           {y = _ , refl}
           (Σext (lemma S p) uipImp)))

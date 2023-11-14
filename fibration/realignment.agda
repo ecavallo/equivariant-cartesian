@@ -29,12 +29,12 @@ module RealignId {ℓ} (S : Shape)
   box' .tube =
     ∨-rec (box .cof) (all S Φ)
       (box .tube)
-      (λ u i → fillB u .fill i .fst)
-      (λ v u → funext λ i → fillB u .fill i .snd v)
-  box' .cap .fst = box .cap .fst
-  box' .cap .snd =
+      (λ u i → fillB u .fill i .out)
+      (λ v u → funext λ i → fillB u .fill i .out≡ v)
+  box' .cap .out = box .cap .out
+  box' .cap .out≡ =
     ∨-elimEq (box .cof) (all S Φ)
-      (box .cap .snd)
+      (box .cap .out≡)
       (λ u → fillB u .cap≡)
 
   fillA = α .lift S r id box' -- (ψ ∨ all S Φ) f' x₀'
@@ -49,11 +49,12 @@ opaque
     → ---------------
     isFib A
   realignIsFib Φ A β α .lift S r p box =
+    -- TODO use copattern matching
     record
     { fill = λ s →
-      ( fillA .fill s .fst
-      , λ v → fillA .fill s .snd ∣ inl v ∣
-      )
+      makeRestrict
+        (fillA .fill s .out)
+        (λ v → fillA .fill s .out≡ ∣ inl v ∣)
     ; cap≡ = fillA .cap≡
     }
     where
@@ -62,14 +63,14 @@ opaque
     α .vary S T σ r p T.box' s
     ∙
     cong
-      (λ box' → α .lift S r (p ∘ ⟪ σ ⟫) box' .fill s .fst)
+      (λ box' → α .lift S r (p ∘ ⟪ σ ⟫) box' .fill s .out)
       (boxExt
         (cong (λ φ → box .cof ∨ φ) (allEquivariant σ (Φ ∘ p)))
         (takeOutCof (box .cof) (all T (Φ ∘ p)) (all S (Φ ∘ p ∘ ⟪ σ ⟫))
           (λ _ → refl)
           (λ uS uT → funext λ i →
             β .vary S T σ r (λ s → p s , uS s) box i
-            ∙ cong (λ w → β .lift S r (λ s → p (⟪ σ ⟫ s) , w s) (reshapeBox σ box) .fill i .fst)
+            ∙ cong (λ w → β .lift S r (λ s → p (⟪ σ ⟫ s) , w s) (reshapeBox σ box) .fill i .out)
               (funext λ s → cofIsProp (Φ (p (⟪ σ ⟫ s))) _ _)))
         refl)
     where
@@ -94,7 +95,7 @@ opaque
         open RealignId S (Φ ∘ fst ∘ p) (A ∘ fst ∘ p)
           (reindex (A ∘ fst) β ((fst ∘ p) ×id)) (reindex A α (fst ∘ p)) r box
       in
-      symm (fillA .fill s .snd ∣ inr (λ s → p s .snd) ∣)
+      symm (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
 
   reindexRealignIsFib : ∀{ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}

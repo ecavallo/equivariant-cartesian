@@ -44,26 +44,26 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .fst a =
+  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .out a =
     subst (curry B (p s))
       (fillA s a .cap≡)
-      (fillB s a (fst ∘ fillA s a .fill) .fill s .fst)
+      (fillB s a (out ∘ fillA s a .fill) .fill s .out)
     where
     open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
-  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .snd u =
+  ΠIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
     funext λ a →
     symm (congdep (box .tube u s) (fillA s a .cap≡))
     ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
-        (fillB s a (fst ∘ fillA s a .fill) .fill s .snd u)
+        (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
     where
     open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
   ΠIsFib {A = A} {B} α β .lift S r p box .cap≡ =
     funext λ a →
     cong (subst (curry B (p r)) (fillA r a .cap≡))
-      (fillB r a (fst ∘ fillA r a .fill) .cap≡)
-    ∙ congdep (box .cap .fst) (fillA r a .cap≡)
+      (fillB r a (out ∘ fillA r a .fill) .cap≡)
+    ∙ congdep (box .cap .out) (fillA r a .cap≡)
     where
     open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
@@ -71,18 +71,18 @@ opaque
     funext λ a →
     cong
       (subst (curry B (p (⟪ σ ⟫ s))) (T.fillA _ a .cap≡))
-      (β .vary S T σ r (p ×id ∘ T.q _ a (fst ∘ T.fillA _ a .fill)) (T.boxB _ a (fst ∘ T.fillA _ a .fill)) s)
+      (β .vary S T σ r (p ×id ∘ T.q _ a (out ∘ T.fillA _ a .fill)) (T.boxB _ a (out ∘ T.fillA _ a .fill)) s)
     ∙
     adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
       (cong (λ cA → S.q s a cA s .snd) (funext (varyA a))) refl
       (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
       (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
-        ∙ congdep (λ cA → S.fillB s a cA .fill s .fst) (funext (varyA a)))
+        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA a)))
     where
     module T = ΠIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
     module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
 
-    varyA : (a : A (p (⟪ σ ⟫ s))) (i : ⟨ S ⟩) → T.fillA _ a .fill _ .fst ≡ S.fillA s a .fill i .fst
+    varyA : (a : A (p (⟪ σ ⟫ s))) (i : ⟨ S ⟩) → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
     varyA = coerceVary S T σ s (reindex A α p)
 
   ----------------------------------------------------------------------

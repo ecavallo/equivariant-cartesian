@@ -55,15 +55,31 @@ postulate
 ∂ : Int → CofProp
 ∂ i = int ∋ i ≈ O ∨ int ∋ i ≈ I
 
-_[_↦_] : ∀ {ℓ} (A : Set ℓ) (φ : CofProp) → ([ φ ] → A) → Set ℓ
-A [ φ ↦ f ] = Σ a ∈ A , ∀ u → f u ≡ a
-
 _,[_] : ∀ {ℓ} (Γ : Set ℓ) (Φ : Γ → CofProp) → Set ℓ
 Γ ,[ Φ ] = Σ x ∈ Γ , [ Φ x ]
 
 ----------------------------------------------------------------------
+-- Restricted types
+----------------------------------------------------------------------
+
+record _[_↦_] {ℓ} (A : Set ℓ) (φ : CofProp) (a : [ φ ] → A) : Set ℓ where
+  constructor makeRestrict
+  field
+    out : A
+    out≡ : ∀ u → a u ≡ out
+
+open _[_↦_] public
+
+restrictExt : ∀ {ℓ} {A : Set ℓ} {φ : CofProp} {a : [ φ ] → A}
+  {z z' : A [ φ ↦ a ]}
+  → z .out ≡ z' .out
+  → z ≡ z'
+restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
+
+----------------------------------------------------------------------
 -- Combining compatible partial functions
 ----------------------------------------------------------------------
+
 ∨-rec : ∀ {ℓ} {A : Set ℓ}
   (φ ψ : CofProp)
   (f : [ φ ] → A)

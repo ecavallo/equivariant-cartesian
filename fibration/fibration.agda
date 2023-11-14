@@ -36,18 +36,18 @@ mapBox : ∀ {ℓ ℓ'} {S : Shape} {r : ⟨ S ⟩}
   → OpenBox S r A → OpenBox S r B
 mapBox f box .cof = box .cof
 mapBox f box .tube u i = f i (box .tube u i)
-mapBox f box .cap .fst = f _ (box .cap .fst)
-mapBox f box .cap .snd u = cong (f _) (box .cap .snd u)
+mapBox f box .cap .out = f _ (box .cap .out)
+mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
 opaque
   boxExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box box' : OpenBox S r A}
     → box .cof ≡ box' .cof
     → (∀ u v → box .tube u ≡ box' .tube v)
-    → box .cap .fst ≡ box' .cap .fst
+    → box .cap .out ≡ box' .cap .out
     → box ≡ box'
   boxExt {box = box} refl q refl =
-    congΣ (λ t c → makeBox (box .cof) t (box .cap .fst , c))
+    congΣ (λ t c → makeBox (box .cof) t (makeRestrict (box .cap .out) c))
       (funext λ _ → q _ _)
       (funext λ _ → uipImp)
 
@@ -57,7 +57,7 @@ opaque
     {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
     → box₀ .cof ≡ box₁ .cof
     → (∀ u v → subst (λ b' → Π (A b')) b (box₀ .tube u) ≡ box₁ .tube v)
-    → subst (A ◆ r) b (box₀ .cap .fst) ≡ box₁ .cap .fst
+    → subst (A ◆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
     → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
   boxExtDep S refl f r x = boxExt f r x
 
@@ -70,7 +70,7 @@ record Filler {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ} (box
   constructor makeFiller
   field
     fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube ◆ s ]
-    cap≡ : fill r .fst ≡ box .cap .fst
+    cap≡ : fill r .out ≡ box .cap .out
 
 open Filler public
 
@@ -86,19 +86,17 @@ opaque
   fillerExt : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
-    → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
+    → (∀ s → co .fill s .out ≡ co' .fill s .out)
     → co ≡ co'
   fillerExt p =
-    congΣ makeFiller
-      (funext λ s → Σext (p s) (funext λ _ → uipImp))
-      uipImp
+    congΣ makeFiller (funext λ s → restrictExt (p s)) uipImp
 
   fillerCong : ∀ {ℓ} {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
     → co ≡ co'
-    → (∀ s → co .fill s .fst ≡ co' .fill s .fst)
-  fillerCong p s = cong fst (appCong (cong fill p))
+    → (∀ s → co .fill s .out ≡ co' .fill s .out)
+  fillerCong p s = cong out (appCong (cong fill p))
 
 ----------------------------------------------------------------------
 -- Equivariant fibrations
@@ -109,8 +107,8 @@ record isFib {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ'
   field
     lift : ∀ S r p → (box : OpenBox S r (A ∘ p)) → Filler box
     vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p box s
-      → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .fst
-        ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .fst
+      → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .out
+        ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .out
 
 open isFib public
 
@@ -165,7 +163,7 @@ reindexComp' g f = refl
 opaque
   isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
-      → (s : ⟨ S ⟩) → α .lift S r p box .fill s .fst ≡ α' .lift S r p box .fill s .fst)
+      → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
     → α ≡ α'
   isFibExt q =
     congΣ makeFib
@@ -188,10 +186,10 @@ opaque
     fillerB = β .lift S r p (mapBox (sec ∘ retract ∘ p) box)
 
     filler : Filler box
-    filler .fill s .fst = retract (p s) .ret (fillerB .fill s .fst)
-    filler .fill s .snd u =
+    filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
+    filler .fill s .out≡ u =
       symm (appCong (retract (p s) .inv))
-      ∙ cong (retract (p s) .ret) (fillerB .fill s .snd u)
+      ∙ cong (retract (p s) .ret) (fillerB .fill s .out≡ u)
     filler .cap≡ =
       cong (retract (p r) .ret) (fillerB .cap≡)
       ∙ appCong (retract (p r) .inv)

@@ -33,18 +33,18 @@ module ΣIsFibId {ℓ ℓ'}
   module _ (cA : Filler boxA) where
 
     q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
-    q s = (s , cA .fill s .fst)
+    q s = (s , cA .fill s .out)
 
     boxB : OpenBox S r (B ∘ q)
     boxB .cof = box .cof
-    boxB .tube u i = subst (curry B i) (cA .fill i .snd u) (box .tube u i .snd)
-    boxB .cap .fst = subst (curry B r) (symm (cA .cap≡)) (box .cap .fst .snd)
-    boxB .cap .snd u =
+    boxB .tube u i = subst (curry B i) (cA .fill i .out≡ u) (box .tube u i .snd)
+    boxB .cap .out = subst (curry B r) (symm (cA .cap≡)) (box .cap .out .snd)
+    boxB .cap .out≡ u =
       adjustSubstEq (curry B r)
-        (cong fst (box .cap .snd u)) refl
-        (cA .fill r .snd u) (symm (cA .cap≡))
-        (symm (substCongAssoc (curry B r) fst (box .cap .snd u) _)
-          ∙ congdep snd (box .cap .snd u))
+        (cong fst (box .cap .out≡ u)) refl
+        (cA .fill r .out≡ u) (symm (cA .cap≡))
+        (symm (substCongAssoc (curry B r) fst (box .cap .out≡ u) _)
+          ∙ congdep snd (box .cap .out≡ u))
 
     fillB = β .lift S r q boxB
 
@@ -57,13 +57,13 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Σ' A B)
-  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .fst =
-    (fillA .fill s .fst , fillB fillA .fill s .fst)
+  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out =
+    (fillA .fill s .out , fillB fillA .fill s .out)
     where
     open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
-  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .snd u =
-    Σext (fillA .fill s .snd u) (fillB fillA .fill s .snd u)
+  ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
+    Σext (fillA .fill s .out≡ u) (fillB fillA .fill s .out≡ u)
     where
     open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
 
@@ -85,7 +85,7 @@ opaque
          (cong (λ cA → S.q cA s .snd) varyA)
          (β .vary S T σ r (p ×id ∘ T.q T.fillA) (T.boxB T.fillA) s)
        ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
-       ∙ congdep (λ cA → S.fillB cA .fill s .fst) varyA)
+       ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
     where
     module T = ΣIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
     module S = ΣIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)

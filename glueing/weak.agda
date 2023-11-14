@@ -75,33 +75,33 @@ module GlueIsFibId {ℓ}
 
     module _ (us : [ Φ s ]) where
 
-      C₁ = e (s , us) (fillA .fill s .fst) .fst
-      C₂ = e (s , us) (fillA .fill s .fst) .snd
+      C₁ = e (s , us) (fillA .fill s .out) .fst
+      C₂ = e (s , us) (fillA .fill s .out) .snd
 
-      fiberR : [ box .cof ∨ S ∋ r ≈ s ] → Fiber (f (s , us)) (fillA .fill s .fst)
+      fiberR : [ box .cof ∨ S ∋ r ≈ s ] → Fiber (f (s , us)) (fillA .fill s .out)
       fiberR =
         ∨-rec (box .cof) (S ∋ r ≈ s)
           (λ v →
             eqToFiber
               (box .tube v s .dom us)
-              (box .tube v s .match us ∙ fillA .fill s .snd v))
+              (box .tube v s .match us ∙ fillA .fill s .out≡ v))
           (λ {refl →
             eqToFiber
-              (box .cap .fst .dom us)
-              (box .cap .fst .match us ∙ symm (fillA .cap≡))})
+              (box .cap .out .dom us)
+              (box .cap .out .match us ∙ symm (fillA .cap≡))})
           (λ {v refl →
             cong (uncurry eqToFiber)
-              (Σext (cong (λ g → g .dom us) (box .cap .snd v)) uipImp)})
+              (Σext (cong (λ g → g .dom us) (box .cap .out≡ v)) uipImp)})
 
-      boxR : OpenBox int I (λ _ → Fiber (f (s , us)) (fillA .fill s .fst))
+      boxR : OpenBox int I (λ _ → Fiber (f (s , us)) (fillA .fill s .out))
       boxR .cof = box .cof ∨ S ∋ r ≈ s
       boxR .tube v≡ k = C₂ (fiberR v≡) .at k
-      boxR .cap .fst = C₁
-      boxR .cap .snd v≡ = C₂ (fiberR v≡) .atI
+      boxR .cap .out = C₁
+      boxR .cap .out≡ v≡ = C₂ (fiberR v≡) .atI
 
       fillR =
         FiberIsFib β (reindex A α fst) .lift
-          int I (λ _ → (((s , us) , f (s , us)) , fillA .fill s .fst)) boxR .fill O
+          int I (λ _ → (((s , us) , f (s , us)) , fillA .fill s .out)) boxR .fill O
 
     boxFix : OpenBox int I (λ _ → A s)
     boxFix .cof = box .cof ∨ Φ s ∨ S ∋ r ≈ s
@@ -109,23 +109,23 @@ module GlueIsFibId {ℓ}
       ∨-rec (box .cof) (Φ s ∨ S ∋ r ≈ s)
         (λ v _ → boxA .tube v s)
         (∨-rec (Φ s) (S ∋ r ≈ s)
-          (λ us i → fillR us .fst .snd .at i)
-          (λ {refl _ → boxA .cap .fst})
+          (λ us i → fillR us .out .snd .at i)
+          (λ {refl _ → boxA .cap .out})
           (λ {us refl → funext λ i →
-            fiberPathEq (symm (fillR us .snd ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .atO) i
-            ∙ box .cap .fst .match us}))
+            fiberPathEq (symm (fillR us .out≡ ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .atO) i
+            ∙ box .cap .out .match us}))
         (λ v →
           ∨-elimEq (Φ s) (S ∋ r ≈ s)
             (λ us → funext λ i →
               symm (box .tube v s .match us)
-              ∙ fiberPathEq (symm (C₂ us (fiberR us ∣ inl v ∣) .atO) ∙ fillR us .snd ∣ inl v ∣) i)
-            (λ {refl → funext λ _ → boxA .cap .snd v}))
-    boxFix .cap .fst = fillA .fill s .fst
-    boxFix .cap .snd =
+              ∙ fiberPathEq (symm (C₂ us (fiberR us ∣ inl v ∣) .atO) ∙ fillR us .out≡ ∣ inl v ∣) i)
+            (λ {refl → funext λ _ → boxA .cap .out≡ v}))
+    boxFix .cap .out = fillA .fill s .out
+    boxFix .cap .out≡ =
       ∨-elimEq (box .cof) (Φ s ∨ S ∋ r ≈ s)
-        (λ v → fillA .fill s .snd v)
+        (λ v → fillA .fill s .out≡ v)
         (∨-elimEq (Φ s) (S ∋ r ≈ s)
-          (λ us → fillR us .fst .snd .atI)
+          (λ us → fillR us .out .snd .atI)
           (λ {refl → symm (fillA .cap≡)}))
 
     fillFix = α .lift int I (λ _ → s) boxFix .fill O
@@ -144,23 +144,23 @@ opaque
       S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r box
 
     rec : Filler box
-    rec .fill s .fst .dom us = fillR s us .fst .fst
-    rec .fill s .fst .cod = fillFix s .fst
-    rec .fill s .fst .match us =
-      symm (fillR s us .fst .snd .atO)
-      ∙ fillFix s .snd ∣ inr ∣ inl us ∣ ∣
-    rec .fill s .snd v =
+    rec .fill s .out .dom us = fillR s us .out .fst
+    rec .fill s .out .cod = fillFix s .out
+    rec .fill s .out .match us =
+      symm (fillR s us .out .snd .atO)
+      ∙ fillFix s .out≡ ∣ inr ∣ inl us ∣ ∣
+    rec .fill s .out≡ v =
       GlueExt
         (λ us →
           cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .atO))
-          ∙ cong fst (fillR s us .snd ∣ inl v ∣))
-        (fillFix s .snd ∣ inl v ∣)
+          ∙ cong fst (fillR s us .out≡ ∣ inl v ∣))
+        (fillFix s .out≡ ∣ inl v ∣)
     rec .cap≡ =
       GlueExt
         (λ ur →
-          cong fst (symm (fillR r ur .snd ∣ inr refl ∣))
+          cong fst (symm (fillR r ur .out≡ ∣ inr refl ∣))
           ∙ cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .atO))
-        (symm (fillFix r .snd ∣ inr ∣ inr refl ∣ ∣))
+        (symm (fillFix r .out≡ ∣ inr ∣ inr refl ∣ ∣))
 
   GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p box s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
@@ -178,7 +178,7 @@ opaque
     e : (γu : Γ ,[ Φ ]) → IsEquiv (f γu)
     e = snd ∘ fe
 
-    varyA : T.fillA .fill (⟪ σ ⟫ s) .fst ≡ S.fillA .fill s .fst
+    varyA : T.fillA .fill (⟪ σ ⟫ s) .out ≡ S.fillA .fill s .out
     varyA = α .vary S T σ r p T.boxA s
 
     varyC₁ : ∀ uσs
@@ -193,13 +193,13 @@ opaque
       congdep₂ (λ a fib → e (_ , uσs) a .snd fib .at i) varyA p
 
     varyR : ∀ uσs
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .fst)
-        ≡ S.fillR s uσs .fst
+      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .out)
+        ≡ S.fillR s uσs .out
     varyR uσs =
       congdep₂
         (λ a box →
           FiberIsFib (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
-            (λ _ → (((_ , uσs) , _) , a)) box .fill O .fst)
+            (λ _ → (((_ , uσs) , _) , a)) box .fill O .out)
         varyA
         (boxExtDep int varyA
           (cong (box .cof ∨_) (≈Equivariant σ r s))
@@ -213,14 +213,14 @@ opaque
           (varyC₁ uσs))
       ∙
       cong
-        (λ δ → δ .lift int I (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill O .fst)
+        (λ δ → δ .lift int I (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill O .out)
         (reindexFiber (reindex B β (p ×id)) (reindex A α (p ∘ fst))
           (λ {(s , uσs) → ⟪ σ ⟫ s , uσs}))
 
-    varyFix : T.fillFix (⟪ σ ⟫ s) .fst ≡ S.fillFix s .fst
+    varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
     varyFix =
       cong
-        (λ box' → α .lift int I (λ _ → p (⟪ σ ⟫ s)) box' .fill O .fst)
+        (λ box' → α .lift int I (λ _ → p (⟪ σ ⟫ s)) box' .fill O .out)
         (boxExt
           (cong (λ φ → box .cof ∨ Φ (p (⟪ σ ⟫ s)) ∨ φ) (≈Equivariant σ r s))
           (takeOutCof (box .cof) (Φ (p (⟪ σ ⟫ s)) ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (Φ (p (⟪ σ ⟫ s)) ∨ S ∋ r ≈ s)
