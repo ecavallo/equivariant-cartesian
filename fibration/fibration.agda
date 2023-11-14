@@ -51,7 +51,7 @@ opaque
       (funext λ _ → q _ _)
       (funext λ _ → uipImp)
 
-  boxExtDep : ∀ {ℓ ℓ'} (S : Shape) {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
+  boxExtDep : ∀ {ℓ ℓ'} {S : Shape} {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
     {b₀ b₁ : B} (b : b₀ ≡ b₁)
     {r : ⟨ S ⟩}
     {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
@@ -59,7 +59,7 @@ opaque
     → (∀ u v → subst (λ b' → Π (A b')) b (box₀ .tube u) ≡ box₁ .tube v)
     → subst (A ◆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
     → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
-  boxExtDep S refl f r x = boxExt f r x
+  boxExtDep refl f r x = boxExt f r x
 
 ----------------------------------------------------------------------
 -- Solutions to individual lifting problems
@@ -161,7 +161,7 @@ reindexComp' g f = refl
 -- An extensionality principle for fibration structures
 ----------------------------------------------------------------------
 opaque
-  isFibExt : ∀{ℓ ℓ'}{Γ : Set ℓ}{A : Γ → Set ℓ'}{α α' : isFib A} →
+  isFibExt : ∀{ℓ ℓ'} {Γ : Set ℓ} {A : Γ → Set ℓ'} {α α' : isFib A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
       → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
     → α ≡ α'

@@ -20,9 +20,9 @@ _×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set
 
 
 module ΣIsFibId {ℓ ℓ'}
-  (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
+  {S : Shape} {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  (r : ⟨ S ⟩) (box : OpenBox S r (Σ' A B))
+  {r : ⟨ S ⟩} (box : OpenBox S r (Σ' A B))
   where
 
   boxA : OpenBox S r A
@@ -60,12 +60,12 @@ opaque
   ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out =
     (fillA .fill s .out , fillB fillA .fill s .out)
     where
-    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΣIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
     Σext (fillA .fill s .out≡ u) (fillB fillA .fill s .out≡ u)
     where
-    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΣIsFib {A = A} {B} α β .lift S r p box .cap≡ =
     Σext (fillA .cap≡)
@@ -74,7 +74,7 @@ opaque
         (fillA .cap≡) refl
         (fillB fillA .cap≡))
     where
-    open ΣIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΣIsFib {A = A} {B} α β .vary S T σ r p box s =
     Σext
@@ -87,8 +87,8 @@ opaque
        ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
     where
-    module T = ΣIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
-    module S = ΣIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
+    module T = ΣIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    module S = ΣIsFibId (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
     varyA : reshapeFiller σ T.fillA ≡ S.fillA
     varyA = fillerExt (α .vary S T σ r p T.boxA)

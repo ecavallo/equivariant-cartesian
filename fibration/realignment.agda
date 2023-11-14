@@ -13,12 +13,12 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-module RealignId {ℓ} (S : Shape)
+module RealignId {ℓ} {S : Shape}
   (Φ : ⟨ S ⟩ → CofProp)
-  (A : ⟨ S ⟩ → Set ℓ)
+  {A : ⟨ S ⟩ → Set ℓ}
   (β : isFib {Γ = ⟨ S ⟩ ,[ Φ ]} (A ∘ fst))
   (α : isFib A)
-  (r : ⟨ S ⟩) (box : OpenBox S r A)
+  {r : ⟨ S ⟩} (box : OpenBox S r A)
   where
 
   fillB : [ all S Φ ] → _
@@ -58,7 +58,7 @@ opaque
     ; cap≡ = fillA .cap≡
     }
     where
-    open RealignId S (Φ ∘ p) (A ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) r box
+    open RealignId (Φ ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) box
   realignIsFib Φ A β α .vary S T σ r p box s =
     α .vary S T σ r p T.box' s
     ∙
@@ -75,11 +75,9 @@ opaque
         refl)
     where
     module S =
-      RealignId S (Φ ∘ p ∘ ⟪ σ ⟫) (A ∘ p ∘ ⟪ σ ⟫)
-        (reindex (A ∘ fst) β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r (reshapeBox σ box)
-    module T =
-      RealignId T (Φ ∘ p) (A ∘ p)
-        (reindex (A ∘ fst) β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) box
+      RealignId (Φ ∘ p ∘ ⟪ σ ⟫)
+        (reindex (A ∘ fst) β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
+    module T = RealignId (Φ ∘ p) (reindex (A ∘ fst) β (p ×id)) (reindex A α p) box
 
   isRealigned : ∀ {ℓ ℓ'}
     {Γ : Set ℓ}
@@ -92,8 +90,7 @@ opaque
   isRealigned {ℓ} {Γ} Φ A β α =
     isFibExt λ S r p box s →
       let
-        open RealignId S (Φ ∘ fst ∘ p) (A ∘ fst ∘ p)
-          (reindex (A ∘ fst) β ((fst ∘ p) ×id)) (reindex A α (fst ∘ p)) r box
+        open RealignId (Φ ∘ fst ∘ p) (reindex (A ∘ fst) β ((fst ∘ p) ×id)) (reindex A α (fst ∘ p)) box
       in
       symm (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
 

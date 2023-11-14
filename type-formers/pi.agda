@@ -16,22 +16,22 @@ open import fibration.coercion
 Π' A B x = (a : A x) → B (x , a)
 
 module ΠIsFibId {ℓ ℓ'}
-  (S : Shape) {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
+  {S : Shape} {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  (r : ⟨ S ⟩) (box : OpenBox S r (Π' A B))
+  {r : ⟨ S ⟩} (box : OpenBox S r (Π' A B))
   where
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
     fillA = coerceFiller S s α a
 
-    module _ (cA : (i : ⟨ S ⟩) → A i) where
+    module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
       q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
-      q i = (i , cA i)
+      q i = (i , coerceA i)
 
       boxB : OpenBox S r (B ∘ q)
-      boxB = mapBox (λ i f → f (cA i)) box
+      boxB = mapBox (λ i f → f (coerceA i)) box
 
       fillB = β .lift S r q boxB
 
@@ -49,7 +49,7 @@ opaque
       (fillA s a .cap≡)
       (fillB s a (out ∘ fillA s a .fill) .fill s .out)
     where
-    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΠIsFib {A = A} {B} α β .lift S r p box .fill s .out≡ u =
     funext λ a →
@@ -57,7 +57,7 @@ opaque
     ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
         (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
     where
-    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΠIsFib {A = A} {B} α β .lift S r p box .cap≡ =
     funext λ a →
@@ -65,7 +65,7 @@ opaque
       (fillB r a (out ∘ fillA r a .fill) .cap≡)
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
     where
-    open ΠIsFibId S (reindex A α p) (reindex B β (p ×id)) r box
+    open ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
 
   ΠIsFib {A = A} {B} α β .vary S T σ r p box s =
     funext λ a →
@@ -79,8 +79,8 @@ opaque
       (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA a)))
     where
-    module T = ΠIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
-    module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
+    module T = ΠIsFibId (reindex A α p) (reindex B β (p ×id)) box
+    module S = ΠIsFibId (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
     varyA : (a : A (p (⟪ σ ⟫ s))) (i : ⟨ S ⟩) → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
     varyA = coerceVary S T σ s (reindex A α p)

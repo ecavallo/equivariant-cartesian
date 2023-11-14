@@ -23,12 +23,12 @@ Extension' : ∀ {ℓ ℓ'} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
 Extension' Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
 
 module ExtensionIsFibId {ℓ}
-  (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-  (S : Shape)
+  {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
+  {S : Shape}
   {A : ⟨ S ⟩ × ⟨ Z ⟩ → Set ℓ}
   (α : isFib A)
   {a : ∀ s z → [ Φ z ] → A (s , z)}
-  (r : ⟨ S ⟩) (box : OpenBox S r (λ s → (Extension' Z Φ A (s , a s))))
+  {r : ⟨ S ⟩} (box : OpenBox S r (λ s → (Extension' Z Φ A (s , a s))))
   where
 
   module _ (z : ⟨ Z ⟩) where
@@ -58,22 +58,22 @@ opaque
   ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out z .out =
     fillA z .fill s .out
     where
-    open ExtensionIsFibId Z Φ S (reindex A α ((fst ∘ p) ×id)) r box
+    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
 
   ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out z .out≡ v =
     fillA z .fill s .out≡ ∣ inr v ∣
     where
-    open ExtensionIsFibId Z Φ S (reindex A α ((fst ∘ p) ×id)) r box
+    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
 
   ExtensionIsFib Z Φ {A = A} α .lift S r p box .fill s .out≡ u =
     funext λ z → restrictExt (fillA z .fill s .out≡ ∣ inl u ∣)
     where
-    open ExtensionIsFibId Z Φ S (reindex A α ((fst ∘ p) ×id)) r box
+    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
 
   ExtensionIsFib Z Φ {A = A} α .lift S r p box .cap≡ =
     funext λ z → restrictExt (fillA z .cap≡)
     where
-    open ExtensionIsFibId Z Φ S (reindex A α ((fst ∘ p) ×id)) r box
+    open ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
 
   ExtensionIsFib Z Φ {A = A} α .vary S T σ r p box s =
     funext λ z →
@@ -85,8 +85,8 @@ opaque
                 (∨-elimEq (box .cof) (Φ z) (λ _ → refl) (λ _ → refl)))
               refl))
     where
-    module T = ExtensionIsFibId Z Φ T (reindex A α ((fst ∘ p) ×id)) (⟪ σ ⟫ r) box
-    module S = ExtensionIsFibId Z Φ S (reindex A α ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
+    module T = ExtensionIsFibId (reindex A α ((fst ∘ p) ×id)) box
+    module S = ExtensionIsFibId (reindex A α ((fst ∘ p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
 
   ----------------------------------------------------------------------
   -- Forming extension types is stable under reindexing

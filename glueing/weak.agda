@@ -54,13 +54,13 @@ opaque
       (Σext (funext p) (funext (λ _ → uipImp)))
 
 module GlueIsFibId {ℓ}
-  (S : Shape)
-  (Φ : ⟨ S ⟩ → CofProp)
+  {S : Shape}
+  {Φ : ⟨ S ⟩ → CofProp}
   {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
-  (r : ⟨ S ⟩) (box : OpenBox S r (Glue' Φ B A (equivFun fe)))
+  {r : ⟨ S ⟩} (box : OpenBox S r (Glue' Φ B A (equivFun fe)))
   where
 
   f = λ su → fe su .fst
@@ -140,8 +140,7 @@ opaque
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
   GlueIsFib Φ {B} {A} fe β α .lift S r p box = rec
     where
-    open GlueIsFibId
-      S (Φ ∘ p) (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) r box
+    open GlueIsFibId (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) box
 
     rec : Filler box
     rec .fill s .out .dom us = fillR s us .out .fst
@@ -165,12 +164,9 @@ opaque
   GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p box s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
     where
-    module T = GlueIsFibId
-      T (Φ ∘ p) (fe ∘ p ×id)
-      (reindex B β (p ×id)) (reindex A α p) (⟪ σ ⟫ r) box
-    module S = GlueIsFibId
-      S (Φ ∘ p ∘ ⟪ σ ⟫) (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
-      (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) r (reshapeBox σ box)
+    module T = GlueIsFibId (fe ∘ p ×id) (reindex B β (p ×id)) (reindex A α p) box
+    module S = GlueIsFibId (fe ∘ (p ∘ ⟪ σ ⟫) ×id)
+      (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) (reindex A α (p ∘ ⟪ σ ⟫)) (reshapeBox σ box)
 
     f : (γu : Γ ,[ Φ ]) → B γu → A (γu .fst)
     f = fst ∘ fe
@@ -201,7 +197,7 @@ opaque
           FiberIsFib (reindex B β (p ×id)) (reindex A α (p ∘ fst)) .lift int I
             (λ _ → (((_ , uσs) , _) , a)) box .fill O .out)
         varyA
-        (boxExtDep int varyA
+        (boxExtDep varyA
           (cong (box .cof ∨_) (≈Equivariant σ r s))
           (takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
             (λ u → funextDepCod varyA λ i →
