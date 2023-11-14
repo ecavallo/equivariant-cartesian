@@ -44,7 +44,7 @@ opaque
     subst isFib (SGlueStrictness' Φ (equivFun fe)) α
     ≡ reindex (SGlueIsFib Φ fe α β) fst
   SGlueIsFibStrictness Φ {A} {B} fe α β =
-    symm
+    sym
       (isRealigned Φ
         (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
         (Misaligned.SGlueIsFib Φ fe α β))

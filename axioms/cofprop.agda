@@ -91,7 +91,7 @@ restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
   ∥∥-rec _ [ f ∣ g ] λ
     { (inl _) (inl _) → cong f (cofIsProp φ _ _)
     ; (inl u) (inr v) → p u v
-    ; (inr v) (inl u) → symm (p u v)
+    ; (inr v) (inl u) → sym (p u v)
     ; (inr _) (inr _) → cong g (cofIsProp ψ _ _)}
 
 OI-rec : ∀ {ℓ}
@@ -103,7 +103,7 @@ OI-rec : ∀ {ℓ}
   [ 𝕚 ∋ r ≈ 0 ∨ 𝕚 ∋ r ≈ 1 ] → A
 OI-rec r f g =
   ∨-rec (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) f g
-    (λ u v → 0≠1 (symm u ∙ v))
+    (λ u v → 0≠1 (sym u ∙ v))
 
 ∨-elim : ∀ {ℓ}
   (φ ψ : CofProp)

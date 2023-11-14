@@ -88,7 +88,7 @@ module GlueIsFibId {ℓ}
           (λ {refl →
             eqToFiber
               (box .cap .out .dom us)
-              (box .cap .out .match us ∙ symm (fillA .cap≡))})
+              (box .cap .out .match us ∙ sym (fillA .cap≡))})
           (λ {v refl →
             cong (uncurry eqToFiber)
               (Σext (cong (λ g → g .dom us) (box .cap .out≡ v)) uipImp)})
@@ -112,13 +112,13 @@ module GlueIsFibId {ℓ}
           (λ us i → fillR us .out .snd .at i)
           (λ {refl _ → boxA .cap .out})
           (λ {us refl → funext λ i →
-            fiberPathEq (symm (fillR us .out≡ ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .at0) i
+            fiberPathEq (sym (fillR us .out≡ ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .at0) i
             ∙ box .cap .out .match us}))
         (λ v →
           ∨-elimEq (Φ s) (S ∋ r ≈ s)
             (λ us → funext λ i →
-              symm (box .tube v s .match us)
-              ∙ fiberPathEq (symm (C₂ us (fiberR us ∣ inl v ∣) .at0) ∙ fillR us .out≡ ∣ inl v ∣) i)
+              sym (box .tube v s .match us)
+              ∙ fiberPathEq (sym (C₂ us (fiberR us ∣ inl v ∣) .at0) ∙ fillR us .out≡ ∣ inl v ∣) i)
             (λ {refl → funext λ _ → boxA .cap .out≡ v}))
     boxFix .cap .out = fillA .fill s .out
     boxFix .cap .out≡ =
@@ -126,7 +126,7 @@ module GlueIsFibId {ℓ}
         (λ v → fillA .fill s .out≡ v)
         (∨-elimEq (Φ s) (S ∋ r ≈ s)
           (λ us → fillR us .out .snd .at1)
-          (λ {refl → symm (fillA .cap≡)}))
+          (λ {refl → sym (fillA .cap≡)}))
 
     fillFix = α .lift 𝕚 1 (λ _ → s) boxFix .fill 0
 
@@ -146,20 +146,20 @@ opaque
     filler .fill s .out .dom us = fillR s us .out .fst
     filler .fill s .out .cod = fillFix s .out
     filler .fill s .out .match us =
-      symm (fillR s us .out .snd .at0)
+      sym (fillR s us .out .snd .at0)
       ∙ fillFix s .out≡ ∣ inr ∣ inl us ∣ ∣
     filler .fill s .out≡ v =
       GlueExt
         (λ us →
-          cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .at0))
+          cong fst (sym (C₂ s us (fiberR s us ∣ inl v ∣) .at0))
           ∙ cong fst (fillR s us .out≡ ∣ inl v ∣))
         (fillFix s .out≡ ∣ inl v ∣)
     filler .cap≡ =
       GlueExt
         (λ ur →
-          cong fst (symm (fillR r ur .out≡ ∣ inr refl ∣))
+          cong fst (sym (fillR r ur .out≡ ∣ inr refl ∣))
           ∙ cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .at0))
-        (symm (fillFix r .out≡ ∣ inr ∣ inr refl ∣ ∣))
+        (sym (fillFix r .out≡ ∣ inr ∣ inr refl ∣ ∣))
 
   GlueIsFib {Γ = Γ} Φ {B} {A} fe β α .vary S T σ r p box s =
     GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix

@@ -95,7 +95,7 @@ fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
   fst ∘ L S {A = U ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
 fstLlifts S =
   L√ S fst (λ A → A .lifts S)
-  ∙ cong♭ (L S) (funext (λ A → A .liftsBase S) ∙ symm (R℘ S El (hasLifts S)))
+  ∙ cong♭ (L S) (funext (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
 
 getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → U ℓ) → hasLifts S (El ∘ C)
 getLifts S C = coe (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
@@ -111,7 +111,7 @@ fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
   → fst ∘ L T {A = U ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
 fstLvaries S T σ =
   L√ T fst (λ A → A .varies S T σ)
-  ∙ cong♭ (L T) (funext (λ A → A .variesBase S T σ) ∙ symm (R℘ T El (hasVaries S T σ)))
+  ∙ cong♭ (L T) (funext (λ A → A .variesBase S T σ) ∙ sym (R℘ T El (hasVaries S T σ)))
 
 srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
   → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
@@ -216,15 +216,15 @@ encode {ℓ' = ℓ'} {Γ} Aα = encoding
   encoding x .El = Aα .fst x
   encoding x .lifts S = Rl S x
   encoding x .liftsBase S =
-    appCong (cong♭ (R S) (symm (L√ S fst (Rl S))) ∙ R℘ S (Aα .fst) (hasLifts S))
+    appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S (Aα .fst) (hasLifts S))
   encoding x .varies S T σ = Rv S T σ x
   encoding x .variesBase S T σ =
-    appCong (cong♭ (R T) (symm (L√ T fst (Rv S T σ))) ∙ R℘ T (Aα .fst) (hasVaries S T σ))
+    appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T (Aα .fst) (hasVaries S T σ))
   encoding x .variesSrc S T σ =
-    appCong (cong♭ (R T) (symm (L√ T src* (Rv S T σ))))
+    appCong (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
   encoding x .variesDst S T σ =
     appCong
-      (cong♭ (R T) (symm (L√ T dst* (Rv S T σ))) ∙ symm (ShapeHomR σ (FibLifts Aα S)))
+      (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts Aα S)))
 
 -- Inverse conditions for the correspondence between Fib Γ and Γ → U
 ----------------------------------------------------------------------
@@ -247,7 +247,7 @@ decodeEncode {Γ = Γ} Aα =
   lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → Γ)
     → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
   lemma S p =
-    appCong (symm (L℘ S id (λ C → C .lifts S)))
+    appCong (sym (L℘ S id (λ C → C .lifts S)))
     ∙ appCong (L℘ S id (R S {B = Set* _} (FibLifts Aα S)))
 
 encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
@@ -269,11 +269,11 @@ encodeEl C =
       appCong
         (cong♭ (R S)
           {y = L S (λ D → D .lifts S)}
-          (symm (funext (Llifts S)))))
+          (sym (funext (Llifts S)))))
     (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
       appCong
         (cong♭ (R T)
-          (symm (funext λ C →
+          (sym (funext λ C →
             Lvaries S T σ C
             ∙ cong
                 (λ w →

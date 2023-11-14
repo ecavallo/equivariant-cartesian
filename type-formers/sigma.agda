@@ -37,12 +37,12 @@ module ΣIsFibId {ℓ ℓ'}
     boxB : OpenBox S r (B ∘ q)
     boxB .cof = box .cof
     boxB .tube u i = subst (curry B i) (cA .fill i .out≡ u) (box .tube u i .snd)
-    boxB .cap .out = subst (curry B r) (symm (cA .cap≡)) (box .cap .out .snd)
+    boxB .cap .out = subst (curry B r) (sym (cA .cap≡)) (box .cap .out .snd)
     boxB .cap .out≡ u =
       adjustSubstEq (curry B r)
         (cong fst (box .cap .out≡ u)) refl
-        (cA .fill r .out≡ u) (symm (cA .cap≡))
-        (symm (substCongAssoc (curry B r) fst (box .cap .out≡ u) _)
+        (cA .fill r .out≡ u) (sym (cA .cap≡))
+        (sym (substCongAssoc (curry B r) fst (box .cap .out≡ u) _)
           ∙ congdep snd (box .cap .out≡ u))
 
     fillB = β .lift S r q boxB
@@ -68,7 +68,7 @@ opaque
     filler .cap≡ =
       Σext (fillA .cap≡)
         (adjustSubstEq (curry B (p r))
-          refl (symm (fillA .cap≡))
+          refl (sym (fillA .cap≡))
           (fillA .cap≡) refl
           (fillB fillA .cap≡))
 
@@ -80,7 +80,7 @@ opaque
          (α .vary S T σ r p T.boxA s)
          (cong (λ cA → S.q cA s .snd) varyA)
          (β .vary S T σ r (p ×id ∘ T.q T.fillA) (T.boxB T.fillA) s)
-       ∙ symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
+       ∙ sym (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q cA s .snd) varyA _)
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
     where
     module T = ΣIsFibId (reindex α p) (reindex β (p ×id)) box

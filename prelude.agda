@@ -50,14 +50,14 @@ _∙_ : -- transitivity
   x ≡ z
 refl ∙ q = q
 
-symm :
+sym :
   {ℓ : Level}
   {A : Set ℓ}
   {x y : A}
   (p : x ≡ y)
   → ---------
   y ≡ x
-symm refl = refl
+sym refl = refl
 
 cong :
   {ℓ ℓ' : Level}

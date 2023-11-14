@@ -62,7 +62,7 @@ module Tiny (@♭ S : Shape) where
     (@♭ g : B → C) (@♭ f : (⟨ S ⟩ → A) → B)
     → √` g ∘ R f ≡ R (g ∘ f)
   √R {A = A} {B} {C = C} g f =
-    symm (R℘ (R f) (g ∘ L id))
+    sym (R℘ (R f) (g ∘ L id))
     ∙ cong♭ (λ h → R (g ∘ h)) (L℘ id (R f))
   -- The other naturality property of left transposition
   L√ : ∀ {@♭ ℓ ℓ' ℓ''}
@@ -70,7 +70,7 @@ module Tiny (@♭ S : Shape) where
     (@♭ g : B → C) (@♭ f : A → √ B)
     → ---------------------
     g ∘ L f  ≡ L (√` g ∘ f)
-  L√ g f = cong♭ L (symm (√R g (L f)))
+  L√ g f = cong♭ L (sym (√R g (L f)))
 
 open Tiny
 
@@ -85,7 +85,7 @@ module _ {@♭ S T : Shape} (@♭ σ : ShapeHom S T) where
     (@♭ f : A → √ S B)
     → L T (√ShapeHom ∘ f) ≡ L S f ∘ (_∘ ⟪ σ ⟫)
   LShapeHom f =
-    symm (L℘ T √ShapeHom f)
+    sym (L℘ T √ShapeHom f)
     ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (L℘ S id f)
 
   ShapeHomR : ∀ {@♭ ℓ ℓ'} {@♭ A : Set ℓ} {@♭ B : Set ℓ'}

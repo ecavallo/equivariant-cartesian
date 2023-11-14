@@ -188,7 +188,7 @@ opaque
     filler : Filler box
     filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
     filler .fill s .out≡ u =
-      symm (appCong (retract (p s) .inv))
+      sym (appCong (retract (p s) .inv))
       ∙ cong (retract (p s) .ret) (fillerB .fill s .out≡ u)
     filler .cap≡ =
       cong (retract (p r) .ret) (fillerB .cap≡)

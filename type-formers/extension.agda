@@ -39,7 +39,7 @@ module ExtensionIsFibId {ℓ}
       ∨-rec (box .cof) (Φ z)
         (λ u s → box .tube u s z .out)
         (λ v s → a s z v)
-        (λ u v → funext λ s → symm (box .tube u s z .out≡ v))
+        (λ u v → funext λ s → sym (box .tube u s z .out≡ v))
     boxA .cap .out = box .cap .out z .out
     boxA .cap .out≡ =
       ∨-elimEq (box .cof) (Φ z)

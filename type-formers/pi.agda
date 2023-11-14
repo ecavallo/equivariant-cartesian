@@ -55,7 +55,7 @@ opaque
         (fillB s a (out ∘ fillA s a .fill) .fill s .out)
     filler .fill s .out≡ u =
       funext λ a →
-      symm (congdep (box .tube u s) (fillA s a .cap≡))
+      sym (congdep (box .tube u s) (fillA s a .cap≡))
       ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
           (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
     filler .cap≡ =
@@ -73,7 +73,7 @@ opaque
     adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
       (cong (λ cA → S.q s a cA s .snd) (funext (varyA a))) refl
       (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
-      (symm (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
+      (sym (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA a)))
     where
     module T = ΠIsFibId (reindex α p) (reindex β (p ×id)) box

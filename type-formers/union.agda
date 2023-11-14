@@ -53,7 +53,7 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
                   move (λ s → ∣ inl (u₀ s) ∣) (funext λ _ → trunc _ _)
                     (reindex β (λ i → p i .fst , u₀ i)))
                 eq₀
-          ∙ symm (moveEq (λ s → ∣ inl (u₀ s) ∣) (funext λ _ → trunc _ _) α₁))
+          ∙ sym (moveEq (λ s → ∣ inl (u₀ s) ∣) (funext λ _ → trunc _ _) α₁))
         (λ u₁ →
           moveEq (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _) α₀
           ∙ cong
@@ -61,7 +61,7 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
                   move (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _)
                     (reindex β (λ i → p i .fst , u₁ i)))
                 eq₁
-          ∙ symm (moveEq (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _) α₁))
+          ∙ sym (moveEq (λ s → ∣ inr (u₁ s) ∣) (funext λ _ → trunc _ _) α₁))
 
 unionFibExt : ∀ {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
   {Aα₀ Aα₁ : Fib ℓ' (Γ ,[ φ₀ ∨' φ₁ ])}
@@ -287,9 +287,9 @@ reindexUnion : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ 
 reindexUnion φ₀ φ₁ A α₀ α₁ eqFib ρ =
   unionIsFibExt (φ₀ ∘ ρ) (φ₁ ∘ ρ)
     (cong (reindex ◆ (ρ ×id)) (UnionIsFib.left φ₀ φ₁ A α₀ α₁ eqFib)
-      ∙ symm (UnionIsFib.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
+      ∙ sym (UnionIsFib.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
     (cong (reindex ◆ (ρ ×id)) (UnionIsFib.right φ₀ φ₁ A α₀ α₁ eqFib)
-      ∙ symm (UnionIsFib.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
+      ∙ sym (UnionIsFib.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
 
 module FibUnion {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
   (Aα₀ : Fib ℓ' (Γ ,[ φ₀ ])) (Aα₁ : Fib ℓ' (Γ ,[ φ₁ ]))
@@ -327,6 +327,6 @@ reindexFibUnion : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ�
 reindexFibUnion {Δ = Δ} φ₀ φ₁ Aα₀ Aα₁ eqFib ρ =
   unionFibExt (φ₀ ∘ ρ) (φ₁ ∘ ρ)
     (cong (reindexFib ◆ (ρ ×id)) (FibUnion.left φ₀ φ₁ Aα₀ Aα₁ eqFib)
-      ∙ symm (FibUnion.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
+      ∙ sym (FibUnion.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
     (cong (reindexFib ◆ (ρ ×id)) (FibUnion.right φ₀ φ₁ Aα₀ Aα₁ eqFib)
-      ∙ symm (FibUnion.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
+      ∙ sym (FibUnion.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))

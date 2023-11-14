@@ -95,7 +95,7 @@ opaque
       let
         open RealignId (Φ ∘ fst ∘ p) (reindex β ((fst ∘ p) ×id)) (reindex α (fst ∘ p)) box
       in
-      symm (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
+      sym (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
 
   reindexRealignIsFib : ∀{ℓ ℓ' ℓ''}
     {Δ : Set ℓ} {Γ : Set ℓ'}

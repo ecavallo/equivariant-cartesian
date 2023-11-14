@@ -84,7 +84,7 @@ module _ (@♭ S : Shape) where
         (trans
           (cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂)))
           (cong (iso .from) (shape→⊎♭` fst fst (iso .from h'))))
-        (symm (appCong (iso .inv₁)))
+        (sym (appCong (iso .inv₁)))
 
     baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ .from h')) ≡ AB
     baseEq =
@@ -93,7 +93,7 @@ module _ (@♭ S : Shape) where
           (trans
             (funext fsth')
             (cong (∇ ∘_) (appCong (iso .inv₂))))
-          (symm (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))))
+          (sym (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))))
         (cong ∇ fromNatural)
 
     main : Π A ⊎ Π B

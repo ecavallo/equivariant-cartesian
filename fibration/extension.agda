@@ -46,30 +46,30 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
       ∨-elim (φ x) (ψ x) _
         (λ u →
           subst (Equiv ◆ X₀ .fst x)
-            (cong (λ Bβ → Bβ .fst (x , u)) (symm left))
+            (cong (λ Bβ → Bβ .fst (x , u)) (sym left))
             (φEquiv x u))
         (λ v →
           subst (Equiv ◆ X₀ .fst x)
-            (cong (λ Bβ → Bβ .fst (x , v)) (symm right))
+            (cong (λ Bβ → Bβ .fst (x , v)) (sym right))
             (idEquiv (reindexFib X₀ (λ _ → x) .snd)))
         (λ u v →
           substCongAssoc (Equiv ◆ X₀ .fst x) (curry (fib .fst) x) (trunc _ _) _
           ∙
-          symm
+          sym
             (substTrans (Equiv ◆ X₀ .fst x)
               (cong (curry (fib .fst) x) (trunc _ _))
-              (cong (λ Bβ → Bβ .fst (x , u)) (symm left)))
+              (cong (λ Bβ → Bβ .fst (x , u)) (sym left)))
           ∙
           adjustSubstEq (Equiv ◆ X₀ .fst x)
             (cong (λ Bβ → Bβ .fst (x , u , v)) ψMatch)
               refl
-              (cong (λ Bβ → Bβ .fst (x , u)) (symm left) ∙ cong (curry (fib .fst) x) (trunc _ _))
-              (cong (λ Bβ → Bβ .fst (x , v)) (symm right))
+              (cong (λ Bβ → Bβ .fst (x , u)) (sym left) ∙ cong (curry (fib .fst) x) (trunc _ _))
+              (cong (λ Bβ → Bβ .fst (x , v)) (sym right))
               (equivMatch x u v))
 
   rsMatch : reindexFib F (ats ∘ fst') ≡ reindexFib X₀ fst
   rsMatch =
-    cong (reindexFib F) (funext λ {(x , u , eq) → Σext refl (symm eq)})
+    cong (reindexFib F) (funext λ {(x , u , eq) → Σext refl (sym eq)})
     ∙ cong (reindexFib ◆ fst') match
 
   rsEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x)
@@ -86,22 +86,22 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
       (reindexFib F (λ _ → (x , u) , r x) .snd)
       (reindexFib X₀ (λ _ → x) .snd)
       (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
-      (cong (λ t → F .fst ((x , u) , t)) (symm eq))
+      (cong (λ t → F .fst ((x , u) , t)) (sym eq))
       (cong (λ Bβ → Bβ .fst (x , u)) match)
       (Σeq₂
         (cong (λ Bβ → (Bβ .fst (x , u) , reindexFib Bβ (λ _ → (x , u)) .snd)) match)
         (cong (λ Bβ → Bβ .fst (x , u)) match))
       (coerceEquiv S (reindexFib F (λ i → ((x , u) , i)) .snd) (s x) (r x))
-      (symm
+      (sym
         (substCongAssoc
           (Equiv ◆ fst (reindexFib F (λ _ → (x , u) , r x)) tt)
             (λ t → F .fst ((x , u) , t))
-            (symm eq)
+            (sym eq)
             (coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x)))
        ∙
        congdep
          (λ t → coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) t (r x))
-         (symm eq)
+         (sym eq)
        ∙
        coerceEquivCap S (reindexFib F (λ i → ((x , u) , i)) .snd) (r x))
     where
@@ -132,7 +132,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
 
     LargeCompMatch : reindexFib F ats ≡ reindexFib LargeComp fst
     LargeCompMatch =
-      symm left
+      sym left
       ∙
       cong
         (reindexFib ◆ inl' φ (λ x → S ∋ r x ≈ s x))
@@ -141,7 +141,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   LargeCap : LargeComp r ≡ X₀
   LargeCap =
     cong (reindexFib ◆ (inr' φ (λ x → S ∋ r x ≈ r x) ∘ f₀))
-      (symm (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv))
+      (sym (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv))
     ∙
     cong (reindexFib ◆ f₀) right
     where

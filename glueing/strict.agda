@@ -28,7 +28,7 @@ opaque
   includeA φ {A} {B} f u a .dom v = subst A (cofIsProp φ _ _) a
   includeA φ {A} {B} f u a .cod = f u a
   includeA φ {A} {B} f u a .match v =
-    cong (uncurry f) (symm (Σext (cofIsProp φ _ _) refl))
+    cong (uncurry f) (sym (Σext (cofIsProp φ _ _) refl))
 
   includeAIso : ∀ {ℓ}
     (φ : CofProp)
@@ -108,10 +108,10 @@ opaque
     (u : [ φ ]) (a : A u)
     → sunglue f (coe (SGlueStrictness φ f u) a) ≡ f u a
   sunglue-boundary φ {A} {B} f u a =
-    symm
+    sym
       (appdep
         (restrictsToA φ A (Glue φ A B f) (includeAIso φ f) u)
-        (symm
+        (sym
           (substCongAssoc (λ D → D → B) fst
             (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u) _)
          ∙

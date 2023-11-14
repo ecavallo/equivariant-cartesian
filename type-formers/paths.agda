@@ -46,10 +46,10 @@ opaque
     retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
       → Retract' (Path' A) (Extension' 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
     retract A γ .sec p i .out = p .at i
-    retract A γ .sec p i .out≡ = OI-elim i (λ {refl → symm (p .at0)}) (λ {refl → symm (p .at1)})
+    retract A γ .sec p i .out≡ = OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
     retract A γ .ret ex .at i = ex i .out
-    retract A γ .ret ex .at0 = symm (ex 0 .out≡ ∣ inl refl ∣)
-    retract A γ .ret ex .at1 = symm (ex 1 .out≡ ∣ inr refl ∣)
+    retract A γ .ret ex .at0 = sym (ex 0 .out≡ ∣ inl refl ∣)
+    retract A γ .ret ex .at1 = sym (ex 1 .out≡ ∣ inr refl ∣)
     retract A γ .inv = funext λ p → PathExt λ i → refl
 
   PathIsFib :
