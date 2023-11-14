@@ -48,15 +48,18 @@ opaque
     (α : isFib A)
     → ---------------
     isFib A
-  realignIsFib Φ A β α .lift S r p box =
-    -- TODO use copattern matching
-    record
-    { fill = λ s →
-      makeRestrict
-        (fillA .fill s .out)
-        (λ v → fillA .fill s .out≡ ∣ inl v ∣)
-    ; cap≡ = fillA .cap≡
-    }
+  realignIsFib Φ A β α .lift S r p box .fill s .out =
+    fillA .fill s .out
+    where
+    open RealignId (Φ ∘ p) (reindex β (p ×id)) (reindex α p) box
+
+  realignIsFib Φ A β α .lift S r p box .fill s .out≡ v =
+    fillA .fill s .out≡ ∣ inl v ∣
+    where
+    open RealignId (Φ ∘ p) (reindex β (p ×id)) (reindex α p) box
+
+  realignIsFib Φ A β α .lift S r p box .cap≡ =
+    fillA .cap≡
     where
     open RealignId (Φ ∘ p) (reindex β (p ×id)) (reindex α p) box
   realignIsFib Φ A β α .vary S T σ r p box s =
