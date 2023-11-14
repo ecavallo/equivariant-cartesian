@@ -44,28 +44,25 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  ΠIsFib {B = B} α β .lift S r p box .fill s .out a =
-    subst (curry B (p s))
-      (fillA s a .cap≡)
-      (fillB s a (out ∘ fillA s a .fill) .fill s .out)
+  ΠIsFib {B = B} α β .lift S r p box = filler
     where
     open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΠIsFib {B = B} α β .lift S r p box .fill s .out≡ u =
-    funext λ a →
-    symm (congdep (box .tube u s) (fillA s a .cap≡))
-    ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
-        (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
-    where
-    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
-
-  ΠIsFib {B = B} α β .lift S r p box .cap≡ =
-    funext λ a →
-    cong (subst (curry B (p r)) (fillA r a .cap≡))
-      (fillB r a (out ∘ fillA r a .fill) .cap≡)
-    ∙ congdep (box .cap .out) (fillA r a .cap≡)
-    where
-    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
+    filler : Filler box
+    filler .fill s .out a =
+      subst (curry B (p s))
+        (fillA s a .cap≡)
+        (fillB s a (out ∘ fillA s a .fill) .fill s .out)
+    filler .fill s .out≡ u =
+      funext λ a →
+      symm (congdep (box .tube u s) (fillA s a .cap≡))
+      ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
+          (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
+    filler .cap≡ =
+      funext λ a →
+      cong (subst (curry B (p r)) (fillA r a .cap≡))
+        (fillB r a (out ∘ fillA r a .fill) .cap≡)
+      ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
   ΠIsFib {B = B} α β .vary S T σ r p box s =
     funext λ a →

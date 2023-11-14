@@ -138,23 +138,23 @@ opaque
     (fe : Π (Equiv' B (A ∘ fst)))
     → ---------------
     isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
-  GlueIsFib Φ {B} {A} fe β α .lift S r p box = rec
+  GlueIsFib Φ {B} {A} fe β α .lift S r p box = filler
     where
     open GlueIsFibId (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p) box
 
-    rec : Filler box
-    rec .fill s .out .dom us = fillR s us .out .fst
-    rec .fill s .out .cod = fillFix s .out
-    rec .fill s .out .match us =
+    filler : Filler box
+    filler .fill s .out .dom us = fillR s us .out .fst
+    filler .fill s .out .cod = fillFix s .out
+    filler .fill s .out .match us =
       symm (fillR s us .out .snd .at0)
       ∙ fillFix s .out≡ ∣ inr ∣ inl us ∣ ∣
-    rec .fill s .out≡ v =
+    filler .fill s .out≡ v =
       GlueExt
         (λ us →
           cong fst (symm (C₂ s us (fiberR s us ∣ inl v ∣) .at0))
           ∙ cong fst (fillR s us .out≡ ∣ inl v ∣))
         (fillFix s .out≡ ∣ inl v ∣)
-    rec .cap≡ =
+    filler .cap≡ =
       GlueExt
         (λ ur →
           cong fst (symm (fillR r ur .out≡ ∣ inr refl ∣))

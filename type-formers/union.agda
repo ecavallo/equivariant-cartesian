@@ -140,11 +140,7 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
   opaque
 
     fib : isFib A
-    fib .lift S r p box =
-      record
-      { fill = λ s → fillSys s (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
-      ; cap≡ = capSys (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
-      }
+    fib .lift S r p box = filler
       where
       open UnionIsFibId (φ₀ ∘ fst ∘ p)  (φ₁ ∘ fst ∘ p)
         (A ∘ (fst ∘ p) ×id)
@@ -152,6 +148,10 @@ module UnionIsFib {ℓ ℓ'} {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
         (reindex α₁ ((fst ∘ p) ×id))
         (cong (λ Aα → reindexFib Aα ((fst ∘ p) ×id)) eqFib)
         box
+
+      filler : Filler box
+      filler .fill s = fillSys s (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
+      filler .cap≡ = capSys (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
 
     fib .vary S T σ r p box s =
       ∨-elimEq (all T (φ₀ ∘ fst ∘ p)) (all T (φ₁ ∘ fst ∘ p))

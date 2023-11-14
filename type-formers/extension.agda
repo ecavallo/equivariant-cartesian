@@ -55,25 +55,15 @@ opaque
     {A : Γ × ⟨ Z ⟩ → Set ℓ'}
     (α : isFib A)
     → isFib (Extension' Z Φ A)
-  ExtensionIsFib Z Φ α .lift S r p box .fill s .out z .out =
-    fillA z .fill s .out
+  ExtensionIsFib Z Φ α .lift S r p box = filler
     where
     open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
 
-  ExtensionIsFib Z Φ  α .lift S r p box .fill s .out z .out≡ v =
-    fillA z .fill s .out≡ ∣ inr v ∣
-    where
-    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
-
-  ExtensionIsFib Z Φ α .lift S r p box .fill s .out≡ u =
-    funext λ z → restrictExt (fillA z .fill s .out≡ ∣ inl u ∣)
-    where
-    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
-
-  ExtensionIsFib Z Φ α .lift S r p box .cap≡ =
-    funext λ z → restrictExt (fillA z .cap≡)
-    where
-    open ExtensionIsFibId (reindex α ((fst ∘ p) ×id)) box
+    filler : Filler box
+    filler .fill s .out z .out = fillA z .fill s .out
+    filler .fill s .out z .out≡ v = fillA z .fill s .out≡ ∣ inr v ∣
+    filler .fill s .out≡ u = funext λ z → restrictExt (fillA z .fill s .out≡ ∣ inl u ∣)
+    filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
 
   ExtensionIsFib Z Φ α .vary S T σ r p box s =
     funext λ z →

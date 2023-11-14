@@ -57,24 +57,21 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Σ' A B)
-  ΣIsFib α β .lift S r p box .fill s .out =
-    (fillA .fill s .out , fillB fillA .fill s .out)
+  ΣIsFib {B = B} α β .lift S r p box = filler
     where
     open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
 
-  ΣIsFib α β .lift S r p box .fill s .out≡ u =
-    Σext (fillA .fill s .out≡ u) (fillB fillA .fill s .out≡ u)
-    where
-    open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
-
-  ΣIsFib {B = B} α β .lift S r p box .cap≡ =
-    Σext (fillA .cap≡)
-      (adjustSubstEq (curry B (p r))
-        refl (symm (fillA .cap≡))
-        (fillA .cap≡) refl
-        (fillB fillA .cap≡))
-    where
-    open ΣIsFibId (reindex α p) (reindex β (p ×id)) box
+    filler : Filler box
+    filler .fill s .out .fst = fillA .fill s .out
+    filler .fill s .out .snd = fillB fillA .fill s .out
+    filler .fill s .out≡ u =
+      Σext (fillA .fill s .out≡ u) (fillB fillA .fill s .out≡ u)
+    filler .cap≡ =
+      Σext (fillA .cap≡)
+        (adjustSubstEq (curry B (p r))
+          refl (symm (fillA .cap≡))
+          (fillA .cap≡) refl
+          (fillB fillA .cap≡))
 
   ΣIsFib {B = B} α β .vary S T σ r p box s =
     Σext
