@@ -69,7 +69,7 @@ open U public
 UExt : ∀ {@♭ ℓ} {A B : U ℓ}
   → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies
   → A ≡ B
-UExt {A = A} {B} refl refl refl =
+UExt {A = A} refl refl refl =
   cong
     (λ {(cBase , vBase , vSrc , vDst) → record
       { El = A .El
@@ -125,8 +125,6 @@ dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨
   → dst* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))
 dstLvaries S T σ C =
   appCong
-    {f = λ C → dst* (L T (λ A → A .varies S T σ) C)}
-    {g = λ C → (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))}
     (L√ T dst* (λ A → A .varies S T σ)
       ∙ cong♭ (L T) (funext (λ A → A .variesDst S T σ))
       ∙ LShapeHom σ (λ A → A .lifts S)
@@ -135,9 +133,9 @@ dstLvaries S T σ C =
 substSpan : ∀ {ℓ ℓ'} {A : Set ℓ} (D : A → Span ℓ')
   {x y : A} (p : x ≡ y)
   → Witness (D x) → Witness (D y)
-substSpan D {x} p w .src = subst (Src ∘ D) p (w .src)
-substSpan D {x} p w .dst = subst (Dst ∘ D) p (w .dst)
-substSpan D {x} refl w .rel = w .rel
+substSpan D p w .src = subst (Src ∘ D) p (w .src)
+substSpan D p w .dst = subst (Dst ∘ D) p (w .dst)
+substSpan D refl w .rel = w .rel
 
 getVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
   → Witness (hasVaries S T σ (El ∘ C))
@@ -223,27 +221,21 @@ encode {ℓ' = ℓ'} {Γ} Aα = encoding
   encoding x .variesBase S T σ =
     appCong (cong♭ (R T) (symm (L√ T fst (Rv S T σ))) ∙ R℘ T (Aα .fst) (hasVaries S T σ))
   encoding x .variesSrc S T σ =
-    appCong
-      (cong♭ (R T)
-        {x = L T (R T (λ x → (src* ∘ L T id) x) ∘ Rv S T σ)}
-        (symm (L√ T src* (Rv S T σ))))
+    appCong (cong♭ (R T) (symm (L√ T src* (Rv S T σ))))
   encoding x .variesDst S T σ =
     appCong
-      (cong♭ (R T)
-          {x = L T (R T (λ x → (dst* ∘ L T id) x) ∘ Rv S T σ)}
-          (symm (L√ T dst* (Rv S T σ)))
-       ∙ symm (ShapeHomR σ (FibLifts Aα S)))
+      (cong♭ (R T) (symm (L√ T dst* (Rv S T σ))) ∙ symm (ShapeHomR σ (FibLifts Aα S)))
 
 -- Inverse conditions for the correspondence between Fib Γ and Γ → U
 ----------------------------------------------------------------------
 decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
   → decode (encode Aα) ≡ Aα
-decodeEncode {ℓ' = ℓ'} {Γ} Aα =
+decodeEncode {Γ = Γ} Aα =
   Σext refl
     (isFibExt
       (ShapeIsDiscrete λ (@♭ S) r p box s →
         cong
-          {A = Σ C ∈ Set* ℓ' , C .fst ≡ hasLifts S (A ∘ p)}
+          {A = Σ C ∈ Set* _ , C .fst ≡ hasLifts S (A ∘ p)}
           (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
           {x = _ , appCong (fstLlifts S)}
           {y = _ , refl}
@@ -256,21 +248,21 @@ decodeEncode {ℓ' = ℓ'} {Γ} Aα =
     → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
   lemma S p =
     appCong (symm (L℘ S id (λ C → C .lifts S)))
-    ∙ appCong (L℘ S id (R S {B = Set* ℓ'} (FibLifts Aα S)))
+    ∙ appCong (L℘ S id (R S {B = Set* _} (FibLifts Aα S)))
 
 encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
   (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)
   → encode (reindexFib Aα ρ) x ≡ encode Aα (ρ x)
-encodeReindexFib {ℓ'' = ℓ''} {Γ} Aα ρ x =
+encodeReindexFib Aα ρ x =
   UExt
     refl
     (funext♭ λ S →
-      appCong (R℘ S {C = Set* ℓ''} ρ (FibLifts Aα S)))
+      appCong (R℘ S ρ (FibLifts Aα S)))
     (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
-      appCong (R℘ T {C = Span* ℓ''} ρ (FibVaries Aα S T σ)))
+      appCong (R℘ T ρ (FibVaries Aα S T σ)))
 
 encodeEl : ∀ {@♭ ℓ} → (C : U ℓ) → encode (El , υ) C ≡ C
-encodeEl {ℓ} C =
+encodeEl C =
   UExt
     refl
     (funext♭ λ S →
@@ -291,5 +283,5 @@ encodeEl {ℓ} C =
                 (funext λ r → funext λ box → funext λ s → uipImp)))))
 
 encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
-encodeDecode {ℓ' = ℓ'} {Γ} C = funext λ x →
+encodeDecode C = funext λ x →
   encodeReindexFib (El , υ) C x ∙ encodeEl (C x)
