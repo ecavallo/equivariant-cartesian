@@ -27,7 +27,7 @@ reshapeBox : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
   {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
   → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
 reshapeBox σ box .cof = box .cof
-reshapeBox σ box .tube = box .tube ◇ ⟪ σ ⟫
+reshapeBox σ box .tube u = box .tube u ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
 
 mapBox : ∀ {ℓ ℓ'} {S : Shape} {r : ⟨ S ⟩}
