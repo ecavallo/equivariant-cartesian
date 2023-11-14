@@ -91,7 +91,10 @@ subst :
   (p : x ≡ y)
   → --------------
   B x → B y
-subst _  refl = λ b → b
+subst _ refl b = b
+
+coe : ∀ {ℓ} {A B : Set ℓ} → A ≡ B → A → B
+coe = subst id
 
 congdep :
   {ℓ ℓ' : Level}
@@ -142,14 +145,6 @@ substCongAssoc :
   → ------------------------------------------
   subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
 substCongAssoc _ _ refl _ = refl
-
-substConst :
-  {ℓ ℓ' : Level}
-  {A : Set ℓ}
-  {B : Set ℓ'}
-  {x y : A} (p : x ≡ y) (b : B)
-  → subst (λ _ → B) p b ≡ b
-substConst refl b = refl
 
 substTrans :
   {ℓ ℓ' : Level}
@@ -211,12 +206,6 @@ adjustSubstEq :
 adjustSubstEq B refl refl refl refl = id
 
 ----------------------------------------------------------------------
--- Type coercion
-----------------------------------------------------------------------
-coe : ∀ {ℓ} {A B : Set ℓ} → A ≡ B → A → B
-coe = subst id
-
-----------------------------------------------------------------------
 -- Empty type
 ----------------------------------------------------------------------
 data ∅ : Set where
@@ -234,9 +223,6 @@ data ∅ : Set where
   → ---------
   ∅ → A
 ∅-rec ()
-
-¬_ : ∀ {ℓ} → Set ℓ → Set ℓ
-¬ A = A → ∅
 
 ----------------------------------------------------------------------
 -- One-element type
@@ -338,8 +324,8 @@ curry f a b = f (a , b)
 Π : ∀ {ℓ ℓ'} {A : Set ℓ} → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
 Π B = (a : _) → B a
 
-_◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : B → Set ℓ''}
-       → (A → (i : B) → C i) → (i : B) → A → C i
+_◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → B → Set ℓ''}
+       → ((a : A) (b : B) → C a b) → (b : B) (a : A) → C a b
 (f ◆ b) a = f a b
 
 ----------------------------------------------------------------------
