@@ -165,7 +165,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   varyEquiv = funext λ x → funext λ u →
     cong
       (subst (Equiv (F .fst ((x , u) , ⟪ σ ⟫ (s x)))) (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (varyCoerceEquiv S T σ (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))
+      (coerceEquivVary S T σ (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))
 
   LargeVary
     : LargeComp T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)

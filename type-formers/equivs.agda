@@ -9,6 +9,7 @@ module type-formers.equivs where
 open import prelude
 open import axioms
 open import fibration.fibration
+open import fibration.coercion
 open import type-formers.paths
 open import type-formers.pi
 open import type-formers.sigma
@@ -195,59 +196,32 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (symm (q I .fill O .snd ∣ inr refl ∣))
       (λ j → symm (q I .fill j .snd ∣ inr refl ∣))
 
-opaque
-  coerceBox : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
-    → (r : ⟨ S ⟩) → A r → OpenBox S r A
-  coerceBox S α r a .cof = ⊥
-  coerceBox S α r a .tube v _ = ∅-rec v
-  coerceBox S α r a .cap .fst = a
-  coerceBox S α r a .cap .snd ()
-
-  coerce : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
-    → (r s : ⟨ S ⟩) → A r → A s
-  coerce S α r s a =
-    α .lift S r id (coerceBox S α r a) .fill s .fst
-
-  coerceCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A)
-    → (r : ⟨ S ⟩) → ∀ a → coerce S α r r a ≡ a
-  coerceCap S α r a =
-    α .lift S r id (coerceBox S α r a) .cap≡
-
-  varyCoerce : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
-    {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
-    → ∀ a → coerce T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) a ≡ coerce S (reindex A α ⟪ σ ⟫) r s a
-  varyCoerce S T σ α r s a =
-    α .vary S T σ r id _ s
-    ∙ cong (λ box → α .lift S r ⟪ σ ⟫ box .fill s .fst) (boxExt refl (λ ()) refl)
-
-
 coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r s : ⟨ S ⟩)
   → Equiv (A r) (A s)
 coerceEquiv S {A} α r s =
-  coerce S
+  coerce S r
     (EquivIsFib (reindex A α (λ _ → r)) α)
-    r s
     (idEquiv (reindex A α (λ _ → r)))
+    s
 
 coerceEquivCap : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r : ⟨ S ⟩)
   → coerceEquiv S α r r ≡ idEquiv (reindex A α (λ _ → r))
 coerceEquivCap S {A} α r =
-  coerceCap S
+  coerceCap S r
     (EquivIsFib (reindex A α (λ _ → r)) α)
-    r
     (idEquiv (reindex A α (λ _ → r)))
 
-varyCoerceEquiv : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
+coerceEquivVary : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
   {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (r s : ⟨ S ⟩)
   → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex A α ⟪ σ ⟫) r s
-varyCoerceEquiv S T σ {A = A} α r s =
-  varyCoerce S T σ
+coerceEquivVary S T σ {A = A} α r s =
+  coerceVary S T σ r
     (EquivIsFib (reindex A α (λ _ → ⟪ σ ⟫ r)) α)
-    r s
     (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)))
+    s
   ∙
   cong
-    (λ β → coerce S  β r s (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))))
+    (λ β → coerce S r β (idEquiv (reindex A α (λ _ → ⟪ σ ⟫ r))) s)
     (reindexEquiv (reindex A α (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫)

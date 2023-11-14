@@ -9,6 +9,7 @@ module type-formers.pi where
 open import prelude
 open import axioms
 open import fibration.fibration
+open import fibration.coercion
 
 Π' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ}(A : Γ → Set ℓ')(B : (Σ x ∈ Γ , A x) → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
@@ -22,13 +23,7 @@ module ΠIsFibId {ℓ ℓ'}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    boxA : OpenBox S s A
-    boxA .cof = ⊥
-    boxA .tube e _ = ∅-rec e
-    boxA .cap .fst = a
-    boxA .cap .snd ()
-
-    fillA = α .lift S s id boxA
+    fillA = coerceFiller S s α a
 
     module _ (cA : (i : ⟨ S ⟩) → A i) where
 
@@ -36,10 +31,7 @@ module ΠIsFibId {ℓ ℓ'}
       q i = (i , cA i)
 
       boxB : OpenBox S r (B ∘ q)
-      boxB .cof = box .cof
-      boxB .tube u i = box .tube u i (cA i)
-      boxB .cap .fst = box .cap .fst (cA r)
-      boxB .cap .snd u = appCong (box .cap .snd u)
+      boxB = mapBox (λ i f → f (cA i)) box
 
       fillB = β .lift S r q boxB
 
@@ -90,13 +82,8 @@ opaque
     module T = ΠIsFibId T (reindex A α p) (reindex B β (p ×id)) (⟪ σ ⟫ r) box
     module S = ΠIsFibId S (reindex A α (p ∘ ⟪ σ ⟫)) (reindex B β ((p ∘ ⟪ σ ⟫) ×id)) r (reshapeBox σ box)
 
-    varyBoxA : ∀ a → reshapeBox σ (T.boxA (⟪ σ ⟫ s) a) ≡ S.boxA s a
-    varyBoxA a = boxExt refl (λ ()) refl
-
     varyA : (a : A (p (⟪ σ ⟫ s))) (i : ⟨ S ⟩) → T.fillA _ a .fill _ .fst ≡ S.fillA s a .fill i .fst
-    varyA a i =
-      α .vary S T σ s p (T.boxA _ a) i
-      ∙ cong (λ box → α .lift S s (p ∘ ⟪ σ ⟫) box .fill i .fst) (varyBoxA a)
+    varyA = coerceVary S T σ s (reindex A α p)
 
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
