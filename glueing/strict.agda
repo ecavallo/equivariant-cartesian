@@ -10,6 +10,7 @@ open import prelude
 open import axioms
 open import fibration.fibration
 open import type-formers.equivs
+open import type-formers.pi
 
 open import glueing.weak
 
@@ -128,7 +129,7 @@ SGlueᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (A : Γ ,[ Φ ] → Set ℓ')
   (B : Γ → Set ℓ')
-  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
+  (f : Π (A →ᴵ (B ∘ fst)))
   → ---------------
   Γ → Set ℓ'
 SGlueᴵ Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
@@ -137,7 +138,7 @@ strictifyGlueIsoᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
-  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
+  (f : Π (A →ᴵ (B ∘ fst)))
   → ---------------
   SGlueᴵ Φ A B f ≅ᴵ Glueᴵ Φ A B f
 strictifyGlueIsoᴵ Φ {A} {B} f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
@@ -146,7 +147,7 @@ SGlueStrictnessᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
-  (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
+  (f : Π (A →ᴵ (B ∘ fst)))
   → ---------------
   A ≡ SGlueᴵ Φ A B f ∘ fst
 SGlueStrictnessᴵ Φ {A} {B} f =

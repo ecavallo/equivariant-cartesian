@@ -9,8 +9,9 @@ module glueing.weak where
 open import prelude
 open import axioms
 open import fibration.fibration
-open import type-formers.paths
 open import type-formers.equivs
+open import type-formers.paths
+open import type-formers.pi
 
 private variable ℓ ℓ' ℓ'' : Level
 
@@ -33,7 +34,7 @@ Glueᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (B : Γ ,[ Φ ] → Set ℓ')
   (A : Γ → Set ℓ')
-  (f : (xu : Γ ,[ Φ ]) → B xu → A (xu .fst))
+  (f : Π (B →ᴵ (A ∘ fst)))
   → ---------------
   Γ → Set ℓ'
 Glueᴵ Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))

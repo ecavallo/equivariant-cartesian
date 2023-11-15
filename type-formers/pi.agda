@@ -17,6 +17,10 @@ private variable ℓ ℓ' ℓ'' ℓ''' : Level
   → Γ → Set (ℓ' ⊔ ℓ'')
 Πᴵ A B x = (a : A x) → B (x , a)
 
+_→ᴵ_ : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set ℓ'')
+  → Γ → Set (ℓ' ⊔ ℓ'')
+A →ᴵ B = Πᴵ A (B ∘ fst)
+
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
@@ -101,8 +105,8 @@ opaque
   reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΠ : {Γ : Set ℓ}
-  (A : Fib ℓ' Γ)
-  (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
+  (Aα : Fib ℓ' Γ)
+  (Bα : Fib ℓ'' (Σ Γ (Aα .fst)))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
 FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
