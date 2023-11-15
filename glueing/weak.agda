@@ -34,7 +34,7 @@ Glueᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (B : Γ ,[ Φ ] → Set ℓ')
   (A : Γ → Set ℓ')
-  (f : Π (B →ᴵ (A ∘ fst)))
+  (f : Γ ,[ Φ ] ⊢ B →ᴵ (A ∘ fst))
   → ---------------
   Γ → Set ℓ'
 Glueᴵ Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
@@ -57,7 +57,7 @@ opaque
 module GlueLift {S r Φ}
   {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
-  (fe : Π (Equivᴵ B (A ∘ fst)))
+  (fe : ⟨ S ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
   (β : isFib B) (α : isFib A)
   (box : OpenBox S r (Glueᴵ Φ B A (equivFun fe)))
   where
@@ -152,7 +152,7 @@ module GlueLift {S r Φ}
 module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
   {B : ⟨ T ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ T ⟩ → Set ℓ}
-  (fe : Π (Equivᴵ B (A ∘ fst)))
+  (fe : ⟨ T ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
   (β : isFib B) (α : isFib A)
   (box : OpenBox T (⟪ σ ⟫ r) (Glueᴵ Φ B A (equivFun fe)))
   where
@@ -227,7 +227,7 @@ opaque
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ'}
     {A : Γ → Set ℓ'}
-    (fe : Π (Equivᴵ B (A ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     → ---------------
     isFib B → isFib A → isFib (Glueᴵ Φ B A (equivFun fe))
   GlueIsFib Φ fe β α .lift S r p =
@@ -241,7 +241,7 @@ opaque
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ''}
     {A : Γ → Set ℓ''}
-    (fe : Π (Equivᴵ B (A ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     (β : isFib B)
     (α : isFib A)
     (ρ : Δ → Γ)

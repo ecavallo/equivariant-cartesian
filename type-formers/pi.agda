@@ -83,7 +83,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 opaque
   ΠIsFib : {Γ : Set ℓ}
     {A : Γ → Set ℓ'}
-    {B : (Σ x ∈ Γ , A x) → Set ℓ''}
+    {B : Σ Γ A → Set ℓ''}
     (α : isFib A)
     (β : isFib B)
     → -----------

@@ -140,10 +140,11 @@ Equiv : (A B : Set ℓ) → Set ℓ
 Equiv A B = Σ (A → B) IsEquiv
 
 Equivᴵ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
-Equivᴵ A B = Σᴵ (Πᴵ A (B ∘ fst)) (IsEquivᴵ A B)
+Equivᴵ A B = Σᴵ (A →ᴵ B) (IsEquivᴵ A B)
 
 equivFun : {Γ : Set ℓ} {A B : Γ → Set ℓ'}
-  → Π (Equivᴵ A B) → Π (Πᴵ A (B ∘ fst))
+  → Γ ⊢ Equivᴵ A B
+  → Γ ⊢ A →ᴵ B
 equivFun fe x = fe x .fst
 
 opaque

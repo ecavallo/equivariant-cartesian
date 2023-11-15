@@ -178,11 +178,11 @@ opaque
 -- A retract of a fibration is a fibration
 ----------------------------------------------------------------------
 
-Retractᴵ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
-Retractᴵ A B = ∀ x → Retract (A x) (B x)
+Retractᴵ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
+Retractᴵ A B γ = Retract (A γ) (B γ)
 
 opaque
-  retractIsFib : {Γ : Set ℓ} {A B : Γ → Set ℓ'} → (Retractᴵ A B) → isFib B → isFib A
+  retractIsFib : {Γ : Set ℓ} {A B : Γ → Set ℓ'} → Γ ⊢ Retractᴵ A B → isFib B → isFib A
   retractIsFib retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
@@ -202,7 +202,7 @@ opaque
 
   reindexRetract : {Δ : Set ℓ} {Γ : Set ℓ'}
     {A B : Γ → Set ℓ''}
-    (retract : Retractᴵ A B)
+    (retract : Γ ⊢ Retractᴵ A B)
     (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (retractIsFib retract β) ρ ≡ retractIsFib (retract ∘ ρ) (reindex β ρ)
@@ -212,15 +212,15 @@ opaque
 -- Corollary: fibration structures can be transferred across isomorphisms
 ----------------------------------------------------------------------
 
-_≅ᴵ_ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → Set (ℓ ⊔ ℓ')
-_≅ᴵ_ {Γ = Γ} A B = (x : Γ) → A x ≅ B x
+_≅ᴵ_ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
+_≅ᴵ_ A B γ = A γ ≅ B γ
 
 isomorphIsFib : {Γ : Set ℓ} {A B : Γ → Set ℓ'}
-  → (A ≅ᴵ B) → isFib B → isFib A
+  → Γ ⊢ A ≅ᴵ B → isFib B → isFib A
 isomorphIsFib iso β = retractIsFib (isoToRetract ∘ iso) β
 
 reindexIsomorph : {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
-  (iso : A ≅ᴵ B)
+  (iso : Γ ⊢ A ≅ᴵ B)
   (β : isFib B)
   (ρ : Δ → Γ)
   → reindex (isomorphIsFib iso β) ρ ≡ isomorphIsFib (iso ∘ ρ) (reindex β ρ)

@@ -44,7 +44,7 @@ module Box {Γ : Set ℓ}
     module F = FibUnion φ ψ (reindexFib F ats) (reindexFib X₀ fst) ψMatch
     open F public
 
-    equiv : Π (Equivᴵ (fib .fst) (X₀ .fst ∘ fst))
+    equiv : Γ ,[ φ ∨ᴵ ψ ] ⊢ Equivᴵ (fib .fst) (X₀ .fst ∘ fst)
     equiv = uncurry λ x →
       ∨-elim (φ x) (ψ x) _
         (λ u →

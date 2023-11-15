@@ -27,7 +27,7 @@ Extensionᴵ Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
 
 module ExtensionLift {Z Φ S r}
   {A : ⟨ S ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
-  {a : Π (Partial Z Φ A)}
+  {a : ⟨ S ⟩ ⊢ Partial Z Φ A}
   (box : OpenBox S r (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
 
@@ -56,7 +56,7 @@ module ExtensionLift {Z Φ S r}
 
 module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
-  {a : Π (Partial Z Φ A)}
+  {a : ⟨ T ⟩ ⊢ Partial Z Φ A}
   (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
 

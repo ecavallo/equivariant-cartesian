@@ -10,10 +10,11 @@ open import prelude
 open import axioms
 open import fibration.fibration
 open import type-formers.extension
+open import type-formers.sigma
 
 private variable ℓ ℓ' ℓ'' : Level
 
-record _~_ {A : Set ℓ}(a a' : A) : Set ℓ where
+record _~_ {A : Set ℓ} (a a' : A) : Set ℓ where
   constructor path
   field
     at : 𝕀 → A
@@ -39,11 +40,11 @@ Pathᴵ A (x , (a , a')) = a ~ a'
 opaque
   private
     ctxMap : {Γ : Set ℓ} (A : Γ → Set ℓ')
-      → Σ x ∈ Γ , A x × A x → Σ x ∈ Γ , Partial 𝕚 ∂ (A ∘ fst) x
+      → Σ Γ (A ×ᴵ A) → Σ Γ (Partial 𝕚 ∂ (A ∘ fst))
     ctxMap A (γ , a₀ , a₁) = γ , λ i → OI-rec i (λ _ → a₀) (λ _ → a₁)
 
     retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
-      → Retractᴵ (Pathᴵ A) (Extensionᴵ 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
+      → Σ Γ (A ×ᴵ A) ⊢ Retractᴵ (Pathᴵ A) (Extensionᴵ 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
     retract A γ .sec p i .out = p .at i
     retract A γ .sec p i .out≡ = OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
     retract A γ .ret ex .at i = ex i .out

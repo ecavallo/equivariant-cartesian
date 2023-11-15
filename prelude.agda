@@ -10,7 +10,7 @@ open import Agda.Primitive public
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-infix  1 Σ
+infix  1 Σ _⊢_
 infixr 3 _,_ _,,_ _×_ _⊎_
 infixr 5 _∘_ _∙_
 

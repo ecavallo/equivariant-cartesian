@@ -26,7 +26,7 @@ opaque
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
-    (fe : Π (Equivᴵ A (B ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     → ---------------
     isFib A → isFib B → isFib (SGlueᴵ Φ A B (equivFun fe))
   SGlueIsFib Φ {A} {B} fe α β =
@@ -38,7 +38,7 @@ opaque
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
-    (fe : Π (Equivᴵ A (B ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     (α : isFib A) (β : isFib B)
     → ---------------
     subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α
@@ -53,7 +53,7 @@ FibSGlue : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (Aα : Fib ℓ' (Γ ,[ Φ ]))
   (Bβ : Fib ℓ' Γ)
-  (fe : Π (Equivᴵ (Aα .fst) (Bβ .fst ∘ fst)))
+  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
   → Fib ℓ' Γ
 FibSGlue Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
 
@@ -62,7 +62,7 @@ opaque
     (Φ : Γ → CofProp)
     (Aα : Fib ℓ' (Γ ,[ Φ ]))
     (Bβ : Fib ℓ' Γ)
-    (fe : Π (Equivᴵ (Aα .fst) (Bβ .fst ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
     → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
   FibSGlueStrictness Φ (A , α) (B , β) fe =
     Σext (SGlueStrictnessᴵ Φ (equivFun fe)) (SGlueIsFibStrictness Φ fe α β)
@@ -73,7 +73,7 @@ opaque
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}
-    (fe : Π (Equivᴵ A (B ∘ fst)))
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (SGlueIsFib Φ fe α β) ρ
