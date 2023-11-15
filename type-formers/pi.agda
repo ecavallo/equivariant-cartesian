@@ -15,10 +15,10 @@ open import fibration.coercion
   → Γ → Set (ℓ' ⊔ ℓ'')
 Π' A B x = (a : A x) → B (x , a)
 
-module ΠLift {ℓ ℓ'} {S}
+module ΠLift {ℓ ℓ'} {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  {r : ⟨ S ⟩} (box : OpenBox S r (Π' A B))
+  (box : OpenBox S r (Π' A B))
   where
 
   module _ (s : ⟨ S ⟩) (a : A s) where
@@ -51,7 +51,7 @@ module ΠLift {ℓ ℓ'} {S}
       (fillB r a (out ∘ fillA r a .fill) .cap≡)
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
-module ΠVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r : ⟨ S ⟩}
+module ΠVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Π' A B))

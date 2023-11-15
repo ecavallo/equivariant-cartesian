@@ -18,7 +18,7 @@ _×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set
   → Γ → Set (ℓ' ⊔ ℓ'')
 (A ×' B) x = A x × B x
 
-module ΣLift {ℓ ℓ'} {S} {r : ⟨ S ⟩}
+module ΣLift {ℓ ℓ'} {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox S r (Σ' A B))
@@ -59,7 +59,7 @@ module ΣLift {ℓ ℓ'} {S} {r : ⟨ S ⟩}
         (fillA .cap≡) refl
         (fillB fillA .cap≡))
 
-module ΣVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r : ⟨ S ⟩}
+module ΣVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Σ' A B))
