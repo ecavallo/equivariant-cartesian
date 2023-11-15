@@ -140,7 +140,7 @@ strictifyGlueIsoᴵ : {Γ : Set ℓ}
   {B : Γ → Set ℓ'}
   (f : Γ ,[ Φ ] ⊢ A →ᴵ (B ∘ fst))
   → ---------------
-  SGlueᴵ Φ A B f ≅ᴵ Glueᴵ Φ A B f
+  Γ ⊢ SGlueᴵ Φ A B f ≅ᴵ Glueᴵ Φ A B f
 strictifyGlueIsoᴵ Φ f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
 
 SGlueStrictnessᴵ : {Γ : Set ℓ}
