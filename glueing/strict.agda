@@ -137,7 +137,7 @@ SGlue' : ∀ {ℓ ℓ'}
   (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   Γ → Set ℓ'
-SGlue' Φ A B f x = SGlue (Φ x) (λ u → A (x , u)) (B x) (λ u → f (x , u))
+SGlue' Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
 
 strictifyGlueIso' : ∀{ℓ ℓ'}
   {Γ : Set ℓ}
@@ -147,7 +147,7 @@ strictifyGlueIso' : ∀{ℓ ℓ'}
   (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   SGlue' Φ A B f ≅' Glue' Φ A B f
-strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (λ u → f (x , u))
+strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
 
 SGlueStrictness' : ∀ {ℓ ℓ'}
   {Γ : Set ℓ}
@@ -158,7 +158,7 @@ SGlueStrictness' : ∀ {ℓ ℓ'}
   → ---------------
   A ≡ SGlue' Φ A B f ∘ fst
 SGlueStrictness' Φ {A} {B} f =
-  funext λ {(x , u) → SGlueStrictness (Φ x) (λ u' → f (x , u')) u}
+  funext λ (x , u) → SGlueStrictness (Φ x) (f ∘ (x ,_)) u
 
 module Misaligned where
 

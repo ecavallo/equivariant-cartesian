@@ -31,10 +31,7 @@ module ΣLift {ℓ ℓ'} {S r}
 
   module _ (cA : Filler boxA) where
 
-    q : ⟨ S ⟩ → Σ ⟨ S ⟩ A
-    q s = (s , cA .fill s .out)
-
-    boxB : OpenBox S r (B ∘ q)
+    boxB : OpenBox S r (B ∘ (id ,, out ∘ cA .fill))
     boxB .cof = box .cof
     boxB .tube u i = subst (curry B i) (cA .fill i .out≡ u) (box .tube u i .snd)
     boxB .cap .out = subst (curry B r) (sym (cA .cap≡)) (box .cap .out .snd)
@@ -45,7 +42,7 @@ module ΣLift {ℓ ℓ'} {S r}
         (sym (substCongAssoc (curry B r) fst (box .cap .out≡ u) _)
           ∙ congdep snd (box .cap .out≡ u))
 
-    fillB = β .lift S r q boxB
+    fillB = β .lift S r (id ,, out ∘ cA .fill) boxB
 
   filler : Filler box
   filler .fill s .out .fst = fillA .fill s .out
@@ -78,9 +75,9 @@ module ΣVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
       (adjustSubstEq (curry B (⟪ σ ⟫ s))
          refl refl
          (α .vary S T σ r id T.boxA s)
-         (cong (λ cA → S.q cA s .snd) varyA)
-         (β .vary S T σ r (T.q T.fillA) (T.boxB T.fillA) s)
-       ∙ sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → S.q cA s .snd) varyA _)
+         (cong (λ cA → cA .fill s .out) varyA)
+         (β .vary S T σ r (id ,, out ∘ T.fillA .fill) (T.boxB T.fillA) s)
+       ∙ sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA .fill s .out) varyA _)
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
 
 opaque

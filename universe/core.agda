@@ -21,6 +21,7 @@ record Span ℓ : Set (lsuc ℓ) where
 open Span public
 
 record Witness {ℓ} (D : Span ℓ) : Set ℓ where
+  constructor witness
   field
     src : D .Src
     dst : D .Dst
@@ -153,7 +154,7 @@ getVaries S T σ C .rel =
 
 Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
   → L T (λ A → A .varies S T σ) C ≡ (hasVaries S T σ (El ∘ C) , getVaries S T σ C)
-Lvaries {ℓ} S T σ C =
+Lvaries S T σ C =
   Σext
     (appCong (fstLvaries S T σ))
     (witnessExtLemma
@@ -162,16 +163,14 @@ Lvaries {ℓ} S T σ C =
       (dstLvaries S T σ C)
       (λ _ _ → funext λ r → funext λ box → funext λ s → uipImp))
   where
-  witnessExtLemma : {D D' : Span ℓ} (p : D ≡ D')
+  witnessExtLemma : {D D' : Span _} (p : D ≡ D')
     {w : Witness D} {w' : Witness D'}
     (q : src* (D , w) ≡ src* (D' , w'))
     (q' : dst* (D , w) ≡ dst* (D' , w'))
     → (∀ {a b} → (r r' : D' .Rel a b) → r ≡ r')
     → subst Witness p w ≡ w'
   witnessExtLemma refl refl refl prop =
-    cong
-      (λ r → record {src = _; dst = _; rel = r})
-      (prop _ _)
+    cong (witness _ _) (prop _ _)
 
 ----------------------------------------------------------------------
 -- El : U → Set is a fibration
@@ -230,7 +229,7 @@ encode {ℓ' = ℓ'} {Γ} Aα = encoding
 ----------------------------------------------------------------------
 decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
   → decode (encode Aα) ≡ Aα
-decodeEncode {Γ = Γ} Aα =
+decodeEncode Aα =
   Σext refl
     (isFibExt
       (ShapeIsDiscrete λ (@♭ S) r p box s →
@@ -244,7 +243,7 @@ decodeEncode {Γ = Γ} Aα =
   A = Aα .fst
   α = Aα .snd
 
-  lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → Γ)
+  lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → _)
     → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
   lemma S p =
     appCong (sym (L℘ S id (λ C → C .lifts S)))
@@ -278,7 +277,7 @@ encodeEl C =
             ∙ cong
                 (λ w →
                   ( hasVaries S T σ (El ∘ C)
-                  , record {src = getLifts T C; dst = getLifts S (C ∘ ⟪ σ ⟫); rel = w}
+                  , witness (getLifts T C) (getLifts S (C ∘ ⟪ σ ⟫)) w
                   ))
                 (funext λ r → funext λ box → funext λ s → uipImp)))))
 

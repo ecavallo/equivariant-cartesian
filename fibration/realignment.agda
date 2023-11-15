@@ -22,7 +22,7 @@ module RealignLift {ℓ} {S r}
   where
 
   fillB : [ all S Φ ] → _
-  fillB u = β .lift S r (λ s → s , u s) box
+  fillB u = β .lift S r (id ,, u) box
 
   box' : OpenBox S r A
   box' .cof = box .cof ∨ all S Φ
@@ -68,8 +68,8 @@ module RealignVary {ℓ} {S T} (σ : ShapeHom S T) {r}
         (takeOutCof (box .cof) (all T Φ) (all S (Φ ∘ ⟪ σ ⟫))
           (λ _ → refl)
           (λ uS uT → funext λ i →
-            β .vary S T σ r (λ s → s , uS s) box i
-            ∙ cong (λ w → β .lift S r (λ s → ⟪ σ ⟫ s , w s) (reshapeBox σ box) .fill i .out)
+            β .vary S T σ r (id ,, uS) box i
+            ∙ cong (λ w → β .lift S r (⟪ σ ⟫ ,, w) (reshapeBox σ box) .fill i .out)
               (funext λ s → cofIsProp (Φ (⟪ σ ⟫ s)) _ _)))
         refl)
 

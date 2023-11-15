@@ -27,19 +27,19 @@ IsContr' A x = IsContr (A x)
 opaque
   IsContrIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A : Γ → Set ℓ'}
     → isFib A → isFib (IsContr' A)
-  IsContrIsFib {A = A} α =
+  IsContrIsFib α =
     ΣIsFib
       α
       (ΠIsFib
         (reindex α fst)
-        (reindex (PathIsFib α) (λ {((x , a₀) , a) → x , a , a₀})))
+        (reindex (PathIsFib α) (λ ((x , a₀) , a) → x , a , a₀)))
 
   reindexIsContr : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → reindex (IsContrIsFib α) ρ ≡ IsContrIsFib (reindex α ρ)
-  reindexIsContr {A = A} α ρ =
+  reindexIsContr α ρ =
     reindexΣ _ _ ρ
     ∙
     cong (ΣIsFib (reindex α ρ))
@@ -47,7 +47,7 @@ opaque
         ∙ cong
             (λ β →
               ΠIsFib (reindex α (ρ ∘ fst))
-                (reindex β (λ {((x , a₀) , a) → x , a , a₀})))
+                (reindex β (λ ((x , a₀) , a) → x , a , a₀)))
             (reindexPath _ ρ))
 
 ----------------------------------------------------------------------
@@ -59,7 +59,7 @@ Fiber f b = Σ a ∈ _ , f a ~ b
 
 Fiber' : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A B : Γ → Set ℓ')
   → Σ (Σ x ∈ Γ , (A x → B x)) (B ∘ fst) → Set ℓ'
-Fiber' A B = Σ' (A ∘ fst ∘ fst) (λ {(((x , f) , b) , a) → Path' B (x , f a , b)})
+Fiber' A B = Σ' (A ∘ fst ∘ fst) (λ (((x , f) , b) , a) → Path' B (x , f a , b))
 
 opaque
   FiberIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ} {A B : Γ → Set ℓ'}
@@ -67,7 +67,7 @@ opaque
   FiberIsFib {A = A} {B} α β =
     ΣIsFib
       (reindex α (fst ∘ fst))
-      (reindex (PathIsFib β) (λ {(((x , f) , b) , a) → (x , f a , b)}))
+      (reindex (PathIsFib β) (λ (((x , f) , b) , a) → (x , f a , b)))
 
   reindexFiber : ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
     {A B : Γ → Set ℓ''}
@@ -79,7 +79,7 @@ opaque
     ∙ cong
         (λ δ →
           ΣIsFib (reindex α (ρ ∘ fst ∘ fst))
-            (reindex δ (λ {(((x , f) , b) , a) → (x , f a , b)})))
+            (reindex δ (λ (((x , f) , b) , a) → (x , f a , b))))
         (reindexPath β ρ)
 
 FiberExt : ∀ {ℓ} {A B : Set ℓ} {f : A → B} {b : B} {x y : Fiber f b}

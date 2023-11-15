@@ -14,19 +14,19 @@ open import type-formers.union
 open import type-formers.equivs
 open import glueing
 
+fst' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
+fst' (x , a , b) = (x , a)
+
 module Box {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, r ∘ fst) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
   ats : Γ ,[ φ ] → Γ ,[ φ ] × ⟨ S ⟩
-  ats (x , u) = (x , u) , s x
-
-  fst' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
-  fst' (x , a , b) = (x , a)
+  ats = id ,, s ∘ fst
 
   -- We want to isolate the parts that depend essentially on r and s, so that we can
   -- prove equivariance more easily. Those parts are parameters to this module.
@@ -67,52 +67,54 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
               (cong (λ Bβ → Bβ .fst (x , v)) (sym right))
               (equivMatch x u v))
 
-  rsMatch : reindexFib F (ats ∘ fst') ≡ reindexFib X₀ fst
-  rsMatch =
-    cong (reindexFib F) (funext λ {(x , u , eq) → Σext refl (sym eq)})
-    ∙ cong (reindexFib ◆ fst') match
+  opaque
+    rsMatch : reindexFib F (ats ∘ fst' {B = λ x → r x ≡ s x}) ≡ reindexFib X₀ fst
+    rsMatch =
+      cong (reindexFib F) (funext λ (x , u , eq) → Σext refl (sym eq))
+      ∙ cong (reindexFib ◆ fst') match
 
   rsEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x)
   rsEquiv x u =
     subst (Equiv (F .fst ((x , u) , s x)))
       (cong (λ Bβ → Bβ .fst (x , u)) match)
-      (coerceEquiv S (reindexFib F (λ i → ((x , u) , i)) .snd) (s x) (r x))
+      (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
 
-  rsEquivMatch : (x : Γ) (u : [ φ x ]) (eq : r x ≡ s x) →
-    subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch) (rsEquiv x u)
-    ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd)
-  rsEquivMatch x u eq =
-    lemma
-      (reindexFib F (λ _ → (x , u) , r x) .snd)
-      (reindexFib X₀ (λ _ → x) .snd)
-      (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
-      (cong (λ t → F .fst ((x , u) , t)) (sym eq))
-      (cong (λ Bβ → Bβ .fst (x , u)) match)
-      (Σeq₂
-        (cong (λ Bβ → (Bβ .fst (x , u) , reindexFib Bβ (λ _ → (x , u)) .snd)) match)
-        (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (coerceEquiv S (reindexFib F (λ i → ((x , u) , i)) .snd) (s x) (r x))
-      (sym
-        (substCongAssoc
-          (Equiv ◆ fst (reindexFib F (λ _ → (x , u) , r x)) tt)
-            (λ t → F .fst ((x , u) , t))
-            (sym eq)
-            (coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x)))
-       ∙
-       congdep
-         (λ t → coerceEquiv S (reindexFib F (λ i → (x , u) , i) .snd) t (r x))
-         (sym eq)
-       ∙
-       coerceEquivCap S (reindexFib F (λ i → ((x , u) , i)) .snd) (r x))
-    where
-    lemma : {A B G : Set ℓ'}
-      (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
-      (eqAG : A ≡ G) (eqAB : A ≡ B) (eqBG : B ≡ G)
-      (eqβγ : subst (λ D → isFib (λ _ → D)) eqBG β ≡ γ)
-      (e : Equiv A B)
-      → subst (Equiv ◆ B) eqAB e ≡ idEquiv β
-      → subst (Equiv ◆ G) eqAG (subst (Equiv A) eqBG e) ≡ idEquiv γ
-    lemma β γ refl refl refl refl e eq = eq
+  opaque
+    rsEquivMatch : (x : Γ) (u : [ φ x ]) (eq : r x ≡ s x) →
+      subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch) (rsEquiv x u)
+      ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd)
+    rsEquivMatch x u eq =
+      lemma
+        (reindexFib F (λ _ → (x , u) , r x) .snd)
+        (reindexFib X₀ (λ _ → x) .snd)
+        (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
+        (cong (λ t → F .fst ((x , u) , t)) (sym eq))
+        (cong (λ Bβ → Bβ .fst (x , u)) match)
+        (Σeq₂
+          (cong (λ Bβ → (Bβ .fst (x , u) , reindexFib Bβ (λ _ → (x , u)) .snd)) match)
+          (cong (λ Bβ → Bβ .fst (x , u)) match))
+        (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
+        (sym
+          (substCongAssoc
+            (Equiv ◆ fst (reindexFib F (λ _ → (x , u) , r x)) tt)
+              (λ t → F .fst ((x , u) , t))
+              (sym eq)
+              (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x)))
+         ∙
+         congdep
+           (λ t → coerceEquiv S (reindexFib F ((x , u) ,_) .snd) t (r x))
+           (sym eq)
+         ∙
+         coerceEquivCap S (reindexFib F ((x , u) ,_) .snd) (r x))
+      where
+      lemma : {A B G : Set ℓ'}
+        (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
+        (eqAG : A ≡ G) (eqAB : A ≡ B) (eqBG : B ≡ G)
+        (eqβγ : subst (λ D → isFib (λ _ → D)) eqBG β ≡ γ)
+        (e : Equiv A B)
+        → subst (Equiv ◆ B) eqAB e ≡ idEquiv β
+        → subst (Equiv ◆ G) eqAG (subst (Equiv A) eqBG e) ≡ idEquiv γ
+      lemma β γ refl refl refl refl e eq = eq
 
   open Template (λ x → S ∋ r x ≈ s x) rsMatch rsEquiv rsEquivMatch public
 
@@ -120,7 +122,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , r x}) ≡ reindexFib X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, r ∘ fst) ≡ reindexFib X₀ fst)
   where
 
   module _ (s : Γ → ⟨ S ⟩) where
@@ -154,7 +156,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ T ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (λ {(x , u) → (x , u) , ⟪ σ ⟫ (r x)}) ≡ reindexFib X₀ fst)
+  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, ⟪ σ ⟫ ∘ r ∘ fst) ≡ reindexFib X₀ fst)
   (s : Γ → ⟨ S ⟩)
   where
 
@@ -165,7 +167,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
   varyEquiv = funext λ x → funext λ u →
     cong
       (subst (Equiv (F .fst ((x , u) , ⟪ σ ⟫ (s x)))) (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (coerceEquivVary S T σ (reindexFib F (λ i → (x , u) , i) .snd) (s x) (r x))
+      (coerceEquivVary S T σ (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
 
   LargeVary
     : LargeComp T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)

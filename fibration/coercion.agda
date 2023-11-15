@@ -10,7 +10,7 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-module _ {ℓ} (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) (a : A r)where
+module _ {ℓ} (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) (a : A r) where
 
   coerceBox : OpenBox S r A
   coerceBox .cof = ⊥

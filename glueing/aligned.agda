@@ -56,17 +56,18 @@ FibSGlue : ∀ {ℓ ℓ'}
   (Bβ : Fib ℓ' Γ)
   (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
   → Fib ℓ' Γ
-FibSGlue {Γ = Γ} Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
+FibSGlue Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
 
-FibSGlueStrictness : ∀ {ℓ ℓ'}
-  {Γ : Set ℓ}
-  (Φ : Γ → CofProp)
-  (Aα : Fib ℓ' (Γ ,[ Φ ]))
-  (Bβ : Fib ℓ' Γ)
-  (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
-  → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
-FibSGlueStrictness Φ (A , α) (B , β) fe =
-  Σext (SGlueStrictness' Φ (equivFun fe)) (SGlueIsFibStrictness Φ fe α β)
+opaque
+  FibSGlueStrictness : ∀ {ℓ ℓ'}
+    {Γ : Set ℓ}
+    (Φ : Γ → CofProp)
+    (Aα : Fib ℓ' (Γ ,[ Φ ]))
+    (Bβ : Fib ℓ' Γ)
+    (fe : Π (Equiv' (Aα .fst) (Bβ .fst ∘ fst)))
+    → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
+  FibSGlueStrictness Φ (A , α) (B , β) fe =
+    Σext (SGlueStrictness' Φ (equivFun fe)) (SGlueIsFibStrictness Φ fe α β)
 
 opaque
   unfolding SGlueIsFib

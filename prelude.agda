@@ -9,7 +9,7 @@ module prelude where
 open import Agda.Primitive public
 
 infix  1 Σ
-infixr 3 _,_ _×_ _⊎_
+infixr 3 _,_ _,,_ _×_ _⊎_
 infixr 5 _∘_ _∙_
 
 ----------------------------------------------------------------------
@@ -308,6 +308,11 @@ id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
   (p : x ≡ y) (q : x .fst ≡ y .fst)
   → subst B q (x .snd) ≡ y .snd
 Σeq₂ refl refl = refl
+
+_,,_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
+  (f : (a : A) → B a) → ((a : A) → C a (f a)) → ((a : A) → Σ (B a) (C a))
+(f ,, g) a .fst = f a
+(f ,, g) a .snd = g a
 
 uncurry : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   → (∀ a b → C a b)

@@ -25,7 +25,7 @@ Extension' Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
 module ExtensionLift {ℓ} {Z Φ S r}
   {A : ⟨ S ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
   {a : ∀ s z → [ Φ z ] → A (s , z)}
-  (box : OpenBox S r (λ s → (Extension' Z Φ A (s , a s))))
+  (box : OpenBox S r (Extension' Z Φ A ∘ (id ,, a)))
   where
 
   module _ (z : ⟨ Z ⟩) where
@@ -54,7 +54,7 @@ module ExtensionLift {ℓ} {Z Φ S r}
 module ExtensionVary {ℓ} {Z Φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
   {a : ∀ t z → [ Φ z ] → A (t , z)}
-  (box : OpenBox T (⟪ σ ⟫ r) (λ t → (Extension' Z Φ A (t , a t))))
+  (box : OpenBox T (⟪ σ ⟫ r) (Extension' Z Φ A ∘ (id ,, a)))
   where
 
   module T = ExtensionLift α box

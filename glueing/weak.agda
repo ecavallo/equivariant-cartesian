@@ -35,7 +35,7 @@ Glue' :
   (f : (xu : Γ ,[ Φ ]) → B xu → A (xu .fst))
   → ---------------
   Γ → Set ℓ'
-Glue' Φ B A f x = Glue (Φ x) (λ u → B (x , u)) (A x) (λ u → f (x , u))
+Glue' Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
 
 opaque
   GlueExt : ∀ {ℓ}
@@ -50,7 +50,7 @@ opaque
     g ≡ g'
   GlueExt {g = glue _ a _} p refl =
     cong
-      (λ {(t , ft≡a) → glue t a ft≡a})
+      (λ (t , ft≡a) → glue t a ft≡a)
       (Σext (funext p) (funext (λ _ → uipImp)))
 
 module GlueLift {ℓ} {S r Φ}
@@ -61,8 +61,8 @@ module GlueLift {ℓ} {S r Φ}
   (box : OpenBox S r (Glue' Φ B A (equivFun fe)))
   where
 
-  f = λ su → fe su .fst
-  e = λ su → fe su .snd
+  f = fst ∘ fe
+  e = snd ∘ fe
 
   boxA : OpenBox S r A
   boxA = mapBox (λ _ → cod) box
@@ -201,8 +201,7 @@ module GlueVary {ℓ} {S T} (σ : ShapeHom S T) {r Φ}
       ∙
       cong
         (λ δ → δ .lift 𝕚 1 (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill 0 .out)
-        (reindexFiber β (reindex α fst)
-          (λ {(s , uσs) → ⟪ σ ⟫ s , uσs}))
+        (reindexFiber β (reindex α fst) (⟪ σ ⟫ ×id))
 
     varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
     varyFix =
