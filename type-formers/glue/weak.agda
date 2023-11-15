@@ -4,7 +4,7 @@ Definition of weak Glue types and their (unaligned) fibrancy.
 
 -}
 {-# OPTIONS --rewriting #-}
-module glueing.weak where
+module type-formers.glue.weak where
 
 open import prelude
 open import axioms

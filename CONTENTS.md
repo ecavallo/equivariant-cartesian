@@ -61,6 +61,8 @@ Ordered roughly by conceptual priority.
   * `type-formers.empty`
   
   * `type-formers.unit`
+
+  * `type-formers.extension`
   
   * `type-formers.paths`
   
@@ -74,24 +76,24 @@ Ordered roughly by conceptual priority.
     using existing type formers.
     
     Constructs the identity equivalence and coercion equivalence (for any fibration `A : ⟨ S ⟩ →
-    Set` indexed by a shape and `r s : ⟨ S ⟩`), there is an equivalence between `A r` and `A s`)
+    Type` indexed by a shape and `r s : ⟨ S ⟩`), there is an equivalence between `A r` and `A s`)
 
-* `glueing`: Defines the interpretation of `Glue` types, i.e. proves that equivalences extend along
-  generating trivial cofibrations.
-  
-  * `glueing.weak`: TODO explain
+  * `type-formers.glue`: Defines the interpretation of `Glue` types, i.e. proves that equivalences extend
+    along generating trivial cofibrations.
 
-  * `glueing.strict`: TODO explain
-  
-  * `glueing.aligned`: TODO explain
-  
-  * TODO: state and prove univalence
+    * `type-formers.glue.weak`: TODO explain
+
+    * `type-formers.glue.strict`: TODO explain
+
+    * `type-formers.glue.aligned`: TODO explain
+
+    * TODO: state and prove univalence
 
 * `universe`: Definition of a universe classifying equivariant fibrations. This construction uses
   the external tinyness of shapes (`axioms.tiny`) and thus the flat modality.
 
-  * `universe.core`: Defines the universe type `U` and decoding family `El`, proves that `El` is a
-    fibration, and proves an isomorphism between maps `Γ → U` and equivariant fibrations over `Γ`.
+  * `universe.core`: Defines the universe type `U` and decoding family `El`, proves that `El` is a fibration,
+    and constructs an isomorphism between maps `Γ → U` and equivariant fibrations over `Γ`.
     
   * `universe.type-formers`: Uses the results of the `type-formers` directory to show that the
     universe is closed under various type formers.

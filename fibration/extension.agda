@@ -12,7 +12,7 @@ open import fibration.fibration
 open import type-formers.sigma
 open import type-formers.union
 open import type-formers.equivs
-open import glueing
+open import type-formers.glue
 
 private variable ℓ ℓ' : Level
 

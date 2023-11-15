@@ -4,15 +4,14 @@ Strict Glue types and their (unaligned) fibrancy.
 
 -}
 {-# OPTIONS --rewriting #-}
-module glueing.strict where
+module type-formers.glue.strict where
 
 open import prelude
 open import axioms
 open import fibration.fibration
 open import type-formers.equivs
 open import type-formers.pi
-
-open import glueing.weak
+open import type-formers.glue.weak
 
 private variable ℓ ℓ' ℓ'' : Level
 

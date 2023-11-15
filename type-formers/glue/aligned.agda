@@ -4,16 +4,15 @@ Realigning strict glue.
 
 -}
 {-# OPTIONS --rewriting #-}
-module glueing.aligned where
+module type-formers.glue.aligned where
 
 open import prelude
 open import axioms
 open import fibration.fibration
 open import fibration.realignment
 open import type-formers.equivs
-
-open import glueing.weak
-open import glueing.strict
+open import type-formers.glue.weak
+open import type-formers.glue.strict
 
 private variable ℓ ℓ' ℓ'' : Level
 
