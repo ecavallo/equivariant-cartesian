@@ -22,8 +22,8 @@ private variable ℓ ℓ' ℓ'' : Level
 
 opaque
   includeA : (φ : CofProp)
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     → ---------------
     (u : [ φ ]) → A u → Glue φ A B f
@@ -33,8 +33,8 @@ opaque
     cong (uncurry f) (sym (Σext (cofIsProp φ _ _) refl))
 
   includeAIso : (φ : CofProp)
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (w : (u : [ φ ]) → A u → B)
     → ---------------
     (u : [ φ ]) → A u ≅ Glue φ A B w
@@ -56,40 +56,40 @@ opaque
       fg≡id gl = GlueExt (parEq prfIr) (gl .match u)
 
   SGlue : (φ : CofProp)
-    (A : [ φ ] → Set ℓ)
-    (B : Set ℓ)
+    (A : [ φ ] → Type ℓ)
+    (B : Type ℓ)
     (f : (u : [ φ ]) → A u → B)
     → ---------------
-    Set ℓ
+    Type ℓ
   SGlue φ A B f = realign φ A (Glue φ A B f) (includeAIso φ f)
 
   strictifyGlueIso : (φ : CofProp)
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     → ---------------
     SGlue φ A B f ≅ Glue φ A B f
   strictifyGlueIso φ {A} {B} f = isoB φ A (Glue φ A B f) (includeAIso φ f)
 
   sglue : {φ : CofProp}
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     → ---------------
     (u : [ φ ]) → A u → SGlue φ A B f
   sglue {φ = φ} f u = strictifyGlueIso φ f .from ∘ includeA φ f u
 
   sunglue : {φ : CofProp}
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     → ---------------
     SGlue φ A B f → B
   sunglue {φ = φ} f = cod ∘ strictifyGlueIso φ f .to
 
   SGlueStrictness : (φ : CofProp)
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     (u : [ φ ])
     → ---------------
@@ -98,8 +98,8 @@ opaque
     restrictsToA φ A (Glue φ A B f) (includeAIso φ f) u
 
   sunglue-boundary : (φ : CofProp)
-    {A : [ φ ] → Set ℓ}
-    {B : Set ℓ}
+    {A : [ φ ] → Type ℓ}
+    {B : Type ℓ}
     (f : (u : [ φ ]) → A u → B)
     (u : [ φ ]) (a : A u)
     → sunglue f (coe (SGlueStrictness φ f u) a) ≡ f u a
@@ -114,7 +114,7 @@ opaque
          congdep (λ p → cod ∘ p .snd .to) (restrictsToM φ A (Glue φ A B f) (includeAIso φ f) u))
         refl)
     where
-    appdep : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : Set ℓ''}
+    appdep : ∀ {ℓ ℓ' ℓ''} {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
       {a a' : A} (p : a ≡ a') {f : B a → C} {f' : B a' → C}
       (q : subst (λ a → B a → C) p f ≡ f')
       {b : B a} {b' : B a'} (r : subst B p b ≡ b')
@@ -125,28 +125,28 @@ opaque
 -- Indexed versions
 ----------------------------------------------------------------------
 
-SGlueᴵ : {Γ : Set ℓ}
+SGlueᴵ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  (A : Γ ,[ Φ ] → Set ℓ')
-  (B : Γ → Set ℓ')
+  (A : Γ ,[ Φ ] → Type ℓ')
+  (B : Γ → Type ℓ')
   (f : Γ ,[ Φ ] ⊢ A →ᴵ (B ∘ fst))
   → ---------------
-  Γ → Set ℓ'
+  Γ → Type ℓ'
 SGlueᴵ Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
 
-strictifyGlueIsoᴵ : {Γ : Set ℓ}
+strictifyGlueIsoᴵ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  {A : Γ ,[ Φ ] → Set ℓ'}
-  {B : Γ → Set ℓ'}
+  {A : Γ ,[ Φ ] → Type ℓ'}
+  {B : Γ → Type ℓ'}
   (f : Γ ,[ Φ ] ⊢ A →ᴵ (B ∘ fst))
   → ---------------
   Γ ⊢ SGlueᴵ Φ A B f ≅ᴵ Glueᴵ Φ A B f
 strictifyGlueIsoᴵ Φ f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
 
-SGlueStrictnessᴵ : {Γ : Set ℓ}
+SGlueStrictnessᴵ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  {A : Γ ,[ Φ ] → Set ℓ'}
-  {B : Γ → Set ℓ'}
+  {A : Γ ,[ Φ ] → Type ℓ'}
+  {B : Γ → Type ℓ'}
   (f : Γ ,[ Φ ] ⊢ A →ᴵ (B ∘ fst))
   → ---------------
   A ≡ SGlueᴵ Φ A B f ∘ fst
@@ -155,10 +155,10 @@ SGlueStrictnessᴵ Φ f =
 
 module Misaligned where
 
-  GlueIsFib→SGlueIsFib : {Γ : Set ℓ}
+  GlueIsFib→SGlueIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ'}
-    {B : Γ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Type ℓ'}
+    {B : Γ → Type ℓ'}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     → ---------------
     isFib (Glueᴵ Φ A B (equivFun fe)) → isFib (SGlueᴵ Φ A B (equivFun fe))
@@ -167,10 +167,10 @@ module Misaligned where
       (strictifyGlueIsoᴵ Φ (equivFun fe))
       γ
 
-  SGlueIsFib : {Γ : Set ℓ}
+  SGlueIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ'}
-    {B : Γ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Type ℓ'}
+    {B : Γ → Type ℓ'}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     → ---------------
     isFib A → isFib B → isFib (SGlueᴵ Φ A B (equivFun fe))
@@ -179,10 +179,10 @@ module Misaligned where
       (strictifyGlueIsoᴵ Φ (equivFun fe))
       (GlueIsFib Φ fe α β)
 
-  reindexSGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexSGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ''}
-    {B : Γ → Set ℓ''}
+    {A : Γ ,[ Φ ] → Type ℓ''}
+    {B : Γ → Type ℓ''}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)

@@ -21,7 +21,7 @@ open Tiny
 
 module _ (@♭ S : Shape) where
 
-  shape→⊎♭ : ∀ {@♭ ℓ ℓ'} {@♭ A : Set ℓ} {@♭ B : Set ℓ'}
+  shape→⊎♭ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
     → ((⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) ≅ (⟨ S ⟩ → A ⊎ B)
   shape→⊎♭ {A = A} {B} =
     record
@@ -43,34 +43,34 @@ module _ (@♭ S : Shape) where
     back∘forward (inr g) = appCong (L℘ S back inr)
 
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
-      {@♭ A : Set ℓ} {@♭ A' : Set ℓ'}
-      {@♭ B : Set ℓ''} {@♭ B' : Set ℓ'''}
+      {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
+      {@♭ B : Type ℓ''} {@♭ B' : Type ℓ'''}
       (f : A → A') (g : B → B')
       (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B))
       → shape→⊎♭ .to (((f ∘_) ⊎` (g ∘_)) p) ≡ (f ⊎` g) ∘ (shape→⊎♭ .to p)
   shape→⊎♭` f g (inl _) = refl
   shape→⊎♭` f g (inr _) = refl
 
-  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Set ℓ}
+  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Type ℓ}
     (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → A))
     → ∇ ∘ shape→⊎♭ .to p ≡ ∇ p
   shape→⊎♭∇ (inl _) = refl
   shape→⊎♭∇ (inr _) = refl
 
   shape→⊎ : ∀ {@♭ ℓ ℓ'}
-    {A : ⟨ S ⟩ → Set ℓ} {B : ⟨ S ⟩ → Set ℓ'}
+    {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
     → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π A ⊎ Π B
   shape→⊎ {ℓ} {ℓ'} {A} {B} h = main
     where
-    Setₗ = Σ AB ∈ Set ℓ × Set ℓ' , AB .fst
-    Setᵣ = Σ AB ∈ Set ℓ × Set ℓ' , AB .snd
+    Typeₗ = Σ AB ∈ Type ℓ × Type ℓ' , AB .fst
+    Typeᵣ = Σ AB ∈ Type ℓ × Type ℓ' , AB .snd
 
     iso = shape→⊎♭
 
-    AB : ⟨ S ⟩ → Set ℓ × Set ℓ'
+    AB : ⟨ S ⟩ → Type ℓ × Type ℓ'
     AB s = (A s , B s)
 
-    h' : ⟨ S ⟩ → Setₗ ⊎ Setᵣ
+    h' : ⟨ S ⟩ → Typeₗ ⊎ Typeᵣ
     h' s = ((_,_ (AB s)) ⊎` (_,_ (AB s))) (h s)
 
     fsth' : ∀ s → ∇ ((fst ⊎` fst) (h' s)) ≡ AB s

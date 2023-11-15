@@ -22,8 +22,8 @@ infixr 4 _∨_
 ----------------------------------------------------------------------
 
 postulate
-  CofProp : Set
-  [_] : CofProp → Set
+  CofProp : Type
+  [_] : CofProp → Type
 
   _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → CofProp
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
@@ -57,20 +57,20 @@ postulate
 ∂ : 𝕀 → CofProp
 ∂ i = 𝕚 ∋ i ≈ 0 ∨ 𝕚 ∋ i ≈ 1
 
-∨l : {A : Set ℓ} {B : Set ℓ'} → A → ∥ A ⊎ B ∥
+∨l : {A : Type ℓ} {B : Type ℓ'} → A → ∥ A ⊎ B ∥
 ∨l a = ∣ inl a ∣
 
-∨r : {A : Set ℓ} {B : Set ℓ'} → B → ∥ A ⊎ B ∥
+∨r : {A : Type ℓ} {B : Type ℓ'} → B → ∥ A ⊎ B ∥
 ∨r b = ∣ inr b ∣
 
-_,[_] : (Γ : Set ℓ) (Φ : Γ → CofProp) → Set ℓ
+_,[_] : (Γ : Type ℓ) (Φ : Γ → CofProp) → Type ℓ
 Γ ,[ Φ ] = Σ x ∈ Γ , [ Φ x ]
 
 ----------------------------------------------------------------------
 -- Restricted types
 ----------------------------------------------------------------------
 
-record _[_↦_] (A : Set ℓ) (φ : CofProp) (a : [ φ ] → A) : Set ℓ where
+record _[_↦_] (A : Type ℓ) (φ : CofProp) (a : [ φ ] → A) : Type ℓ where
   constructor makeRestrict
   field
     out : A
@@ -78,7 +78,7 @@ record _[_↦_] (A : Set ℓ) (φ : CofProp) (a : [ φ ] → A) : Set ℓ where
 
 open _[_↦_] public
 
-restrictExt : {A : Set ℓ} {φ : CofProp} {a : [ φ ] → A}
+restrictExt : {A : Type ℓ} {φ : CofProp} {a : [ φ ] → A}
   {z z' : A [ φ ↦ a ]}
   → z .out ≡ z' .out
   → z ≡ z'
@@ -88,7 +88,7 @@ restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
 -- Combining compatible partial functions
 ----------------------------------------------------------------------
 
-∨-rec : {A : Set ℓ}
+∨-rec : {A : Type ℓ}
   (φ ψ : CofProp)
   (f : [ φ ] → A)
   (g : [ ψ ] → A)
@@ -102,7 +102,7 @@ restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
     ; (inr v) (inl u) → sym (p u v)
     ; (inr _) (inr _) → cong g (cofIsProp ψ _ _)}
 
-OI-rec : (r : 𝕀) {A : Set ℓ}
+OI-rec : (r : 𝕀) {A : Type ℓ}
   → ([ 𝕚 ∋ r ≈ 0 ] → A)
   → ([ 𝕚 ∋ r ≈ 1 ] → A)
   → ---------------------------
@@ -112,7 +112,7 @@ OI-rec r f g =
     (λ u v → 0≠1 (sym u ∙ v))
 
 ∨-elim : (φ ψ : CofProp)
-  (P : [ φ ∨ ψ ] → Set ℓ)
+  (P : [ φ ∨ ψ ] → Type ℓ)
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
   .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
@@ -129,7 +129,7 @@ OI-rec r f g =
       (λ u v → Σext (trunc _ _) (p u v))
 
 ∨-elimProp : (φ ψ : CofProp)
-  (P : [ φ ∨ ψ ] → Set ℓ)
+  (P : [ φ ∨ ψ ] → Type ℓ)
   (propP : ∀ uv → isProp (P uv))
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
@@ -139,7 +139,7 @@ OI-rec r f g =
   ∨-elim φ ψ _ f g (λ _ _ → propP _ _ _)
 
 OI-elim : (r : 𝕀)
-  {A : [ ∂ r ] → Set ℓ}
+  {A : [ ∂ r ] → Type ℓ}
   → ((rO : [ 𝕚 ∋ r ≈ 0 ]) → A (∨l rO))
   → ((rI : [ 𝕚 ∋ r ≈ 1 ]) → A (∨r rI))
   → ---------------------------
@@ -147,7 +147,7 @@ OI-elim : (r : 𝕀)
 OI-elim r f g =
   ∨-elim (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) _ f g (λ {refl r≡I → 0≠1 r≡I})
 
-∨-elimEq : (φ ψ : CofProp) {A : Set ℓ}
+∨-elimEq : (φ ψ : CofProp) {A : Type ℓ}
   {f g : [ φ ∨ ψ ] → A}
   → ((u : [ φ ]) → f (∨l u) ≡ g (∨l u))
   → ((v : [ ψ ]) → f (∨r v) ≡ g (∨r v))
@@ -156,7 +156,7 @@ OI-elim r f g =
 ∨-elimEq φ ψ =
   ∨-elimProp φ ψ _ (λ _ → uip)
 
-takeOutCof : {A : Set ℓ} (φ φ₀ φ₁ : CofProp)
+takeOutCof : {A : Type ℓ} (φ φ₀ φ₁ : CofProp)
   {f₀ : [ φ ∨ φ₀ ] → A} {f₁ : [ φ ∨ φ₁ ] → A}
   → (∀ u → f₀ (∨l u) ≡ f₁ (∨l u))
   → (∀ v₀ v₁ → f₀ (∨r v₀) ≡ f₁ (∨r v₁))
@@ -171,7 +171,7 @@ takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
       (λ v₁ → q v₀ v₁))
     (λ _ _ → funext λ _ → uipImp)
 
-diagonalElim : (φ : CofProp) {P : [ φ ] → [ φ ] → Set ℓ}
+diagonalElim : (φ : CofProp) {P : [ φ ] → [ φ ] → Type ℓ}
   → (∀ u → P u u)
   → (∀ u v → P u v)
 diagonalElim φ {P = P} f u v = subst (P u) (cofIsProp φ u v) (f u)

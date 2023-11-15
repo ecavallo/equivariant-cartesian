@@ -17,10 +17,10 @@ open import glueing
 private variable ℓ ℓ' : Level
 
 -- TODO do something about this
-fst' : {Γ : Set ℓ} {A B : Γ → Set ℓ'} → Σ Γ (A ×ᴵ B) → Σ Γ A
+fst' : {Γ : Type ℓ} {A B : Γ → Type ℓ'} → Σ Γ (A ×ᴵ B) → Σ Γ A
 fst' = id× fst
 
-module Box {Γ : Set ℓ}
+module Box {Γ : Type ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
@@ -110,7 +110,7 @@ module Box {Γ : Set ℓ}
          ∙
          coerceEquivCap S (reindexFib F ((x , u) ,_) .snd) (r x))
       where
-      lemma : {A B G : Set ℓ'}
+      lemma : {A B G : Type ℓ'}
         (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
         (eqAG : A ≡ G) (eqAB : A ≡ B) (eqBG : B ≡ G)
         (eqβγ : subst (λ D → isFib (λ _ → D)) eqBG β ≡ γ)
@@ -121,7 +121,7 @@ module Box {Γ : Set ℓ}
 
   open Template (λ x → S ∋ r x ≈ s x) rsMatch rsEquiv rsEquivMatch public
 
-module _ {Γ : Set ℓ}
+module _ {Γ : Type ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
@@ -155,7 +155,7 @@ module _ {Γ : Set ℓ}
     f₀ : Γ → Γ ,[ (λ x → S ∋ r x ≈ r x) ]
     f₀ x = x , refl
 
-module _ {Γ : Set ℓ}
+module _ {Γ : Type ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ T ⟩))

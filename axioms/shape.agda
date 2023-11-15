@@ -17,10 +17,10 @@ private variable ℓ : Level
 ----------------------------------------------------------------------
 
 postulate
-  Shape : Set
-  ShapeHom : Shape → Shape → Set
+  Shape : Type
+  ShapeHom : Shape → Shape → Type
 
-  ⟨_⟩ : Shape → Set
+  ⟨_⟩ : Shape → Type
   ⟪_⟫ : {I J : Shape} → ShapeHom I J → ⟨ I ⟩ → ⟨ J ⟩
 
   𝕚 : Shape -- interval shape
@@ -30,7 +30,7 @@ postulate
 postulate -- interval endpoints
   𝕚0 : 𝕀
   𝕚1 : 𝕀
-  0≠1 : {A : Set ℓ} → 𝕚0 ≡ 𝕚1 → A
+  0≠1 : {A : Type ℓ} → 𝕚0 ≡ 𝕚1 → A
 
 ----------------------------------------------------------------------
 -- Notation for interval endpoints
@@ -48,18 +48,18 @@ fromNat (suc _) = 𝕚1
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)
 ----------------------------------------------------------------------
 postulate
-  ShapeIsDiscrete : {A : Shape → Set ℓ}
+  ShapeIsDiscrete : {A : Shape → Type ℓ}
     → ((@♭ S : Shape) → A S) → ((S : Shape) → A S)
 
-  ShapeIsDiscrete-β : {A : Shape → Set ℓ} (f : (@♭ S : Shape) → A S)
+  ShapeIsDiscrete-β : {A : Shape → Type ℓ} (f : (@♭ S : Shape) → A S)
     (@♭ S : Shape) → ShapeIsDiscrete f S ≡ f S
 
   {-# REWRITE ShapeIsDiscrete-β #-}
 
-  ShapeHomIsDiscrete : {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
+  ShapeHomIsDiscrete : {@♭ S T : Shape} {A : ShapeHom S T → Type ℓ}
     → ((@♭ σ : ShapeHom S T) → A σ) → ((σ : ShapeHom S T) → A σ)
 
-  ShapeHomIsDiscrete-β : {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
+  ShapeHomIsDiscrete-β : {@♭ S T : Shape} {A : ShapeHom S T → Type ℓ}
     (f : (@♭ σ : ShapeHom S T) → A σ)
     (@♭ σ : ShapeHom S T) → ShapeHomIsDiscrete f σ ≡ f σ
 

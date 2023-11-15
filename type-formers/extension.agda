@@ -14,19 +14,19 @@ private variable ℓ ℓ' ℓ'' : Level
 
 -- TODO do something better with this
 Partial : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-  {Γ : Set ℓ}
-  (A : Γ × ⟨ Z ⟩ → Set ℓ')
-  → Γ → Set ℓ'
+  {Γ : Type ℓ}
+  (A : Γ × ⟨ Z ⟩ → Type ℓ')
+  → Γ → Type ℓ'
 Partial Z Φ A γ = ∀ z → [ Φ z ] → A (γ , z)
 
 Extensionᴵ : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-  {Γ : Set ℓ}
-  (A : Γ × ⟨ Z ⟩ → Set ℓ')
-  → Σ Γ (Partial Z Φ A) → Set ℓ'
+  {Γ : Type ℓ}
+  (A : Γ × ⟨ Z ⟩ → Type ℓ')
+  → Σ Γ (Partial Z Φ A) → Type ℓ'
 Extensionᴵ Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
 
 module ExtensionLift {Z Φ S r}
-  {A : ⟨ S ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
+  {A : ⟨ S ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
   {a : ⟨ S ⟩ ⊢ Partial Z Φ A}
   (box : OpenBox S r (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
@@ -55,7 +55,7 @@ module ExtensionLift {Z Φ S r}
   filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
 
 module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
+  {A : ⟨ T ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
   {a : ⟨ T ⟩ ⊢ Partial Z Φ A}
   (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
@@ -76,8 +76,8 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
 
 opaque
   ExtensionIsFib : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-    {Γ : Set ℓ}
-    {A : Γ × ⟨ Z ⟩ → Set ℓ'}
+    {Γ : Type ℓ}
+    {A : Γ × ⟨ Z ⟩ → Type ℓ'}
     (α : isFib A)
     → isFib (Extensionᴵ Z Φ A)
   ExtensionIsFib Z Φ α .lift S r p = ExtensionLift.filler (reindex α ((fst ∘ p) ×id))
@@ -87,8 +87,8 @@ opaque
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------
   reindexExtension : {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ × ⟨ Z ⟩ → Set ℓ''}
+    {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A : Γ × ⟨ Z ⟩ → Type ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------

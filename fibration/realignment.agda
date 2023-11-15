@@ -2,7 +2,7 @@
 
 Realign a fibration structure to agree with another on some cofibration
 
-TODO: package with Set-realignment to get a proof that fibrations (not just their structures) can be
+TODO: package with Type-realignment to get a proof that fibrations (not just their structures) can be
 realigned
 
 -}
@@ -17,7 +17,7 @@ private variable ℓ ℓ' ℓ'' : Level
 
 module RealignLift {S r}
   (Φ : ⟨ S ⟩ → CofProp)
-  {A : ⟨ S ⟩ → Set ℓ}
+  {A : ⟨ S ⟩ → Type ℓ}
   (β : isFib {Γ = ⟨ S ⟩ ,[ Φ ]} (A ∘ fst))
   (α : isFib A)
   (box : OpenBox S r A)
@@ -48,7 +48,7 @@ module RealignLift {S r}
 
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (Φ : ⟨ T ⟩ → CofProp)
-  {A : ⟨ T ⟩ → Set ℓ}
+  {A : ⟨ T ⟩ → Type ℓ}
   (β : isFib {Γ = ⟨ T ⟩ ,[ Φ ]} (A ∘ fst))
   (α : isFib A)
   (box : OpenBox T (⟪ σ ⟫ r) A)
@@ -76,9 +76,9 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
-  realignIsFib : {Γ : Set ℓ}
+  realignIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    (A : Γ → Set ℓ')
+    (A : Γ → Type ℓ')
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
@@ -89,9 +89,9 @@ opaque
     RealignVary.eq σ (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
 
   -- TODO prove this in RealignLift
-  isRealigned : {Γ : Set ℓ}
+  isRealigned : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {A : Γ → Set ℓ'}
+    {A : Γ → Type ℓ'}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     → ---------------
@@ -103,9 +103,9 @@ opaque
       in
       sym (fillA .fill s .out≡ (∨r (snd ∘ p)))
 
-  reindexRealignIsFib : {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexRealignIsFib : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    {A : Γ → Set ℓ''}
+    {A : Γ → Type ℓ''}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
     (α : isFib A)
     (ρ : Δ → Γ)

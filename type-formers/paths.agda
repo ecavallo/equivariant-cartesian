@@ -14,7 +14,7 @@ open import type-formers.sigma
 
 private variable ℓ ℓ' ℓ'' : Level
 
-record _~_ {A : Set ℓ} (a a' : A) : Set ℓ where
+record _~_ {A : Type ℓ} (a a' : A) : Type ℓ where
   constructor path
   field
     at : 𝕀 → A
@@ -23,27 +23,27 @@ record _~_ {A : Set ℓ} (a a' : A) : Set ℓ where
 
 open _~_ public
 
-eqToPath : {A : Set ℓ} {x y : A} → x ≡ y → x ~ y
+eqToPath : {A : Type ℓ} {x y : A} → x ≡ y → x ~ y
 eqToPath {x = x} p = path (λ _ → x) refl p
 
-refl~ : {A : Set ℓ} (a : A) → a ~ a
+refl~ : {A : Type ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
 
-PathExt : {A : Set ℓ} {a a' : A} {p q : a ~ a'}
+PathExt : {A : Type ℓ} {a a' : A} {p q : a ~ a'}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
   cong (uncurry (uncurry ∘ path)) (Σext (funext t) (Σext uipImp uipImp))
 
-Pathᴵ : {Γ : Set ℓ} (A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
+Pathᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') → Σ x ∈ Γ , A x × A x → Type ℓ'
 Pathᴵ A (x , (a , a')) = a ~ a'
 
 opaque
   private
-    ctxMap : {Γ : Set ℓ} (A : Γ → Set ℓ')
+    ctxMap : {Γ : Type ℓ} (A : Γ → Type ℓ')
       → Σ Γ (A ×ᴵ A) → Σ Γ (Partial 𝕚 ∂ (A ∘ fst))
     ctxMap A (γ , a₀ , a₁) = γ , λ i → OI-rec i (λ _ → a₀) (λ _ → a₁)
 
-    retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
+    retract : ∀ {ℓ ℓ'} {Γ : Type ℓ} (A : Γ → Type ℓ')
       → Σ Γ (A ×ᴵ A) ⊢ Retractᴵ (Pathᴵ A) (Extensionᴵ 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
     retract A γ .sec p i .out = p .at i
     retract A γ .sec p i .out≡ = OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
@@ -52,8 +52,8 @@ opaque
     retract A γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
     retract A γ .inv = funext λ p → PathExt λ i → refl
 
-  PathIsFib :{Γ : Set ℓ}
-    {A : Γ → Set ℓ'}
+  PathIsFib :{Γ : Type ℓ}
+    {A : Γ → Type ℓ'}
     (α : isFib A)
     → -----------
     isFib (Pathᴵ A)
@@ -63,8 +63,8 @@ opaque
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexPath : {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set ℓ''}
+  reindexPath : {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A : Γ → Type ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------

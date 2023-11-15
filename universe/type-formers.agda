@@ -30,11 +30,11 @@ module _ {@♭ ℓ : Level} where
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   sigma a b = encode (_ , ΣIsFibUniversal) (a , b)
 
-  sigmaᴵ : {Γ : Set ℓ'}
+  sigmaᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
   sigmaᴵ a b x = sigma (a x) (curry b x)
 
-  decodeSigma : {Γ : Set ℓ'}
+  decodeSigma : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
     → decode (sigmaᴵ a b) ≡ FibΣ (decode a) (decode b)
   decodeSigma a b =
@@ -60,11 +60,11 @@ module _ {@♭ ℓ : Level} where
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   pi a b = encode (_ , ΠIsFibUniversal) (a , b)
 
-  piᴵ : {Γ : Set ℓ'}
+  piᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
   piᴵ a b x = pi (a x) (curry b x)
 
-  decodePi : {Γ : Set ℓ'}
+  decodePi : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
     → decode (piᴵ a b) ≡ FibΠ (decode a) (decode b)
   decodePi a b =

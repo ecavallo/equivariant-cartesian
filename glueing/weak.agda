@@ -19,8 +19,8 @@ private variable ℓ ℓ' ℓ'' : Level
 -- Glueing
 ----------------------------------------------------------------------
 record Glue (Φ : CofProp)
-  (T : [ Φ ] → Set ℓ) (A : Set ℓ)
-  (f : (u : [ Φ ]) → T u → A) : Set ℓ
+  (T : [ Φ ] → Type ℓ) (A : Type ℓ)
+  (f : (u : [ Φ ]) → T u → A) : Type ℓ
   where
   constructor glue
   field
@@ -30,19 +30,19 @@ record Glue (Φ : CofProp)
 
 open Glue public
 
-Glueᴵ : {Γ : Set ℓ}
+Glueᴵ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  (B : Γ ,[ Φ ] → Set ℓ')
-  (A : Γ → Set ℓ')
+  (B : Γ ,[ Φ ] → Type ℓ')
+  (A : Γ → Type ℓ')
   (f : Γ ,[ Φ ] ⊢ B →ᴵ (A ∘ fst))
   → ---------------
-  Γ → Set ℓ'
+  Γ → Type ℓ'
 Glueᴵ Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
 
 opaque
   GlueExt : {Φ : CofProp}
-    {B : [ Φ ] → Set ℓ}
-    {A : Set ℓ}
+    {B : [ Φ ] → Type ℓ}
+    {A : Type ℓ}
     {f : (u : [ Φ ]) → B u → A}
     {g g' : Glue Φ B A f}
     (p : ∀ us → g .dom us ≡ g' .dom us)
@@ -55,8 +55,8 @@ opaque
       (Σext (funext p) (funext (λ _ → uipImp)))
 
 module GlueLift {S r Φ}
-  {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
-  {A : ⟨ S ⟩ → Set ℓ}
+  {B : ⟨ S ⟩ ,[ Φ ] → Type ℓ}
+  {A : ⟨ S ⟩ → Type ℓ}
   (fe : ⟨ S ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
   (β : isFib B) (α : isFib A)
   (box : OpenBox S r (Glueᴵ Φ B A (equivFun fe)))
@@ -150,8 +150,8 @@ module GlueLift {S r Φ}
         (sym (fillFix r .out≡ (∨r (∨r refl))))
 
 module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
-  {B : ⟨ T ⟩ ,[ Φ ] → Set ℓ}
-  {A : ⟨ T ⟩ → Set ℓ}
+  {B : ⟨ T ⟩ ,[ Φ ] → Type ℓ}
+  {A : ⟨ T ⟩ → Type ℓ}
   (fe : ⟨ T ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
   (β : isFib B) (α : isFib A)
   (box : OpenBox T (⟪ σ ⟫ r) (Glueᴵ Φ B A (equivFun fe)))
@@ -223,10 +223,10 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
       eq = GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
 
 opaque
-  GlueIsFib : {Γ : Set ℓ}
+  GlueIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {B : Γ ,[ Φ ] → Set ℓ'}
-    {A : Γ → Set ℓ'}
+    {B : Γ ,[ Φ ] → Type ℓ'}
+    {A : Γ → Type ℓ'}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     → ---------------
     isFib B → isFib A → isFib (Glueᴵ Φ B A (equivFun fe))
@@ -237,10 +237,10 @@ opaque
 
 opaque
   unfolding GlueIsFib
-  reindexGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    {B : Γ ,[ Φ ] → Set ℓ''}
-    {A : Γ → Set ℓ''}
+    {B : Γ ,[ Φ ] → Type ℓ''}
+    {A : Γ → Type ℓ''}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     (β : isFib B)
     (α : isFib A)

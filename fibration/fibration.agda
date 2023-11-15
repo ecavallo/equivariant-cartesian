@@ -15,7 +15,7 @@ private variable ℓ ℓ' ℓ'' ℓ''' : Level
 -- Open boxes
 ----------------------------------------------------------------------
 
-record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ) : Set ℓ
+record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type ℓ
   where
   constructor makeBox
   field
@@ -26,14 +26,14 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Set ℓ) : Set ℓ
 open OpenBox public
 
 reshapeBox : {S T : Shape} (σ : ShapeHom S T)
-  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
+  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Type ℓ}
   → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
 reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube u = box .tube u ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
 
 mapBox : {S : Shape} {r : ⟨ S ⟩}
-  {A : ⟨ S ⟩ → Set ℓ} {B : ⟨ S ⟩ → Set ℓ'}
+  {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
   → (∀ s → A s → B s)
   → OpenBox S r A → OpenBox S r B
 mapBox f box .cof = box .cof
@@ -42,7 +42,7 @@ mapBox f box .cap .out = f _ (box .cap .out)
 mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
 opaque
-  boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+  boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box box' : OpenBox S r A}
     → box .cof ≡ box' .cof
     → (∀ u v → box .tube u ≡ box' .tube v)
@@ -53,7 +53,7 @@ opaque
       (funext λ _ → q _ _)
       (funext λ _ → uipImp)
 
-  boxExtDep : {S : Shape} {B : Set ℓ} {A : B → ⟨ S ⟩ → Set ℓ'}
+  boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
     {b₀ b₁ : B} (b : b₀ ≡ b₁)
     {r : ⟨ S ⟩}
     {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
@@ -67,7 +67,7 @@ opaque
 -- Solutions to individual lifting problems
 ----------------------------------------------------------------------
 
-record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ} (box : OpenBox S r A) : Set ℓ
+record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A) : Type ℓ
   where
   constructor makeFiller
   field
@@ -77,7 +77,7 @@ record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ} (box : Ope
 open Filler public
 
 reshapeFiller : {S T : Shape} (σ : ShapeHom S T)
-  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Set ℓ}
+  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Type ℓ}
   {box : OpenBox T (⟪ σ ⟫ r) A}
   → Filler box
   → Filler (reshapeBox σ box)
@@ -85,7 +85,7 @@ reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
 opaque
-  fillerExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+  fillerExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
@@ -93,7 +93,7 @@ opaque
   fillerExt p =
     congΣ makeFiller (funext λ s → restrictExt (p s)) uipImp
 
-  fillerCong : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Set ℓ}
+  fillerCong : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
     → co ≡ co'
@@ -104,7 +104,7 @@ opaque
 -- Equivariant fibrations
 ----------------------------------------------------------------------
 
-record isFib {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
+record isFib {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
     lift : ∀ S r p → (box : OpenBox S r (A ∘ p)) → Filler box
@@ -114,24 +114,24 @@ record isFib {Γ : Set ℓ} (A : Γ → Set ℓ') : Set (ℓ ⊔ ℓ') where
 
 open isFib public
 
-Fib : (ℓ' : Level) (Γ : Set ℓ) → Set (ℓ ⊔ lsuc ℓ')
-Fib ℓ' Γ = Σ (Γ → Set ℓ') isFib
+Fib : (ℓ' : Level) (Γ : Type ℓ) → Type (ℓ ⊔ lsuc ℓ')
+Fib ℓ' Γ = Σ (Γ → Type ℓ') isFib
 
 ----------------------------------------------------------------------
 -- Fibrations can be reindexed
 ----------------------------------------------------------------------
 
-reindex : {Δ : Set ℓ} {Γ : Set ℓ'} {A : Γ → Set ℓ''}
+reindex : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''}
   (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
 reindex α ρ .lift S r p = α .lift S r (ρ ∘ p)
 reindex α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
-reindexFib : {Δ : Set ℓ} {Γ : Set ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ)
+reindexFib : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ)
   → Fib ℓ'' Δ
 reindexFib (A , α) ρ .fst = A ∘ ρ
 reindexFib (A , α) ρ .snd = reindex α ρ
 
-reindexSubst : {Δ : Set ℓ} {Γ : Set ℓ'} {A A' : Γ → Set ℓ''}
+reindexSubst : {Δ : Type ℓ} {Γ : Type ℓ'} {A A' : Γ → Type ℓ''}
  (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
   → reindex (subst isFib P α) ρ ≡ subst isFib Q (reindex α ρ)
 reindexSubst ρ refl refl α = refl
@@ -140,20 +140,20 @@ reindexSubst ρ refl refl α = refl
 -- Reindexing is functorial
 ----------------------------------------------------------------------
 
-reindexAlongId : {Γ : Set ℓ}{A : Γ → Set ℓ'}{α : isFib A} → α ≡ reindex α id
+reindexAlongId : {Γ : Type ℓ}{A : Γ → Type ℓ'}{α : isFib A} → α ≡ reindex α id
 reindexAlongId = refl
 
 reindexComp :
-  {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''} {A : Γ₃ → Set ℓ'''}
+  {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''} {A : Γ₃ → Type ℓ'''}
   (α : isFib A) (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
   → ----------------------
   reindex α (g ∘ f) ≡ reindex (reindex α g) f
 reindexComp α g f = refl
 
-reindexAlongId' : {Γ : Set ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
+reindexAlongId' : {Γ : Type ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
 reindexAlongId' = refl
 
-reindexComp' : {Γ₁ : Set ℓ} {Γ₂ : Set ℓ'} {Γ₃ : Set ℓ''}
+reindexComp' : {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''}
   {Aα : Fib ℓ''' Γ₃}
   (f : Γ₁ → Γ₂)(g : Γ₂ → Γ₃)
   → ----------------------
@@ -164,7 +164,7 @@ reindexComp' g f = refl
 -- An extensionality principle for fibration structures
 ----------------------------------------------------------------------
 opaque
-  isFibExt :  {Γ : Set ℓ} {A : Γ → Set ℓ'} {α α' : isFib A} →
+  isFibExt :  {Γ : Type ℓ} {A : Γ → Type ℓ'} {α α' : isFib A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
       → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
     → α ≡ α'
@@ -178,11 +178,11 @@ opaque
 -- A retract of a fibration is a fibration
 ----------------------------------------------------------------------
 
-Retractᴵ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
+Retractᴵ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
 Retractᴵ A B γ = Retract (A γ) (B γ)
 
 opaque
-  retractIsFib : {Γ : Set ℓ} {A B : Γ → Set ℓ'} → Γ ⊢ Retractᴵ A B → isFib B → isFib A
+  retractIsFib : {Γ : Type ℓ} {A B : Γ → Type ℓ'} → Γ ⊢ Retractᴵ A B → isFib B → isFib A
   retractIsFib retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
@@ -200,8 +200,8 @@ opaque
   retractIsFib retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
-  reindexRetract : {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A B : Γ → Set ℓ''}
+  reindexRetract : {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A B : Γ → Type ℓ''}
     (retract : Γ ⊢ Retractᴵ A B)
     (β : isFib B)
     (ρ : Δ → Γ)
@@ -212,14 +212,14 @@ opaque
 -- Corollary: fibration structures can be transferred across isomorphisms
 ----------------------------------------------------------------------
 
-_≅ᴵ_ : {Γ : Set ℓ} (A B : Γ → Set ℓ') → (Γ → Set ℓ')
+_≅ᴵ_ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
 _≅ᴵ_ A B γ = A γ ≅ B γ
 
-isomorphIsFib : {Γ : Set ℓ} {A B : Γ → Set ℓ'}
+isomorphIsFib : {Γ : Type ℓ} {A B : Γ → Type ℓ'}
   → Γ ⊢ A ≅ᴵ B → isFib B → isFib A
 isomorphIsFib iso β = retractIsFib (isoToRetract ∘ iso) β
 
-reindexIsomorph : {Δ : Set ℓ} {Γ : Set ℓ'} {A B : Γ → Set ℓ''}
+reindexIsomorph : {Δ : Type ℓ} {Γ : Type ℓ'} {A B : Γ → Type ℓ''}
   (iso : Γ ⊢ A ≅ᴵ B)
   (β : isFib B)
   (ρ : Δ → Γ)

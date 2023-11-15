@@ -13,16 +13,16 @@ open import fibration.coercion
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-Πᴵ : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : (Σ x ∈ Γ , A x) → Set ℓ'')
-  → Γ → Set (ℓ' ⊔ ℓ'')
+Πᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : (Σ x ∈ Γ , A x) → Type ℓ'')
+  → Γ → Type (ℓ' ⊔ ℓ'')
 Πᴵ A B x = (a : A x) → B (x , a)
 
-_→ᴵ_ : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set ℓ'')
-  → Γ → Set (ℓ' ⊔ ℓ'')
+_→ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'')
+  → Γ → Type (ℓ' ⊔ ℓ'')
 A →ᴵ B = Πᴵ A (B ∘ fst)
 
 module ΠLift {S r}
-  {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
+  {A : ⟨ S ⟩ → Type ℓ} {B : Σ ⟨ S ⟩ A → Type ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox S r (Πᴵ A B))
   where
@@ -56,7 +56,7 @@ module ΠLift {S r}
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
+  {A : ⟨ T ⟩ → Type ℓ} {B : Σ ⟨ T ⟩ A → Type ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Πᴵ A B))
   where
@@ -81,9 +81,9 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA s a)))
 
 opaque
-  ΠIsFib : {Γ : Set ℓ}
-    {A : Γ → Set ℓ'}
-    {B : Σ Γ A → Set ℓ''}
+  ΠIsFib : {Γ : Type ℓ}
+    {A : Γ → Type ℓ'}
+    {B : Σ Γ A → Type ℓ''}
     (α : isFib A)
     (β : isFib B)
     → -----------
@@ -94,9 +94,9 @@ opaque
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexΠ : {Δ : Set ℓ} {Γ : Set ℓ'}
-    {A : Γ → Set ℓ''}
-    {B : Σ Γ A → Set ℓ'''}
+  reindexΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A : Γ → Type ℓ''}
+    {B : Σ Γ A → Type ℓ'''}
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
@@ -104,14 +104,14 @@ opaque
     reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
-FibΠ : {Γ : Set ℓ}
+FibΠ : {Γ : Type ℓ}
   (Aα : Fib ℓ' Γ)
   (Bα : Fib ℓ'' (Σ Γ (Aα .fst)))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
 FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
 
-reindexFibΠ : {Δ : Set ℓ} {Γ : Set ℓ'}
+reindexFibΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)

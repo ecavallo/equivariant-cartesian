@@ -14,15 +14,15 @@ private variable ℓ ℓ' : Level
 
 open Tiny
 
-record Span ℓ : Set (lsuc ℓ) where
+record Span ℓ : Type (lsuc ℓ) where
   field
-    Src : Set ℓ
-    Dst : Set ℓ
-    Rel : Src → Dst → Set ℓ
+    Src : Type ℓ
+    Dst : Type ℓ
+    Rel : Src → Dst → Type ℓ
 
 open Span public
 
-record Witness {ℓ} (D : Span ℓ) : Set ℓ where
+record Witness {ℓ} (D : Span ℓ) : Type ℓ where
   constructor witness
   field
     src : D .Src
@@ -31,19 +31,19 @@ record Witness {ℓ} (D : Span ℓ) : Set ℓ where
 
 open Witness public
 
-Span* : ∀ ℓ → Set (lsuc ℓ)
+Span* : ∀ ℓ → Type (lsuc ℓ)
 Span* ℓ = Σ D ∈ Span ℓ , Witness D
 
-src* : Span* ℓ → Set* ℓ
+src* : Span* ℓ → Type* ℓ
 src* (D , W) = (D .Src , W .src)
 
-dst* : Span* ℓ → Set* ℓ
+dst* : Span* ℓ → Type* ℓ
 dst* (D , W) = (D .Dst , W .dst)
 
-hasLifts : (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
+hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
 hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
 
-hasVaries : (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
+hasVaries : (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Type ℓ) → Span ℓ
 hasVaries S T σ A .Src = hasLifts T A
 hasVaries S T σ A .Dst = hasLifts S (A ∘ ⟪ σ ⟫)
 hasVaries S T σ A .Rel cT cS =
@@ -53,10 +53,10 @@ hasVaries S T σ A .Rel cT cS =
 ----------------------------------------------------------------------
 -- Definition of the universe
 ----------------------------------------------------------------------
-record U (@♭ ℓ) : Set (lsuc ℓ) where
+record U (@♭ ℓ) : Type (lsuc ℓ) where
   field
-    El : Set ℓ
-    lifts : (@♭ S : Shape) → √ S (Set* ℓ)
+    El : Type ℓ
+    lifts : (@♭ S : Shape) → √ S (Type* ℓ)
     liftsBase : (@♭ S : Shape) → √` S fst (lifts S) ≡ R S (hasLifts S) El
 
     varies : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ T (Span* ℓ)
@@ -133,7 +133,7 @@ dstLvaries S T σ C =
       ∙ LShapeHom σ (λ A → A .lifts S)
       ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (funext (Llifts S)))
 
-substSpan : {A : Set ℓ} (D : A → Span ℓ')
+substSpan : {A : Type ℓ} (D : A → Span ℓ')
   {x y : A} (p : x ≡ y)
   → Witness (D x) → Witness (D y)
 substSpan D p w .src = subst (Src ∘ D) p (w .src)
@@ -175,7 +175,7 @@ Lvaries S T σ C =
     cong (witness _ _) (prop _ _)
 
 ----------------------------------------------------------------------
--- El : U → Set is a fibration
+-- El : U → Type is a fibration
 ----------------------------------------------------------------------
 υ : ∀ {@♭ ℓ} → isFib (El {ℓ})
 υ .lift =
@@ -186,17 +186,17 @@ Lvaries S T σ C =
   ShapeHomIsDiscrete λ (@♭ σ) →
   λ r C → getVaries S T σ C .rel r
 
-decode : ∀ {@♭ ℓ'} {Γ : Set ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
+decode : ∀ {@♭ ℓ'} {Γ : Type ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
 decode = reindexFib (El , υ)
 
 ----------------------------------------------------------------------
 -- Any fibration induces a map into U
 ----------------------------------------------------------------------
-FibLifts : {Γ : Set ℓ} → Fib ℓ' Γ
-  → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Set* ℓ'
+FibLifts : {Γ : Type ℓ} → Fib ℓ' Γ
+  → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ'
 FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
-FibVaries : {Γ : Set ℓ} → Fib ℓ' Γ
+FibVaries : {Γ : Type ℓ} → Fib ℓ' Γ
   → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ'
 FibVaries (A , α) S T σ p .fst =
   hasVaries S T σ (A ∘ p)
@@ -204,10 +204,10 @@ FibVaries (A , α) S T σ p .snd .src r = α .lift T r p
 FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
 FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
-encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} → @♭ (Fib ℓ' Γ) → (Γ → U ℓ')
+encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Fib ℓ' Γ) → (Γ → U ℓ')
 encode {ℓ' = ℓ'} {Γ} Aα = encoding
   where
-  Rl : (@♭ S : Shape) → Γ → √ S (Set* ℓ')
+  Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
   Rl S = R S (FibLifts Aα S)
 
   Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
@@ -229,14 +229,14 @@ encode {ℓ' = ℓ'} {Γ} Aα = encoding
 
 -- Inverse conditions for the correspondence between Fib Γ and Γ → U
 ----------------------------------------------------------------------
-decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ Aα : Fib ℓ' Γ)
+decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ Aα : Fib ℓ' Γ)
   → decode (encode Aα) ≡ Aα
 decodeEncode Aα =
   Σext refl
     (isFibExt
       (ShapeIsDiscrete λ (@♭ S) r p box s →
         cong
-          {A = Σ C ∈ Set* _ , C .fst ≡ hasLifts S (A ∘ p)}
+          {A = Σ C ∈ Type* _ , C .fst ≡ hasLifts S (A ∘ p)}
           (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
           {x = _ , appCong (fstLlifts S)}
           {y = _ , refl}
@@ -249,9 +249,9 @@ decodeEncode Aα =
     → L S (λ C → C .lifts S) (encode Aα ∘ p) ≡ (hasLifts S (A ∘ p) , λ r → α .lift S r p)
   lemma S p =
     appCong (sym (L℘ S id (λ C → C .lifts S)))
-    ∙ appCong (L℘ S id (R S {B = Set* _} (FibLifts Aα S)))
+    ∙ appCong (L℘ S id (R S {B = Type* _} (FibLifts Aα S)))
 
-encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Set ℓ} {@♭ Γ : Set ℓ'}
+encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
   (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)
   → encode (reindexFib Aα ρ) x ≡ encode Aα (ρ x)
 encodeReindexFib Aα ρ x =
@@ -283,6 +283,6 @@ encodeEl C =
                   ))
                 (funext λ r → funext λ box → funext λ s → uipImp)))))
 
-encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Set ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
+encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
 encodeDecode C = funext λ x →
   encodeReindexFib (El , υ) C x ∙ encodeEl (C x)

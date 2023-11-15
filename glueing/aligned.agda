@@ -22,10 +22,10 @@ private variable ℓ ℓ' ℓ'' : Level
 ----------------------------------------------------------------------
 
 opaque
-  SGlueIsFib : {Γ : Set ℓ}
+  SGlueIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ'}
-    {B : Γ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Type ℓ'}
+    {B : Γ → Type ℓ'}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     → ---------------
     isFib A → isFib B → isFib (SGlueᴵ Φ A B (equivFun fe))
@@ -34,10 +34,10 @@ opaque
       (subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α)
       (Misaligned.SGlueIsFib Φ fe α β)
 
-  SGlueIsFibStrictness : {Γ : Set ℓ}
+  SGlueIsFibStrictness : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ'}
-    {B : Γ → Set ℓ'}
+    {A : Γ ,[ Φ ] → Type ℓ'}
+    {B : Γ → Type ℓ'}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     (α : isFib A) (β : isFib B)
     → ---------------
@@ -49,7 +49,7 @@ opaque
         (subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α)
         (Misaligned.SGlueIsFib Φ fe α β))
 
-FibSGlue : {Γ : Set ℓ}
+FibSGlue : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
   (Aα : Fib ℓ' (Γ ,[ Φ ]))
   (Bβ : Fib ℓ' Γ)
@@ -58,7 +58,7 @@ FibSGlue : {Γ : Set ℓ}
 FibSGlue Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
 
 opaque
-  FibSGlueStrictness : {Γ : Set ℓ}
+  FibSGlueStrictness : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     (Aα : Fib ℓ' (Γ ,[ Φ ]))
     (Bβ : Fib ℓ' Γ)
@@ -69,10 +69,10 @@ opaque
 
 opaque
   unfolding SGlueIsFib
-  reindexSGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexSGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Set ℓ''}
-    {B : Γ → Set ℓ''}
+    {A : Γ ,[ Φ ] → Type ℓ''}
+    {B : Γ → Type ℓ''}
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)

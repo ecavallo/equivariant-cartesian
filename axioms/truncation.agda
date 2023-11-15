@@ -15,34 +15,34 @@ private variable ℓ ℓ' : Level
 ----------------------------------------------------------------------
 
 postulate
-  ∥_∥ : Set ℓ → Set ℓ
+  ∥_∥ : Type ℓ → Type ℓ
 
-module _ {A : Set ℓ} where
+module _ {A : Type ℓ} where
   postulate
     ∣_∣ : A → ∥ A ∥
 
     trunc : isProp ∥ A ∥
 
-    ∥∥-rec : (P : Set ℓ')
+    ∥∥-rec : (P : Type ℓ')
       (f : A → P)
       .(p : ∀ a b → f a ≡ f b)
       → ---------------
       ∥ A ∥ → P
 
-    ∥∥-rec-β : ∀ (P : Set ℓ') f p a
+    ∥∥-rec-β : ∀ (P : Type ℓ') f p a
       → ∥∥-rec P f p ∣ a ∣ ≡ f a
 
-    ∥∥-elim : (P : ∥ A ∥ → Set ℓ')
+    ∥∥-elim : (P : ∥ A ∥ → Type ℓ')
       (f : (a : A) → P ∣ a ∣)
       .(p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
       → ---------------
       (t : ∥ A ∥) → P t
 
-    ∥∥-elim-β : ∀ (P : ∥ A ∥ → Set ℓ') f p a
+    ∥∥-elim-β : ∀ (P : ∥ A ∥ → Type ℓ') f p a
       → ∥∥-elim P f p ∣ a ∣ ≡ f a
 
     {-# REWRITE ∥∥-rec-β ∥∥-elim-β #-}
 
-∥_∥` : {A : Set ℓ} {B : Set ℓ'}
+∥_∥` : {A : Type ℓ} {B : Type ℓ'}
   → (A → B) → ∥ A ∥ → ∥ B ∥
 ∥_∥` f = ∥∥-rec _ (∣_∣ ∘ f) (λ _ _ → trunc _ _)

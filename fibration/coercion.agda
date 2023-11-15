@@ -12,7 +12,7 @@ open import fibration.fibration
 
 private variable ℓ : Level
 
-module _ (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) (a : A r) where
+module _ (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Type ℓ} (α : isFib A) (a : A r) where
 
   coerceBox : OpenBox S r A
   coerceBox .cof = ⊥
@@ -30,7 +30,7 @@ module _ (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) 
   coerceCap = coerceFiller .cap≡
 
 module _ (S T : Shape) (σ : ShapeHom S T)
-  (r : ⟨ S ⟩) {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (a : A (⟪ σ ⟫ r))
+  (r : ⟨ S ⟩) {A : ⟨ T ⟩ → Type ℓ} (α : isFib A) (a : A (⟪ σ ⟫ r))
   where
 
   coerceVary : (s : ⟨ S ⟩) → coerce T (⟪ σ ⟫ r) α a (⟪ σ ⟫ s) ≡ coerce S r (reindex α ⟪ σ ⟫) a s
