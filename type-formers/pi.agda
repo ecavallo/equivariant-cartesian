@@ -15,8 +15,8 @@ open import fibration.coercion
   → Γ → Set (ℓ' ⊔ ℓ'')
 Π' A B x = (a : A x) → B (x , a)
 
-module ΠIsFibId {ℓ ℓ'}
-  {S : Shape} {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
+module ΠLift {ℓ ℓ'} {S}
+  {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   {r : ⟨ S ⟩} (box : OpenBox S r (Π' A B))
   where
@@ -35,6 +35,47 @@ module ΠIsFibId {ℓ ℓ'}
 
       fillB = β .lift S r q boxB
 
+  filler : Filler box
+  filler .fill s .out a =
+    subst (curry B s)
+      (fillA s a .cap≡)
+      (fillB s a (out ∘ fillA s a .fill) .fill s .out)
+  filler .fill s .out≡ u =
+    funext λ a →
+    sym (congdep (box .tube u s) (fillA s a .cap≡))
+    ∙ cong (subst (curry B s) (fillA s a .cap≡))
+        (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
+  filler .cap≡ =
+    funext λ a →
+    cong (subst (curry B r) (fillA r a .cap≡))
+      (fillB r a (out ∘ fillA r a .fill) .cap≡)
+    ∙ congdep (box .cap .out) (fillA r a .cap≡)
+
+module ΠVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r : ⟨ S ⟩}
+  {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
+  (α : isFib A) (β : isFib B)
+  (box : OpenBox T (⟪ σ ⟫ r) (Π' A B))
+  where
+
+  module T = ΠLift α β box
+  module S = ΠLift (reindex α ⟪ σ ⟫) (reindex β (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+
+  varyA : ∀ s a i → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
+  varyA s = coerceVary S T σ s α
+
+  eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
+  eq s =
+    funext λ a →
+    cong
+      (subst (curry B (⟪ σ ⟫ s)) (T.fillA _ a .cap≡))
+      (β .vary S T σ r (T.q _ a (out ∘ T.fillA _ a .fill)) (T.boxB _ a (out ∘ T.fillA _ a .fill)) s)
+    ∙
+    adjustSubstEq (curry B (⟪ σ ⟫ s))
+      (cong (λ cA → S.q s a cA s .snd) (funext (varyA s a))) refl
+      (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
+      (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → S.q s a cA s .snd) (funext (varyA s a)) _)
+        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA s a)))
+
 opaque
   ΠIsFib :
     ∀{ℓ ℓ' ℓ''}{Γ : Set ℓ}
@@ -44,43 +85,8 @@ opaque
     (β : isFib B)
     → -----------
     isFib (Π' A B)
-  ΠIsFib {B = B} α β .lift S r p box = filler
-    where
-    open ΠIsFibId (reindex α p) (reindex β (p ×id)) box
-
-    filler : Filler box
-    filler .fill s .out a =
-      subst (curry B (p s))
-        (fillA s a .cap≡)
-        (fillB s a (out ∘ fillA s a .fill) .fill s .out)
-    filler .fill s .out≡ u =
-      funext λ a →
-      sym (congdep (box .tube u s) (fillA s a .cap≡))
-      ∙ cong (subst (curry B (p s)) (fillA s a .cap≡))
-          (fillB s a (out ∘ fillA s a .fill) .fill s .out≡ u)
-    filler .cap≡ =
-      funext λ a →
-      cong (subst (curry B (p r)) (fillA r a .cap≡))
-        (fillB r a (out ∘ fillA r a .fill) .cap≡)
-      ∙ congdep (box .cap .out) (fillA r a .cap≡)
-
-  ΠIsFib {B = B} α β .vary S T σ r p box s =
-    funext λ a →
-    cong
-      (subst (curry B (p (⟪ σ ⟫ s))) (T.fillA _ a .cap≡))
-      (β .vary S T σ r (p ×id ∘ T.q _ a (out ∘ T.fillA _ a .fill)) (T.boxB _ a (out ∘ T.fillA _ a .fill)) s)
-    ∙
-    adjustSubstEq (curry B (p (⟪ σ ⟫ s)))
-      (cong (λ cA → S.q s a cA s .snd) (funext (varyA a))) refl
-      (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
-      (sym (substCongAssoc (curry B (p (⟪ σ ⟫ s))) (λ cA → S.q s a cA s .snd) (funext (varyA a)) _)
-        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA a)))
-    where
-    module T = ΠIsFibId (reindex α p) (reindex β (p ×id)) box
-    module S = ΠIsFibId (reindex α (p ∘ ⟪ σ ⟫)) (reindex β ((p ∘ ⟪ σ ⟫) ×id)) (reshapeBox σ box)
-
-    varyA : ∀ a i → T.fillA _ a .fill _ .out ≡ S.fillA s a .fill i .out
-    varyA = coerceVary S T σ s (reindex α p)
+  ΠIsFib α β .lift S r p = ΠLift.filler (reindex α p) (reindex β (p ×id))
+  ΠIsFib α β .vary S T σ r p = ΠVary.eq σ (reindex α p) (reindex β (p ×id))
 
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
