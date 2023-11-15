@@ -13,13 +13,14 @@ open import type-formers.equivs
 
 open import glueing.weak
 
+private variable ℓ ℓ' ℓ'' : Level
+
 ----------------------------------------------------------------------
 -- Strict glueing
 ----------------------------------------------------------------------
 
 opaque
-  includeA : ∀ {ℓ}
-    (φ : CofProp)
+  includeA : (φ : CofProp)
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -30,8 +31,7 @@ opaque
   includeA φ {A} {B} f u a .match v =
     cong (uncurry f) (sym (Σext (cofIsProp φ _ _) refl))
 
-  includeAIso : ∀ {ℓ}
-    (φ : CofProp)
+  includeAIso : (φ : CofProp)
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (w : (u : [ φ ]) → A u → B)
@@ -46,15 +46,15 @@ opaque
     iso .to a = includeA φ w u a
     iso .from (glue a _ _) = a u
     iso .inv₁ = funext (λ a → prfIr)
-    iso .inv₂ = funext fg≡id where
+    iso .inv₂ = funext fg≡id
+      where
       parEq : {a a' : (u : [ φ ]) → A u} → a u ≡ a' u → (∀ u' → a u' ≡ a' u')
       parEq {a} {a'} eq u' = subst (λ u' → a u' ≡ a' u') (cofIsProp φ u u') eq
 
       fg≡id : (gl : Glue φ A B w) → (includeA φ w u (gl .dom u)) ≡ gl
       fg≡id gl = GlueExt (parEq prfIr) (gl .match u)
 
-  SGlue : ∀ {ℓ}
-    (φ : CofProp)
+  SGlue : (φ : CofProp)
     (A : [ φ ] → Set ℓ)
     (B : Set ℓ)
     (f : (u : [ φ ]) → A u → B)
@@ -62,8 +62,7 @@ opaque
     Set ℓ
   SGlue φ A B f = realign φ A (Glue φ A B f) (includeAIso φ f)
 
-  strictifyGlueIso : ∀ {ℓ}
-    (φ : CofProp)
+  strictifyGlueIso : (φ : CofProp)
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -71,8 +70,7 @@ opaque
     SGlue φ A B f ≅ Glue φ A B f
   strictifyGlueIso φ {A} {B} f = isoB φ A (Glue φ A B f) (includeAIso φ f)
 
-  sglue : ∀ {ℓ}
-    {φ : CofProp}
+  sglue : {φ : CofProp}
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -80,8 +78,7 @@ opaque
     (u : [ φ ]) → A u → SGlue φ A B f
   sglue {φ = φ} f u = strictifyGlueIso φ f .from ∘ includeA φ f u
 
-  sunglue : ∀ {ℓ}
-    {φ : CofProp}
+  sunglue : {φ : CofProp}
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -89,8 +86,7 @@ opaque
     SGlue φ A B f → B
   sunglue {φ = φ} f = cod ∘ strictifyGlueIso φ f .to
 
-  SGlueStrictness : ∀ {ℓ}
-    (φ : CofProp)
+  SGlueStrictness : (φ : CofProp)
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -100,8 +96,7 @@ opaque
   SGlueStrictness φ {A} {B} f u =
     restrictsToA φ A (Glue φ A B f) (includeAIso φ f) u
 
-  sunglue-boundary : ∀ {ℓ}
-    (φ : CofProp)
+  sunglue-boundary : (φ : CofProp)
     {A : [ φ ] → Set ℓ}
     {B : Set ℓ}
     (f : (u : [ φ ]) → A u → B)
@@ -129,8 +124,7 @@ opaque
 -- Indexed versions
 ----------------------------------------------------------------------
 
-SGlue' : ∀ {ℓ ℓ'}
-  {Γ : Set ℓ}
+SGlue' : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (A : Γ ,[ Φ ] → Set ℓ')
   (B : Γ → Set ℓ')
@@ -139,8 +133,7 @@ SGlue' : ∀ {ℓ ℓ'}
   Γ → Set ℓ'
 SGlue' Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
 
-strictifyGlueIso' : ∀{ℓ ℓ'}
-  {Γ : Set ℓ}
+strictifyGlueIso' : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
@@ -149,8 +142,7 @@ strictifyGlueIso' : ∀{ℓ ℓ'}
   SGlue' Φ A B f ≅' Glue' Φ A B f
 strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
 
-SGlueStrictness' : ∀ {ℓ ℓ'}
-  {Γ : Set ℓ}
+SGlueStrictness' : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
@@ -162,8 +154,7 @@ SGlueStrictness' Φ {A} {B} f =
 
 module Misaligned where
 
-  GlueIsFib→SGlueIsFib : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  GlueIsFib→SGlueIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
@@ -175,8 +166,7 @@ module Misaligned where
       (strictifyGlueIso' Φ (equivFun fe))
       γ
 
-  SGlueIsFib : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  SGlueIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
@@ -188,8 +178,7 @@ module Misaligned where
       (strictifyGlueIso' Φ (equivFun fe))
       (GlueIsFib Φ fe α β)
 
-  reindexSGlue : ∀ {ℓ ℓ' ℓ''}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexSGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}

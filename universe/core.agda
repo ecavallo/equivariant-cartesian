@@ -10,6 +10,8 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
+private variable ℓ ℓ' : Level
+
 open Tiny
 
 record Span ℓ : Set (lsuc ℓ) where
@@ -32,16 +34,16 @@ open Witness public
 Span* : ∀ ℓ → Set (lsuc ℓ)
 Span* ℓ = Σ D ∈ Span ℓ , Witness D
 
-src* : ∀ {ℓ} → Span* ℓ → Set* ℓ
+src* : Span* ℓ → Set* ℓ
 src* (D , W) = (D .Src , W .src)
 
-dst* : ∀ {ℓ} → Span* ℓ → Set* ℓ
+dst* : Span* ℓ → Set* ℓ
 dst* (D , W) = (D .Dst , W .dst)
 
-hasLifts : ∀ {ℓ} (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
+hasLifts : (S : Shape) (A : ⟨ S ⟩ → Set ℓ) → Set ℓ
 hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
 
-hasVaries : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
+hasVaries : (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Set ℓ) → Span ℓ
 hasVaries S T σ A .Src = hasLifts T A
 hasVaries S T σ A .Dst = hasLifts S (A ∘ ⟪ σ ⟫)
 hasVaries S T σ A .Rel cT cS =
@@ -131,7 +133,7 @@ dstLvaries S T σ C =
       ∙ LShapeHom σ (λ A → A .lifts S)
       ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (funext (Llifts S)))
 
-substSpan : ∀ {ℓ ℓ'} {A : Set ℓ} (D : A → Span ℓ')
+substSpan : {A : Set ℓ} (D : A → Span ℓ')
   {x y : A} (p : x ≡ y)
   → Witness (D x) → Witness (D y)
 substSpan D p w .src = subst (Src ∘ D) p (w .src)
@@ -184,17 +186,17 @@ Lvaries S T σ C =
   ShapeHomIsDiscrete λ (@♭ σ) →
   λ r C → getVaries S T σ C .rel r
 
-decode : ∀ {ℓ} {@♭ ℓ'} {Γ : Set ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
+decode : ∀ {@♭ ℓ'} {Γ : Set ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
 decode = reindexFib (El , υ)
 
 ----------------------------------------------------------------------
 -- Any fibration induces a map into U
 ----------------------------------------------------------------------
-FibLifts : ∀ {ℓ ℓ'} {Γ : Set ℓ} → Fib ℓ' Γ
+FibLifts : {Γ : Set ℓ} → Fib ℓ' Γ
   → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Set* ℓ'
 FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
-FibVaries : ∀ {ℓ ℓ'} {Γ : Set ℓ} → Fib ℓ' Γ
+FibVaries : {Γ : Set ℓ} → Fib ℓ' Γ
   → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ'
 FibVaries (A , α) S T σ p .fst =
   hasVaries S T σ (A ∘ p)

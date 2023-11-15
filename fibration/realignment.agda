@@ -13,7 +13,9 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-module RealignLift {ℓ} {S r}
+private variable ℓ ℓ' ℓ'' : Level
+
+module RealignLift {S r}
   (Φ : ⟨ S ⟩ → CofProp)
   {A : ⟨ S ⟩ → Set ℓ}
   (β : isFib {Γ = ⟨ S ⟩ ,[ Φ ]} (A ∘ fst))
@@ -44,7 +46,7 @@ module RealignLift {ℓ} {S r}
   filler .fill s .out≡ v = fillA .fill s .out≡ ∣ inl v ∣
   filler .cap≡ = fillA .cap≡
 
-module RealignVary {ℓ} {S T} (σ : ShapeHom S T) {r}
+module RealignVary {S T} (σ : ShapeHom S T) {r}
   (Φ : ⟨ T ⟩ → CofProp)
   {A : ⟨ T ⟩ → Set ℓ}
   (β : isFib {Γ = ⟨ T ⟩ ,[ Φ ]} (A ∘ fst))
@@ -74,8 +76,7 @@ module RealignVary {ℓ} {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
-  realignIsFib : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  realignIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Set ℓ')
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
@@ -87,8 +88,7 @@ opaque
   realignIsFib Φ A β α .vary S T σ r p =
     RealignVary.eq σ (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
 
-  isRealigned : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  isRealigned : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ → Set ℓ'}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
@@ -102,8 +102,7 @@ opaque
       in
       sym (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
 
-  reindexRealignIsFib : ∀{ℓ ℓ' ℓ''}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexRealignIsFib : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ → Set ℓ''}
     (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))

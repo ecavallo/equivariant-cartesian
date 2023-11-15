@@ -9,6 +9,9 @@ module axioms.shape where
 
 open import prelude
 open import axioms.funext
+
+private variable ℓ : Level
+
 ----------------------------------------------------------------------
 -- Shapes
 ----------------------------------------------------------------------
@@ -27,7 +30,7 @@ postulate
 postulate -- interval endpoints
   𝕚0 : 𝕀
   𝕚1 : 𝕀
-  0≠1   : ∀ {ℓ} {A : Set ℓ} → 𝕚0 ≡ 𝕚1 → A
+  0≠1 : {A : Set ℓ} → 𝕚0 ≡ 𝕚1 → A
 
 ----------------------------------------------------------------------
 -- Notation for interval endpoints
@@ -45,18 +48,18 @@ fromNat (suc _) = 𝕚1
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)
 ----------------------------------------------------------------------
 postulate
-  ShapeIsDiscrete : ∀ {ℓ} {A : Shape → Set ℓ}
+  ShapeIsDiscrete : {A : Shape → Set ℓ}
     → ((@♭ S : Shape) → A S) → ((S : Shape) → A S)
 
-  ShapeIsDiscrete-β : ∀ {ℓ} {A : Shape → Set ℓ} (f : (@♭ S : Shape) → A S)
+  ShapeIsDiscrete-β : {A : Shape → Set ℓ} (f : (@♭ S : Shape) → A S)
     (@♭ S : Shape) → ShapeIsDiscrete f S ≡ f S
 
   {-# REWRITE ShapeIsDiscrete-β #-}
 
-  ShapeHomIsDiscrete : ∀ {ℓ} {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
+  ShapeHomIsDiscrete : {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
     → ((@♭ σ : ShapeHom S T) → A σ) → ((σ : ShapeHom S T) → A σ)
 
-  ShapeHomIsDiscrete-β : ∀ {ℓ} {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
+  ShapeHomIsDiscrete-β : {@♭ S T : Shape} {A : ShapeHom S T → Set ℓ}
     (f : (@♭ σ : ShapeHom S T) → A σ)
     (@♭ σ : ShapeHom S T) → ShapeHomIsDiscrete f σ ≡ f σ
 

@@ -11,7 +11,9 @@ open import axioms
 open import fibration.fibration
 open import type-formers.extension
 
-record _~_ {ℓ} {A : Set ℓ}(a a' : A) : Set ℓ where
+private variable ℓ ℓ' ℓ'' : Level
+
+record _~_ {A : Set ℓ}(a a' : A) : Set ℓ where
   constructor path
   field
     at : 𝕀 → A
@@ -20,23 +22,23 @@ record _~_ {ℓ} {A : Set ℓ}(a a' : A) : Set ℓ where
 
 open _~_ public
 
-eqToPath : ∀{ℓ} {A : Set ℓ} {x y : A} → x ≡ y → x ~ y
+eqToPath : {A : Set ℓ} {x y : A} → x ≡ y → x ~ y
 eqToPath {x = x} p = path (λ _ → x) refl p
 
-refl~ : ∀{ℓ} {A : Set ℓ} (a : A) → a ~ a
+refl~ : {A : Set ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
 
-PathExt : ∀{ℓ} {A : Set ℓ} {a a' : A} {p q : a ~ a'}
+PathExt : {A : Set ℓ} {a a' : A} {p q : a ~ a'}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
   cong (uncurry (uncurry ∘ path)) (Σext (funext t) (Σext uipImp uipImp))
 
-Path' : ∀{ℓ ℓ'}{Γ : Set ℓ}(A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
+Path' : {Γ : Set ℓ} (A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
 Path' A (x , (a , a')) = a ~ a'
 
 opaque
   private
-    ctxMap : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
+    ctxMap : {Γ : Set ℓ} (A : Γ → Set ℓ')
       → Σ x ∈ Γ , A x × A x → Σ x ∈ Γ , Partial 𝕚 ∂ (A ∘ fst) x
     ctxMap A (γ , a₀ , a₁) = γ , λ i → OI-rec i (λ _ → a₀) (λ _ → a₁)
 
@@ -49,8 +51,7 @@ opaque
     retract A γ .ret ex .at1 = sym (ex 1 .out≡ ∣ inr refl ∣)
     retract A γ .inv = funext λ p → PathExt λ i → refl
 
-  PathIsFib :
-    ∀{ℓ ℓ'} {Γ : Set ℓ}
+  PathIsFib :{Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     (α : isFib A)
     → -----------
@@ -61,8 +62,7 @@ opaque
   ----------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexPath :
-    ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexPath : {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ → Set ℓ''}
     (α : isFib A)
     (ρ : Δ → Γ)

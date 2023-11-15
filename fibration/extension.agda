@@ -14,10 +14,12 @@ open import type-formers.union
 open import type-formers.equivs
 open import glueing
 
-fst' : ∀ {ℓ} {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
+private variable ℓ ℓ' : Level
+
+fst' : {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
 fst' (x , a , b) = (x , a)
 
-module Box {ℓ ℓ'} {Γ : Set ℓ}
+module Box {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
@@ -118,7 +120,7 @@ module Box {ℓ ℓ'} {Γ : Set ℓ}
 
   open Template (λ x → S ∋ r x ≈ s x) rsMatch rsEquiv rsEquivMatch public
 
-module _ {ℓ ℓ'} {Γ : Set ℓ}
+module _ {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
@@ -152,7 +154,7 @@ module _ {ℓ ℓ'} {Γ : Set ℓ}
     f₀ : Γ → Γ ,[ (λ x → S ∋ r x ≈ r x) ]
     f₀ x = x , refl
 
-module _ {ℓ ℓ'} {Γ : Set ℓ}
+module _ {Γ : Set ℓ}
   (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
   (φ : Γ → CofProp)
   (F : Fib ℓ' (Γ ,[ φ ] × ⟨ T ⟩))

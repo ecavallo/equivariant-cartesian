@@ -10,7 +10,9 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-module _ {ℓ} (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) (a : A r) where
+private variable ℓ : Level
+
+module _ (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isFib A) (a : A r) where
 
   coerceBox : OpenBox S r A
   coerceBox .cof = ⊥
@@ -27,7 +29,7 @@ module _ {ℓ} (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Set ℓ} (α : isF
   coerceCap : coerce r ≡ a
   coerceCap = coerceFiller .cap≡
 
-module _ {ℓ} (S T : Shape) (σ : ShapeHom S T)
+module _ (S T : Shape) (σ : ShapeHom S T)
   (r : ⟨ S ⟩) {A : ⟨ T ⟩ → Set ℓ} (α : isFib A) (a : A (⟪ σ ⟫ r))
   where
 

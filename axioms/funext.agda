@@ -8,20 +8,21 @@ module axioms.funext where
 
 open import prelude
 
+private variable ℓ ℓ' ℓ'' : Level
+
 ----------------------------------------------------------------------
 -- Function extensionality
 ----------------------------------------------------------------------
 
 postulate
   funext :
-     {ℓ  ℓ' : Level}
      {A : Set ℓ}
      {B : A → Set ℓ'}
      {f g : (x : A) → B x}
      → ----------------------------
      ((x : A) → f x ≡ g x) → f ≡ g
 
-funextDepCod : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → Set ℓ''}
+funextDepCod : {A : Set ℓ} {B : Set ℓ'} {C : A → Set ℓ''}
   {a₀ a₁ : A} (p : a₀ ≡ a₁)
   {f₀ : B → C a₀} {f₁ : B → C a₁}
   → (∀ b → subst C p (f₀ b) ≡ f₁ b)

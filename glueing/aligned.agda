@@ -15,13 +15,14 @@ open import type-formers.equivs
 open import glueing.weak
 open import glueing.strict
 
+private variable ℓ ℓ' ℓ'' : Level
+
 ----------------------------------------------------------------------
 -- Realigning strict glue
 ----------------------------------------------------------------------
 
 opaque
-  SGlueIsFib : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  SGlueIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
@@ -33,8 +34,7 @@ opaque
       (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
       (Misaligned.SGlueIsFib Φ fe α β)
 
-  SGlueIsFibStrictness : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  SGlueIsFibStrictness : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
@@ -49,8 +49,7 @@ opaque
         (subst isFib (SGlueStrictness' Φ (equivFun fe)) α)
         (Misaligned.SGlueIsFib Φ fe α β))
 
-FibSGlue : ∀ {ℓ ℓ'}
-  {Γ : Set ℓ}
+FibSGlue : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (Aα : Fib ℓ' (Γ ,[ Φ ]))
   (Bβ : Fib ℓ' Γ)
@@ -59,8 +58,7 @@ FibSGlue : ∀ {ℓ ℓ'}
 FibSGlue Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
 
 opaque
-  FibSGlueStrictness : ∀ {ℓ ℓ'}
-    {Γ : Set ℓ}
+  FibSGlueStrictness : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     (Aα : Fib ℓ' (Γ ,[ Φ ]))
     (Bβ : Fib ℓ' Γ)
@@ -71,8 +69,7 @@ opaque
 
 opaque
   unfolding SGlueIsFib
-  reindexSGlue :
-    ∀ {ℓ ℓ' ℓ''} {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexSGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}

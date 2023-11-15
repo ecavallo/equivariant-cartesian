@@ -9,20 +9,20 @@ module axioms.realignment where
 open import prelude
 open import axioms.cofprop
 
+private variable ℓ : Level
+
 ----------------------------------------------------------------------
 -- Realigning
 ----------------------------------------------------------------------
 postulate
- reIm : ∀ {ℓ}
-  (φ : CofProp)
+ reIm : (φ : CofProp)
   (A : [ φ ] → Set ℓ)
   (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
   → ----------------------
   Σ B' ∈ Set ℓ , Σ m' ∈ B' ≅ B , ((u : [ φ ]) → (A u , m u) ≡ (B' , m'))
 
-realign : ∀ {ℓ}
-  (φ : CofProp)
+realign : (φ : CofProp)
   (A : [ φ ] → Set ℓ)
   (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
@@ -30,8 +30,7 @@ realign : ∀ {ℓ}
   Set ℓ
 realign φ A B m = reIm φ A B m .fst
 
-isoB : ∀ {ℓ}
-  (φ : CofProp)
+isoB : (φ : CofProp)
   (A : [ φ ] → Set ℓ)
   (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
@@ -39,8 +38,7 @@ isoB : ∀ {ℓ}
   realign φ A B m ≅ B
 isoB φ A B m = reIm φ A B m .snd .fst
 
-restrictsToA : ∀ {ℓ}
-  (φ : CofProp)
+restrictsToA : (φ : CofProp)
   (A : [ φ ] → Set ℓ)
   (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)
@@ -49,8 +47,7 @@ restrictsToA : ∀ {ℓ}
   A u ≡ realign φ A B m
 restrictsToA φ A B m u = cong fst (reIm φ A B m .snd .snd u)
 
-restrictsToM : ∀ {ℓ}
-  (φ : CofProp)
+restrictsToM : (φ : CofProp)
   (A : [ φ ] → Set ℓ)
   (B : Set ℓ)
   (m : (u : [ φ ]) → A u ≅ B)

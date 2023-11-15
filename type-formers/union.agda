@@ -10,6 +10,8 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
+private variable ℓ ℓ' ℓ'' : Level
+
 _∨'_ : ∀ {ℓ} {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
 (φ ∨' ψ) x = φ x ∨ ψ x
 

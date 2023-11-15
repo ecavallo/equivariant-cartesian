@@ -11,11 +11,13 @@ open import axioms
 open import fibration.fibration
 open import fibration.coercion
 
-Π' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ}(A : Γ → Set ℓ')(B : (Σ x ∈ Γ , A x) → Set ℓ'')
+private variable ℓ ℓ' ℓ'' ℓ''' : Level
+
+Π' : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : (Σ x ∈ Γ , A x) → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
 Π' A B x = (a : A x) → B (x , a)
 
-module ΠLift {ℓ ℓ'} {S r}
+module ΠLift {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox S r (Π' A B))
@@ -49,7 +51,7 @@ module ΠLift {ℓ ℓ'} {S r}
       (fillB r a (coeA r a) .cap≡)
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
-module ΠVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
+module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Π' A B))
@@ -75,8 +77,7 @@ module ΠVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA s a)))
 
 opaque
-  ΠIsFib :
-    ∀{ℓ ℓ' ℓ''}{Γ : Set ℓ}
+  ΠIsFib : {Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     {B : (Σ x ∈ Γ , A x) → Set ℓ''}
     (α : isFib A)
@@ -89,8 +90,7 @@ opaque
   ----------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexΠ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexΠ : {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ → Set ℓ''}
     {B : Σ Γ A → Set ℓ'''}
     (α : isFib A)
@@ -100,16 +100,14 @@ opaque
     reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
-FibΠ : ∀ {ℓ ℓ' ℓ''}
-  {Γ : Set ℓ}
+FibΠ : {Γ : Set ℓ}
   (A : Fib ℓ' Γ)
   (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
 FibΠ (A , α) (B , β) = (Π' A B , ΠIsFib α β)
 
-reindexFibΠ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
-  {Δ : Set ℓ} {Γ : Set ℓ'}
+reindexFibΠ : {Δ : Set ℓ} {Γ : Set ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)

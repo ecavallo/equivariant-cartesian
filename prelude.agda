@@ -8,6 +8,8 @@ module prelude where
 
 open import Agda.Primitive public
 
+private variable ℓ ℓ' ℓ'' ℓ''' : Level
+
 infix  1 Σ
 infixr 3 _,_ _,,_ _×_ _⊎_
 infixr 5 _∘_ _∙_
@@ -15,23 +17,21 @@ infixr 5 _∘_ _∙_
 ----------------------------------------------------------------------
 -- Identity function
 ----------------------------------------------------------------------
-id : ∀{a}{A : Set a} → A → A
+id : {A : Set ℓ} → A → A
 id x = x
 
 ----------------------------------------------------------------------
 -- Composition
 ----------------------------------------------------------------------
 _∘_ :
-  {ℓ m n : Level}
   {A : Set ℓ}
-  {B : A → Set m}
-  {C : (a : A) → B a → Set n}
+  {B : A → Set ℓ'}
+  {C : (a : A) → B a → Set ℓ''}
   (g : {a : A} (b : B a) → C a b)
   (f : (a : A) → B a)
   → -------------
   (a : A) → C a (f a)
 (g ∘ f) x = g (f x)
-
 
 ----------------------------------------------------------------------
 -- Propositional equality
@@ -41,7 +41,6 @@ open import Agda.Builtin.Equality public
 {-# BUILTIN REWRITE _≡_ #-}
 
 _∙_ : -- transitivity
-  {ℓ : Level}
   {A : Set ℓ}
   {x y z : A}
   (p : x ≡ y)
@@ -51,7 +50,6 @@ _∙_ : -- transitivity
 refl ∙ q = q
 
 sym :
-  {ℓ : Level}
   {A : Set ℓ}
   {x y : A}
   (p : x ≡ y)
@@ -60,7 +58,6 @@ sym :
 sym refl = refl
 
 cong :
-  {ℓ ℓ' : Level}
   {A : Set ℓ}
   {B : Set ℓ'}
   (f : A → B)
@@ -71,7 +68,6 @@ cong :
 cong _ refl = refl
 
 cong₂ :
-  {ℓ ℓ' ℓ'' : Level}
   {A : Set ℓ} {A' : Set ℓ'}
   {B : Set ℓ''}
   (f : A → A' → B)
@@ -84,7 +80,6 @@ cong₂ :
 cong₂ _ refl refl = refl
 
 subst :
-  {ℓ ℓ' : Level}
   {A  : Set ℓ}
   (B : A → Set ℓ')
   {x y : A}
@@ -93,11 +88,10 @@ subst :
   B x → B y
 subst _ refl b = b
 
-coe : ∀ {ℓ} {A B : Set ℓ} → A ≡ B → A → B
+coe : {A B : Set ℓ} → A ≡ B → A → B
 coe = subst id
 
 congdep :
-  {ℓ ℓ' : Level}
   {A : Set ℓ}
   {B : A → Set ℓ'}
   (f : (a : A) → B a)
@@ -108,7 +102,6 @@ congdep :
 congdep _ refl = refl
 
 congΣ :
-  {ℓ ℓ' ℓ'' : Level}
   {A : Set ℓ} {A' : A → Set ℓ'}
   {B : Set ℓ''}
   (f : (a : A) → A' a → B)
@@ -121,7 +114,6 @@ congΣ :
 congΣ _ refl refl = refl
 
 congdep₂ :
-  {ℓ ℓ' ℓ'' : Level}
   {A : Set ℓ}
   {B : A → Set ℓ'}
   {C : A → Set ℓ''}
@@ -134,7 +126,6 @@ congdep₂ :
 congdep₂ _ refl refl = refl
 
 substCongAssoc :
-  {ℓ ℓ' ℓ'' : Level}
   {A : Set ℓ}
   {B : Set ℓ'}
   (C : B → Set ℓ'')
@@ -147,7 +138,6 @@ substCongAssoc :
 substCongAssoc _ _ refl _ = refl
 
 substTrans :
-  {ℓ ℓ' : Level}
   {A : Set ℓ}
   (B : A → Set ℓ')
   {x y z : A}
@@ -157,7 +147,7 @@ substTrans :
   subst B (p ∙ q) b ≡ subst B q (subst B p b)
 substTrans B refl refl = refl
 
-substNaturality : ∀ {ℓ ℓ' ℓ''}
+substNaturality :
   {A : Set ℓ} (B : A → Set ℓ') (C : A → Set ℓ'')
   (η : ∀ a → B a → C a)
   {a a' : A} (p : a ≡ a') (b : B a)
@@ -165,7 +155,6 @@ substNaturality : ∀ {ℓ ℓ' ℓ''}
 substNaturality B C η refl b = refl
 
 uip :
-  {ℓ : Level}
   {A : Set ℓ}
   {x y : A}
   (p q : x ≡ y)
@@ -174,7 +163,6 @@ uip :
 uip refl refl = refl
 
 uipImp :
-  {ℓ : Level}
   {A : Set ℓ}
   {x y : A}
   {p q : x ≡ y}
@@ -183,7 +171,6 @@ uipImp :
 uipImp {p = refl} {q = refl} = refl
 
 appCong :
-  {ℓ ℓ' : Level}
   {A : Set ℓ}
   {B : A → Set ℓ'}
   {f g : (a : A) → B a}
@@ -194,7 +181,6 @@ appCong :
 appCong p = cong (λ h → h _) p
 
 adjustSubstEq :
-  {ℓ ℓ' : Level}
   {A : Set ℓ}
   (B : A → Set ℓ')
   {x y z w : A}
@@ -211,14 +197,12 @@ adjustSubstEq B refl refl refl refl = id
 data 𝟘 : Set where
 
 𝟘-elim :
-  {ℓ : Level}
   {A : 𝟘 → Set ℓ}
   → ---------
   (v : 𝟘) → A v
 𝟘-elim ()
 
 𝟘-rec :
-  {ℓ : Level}
   {A : Set ℓ}
   → ---------
   𝟘 → A
@@ -233,28 +217,26 @@ record 𝟙 : Set where
 ----------------------------------------------------------------------
 -- Disjoint union
 ----------------------------------------------------------------------
-data _⊎_ {ℓ m : Level}(A : Set ℓ)(B : Set m) : Set (ℓ ⊔ m) where
+data _⊎_ (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
   inl : A → A ⊎ B
   inr : B → A ⊎ B
 
-[_∣_] : ∀ {ℓ ℓ' ℓ''}
-  {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''}
+[_∣_] : {A : Set ℓ} {B : Set ℓ'} {C : Set ℓ''}
   → (A → C) → (B → C) → A ⊎ B → C
 [ f ∣ g ] (inl a) = f a
 [ f ∣ g ] (inr b) = g b
 
-_⊎`_ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
-  {A : Set ℓ} {A' : Set ℓ'} {B : Set ℓ''} {B' : Set ℓ'''}
+_⊎`_ : {A : Set ℓ} {A' : Set ℓ'} {B : Set ℓ''} {B' : Set ℓ'''}
   → (A → A') → (B → B') → (A ⊎ B) → (A' ⊎ B')
 (f ⊎` g) = [ inl ∘ f ∣ inr ∘ g ]
 
-∇ : ∀ {ℓ} {A : Set ℓ} → A ⊎ A → A
+∇ : {A : Set ℓ} → A ⊎ A → A
 ∇ = [ id ∣ id ]
 
 ----------------------------------------------------------------------
 -- Σ-types
 ----------------------------------------------------------------------
-record Σ {ℓ m : Level} (A : Set ℓ) (B : A → Set m) : Set (ℓ ⊔ m) where
+record Σ (A : Set ℓ) (B : A → Set ℓ') : Set (ℓ ⊔ ℓ') where
   constructor _,_
   field
     fst : A
@@ -264,21 +246,20 @@ open Σ public
 
 syntax Σ A (λ x → B) = Σ x ∈ A , B
 
-_×_ : {ℓ m : Level} → Set ℓ → Set m → Set (ℓ ⊔ m)
+_×_ : Set ℓ → Set ℓ' → Set (ℓ ⊔ ℓ')
 A × B = Σ A (λ _ → B)
 
-_×id : {ℓ ℓ' m : Level}{A : Set ℓ}{A' : Set ℓ'}{B : A' → Set m}
+_×id : {A : Set ℓ} {A' : Set ℓ'} {B : A' → Set ℓ''}
   (f : A → A') → Σ A (B ∘ f) → Σ A' B
 (f ×id) (a , b) = (f a , b)
 
-id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
+id× : {A : Set ℓ} {B : A → Set ℓ'} {B' : A → Set ℓ''}
   (f : ∀ {a} → B a → B' a) → Σ A B → Σ A B'
 (id× f) (a , b) = (a , f b)
 
 ×ext :
-  {ℓ m : Level}
   {A : Set ℓ}
-  {B : Set m}
+  {B : Set ℓ'}
   {x x' : A}
   {y y' : B}
   (p : x ≡ x')
@@ -288,9 +269,8 @@ id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
 ×ext refl refl = refl
 
 Σext :
-  {ℓ m : Level}
   {A : Set ℓ}
-  {B : A → Set m}
+  {B : A → Set ℓ'}
   {x x' : A}
   {y : B x}
   {y' : B x'}
@@ -301,7 +281,6 @@ id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
 Σext refl refl = refl
 
 Σeq₂ :
-  {ℓ ℓ' : Level}
   {A  : Set ℓ}
   {B : A → Set ℓ'}
   {x y : Σ A B}
@@ -309,17 +288,17 @@ id× : {ℓ m m' : Level} {A : Set ℓ} {B : A → Set m} {B' : A → Set m'}
   → subst B q (x .snd) ≡ y .snd
 Σeq₂ refl refl = refl
 
-_,,_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
+_,,_ : {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   (f : (a : A) → B a) → ((a : A) → C a (f a)) → ((a : A) → Σ (B a) (C a))
 (f ,, g) a .fst = f a
 (f ,, g) a .snd = g a
 
-uncurry : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
+uncurry : {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   → (∀ a b → C a b)
   → ((p : Σ A B) → C (p .fst) (p .snd))
 uncurry f (a , b) = f a b
 
-curry : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
+curry : {A : Set ℓ} {B : A → Set ℓ'} {C : (a : A) → B a → Set ℓ''}
   → ((p : Σ A B) → C (p .fst) (p .snd))
   → (∀ a b → C a b)
 curry f a b = f (a , b)
@@ -327,17 +306,17 @@ curry f a b = f (a , b)
 ----------------------------------------------------------------------
 -- Functions
 ----------------------------------------------------------------------
-Π : ∀ {ℓ ℓ'} {A : Set ℓ} → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
+Π : {A : Set ℓ} → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
 Π B = (a : _) → B a
 
-_◆_ : ∀ {ℓ ℓ' ℓ''} {A : Set ℓ} {B : Set ℓ'} {C : A → B → Set ℓ''}
-       → ((a : A) (b : B) → C a b) → (b : B) (a : A) → C a b
+_◆_ : {A : Set ℓ} {B : Set ℓ'} {C : A → B → Set ℓ''}
+  → ((a : A) (b : B) → C a b) → (b : B) (a : A) → C a b
 (f ◆ b) a = f a b
 
 ----------------------------------------------------------------------
 -- Retracts
 ----------------------------------------------------------------------
-record Retract {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
+record Retract (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
  constructor makeRetract
  field
   sec : A → B
@@ -346,7 +325,7 @@ record Retract {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') wher
 
 open Retract public
 
-retractExt : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'}
+retractExt : {A : Set ℓ} {B : Set ℓ'}
   {retract₀ retract₁ : Retract A B}
   → retract₀ .sec ≡ retract₁ .sec
   → retract₀ .ret ≡ retract₁ .ret
@@ -356,7 +335,7 @@ retractExt refl refl = cong (makeRetract _ _) uipImp
 ----------------------------------------------------------------------
 -- Isomorphism
 ----------------------------------------------------------------------
-record _≅_ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
+record _≅_ (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
  field
   to   : A → B
   from : B → A
@@ -365,7 +344,7 @@ record _≅_ {ℓ ℓ'} (A : Set ℓ) (B : Set ℓ') : Set (ℓ ⊔ ℓ') where
 
 open _≅_ public
 
-isoToRetract : ∀ {ℓ ℓ'} {A : Set ℓ} {B : Set ℓ'}
+isoToRetract : {A : Set ℓ} {B : Set ℓ'}
   → A ≅ B → Retract A B
 isoToRetract iso .sec = iso .to
 isoToRetract iso .ret = iso .from
@@ -375,7 +354,7 @@ isoToRetract iso .inv = iso .inv₁
 -- Propositions
 ----------------------------------------------------------------------
 
-isProp : ∀ {ℓ} → Set ℓ → Set ℓ
+isProp : Set ℓ → Set ℓ
 isProp A = (a b : A) → a ≡ b
 
 ----------------------------------------------------------------------

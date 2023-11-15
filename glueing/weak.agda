@@ -12,10 +12,12 @@ open import fibration.fibration
 open import type-formers.paths
 open import type-formers.equivs
 
+private variable ℓ ℓ' ℓ'' : Level
+
 ----------------------------------------------------------------------
 -- Glueing
 ----------------------------------------------------------------------
-record Glue {ℓ} (Φ : CofProp)
+record Glue (Φ : CofProp)
   (T : [ Φ ] → Set ℓ) (A : Set ℓ)
   (f : (u : [ Φ ]) → T u → A) : Set ℓ
   where
@@ -27,8 +29,7 @@ record Glue {ℓ} (Φ : CofProp)
 
 open Glue public
 
-Glue' :
-  ∀{ℓ ℓ'} {Γ : Set ℓ}
+Glue' : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (B : Γ ,[ Φ ] → Set ℓ')
   (A : Γ → Set ℓ')
@@ -38,8 +39,7 @@ Glue' :
 Glue' Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
 
 opaque
-  GlueExt : ∀ {ℓ}
-    {Φ : CofProp}
+  GlueExt : {Φ : CofProp}
     {B : [ Φ ] → Set ℓ}
     {A : Set ℓ}
     {f : (u : [ Φ ]) → B u → A}
@@ -53,7 +53,7 @@ opaque
       (λ (t , ft≡a) → glue t a ft≡a)
       (Σext (funext p) (funext (λ _ → uipImp)))
 
-module GlueLift {ℓ} {S r Φ}
+module GlueLift {S r Φ}
   {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
@@ -148,7 +148,7 @@ module GlueLift {ℓ} {S r Φ}
           ∙ cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .at0))
         (sym (fillFix r .out≡ ∣ inr ∣ inr refl ∣ ∣))
 
-module GlueVary {ℓ} {S T} (σ : ShapeHom S T) {r Φ}
+module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
   {B : ⟨ T ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ T ⟩ → Set ℓ}
   (fe : Π (Equiv' B (A ∘ fst)))
@@ -222,7 +222,7 @@ module GlueVary {ℓ} {S T} (σ : ShapeHom S T) {r Φ}
       eq = GlueExt (λ uσs → fiberDomEqDep varyA (varyR uσs)) varyFix
 
 opaque
-  GlueIsFib : ∀ {ℓ ℓ'} {Γ : Set ℓ}
+  GlueIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ'}
     {A : Γ → Set ℓ'}
@@ -236,8 +236,7 @@ opaque
 
 opaque
   unfolding GlueIsFib
-  reindexGlue : ∀ {ℓ ℓ' ℓ''}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ''}
     {A : Γ → Set ℓ''}

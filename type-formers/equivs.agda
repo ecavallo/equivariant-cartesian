@@ -14,6 +14,8 @@ open import type-formers.paths
 open import type-formers.pi
 open import type-formers.sigma
 
+private variable ℓ ℓ' : Level
+
 ----------------------------------------------------------------------
 -- IsContr
 ----------------------------------------------------------------------

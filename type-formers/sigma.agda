@@ -10,15 +10,17 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-Σ' : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Σ Γ A → Set ℓ'')
+private variable ℓ ℓ' ℓ'' ℓ''' : Level
+
+Σ' : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Σ Γ A → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
 Σ' A B x = Σ a ∈ A x , B (x , a)
 
-_×'_ : ∀{ℓ ℓ' ℓ''} {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set ℓ'')
+_×'_ : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : Γ → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
 (A ×' B) x = A x × B x
 
-module ΣLift {ℓ ℓ'} {S r}
+module ΣLift {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox S r (Σ' A B))
@@ -56,7 +58,7 @@ module ΣLift {ℓ ℓ'} {S r}
         (fillA .cap≡) refl
         (fillB fillA .cap≡))
 
-module ΣVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
+module ΣVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Σ' A B))
@@ -81,8 +83,7 @@ module ΣVary {ℓ ℓ'} {S T} (σ : ShapeHom S T) {r}
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
 
 opaque
-  ΣIsFib : ∀ {ℓ ℓ' ℓ''}
-    {Γ : Set ℓ}
+  ΣIsFib : {Γ : Set ℓ}
     {A : Γ → Set ℓ'}
     {B : (Σ x ∈ Γ , A x) → Set ℓ''}
     (α : isFib A)
@@ -95,8 +96,7 @@ opaque
   ----------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexΣ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
-    {Δ : Set ℓ} {Γ : Set ℓ'}
+  reindexΣ : {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ → Set ℓ''}
     {B : Σ Γ A → Set ℓ'''}
     (α : isFib A)
@@ -106,16 +106,14 @@ opaque
     reindex (ΣIsFib α β) ρ ≡ ΣIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΣ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
-FibΣ : ∀ {ℓ ℓ' ℓ''}
-  {Γ : Set ℓ}
+FibΣ : {Γ : Set ℓ}
   (A : Fib ℓ' Γ)
   (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
 FibΣ (A , α) (B , β) = Σ' A B , ΣIsFib α β
 
-reindexFibΣ : ∀ {ℓ ℓ' ℓ'' ℓ'''}
-  {Δ : Set ℓ} {Γ : Set ℓ'}
+reindexFibΣ : {Δ : Set ℓ} {Γ : Set ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)
