@@ -33,8 +33,8 @@ PathExt : {A : Set ℓ} {a a' : A} {p q : a ~ a'}
 PathExt t =
   cong (uncurry (uncurry ∘ path)) (Σext (funext t) (Σext uipImp uipImp))
 
-Path' : {Γ : Set ℓ} (A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
-Path' A (x , (a , a')) = a ~ a'
+Pathᴵ : {Γ : Set ℓ} (A : Γ → Set ℓ') → Σ x ∈ Γ , A x × A x → Set ℓ'
+Pathᴵ A (x , (a , a')) = a ~ a'
 
 opaque
   private
@@ -43,7 +43,7 @@ opaque
     ctxMap A (γ , a₀ , a₁) = γ , λ i → OI-rec i (λ _ → a₀) (λ _ → a₁)
 
     retract : ∀ {ℓ ℓ'} {Γ : Set ℓ} (A : Γ → Set ℓ')
-      → Retract' (Path' A) (Extension' 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
+      → Retractᴵ (Pathᴵ A) (Extensionᴵ 𝕚 ∂ (A ∘ fst) ∘ ctxMap A)
     retract A γ .sec p i .out = p .at i
     retract A γ .sec p i .out≡ = OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
     retract A γ .ret ex .at i = ex i .out
@@ -55,7 +55,7 @@ opaque
     {A : Γ → Set ℓ'}
     (α : isFib A)
     → -----------
-    isFib (Path' A)
+    isFib (Pathᴵ A)
   PathIsFib α =
     retractIsFib (retract _) (reindex (ExtensionIsFib 𝕚 ∂ (reindex α fst)) (ctxMap _))
 

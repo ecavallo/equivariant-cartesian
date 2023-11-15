@@ -12,36 +12,30 @@ open import fibration.fibration
 
 private variable ℓ ℓ' ℓ'' : Level
 
-_∨'_ : {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
-(φ ∨' ψ) x = φ x ∨ ψ x
-
-∨l' : {Γ : Set ℓ} (φ ψ : Γ → CofProp) → Γ ,[ φ ] → Γ ,[ φ ∨' ψ ]
-∨l' φ ψ = id× ∨l
-
-∨r' : {Γ : Set ℓ} (φ ψ : Γ → CofProp) → Γ ,[ ψ ] → Γ ,[ φ ∨' ψ ]
-∨r' φ ψ = id× ∨r
+_∨ᴵ_ : {Γ : Set ℓ} → (φ ψ : Γ → CofProp) → Γ → CofProp
+(φ ∨ᴵ ψ) x = φ x ∨ ψ x
 
 ----------------------------------------------------------------------
 -- Equality of fibration structures on a union of families
 ----------------------------------------------------------------------
 unionIsFibExt : {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {A : Γ ,[ φ₀ ∨' φ₁ ] → Set ℓ'} {α₀ α₁ : isFib A}
-  → reindex α₀ (∨l' φ₀ φ₁) ≡ reindex α₁ (∨l' φ₀ φ₁)
-  → reindex α₀ (∨r' φ₀ φ₁) ≡ reindex α₁ (∨r' φ₀ φ₁)
+  {A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Set ℓ'} {α₀ α₁ : isFib A}
+  → reindex α₀ (id× ∨l) ≡ reindex α₁ (id× ∨l)
+  → reindex α₀ (id× ∨r) ≡ reindex α₁ (id× ∨r)
   → α₀ ≡ α₁
 unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
   isFibExt λ S r p box s →
     lemma S r p box s (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
   where
-  module _ (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ ,[ φ₀ ∨' φ₁ ])
+  module _ (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ ,[ φ₀ ∨ᴵ φ₁ ])
     (box : OpenBox S r (A ∘ p)) (s : ⟨ S ⟩)
     where
-    move : (u : [ all S ((φ₀ ∨' φ₁) ∘ fst ∘ p) ]) (eq : u ≡ snd ∘ p)
+    move : (u : [ all S ((φ₀ ∨ᴵ φ₁) ∘ fst ∘ p) ]) (eq : u ≡ snd ∘ p)
       (β : isFib (A ∘ (fst ∘ p ,, u)))
       → A (p s)
     move _ refl β = β .lift S r id box .fill s .out
 
-    moveEq : (u : [ all S ((φ₀ ∨' φ₁) ∘ fst ∘ p) ]) (eq : u ≡ snd ∘ p) (β : isFib A)
+    moveEq : (u : [ all S ((φ₀ ∨ᴵ φ₁) ∘ fst ∘ p) ]) (eq : u ≡ snd ∘ p) (β : isFib A)
       → β .lift S r p box .fill s .out ≡ move u eq (reindex β (fst ∘ p ,, u))
     moveEq _ refl β = refl
 
@@ -67,9 +61,9 @@ unionIsFibExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
           ∙ sym (moveEq (∨r ∘ u₁) (funext λ _ → trunc _ _) α₁))
 
 unionFibExt : {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {Aα₀ Aα₁ : Fib ℓ' (Γ ,[ φ₀ ∨' φ₁ ])}
-  → reindexFib Aα₀ (∨l' φ₀ φ₁) ≡ reindexFib Aα₁ (∨l' φ₀ φ₁)
-  → reindexFib Aα₀ (∨r' φ₀ φ₁) ≡ reindexFib Aα₁ (∨r' φ₀ φ₁)
+  {Aα₀ Aα₁ : Fib ℓ' (Γ ,[ φ₀ ∨ᴵ φ₁ ])}
+  → reindexFib Aα₀ (id× ∨l) ≡ reindexFib Aα₁ (id× ∨l)
+  → reindexFib Aα₀ (id× ∨r) ≡ reindexFib Aα₁ (id× ∨r)
   → Aα₀ ≡ Aα₁
 unionFibExt φ₀ φ₁ {Aα₀} {Aα₁} eq₀ eq₁ =
   lemma
@@ -90,9 +84,9 @@ unionFibExt φ₀ φ₁ {Aα₀} {Aα₁} eq₀ eq₁ =
 ----------------------------------------------------------------------
 
 module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
-  (A : ⟨ S ⟩ ,[ φ₀ ∨' φ₁ ] → Set ℓ)
-  (α₀ : isFib (A ∘ ∨l' φ₀ φ₁))
-  (α₁ : isFib (A ∘ ∨r' φ₀ φ₁))
+  (A : ⟨ S ⟩ ,[ φ₀ ∨ᴵ φ₁ ] → Set ℓ)
+  (α₀ : isFib (A ∘ id× ∨l))
+  (α₁ : isFib (A ∘ id× ∨r))
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
   {u : ∀ s → [ φ₀ s ∨ φ₁ s ]}
   (box : OpenBox S r (A ∘ (id ,, u)))
@@ -138,9 +132,9 @@ module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
 
 module UnionVary {S T r} (σ : ShapeHom S T)
   (φ₀ φ₁ : ⟨ T ⟩ → CofProp)
-  (A : ⟨ T ⟩ ,[ φ₀ ∨' φ₁ ] → Set ℓ)
-  (α₀ : isFib (A ∘ ∨l' φ₀ φ₁))
-  (α₁ : isFib (A ∘ ∨r' φ₀ φ₁))
+  (A : ⟨ T ⟩ ,[ φ₀ ∨ᴵ φ₁ ] → Set ℓ)
+  (α₀ : isFib (A ∘ id× ∨l))
+  (α₁ : isFib (A ∘ id× ∨r))
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
   {u : ∀ t → [ φ₀ t ∨ φ₁ t ]}
   (box : OpenBox T (⟪ σ ⟫ r) (λ t → A (t , u t)))
@@ -226,9 +220,9 @@ module UnionVary {S T r} (σ : ShapeHom S T)
 
 
 module UnionIsFib {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
-  (A : Γ ,[ φ₀ ∨' φ₁ ] → Set ℓ')
-  (α₀ : isFib (A ∘ ∨l' φ₀ φ₁))
-  (α₁ : isFib (A ∘ ∨r' φ₀ φ₁))
+  (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Set ℓ')
+  (α₀ : isFib (A ∘ id× ∨l))
+  (α₁ : isFib (A ∘ id× ∨r))
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
     where
 
@@ -253,7 +247,7 @@ module UnionIsFib {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
 
     -- TODO: prove the following in UnionLift
 
-    left : reindex fib (∨l' φ₀ φ₁) ≡ α₀
+    left : reindex fib (id× ∨l) ≡ α₀
     left = isFibExt λ S r p box s →
       let
         open UnionLift (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
@@ -274,7 +268,7 @@ module UnionIsFib {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
             .lift S r id box .fill s .out)
         (uip (funext λ _ → trunc _ _) refl)
 
-    right : reindex fib (∨r' φ₀ φ₁) ≡ α₁
+    right : reindex fib (id× ∨r) ≡ α₁
     right = isFibExt λ S r p box s →
       let
         open UnionLift (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p)
@@ -296,9 +290,9 @@ module UnionIsFib {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
         (uip (funext λ _ → trunc _ _) refl)
 
 reindexUnion : {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)
-  (A : Γ ,[ φ₀ ∨' φ₁ ] → Set ℓ'')
-  (α₀ : isFib (A ∘ ∨l' φ₀ φ₁))
-  (α₁ : isFib (A ∘ ∨r' φ₀ φ₁))
+  (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Set ℓ'')
+  (α₀ : isFib (A ∘ id× ∨l))
+  (α₁ : isFib (A ∘ id× ∨r))
   (eqFib : reindexFib (_ , α₀) (id× fst) ≡ reindexFib (_ , α₁) (id× snd))
   (ρ : Δ → Γ)
   → reindex (UnionIsFib.fib φ₀ φ₁ A α₀ α₁ eqFib) (ρ ×id)
@@ -328,13 +322,13 @@ module FibUnion {Γ : Set ℓ} (φ₀ φ₁ : Γ → CofProp)
       eqFib
 
   opaque
-    fib : Fib ℓ' (Γ ,[ φ₀ ∨' φ₁ ])
+    fib : Fib ℓ' (Γ ,[ φ₀ ∨ᴵ φ₁ ])
     fib = (_ , F.fib)
 
-    left : reindexFib fib (∨l' φ₀ φ₁) ≡ Aα₀
+    left : reindexFib fib (id× ∨l) ≡ Aα₀
     left = cong (Aα₀ .fst ,_) F.left
 
-    right : reindexFib fib (∨r' φ₀ φ₁) ≡ Aα₁
+    right : reindexFib fib (id× ∨r) ≡ Aα₁
     right = cong (Aα₁ .fst ,_) F.right
 
 reindexFibUnion : {Δ : Set ℓ} {Γ : Set ℓ'} (φ₀ φ₁ : Γ → CofProp)

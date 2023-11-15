@@ -124,32 +124,32 @@ opaque
 -- Indexed versions
 ----------------------------------------------------------------------
 
-SGlue' : {Γ : Set ℓ}
+SGlueᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (A : Γ ,[ Φ ] → Set ℓ')
   (B : Γ → Set ℓ')
   (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
   Γ → Set ℓ'
-SGlue' Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
+SGlueᴵ Φ A B f x = SGlue (Φ x) (A ∘ (x ,_)) (B x) (f ∘ (x ,_))
 
-strictifyGlueIso' : {Γ : Set ℓ}
+strictifyGlueIsoᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
   (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
-  SGlue' Φ A B f ≅' Glue' Φ A B f
-strictifyGlueIso' Φ {A} {B} f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
+  SGlueᴵ Φ A B f ≅ᴵ Glueᴵ Φ A B f
+strictifyGlueIsoᴵ Φ {A} {B} f x = strictifyGlueIso (Φ x) (f ∘ (x ,_))
 
-SGlueStrictness' : {Γ : Set ℓ}
+SGlueStrictnessᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   {A : Γ ,[ Φ ] → Set ℓ'}
   {B : Γ → Set ℓ'}
   (f : (xu : Γ ,[ Φ ]) → A xu → B (xu .fst))
   → ---------------
-  A ≡ SGlue' Φ A B f ∘ fst
-SGlueStrictness' Φ {A} {B} f =
+  A ≡ SGlueᴵ Φ A B f ∘ fst
+SGlueStrictnessᴵ Φ {A} {B} f =
   funext λ (x , u) → SGlueStrictness (Φ x) (f ∘ (x ,_)) u
 
 module Misaligned where
@@ -158,35 +158,35 @@ module Misaligned where
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
-    (fe : Π (Equiv' A (B ∘ fst)))
+    (fe : Π (Equivᴵ A (B ∘ fst)))
     → ---------------
-    isFib (Glue' Φ A B (equivFun fe)) → isFib (SGlue' Φ A B (equivFun fe))
+    isFib (Glueᴵ Φ A B (equivFun fe)) → isFib (SGlueᴵ Φ A B (equivFun fe))
   GlueIsFib→SGlueIsFib Φ {A} {B} fe γ =
     isomorphIsFib
-      (strictifyGlueIso' Φ (equivFun fe))
+      (strictifyGlueIsoᴵ Φ (equivFun fe))
       γ
 
   SGlueIsFib : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ'}
     {B : Γ → Set ℓ'}
-    (fe : Π (Equiv' A (B ∘ fst)))
+    (fe : Π (Equivᴵ A (B ∘ fst)))
     → ---------------
-    isFib A → isFib B → isFib (SGlue' Φ A B (equivFun fe))
+    isFib A → isFib B → isFib (SGlueᴵ Φ A B (equivFun fe))
   SGlueIsFib Φ {A} {B} fe α β =
     isomorphIsFib
-      (strictifyGlueIso' Φ (equivFun fe))
+      (strictifyGlueIsoᴵ Φ (equivFun fe))
       (GlueIsFib Φ fe α β)
 
   reindexSGlue : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ ,[ Φ ] → Set ℓ''}
     {B : Γ → Set ℓ''}
-    (fe : Π (Equiv' A (B ∘ fst)))
+    (fe : Π (Equivᴵ A (B ∘ fst)))
     (α : isFib A) (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (SGlueIsFib Φ fe α β) ρ
       ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex α (ρ ×id)) (reindex β ρ)
   reindexSGlue Φ {A} {B} fe α β ρ =
-    reindexIsomorph (strictifyGlueIso' Φ (equivFun fe)) _ ρ
+    reindexIsomorph (strictifyGlueIsoᴵ Φ (equivFun fe)) _ ρ
     ∙ cong (GlueIsFib→SGlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id)) (reindexGlue Φ fe α β ρ)

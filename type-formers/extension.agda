@@ -10,22 +10,25 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-Partial : ∀ {ℓ ℓ'} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
+private variable ℓ ℓ' ℓ'' : Level
+
+-- TODO do something better with this
+Partial : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
   {Γ : Set ℓ}
-  → (A : Γ × ⟨ Z ⟩ → Set ℓ')
+  (A : Γ × ⟨ Z ⟩ → Set ℓ')
   → Γ → Set ℓ'
 Partial Z Φ A γ = ∀ z → [ Φ z ] → A (γ , z)
 
-Extension' : ∀ {ℓ ℓ'} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
+Extensionᴵ : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
   {Γ : Set ℓ}
   (A : Γ × ⟨ Z ⟩ → Set ℓ')
   → Σ Γ (Partial Z Φ A) → Set ℓ'
-Extension' Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
+Extensionᴵ Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
 
-module ExtensionLift {ℓ} {Z Φ S r}
+module ExtensionLift {Z Φ S r}
   {A : ⟨ S ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
-  {a : ∀ s z → [ Φ z ] → A (s , z)}
-  (box : OpenBox S r (Extension' Z Φ A ∘ (id ,, a)))
+  {a : Π (Partial Z Φ A)}
+  (box : OpenBox S r (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
 
   module _ (z : ⟨ Z ⟩) where
@@ -51,10 +54,10 @@ module ExtensionLift {ℓ} {Z Φ S r}
   filler .fill s .out≡ u = funext λ z → restrictExt (fillA z .fill s .out≡ (∨l u))
   filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
 
-module ExtensionVary {ℓ} {Z Φ S T} (σ : ShapeHom S T) {r}
+module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ × ⟨ Z ⟩ → Set ℓ} (α : isFib A)
-  {a : ∀ t z → [ Φ z ] → A (t , z)}
-  (box : OpenBox T (⟪ σ ⟫ r) (Extension' Z Φ A ∘ (id ,, a)))
+  {a : Π (Partial Z Φ A)}
+  (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z Φ A ∘ (id ,, a)))
   where
 
   module T = ExtensionLift α box
@@ -72,20 +75,18 @@ module ExtensionVary {ℓ} {Z Φ S T} (σ : ShapeHom S T) {r}
               refl))
 
 opaque
-  ExtensionIsFib :
-    ∀ {ℓ ℓ'} (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
+  ExtensionIsFib : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
     {Γ : Set ℓ}
     {A : Γ × ⟨ Z ⟩ → Set ℓ'}
     (α : isFib A)
-    → isFib (Extension' Z Φ A)
+    → isFib (Extensionᴵ Z Φ A)
   ExtensionIsFib Z Φ α .lift S r p = ExtensionLift.filler (reindex α ((fst ∘ p) ×id))
   ExtensionIsFib Z Φ α .vary S T σ r p = ExtensionVary.eq σ (reindex α ((fst ∘ p) ×id))
 
   ----------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexExtension :
-    ∀ {ℓ ℓ' ℓ''} {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
+  reindexExtension : {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
     {Δ : Set ℓ} {Γ : Set ℓ'}
     {A : Γ × ⟨ Z ⟩ → Set ℓ''}
     (α : isFib A)

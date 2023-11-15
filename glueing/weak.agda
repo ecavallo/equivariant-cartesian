@@ -29,14 +29,14 @@ record Glue (Φ : CofProp)
 
 open Glue public
 
-Glue' : {Γ : Set ℓ}
+Glueᴵ : {Γ : Set ℓ}
   (Φ : Γ → CofProp)
   (B : Γ ,[ Φ ] → Set ℓ')
   (A : Γ → Set ℓ')
   (f : (xu : Γ ,[ Φ ]) → B xu → A (xu .fst))
   → ---------------
   Γ → Set ℓ'
-Glue' Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
+Glueᴵ Φ B A f x = Glue (Φ x) (B ∘ (x ,_)) (A x) (f ∘ (x ,_))
 
 opaque
   GlueExt : {Φ : CofProp}
@@ -56,9 +56,9 @@ opaque
 module GlueLift {S r Φ}
   {B : ⟨ S ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ S ⟩ → Set ℓ}
-  (fe : Π (Equiv' B (A ∘ fst)))
+  (fe : Π (Equivᴵ B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
-  (box : OpenBox S r (Glue' Φ B A (equivFun fe)))
+  (box : OpenBox S r (Glueᴵ Φ B A (equivFun fe)))
   where
 
   f = fst ∘ fe
@@ -151,9 +151,9 @@ module GlueLift {S r Φ}
 module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
   {B : ⟨ T ⟩ ,[ Φ ] → Set ℓ}
   {A : ⟨ T ⟩ → Set ℓ}
-  (fe : Π (Equiv' B (A ∘ fst)))
+  (fe : Π (Equivᴵ B (A ∘ fst)))
   (β : isFib B) (α : isFib A)
-  (box : OpenBox T (⟪ σ ⟫ r) (Glue' Φ B A (equivFun fe)))
+  (box : OpenBox T (⟪ σ ⟫ r) (Glueᴵ Φ B A (equivFun fe)))
   where
 
   module T = GlueLift fe β α box
@@ -169,18 +169,18 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
     varyA = α .vary S T σ r id T.boxA s
 
     varyC₁ : ∀ uσs
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
+      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
     varyC₁ uσs = congdep (λ a → e (⟪ σ ⟫ s , uσs) a .fst) varyA
 
     varyC₂ : ∀ uσs {fib₀ fib₁} (i : 𝕀)
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA fib₀ ≡ fib₁
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i)
+      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA fib₀ ≡ fib₁
+      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i)
         ≡ S.C₂ s uσs fib₁ .at i
     varyC₂ uσs i p =
       congdep₂ (λ a fib → e (_ , uσs) a .snd fib .at i) varyA p
 
     varyR : ∀ uσs
-      → subst (curry (Fiber' B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .out)
+      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .out)
         ≡ S.fillR s uσs .out
     varyR uσs =
       congdep₂
@@ -226,9 +226,9 @@ opaque
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ'}
     {A : Γ → Set ℓ'}
-    (fe : Π (Equiv' B (A ∘ fst)))
+    (fe : Π (Equivᴵ B (A ∘ fst)))
     → ---------------
-    isFib B → isFib A → isFib (Glue' Φ B A (equivFun fe))
+    isFib B → isFib A → isFib (Glueᴵ Φ B A (equivFun fe))
   GlueIsFib Φ fe β α .lift S r p =
     GlueLift.filler (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p)
   GlueIsFib Φ fe β α .vary S T σ r p =
@@ -240,7 +240,7 @@ opaque
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Set ℓ''}
     {A : Γ → Set ℓ''}
-    (fe : Π (Equiv' B (A ∘ fst)))
+    (fe : Π (Equivᴵ B (A ∘ fst)))
     (β : isFib B)
     (α : isFib A)
     (ρ : Δ → Γ)

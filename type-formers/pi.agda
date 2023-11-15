@@ -13,14 +13,14 @@ open import fibration.coercion
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-Π' : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : (Σ x ∈ Γ , A x) → Set ℓ'')
+Πᴵ : {Γ : Set ℓ} (A : Γ → Set ℓ') (B : (Σ x ∈ Γ , A x) → Set ℓ'')
   → Γ → Set (ℓ' ⊔ ℓ'')
-Π' A B x = (a : A x) → B (x , a)
+Πᴵ A B x = (a : A x) → B (x , a)
 
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Set ℓ} {B : Σ ⟨ S ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  (box : OpenBox S r (Π' A B))
+  (box : OpenBox S r (Πᴵ A B))
   where
 
   module _ (s : ⟨ S ⟩) (a : A s) where
@@ -54,7 +54,7 @@ module ΠLift {S r}
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Set ℓ} {B : Σ ⟨ T ⟩ A → Set ℓ'}
   (α : isFib A) (β : isFib B)
-  (box : OpenBox T (⟪ σ ⟫ r) (Π' A B))
+  (box : OpenBox T (⟪ σ ⟫ r) (Πᴵ A B))
   where
 
   module T = ΠLift α β box
@@ -83,7 +83,7 @@ opaque
     (α : isFib A)
     (β : isFib B)
     → -----------
-    isFib (Π' A B)
+    isFib (Πᴵ A B)
   ΠIsFib α β .lift S r p = ΠLift.filler (reindex α p) (reindex β (p ×id))
   ΠIsFib α β .vary S T σ r p = ΠVary.eq σ (reindex α p) (reindex β (p ×id))
 
@@ -105,7 +105,7 @@ FibΠ : {Γ : Set ℓ}
   (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
   → -----------
   Fib (ℓ' ⊔ ℓ'') Γ
-FibΠ (A , α) (B , β) = (Π' A B , ΠIsFib α β)
+FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
 
 reindexFibΠ : {Δ : Set ℓ} {Γ : Set ℓ'}
   (Aα : Fib ℓ'' Γ)

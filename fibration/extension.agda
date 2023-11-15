@@ -16,8 +16,9 @@ open import glueing
 
 private variable ℓ ℓ' : Level
 
-fst' : {Γ : Set ℓ} {A B : Γ → Set} → Σ Γ (A ×' B) → Σ Γ A
-fst' (x , a , b) = (x , a)
+-- TODO do something about this
+fst' : {Γ : Set ℓ} {A B : Γ → Set ℓ'} → Σ Γ (A ×ᴵ B) → Σ Γ A
+fst' = id× fst
 
 module Box {Γ : Set ℓ}
   (S : Shape) (r : Γ → ⟨ S ⟩)
@@ -43,7 +44,7 @@ module Box {Γ : Set ℓ}
     module F = FibUnion φ ψ (reindexFib F ats) (reindexFib X₀ fst) ψMatch
     open F public
 
-    equiv : Π (Equiv' (fib .fst) (X₀ .fst ∘ fst))
+    equiv : Π (Equivᴵ (fib .fst) (X₀ .fst ∘ fst))
     equiv = uncurry λ x →
       ∨-elim (φ x) (ψ x) _
         (λ u →
@@ -139,12 +140,12 @@ module _ {Γ : Set ℓ}
       sym left
       ∙
       cong
-        (reindexFib ◆ inl' φ (λ x → S ∋ r x ≈ s x))
+        (reindexFib ◆ (id× ∨l))
         (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv)
 
   LargeCap : LargeComp r ≡ X₀
   LargeCap =
-    cong (reindexFib ◆ (inr' φ (λ x → S ∋ r x ≈ r x) ∘ f₀))
+    cong (reindexFib ◆ (id× ∨r ∘ f₀))
       (sym (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv))
     ∙
     cong (reindexFib ◆ f₀) right
