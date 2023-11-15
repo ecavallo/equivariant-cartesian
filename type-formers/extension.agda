@@ -47,8 +47,8 @@ module ExtensionLift {ℓ} {Z Φ S r}
 
   filler : Filler box
   filler .fill s .out z .out = fillA z .fill s .out
-  filler .fill s .out z .out≡ v = fillA z .fill s .out≡ ∣ inr v ∣
-  filler .fill s .out≡ u = funext λ z → restrictExt (fillA z .fill s .out≡ ∣ inl u ∣)
+  filler .fill s .out z .out≡ v = fillA z .fill s .out≡ (∨r v)
+  filler .fill s .out≡ u = funext λ z → restrictExt (fillA z .fill s .out≡ (∨l u))
   filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
 
 module ExtensionVary {ℓ} {Z Φ S T} (σ : ShapeHom S T) {r}

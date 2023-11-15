@@ -110,13 +110,13 @@ module GlueLift {S r Φ}
           (λ us i → fillR us .out .snd .at i)
           (λ {refl _ → boxA .cap .out})
           (λ {us refl → funext λ i →
-            fiberPathEq (sym (fillR us .out≡ ∣ inr refl ∣) ∙ C₂ us (fiberR us ∣ inr refl ∣) .at0) i
+            fiberPathEq (sym (fillR us .out≡ (∨r refl)) ∙ C₂ us (fiberR us (∨r refl)) .at0) i
             ∙ box .cap .out .match us}))
         (λ v →
           ∨-elimEq (Φ s) (S ∋ r ≈ s)
             (λ us → funext λ i →
               sym (box .tube v s .match us)
-              ∙ fiberPathEq (sym (C₂ us (fiberR us ∣ inl v ∣) .at0) ∙ fillR us .out≡ ∣ inl v ∣) i)
+              ∙ fiberPathEq (sym (C₂ us (fiberR us (∨l v)) .at0) ∙ fillR us .out≡ (∨l v)) i)
             (λ {refl → funext λ _ → boxA .cap .out≡ v}))
     boxFix .cap .out = fillA .fill s .out
     boxFix .cap .out≡ =
@@ -134,19 +134,19 @@ module GlueLift {S r Φ}
     filler .fill s .out .cod = fillFix s .out
     filler .fill s .out .match us =
       sym (fillR s us .out .snd .at0)
-      ∙ fillFix s .out≡ ∣ inr ∣ inl us ∣ ∣
+      ∙ fillFix s .out≡ (∨r (∨l us))
     filler .fill s .out≡ v =
       GlueExt
         (λ us →
-          cong fst (sym (C₂ s us (fiberR s us ∣ inl v ∣) .at0))
-          ∙ cong fst (fillR s us .out≡ ∣ inl v ∣))
-        (fillFix s .out≡ ∣ inl v ∣)
+          cong fst (sym (C₂ s us (fiberR s us (∨l v)) .at0))
+          ∙ cong fst (fillR s us .out≡ (∨l v)))
+        (fillFix s .out≡ (∨l v))
     filler .cap≡ =
       GlueExt
         (λ ur →
-          cong fst (sym (fillR r ur .out≡ ∣ inr refl ∣))
-          ∙ cong fst (C₂ r ur (fiberR r ur ∣ inr refl ∣) .at0))
-        (sym (fillFix r .out≡ ∣ inr ∣ inr refl ∣ ∣))
+          cong fst (sym (fillR r ur .out≡ (∨r refl)))
+          ∙ cong fst (C₂ r ur (fiberR r ur (∨r refl)) .at0))
+        (sym (fillFix r .out≡ (∨r (∨r refl))))
 
 module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
   {B : ⟨ T ⟩ ,[ Φ ] → Set ℓ}

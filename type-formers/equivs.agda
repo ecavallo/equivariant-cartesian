@@ -188,12 +188,12 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
   h .at i .snd = path (λ j → q i .fill j .out) refl (q i .cap≡)
   h .at0 =
     FiberExt
-      (sym (q 0 .fill 0 .out≡ ∣ inl refl ∣) ∙ p .at0)
-      (λ j → sym (q 0 .fill j .out≡ ∣ inl refl ∣))
+      (sym (q 0 .fill 0 .out≡ (∨l refl)) ∙ p .at0)
+      (λ j → sym (q 0 .fill j .out≡ (∨l refl)))
   h .at1 =
     FiberExt
-      (sym (q 1 .fill 0 .out≡ ∣ inr refl ∣))
-      (λ j → sym (q 1 .fill j .out≡ ∣ inr refl ∣))
+      (sym (q 1 .fill 0 .out≡ (∨r refl)))
+      (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
 coerceEquiv : ∀ {ℓ} (S : Shape) {A : ⟨ S ⟩ → Set ℓ}
   (α : isFib A) (r s : ⟨ S ⟩)

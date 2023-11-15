@@ -47,8 +47,8 @@ opaque
     retract A γ .sec p i .out = p .at i
     retract A γ .sec p i .out≡ = OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
     retract A γ .ret ex .at i = ex i .out
-    retract A γ .ret ex .at0 = sym (ex 0 .out≡ ∣ inl refl ∣)
-    retract A γ .ret ex .at1 = sym (ex 1 .out≡ ∣ inr refl ∣)
+    retract A γ .ret ex .at0 = sym (ex 0 .out≡ (∨l refl))
+    retract A γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
     retract A γ .inv = funext λ p → PathExt λ i → refl
 
   PathIsFib :{Γ : Set ℓ}

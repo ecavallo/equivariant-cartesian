@@ -43,7 +43,7 @@ module RealignLift {S r}
 
   filler : Filler box
   filler .fill s .out = fillA .fill s .out
-  filler .fill s .out≡ v = fillA .fill s .out≡ ∣ inl v ∣
+  filler .fill s .out≡ v = fillA .fill s .out≡ (∨l v)
   filler .cap≡ = fillA .cap≡
 
 module RealignVary {S T} (σ : ShapeHom S T) {r}
@@ -88,6 +88,7 @@ opaque
   realignIsFib Φ A β α .vary S T σ r p =
     RealignVary.eq σ (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
 
+  -- TODO prove this in RealignLift
   isRealigned : {Γ : Set ℓ}
     (Φ : Γ → CofProp)
     {A : Γ → Set ℓ'}
@@ -100,7 +101,7 @@ opaque
       let
         open RealignLift (Φ ∘ fst ∘ p) (reindex β ((fst ∘ p) ×id)) (reindex α (fst ∘ p)) box
       in
-      sym (fillA .fill s .out≡ ∣ inr (λ s → p s .snd) ∣)
+      sym (fillA .fill s .out≡ (∨r (snd ∘ p)))
 
   reindexRealignIsFib : {Δ : Set ℓ} {Γ : Set ℓ'}
     (Φ : Γ → CofProp)
