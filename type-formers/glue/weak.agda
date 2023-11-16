@@ -16,8 +16,9 @@ open import type-formers.pi
 private variable ℓ ℓ' ℓ'' : Level
 
 ----------------------------------------------------------------------
--- Glueing
+-- Glue types
 ----------------------------------------------------------------------
+
 record Glue (Φ : CofProp)
   (T : [ Φ ] → Type ℓ) (A : Type ℓ)
   (f : (u : [ Φ ]) → T u → A) : Type ℓ
@@ -53,6 +54,56 @@ opaque
     cong
       (λ (t , ft≡a) → glue t a ft≡a)
       (Σext (funext p) (funext (λ _ → uipImp)))
+
+----------------------------------------------------------------------
+-- Isomorphism to the total type
+----------------------------------------------------------------------
+
+includeA : (φ : CofProp)
+  {A : [ φ ] → Type ℓ}
+  {B : Type ℓ}
+  (f : (u : [ φ ]) → A u → B)
+  → ---------------
+  (u : [ φ ]) → A u → Glue φ A B f
+includeA φ {A} {B} f u a .dom v = subst A (cofIsProp φ _ _) a
+includeA φ {A} {B} f u a .cod = f u a
+includeA φ {A} {B} f u a .match v =
+  cong (uncurry f) (sym (Σext (cofIsProp φ _ _) refl))
+
+includeAIso : (φ : CofProp)
+  {A : [ φ ] → Type ℓ}
+  {B : Type ℓ}
+  (w : (u : [ φ ]) → A u → B)
+  → ---------------
+  (u : [ φ ]) → A u ≅ Glue φ A B w
+includeAIso φ {A} {B} w u = iso
+  where
+  prfIr : {a : A u} → subst A (cofIsProp φ u u) a ≡ a
+  prfIr {a} = cong (λ p → subst A p a) (uip (cofIsProp φ u u) refl)
+
+  iso : A u ≅ Glue φ A B w
+  iso .to a = includeA φ w u a
+  iso .from (glue a _ _) = a u
+  iso .inv₁ = funext (λ a → prfIr)
+  iso .inv₂ = funext fg≡id
+    where
+    parEq : {a a' : (u : [ φ ]) → A u} → a u ≡ a' u → (∀ u' → a u' ≡ a' u')
+    parEq {a} {a'} eq u' = subst (λ u' → a u' ≡ a' u') (cofIsProp φ u u') eq
+
+    fg≡id : (gl : Glue φ A B w) → (includeA φ w u (gl .dom u)) ≡ gl
+    fg≡id gl = GlueExt (parEq prfIr) (gl .match u)
+
+includeAIsoᴵ : {Γ : Type ℓ} (φ : Γ → CofProp)
+  {A : Γ ,[ φ ] → Type ℓ'}
+  {B : Γ → Type ℓ'}
+  (w : Γ ,[ φ ] ⊢ A →ᴵ (B ∘ fst))
+  → ---------------
+  Γ ,[ φ ] ⊢ A ≅ᴵ (Glueᴵ φ A B w ∘ fst)
+includeAIsoᴵ φ w (γ , u) = includeAIso (φ γ) (w ∘ (γ ,_)) u
+
+----------------------------------------------------------------------
+-- Fibrancy of Glue types
+----------------------------------------------------------------------
 
 module GlueLift {S r Φ}
   {B : ⟨ S ⟩ ,[ Φ ] → Type ℓ}
@@ -235,8 +286,6 @@ opaque
   GlueIsFib Φ fe β α .vary S T σ r p =
     GlueVary.eq σ (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p)
 
-opaque
-  unfolding GlueIsFib
   reindexGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
     {B : Γ ,[ Φ ] → Type ℓ''}
@@ -250,3 +299,13 @@ opaque
     ≡ GlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex β (ρ ×id)) (reindex α ρ)
   reindexGlue Φ fe β α ρ =
     isFibExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
+
+FibGlue : {Γ : Type ℓ}
+  (Φ : Γ → CofProp)
+  (B : Fib ℓ' (Γ ,[ Φ ]))
+  (A : Fib ℓ' Γ)
+  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
+  → ---------------
+  Fib ℓ' Γ
+FibGlue Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
+FibGlue Φ (_ , β) (_ , α) fe .snd = GlueIsFib Φ fe β α

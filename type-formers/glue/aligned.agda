@@ -1,6 +1,6 @@
 {-
 
-Realigning strict glue.
+Realigned (ie "strict") glue types.
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -12,41 +12,8 @@ open import fibration.fibration
 open import fibration.realignment
 open import type-formers.equivs
 open import type-formers.glue.weak
-open import type-formers.glue.strict
 
 private variable ℓ ℓ' ℓ'' : Level
-
-----------------------------------------------------------------------
--- Realigning strict glue
-----------------------------------------------------------------------
-
-opaque
-  SGlueIsFib : {Γ : Type ℓ}
-    (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Type ℓ'}
-    {B : Γ → Type ℓ'}
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
-    → ---------------
-    isFib A → isFib B → isFib (SGlueᴵ Φ A B (equivFun fe))
-  SGlueIsFib Φ {A} {B} fe α β =
-    realignIsFib Φ (SGlueᴵ Φ A B (equivFun fe))
-      (subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α)
-      (Misaligned.SGlueIsFib Φ fe α β)
-
-  SGlueIsFibStrictness : {Γ : Type ℓ}
-    (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Type ℓ'}
-    {B : Γ → Type ℓ'}
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
-    (α : isFib A) (β : isFib B)
-    → ---------------
-    subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α
-    ≡ reindex (SGlueIsFib Φ fe α β) fst
-  SGlueIsFibStrictness Φ {A} {B} fe α β =
-    sym
-      (isRealigned Φ
-        (subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α)
-        (Misaligned.SGlueIsFib Φ fe α β))
 
 FibSGlue : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
@@ -54,7 +21,8 @@ FibSGlue : {Γ : Type ℓ}
   (Bβ : Fib ℓ' Γ)
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
   → Fib ℓ' Γ
-FibSGlue Φ (A , α) (B , β) fe = (_ , SGlueIsFib Φ fe α β)
+FibSGlue Φ Aα Bβ fe =
+  realignFib Φ Aα (FibGlue Φ Aα Bβ fe) (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
   FibSGlueStrictness : {Γ : Type ℓ}
@@ -63,28 +31,5 @@ opaque
     (Bβ : Fib ℓ' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
     → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
-  FibSGlueStrictness Φ (A , α) (B , β) fe =
-    Σext (SGlueStrictnessᴵ Φ (equivFun fe)) (SGlueIsFibStrictness Φ fe α β)
-
-opaque
-  unfolding SGlueIsFib
-  reindexSGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (Φ : Γ → CofProp)
-    {A : Γ ,[ Φ ] → Type ℓ''}
-    {B : Γ → Type ℓ''}
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ A (B ∘ fst))
-    (α : isFib A) (β : isFib B)
-    (ρ : Δ → Γ)
-    → reindex (SGlueIsFib Φ fe α β) ρ
-      ≡ SGlueIsFib (Φ ∘ ρ) (fe ∘ (ρ ×id)) (reindex α (ρ ×id)) (reindex β ρ)
-  reindexSGlue Φ {A} {B} fe α β ρ =
-    reindexRealignIsFib Φ
-      (subst isFib (SGlueStrictnessᴵ Φ (equivFun fe)) α)
-      (Misaligned.SGlueIsFib Φ fe α β)
-      ρ
-    ∙
-    cong₂ (realignIsFib (Φ ∘ ρ) (SGlueᴵ Φ A B (equivFun fe) ∘ ρ))
-        (reindexSubst (ρ ×id)
-          (SGlueStrictnessᴵ Φ (equivFun fe))
-          (SGlueStrictnessᴵ (Φ ∘ ρ) (equivFun fe ∘ (ρ ×id))) α)
-        (Misaligned.reindexSGlue Φ fe α β ρ)
+  FibSGlueStrictness Φ Aα Bβ fe =
+    isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
