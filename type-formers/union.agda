@@ -227,7 +227,6 @@ module UnionIsFib {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
     where
 
   opaque
-
     fib : isFib A
     fib .lift S r p =
       UnionLift.filler
@@ -321,15 +320,14 @@ module FibUnion {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
       (Aα₁ .snd)
       eqFib
 
-  opaque
-    fib : Fib ℓ' (Γ ,[ φ₀ ∨ᴵ φ₁ ])
-    fib = (_ , F.fib)
+  fib : Fib ℓ' (Γ ,[ φ₀ ∨ᴵ φ₁ ])
+  fib = (_ , F.fib)
 
-    left : reindexFib fib (id× ∨l) ≡ Aα₀
-    left = cong (Aα₀ .fst ,_) F.left
+  left : reindexFib fib (id× ∨l) ≡ Aα₀
+  left = cong (Aα₀ .fst ,_) F.left
 
-    right : reindexFib fib (id× ∨r) ≡ Aα₁
-    right = cong (Aα₁ .fst ,_) F.right
+  right : reindexFib fib (id× ∨r) ≡ Aα₁
+  right = cong (Aα₁ .fst ,_) F.right
 
 reindexFibUnion : {Δ : Type ℓ} {Γ : Type ℓ'} (φ₀ φ₁ : Γ → CofProp)
   (Aα₀ : Fib ℓ'' (Γ ,[ φ₀ ])) (Aα₁ : Fib ℓ'' (Γ ,[ φ₁ ]))

@@ -47,28 +47,12 @@ module Box {Γ : Type ℓ}
     equiv : Γ ,[ φ ∨ᴵ ψ ] ⊢ Equivᴵ (fib .fst) (X₀ .fst ∘ fst)
     equiv = uncurry λ x →
       ∨-elim (φ x) (ψ x) _
-        (λ u →
-          subst (Equiv ◆ X₀ .fst x)
-            (cong (λ Bβ → Bβ .fst (x , u)) (sym left))
-            (φEquiv x u))
-        (λ v →
-          subst (Equiv ◆ X₀ .fst x)
-            (cong (λ Bβ → Bβ .fst (x , v)) (sym right))
-            (idEquiv (reindexFib X₀ (λ _ → x) .snd)))
+        (λ u → φEquiv x u)
+        (λ v → idEquiv (reindexFib X₀ (λ _ → x) .snd))
         (λ u v →
-          substCongAssoc (Equiv ◆ X₀ .fst x) (curry (fib .fst) x) (trunc _ _) _
-          ∙
-          sym
-            (substTrans (Equiv ◆ X₀ .fst x)
-              (cong (curry (fib .fst) x) (trunc _ _))
-              (cong (λ Bβ → Bβ .fst (x , u)) (sym left)))
-          ∙
-          adjustSubstEq (Equiv ◆ X₀ .fst x)
-            (cong (λ Bβ → Bβ .fst (x , u , v)) ψMatch)
-              refl
-              (cong (λ Bβ → Bβ .fst (x , u)) (sym left) ∙ cong (curry (fib .fst) x) (trunc _ _))
-              (cong (λ Bβ → Bβ .fst (x , v)) (sym right))
-              (equivMatch x u v))
+          substCongAssoc (Equiv ◆ X₀ .fst x) (curry (fib .fst) x) (trunc (∨l u) (∨r v)) _
+          ∙ cong (λ p → subst (Equiv ◆ X₀ .fst x) p (φEquiv x u)) uipImp
+          ∙ equivMatch x u v)
 
   opaque
     rsMatch : reindexFib F (ats ∘ fst' {B = λ x → r x ≡ s x}) ≡ reindexFib X₀ fst
