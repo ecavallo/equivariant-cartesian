@@ -11,9 +11,6 @@ open import axioms.cofprop
 
 private variable ℓ : Level
 
-----------------------------------------------------------------------
--- Realigning
-----------------------------------------------------------------------
 postulate
  reIm : (φ : CofProp)
   (A : [ φ ] → Type ℓ)

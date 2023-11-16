@@ -15,6 +15,10 @@ open import fibration.fibration
 
 private variable ℓ ℓ' ℓ'' : Level
 
+----------------------------------------------------------------------
+-- Realigning a fibration structure on a given family
+----------------------------------------------------------------------
+
 module RealignLift {S r}
   (Φ : ⟨ S ⟩ → CofProp)
   {A : ⟨ S ⟩ → Type ℓ}
@@ -88,7 +92,7 @@ opaque
   realignIsFib Φ A β α .vary S T σ r p =
     RealignVary.eq σ (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
 
-  -- TODO prove this in RealignLift
+  -- TODO prove this in RealignLift?
   isRealigned : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     {A : Γ → Type ℓ'}
@@ -113,3 +117,34 @@ opaque
     reindex (realignIsFib Φ A β α) ρ
     ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex β (ρ ×id)) (reindex α ρ)
   reindexRealignIsFib Φ β α ρ = isFibExt λ S r p box s → refl
+
+----------------------------------------------------------------------
+-- Realigning a fibration
+----------------------------------------------------------------------
+
+opaque
+  realignFib : {Γ : Type ℓ} (Φ : Γ → CofProp)
+    (B : Fib ℓ' (Γ ,[ Φ ]))
+    (A : Fib ℓ' Γ)
+    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    → Fib ℓ' Γ
+  realignFib Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
+  realignFib Φ (_ , β) (_ , α) iso .snd =
+    realignIsFib Φ _
+      (subst isFib (funext (uncurry λ γ → restrictsToA (Φ γ) _ _ (iso ∘ (γ ,_)))) β)
+      (isomorphIsFib (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
+
+  isRealignedFib : {Γ : Type ℓ} (Φ : Γ → CofProp)
+    (B : Fib ℓ' (Γ ,[ Φ ]))
+    (A : Fib ℓ' Γ)
+    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    → B ≡ reindexFib (realignFib Φ B A iso) fst
+  isRealignedFib Φ (_ , β) (_ , α) iso =
+    Σext _ (sym (isRealigned Φ _ _))
+
+  realignFibIso : {Γ : Type ℓ} (Φ : Γ → CofProp)
+    (B : Fib ℓ' (Γ ,[ Φ ]))
+    (A : Fib ℓ' Γ)
+    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    → Γ ⊢ realignFib Φ B A iso .fst ≅ᴵ A .fst
+  realignFibIso Φ B A iso γ = isoB _ _ _ _
