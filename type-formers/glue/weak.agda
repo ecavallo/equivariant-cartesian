@@ -309,3 +309,14 @@ FibGlue : {Γ : Type ℓ}
   Fib ℓ' Γ
 FibGlue Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
 FibGlue Φ (_ , β) (_ , α) fe .snd = GlueIsFib Φ fe β α
+
+reindexFibGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
+  (Φ : Γ → CofProp)
+  (Bβ : Fib ℓ'' (Γ ,[ Φ ]))
+  (Aα : Fib ℓ'' Γ)
+  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Bβ .fst) (Aα .fst ∘ fst))
+  (ρ : Δ → Γ)
+  → ----------------------
+  reindexFib (FibGlue Φ Bβ Aα fe) ρ
+  ≡ FibGlue (Φ ∘ ρ)(reindexFib Bβ (ρ ×id)) (reindexFib Aα ρ) (fe ∘ ρ ×id)
+reindexFibGlue Φ fe Bβ Aα ρ = Σext refl (reindexGlue _ _ _ _ _)

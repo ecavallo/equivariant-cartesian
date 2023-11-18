@@ -123,13 +123,13 @@ opaque
 ----------------------------------------------------------------------
 
 opaque
-  realignFib : {Γ : Type ℓ} (Φ : Γ → CofProp)
+  FibRealign : {Γ : Type ℓ} (Φ : Γ → CofProp)
     (B : Fib ℓ' (Γ ,[ Φ ]))
     (A : Fib ℓ' Γ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → Fib ℓ' Γ
-  realignFib Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
-  realignFib Φ (_ , β) (_ , α) iso .snd =
+  FibRealign Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
+  FibRealign Φ (_ , β) (_ , α) iso .snd =
     realignIsFib Φ _
       (subst isFib (funext (uncurry λ γ → restrictsToA (Φ γ) _ _ (iso ∘ (γ ,_)))) β)
       (isomorphIsFib (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
@@ -138,13 +138,28 @@ opaque
     (B : Fib ℓ' (Γ ,[ Φ ]))
     (A : Fib ℓ' Γ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
-    → B ≡ reindexFib (realignFib Φ B A iso) fst
+    → B ≡ reindexFib (FibRealign Φ B A iso) fst
   isRealignedFib Φ (_ , β) (_ , α) iso =
     Σext _ (sym (isRealigned Φ _ _))
 
-  realignFibIso : {Γ : Type ℓ} (Φ : Γ → CofProp)
+  FibRealignIso : {Γ : Type ℓ} (Φ : Γ → CofProp)
     (B : Fib ℓ' (Γ ,[ Φ ]))
     (A : Fib ℓ' Γ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
-    → Γ ⊢ realignFib Φ B A iso .fst ≅ᴵ A .fst
-  realignFibIso Φ B A iso γ = isoB _ _ _ _
+    → Γ ⊢ FibRealign Φ B A iso .fst ≅ᴵ A .fst
+  FibRealignIso Φ B A iso γ = isoB _ _ _ _
+
+  reindexFibRealign : {Δ : Type ℓ} {Γ : Type ℓ'}
+    (Φ : Γ → CofProp)
+    (B : Fib ℓ'' (Γ ,[ Φ ]))
+    (A : Fib ℓ'' Γ)
+    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    (ρ : Δ → Γ)
+    → reindexFib (FibRealign Φ B A iso) ρ
+      ≡ FibRealign (Φ ∘ ρ) (reindexFib B (ρ ×id)) (reindexFib A ρ) (iso ∘ (ρ ×id))
+  reindexFibRealign Φ (_ , β) (_ , α) iso ρ =
+    Σext refl
+      (reindexRealignIsFib _ _ _ ρ
+        ∙ cong₂ (realignIsFib (Φ ∘ ρ) _)
+            (reindexSubst (ρ ×id) _ _ β)
+            (reindexIsomorph (λ _ → isoB _ _ _ _) _ ρ))
