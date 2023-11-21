@@ -221,8 +221,10 @@ data _⊎_ (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
   inl : A → A ⊎ B
   inr : B → A ⊎ B
 
-[_∣_] : {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
-  → (A → C) → (B → C) → A ⊎ B → C
+[_∣_] : {A : Type ℓ} {B : Type ℓ'} {C : A ⊎ B → Type ℓ''}
+  → ((a : A) → C (inl a))
+  → ((b : B) → C (inr b))
+  → (z : A ⊎ B) → C z
 [ f ∣ g ] (inl a) = f a
 [ f ∣ g ] (inr b) = g b
 
