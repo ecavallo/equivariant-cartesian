@@ -204,9 +204,8 @@ opaque
     uncurry λ γ →
     ∨-elimEq (box .cof γ) (ψ γ)
       (λ u →
-        cong (subst _ (trunc _ _)) -- comes from the ∨-eliminator
-          (cong (subst (Equiv (box .Tube .fst _)) (appCong (cong fst (box .match))))
-            (coerceEquivVary σ (reindexFib (box .Tube) ((γ , u) ,_) .snd) (s γ) (r γ))))
+        cong (subst (Equiv (box .Tube .fst _)) (appCong (cong fst (box .match))))
+          (coerceEquivVary σ (reindexFib (box .Tube) ((γ , u) ,_) .snd) (s γ) (r γ)))
       (λ v → refl)
 
 opaque
@@ -223,11 +222,10 @@ opaque
     uncurry λ δ →
     ∨-elimEq (box .cof (ρ δ)) (ψ (ρ δ))
       (λ u →
-        cong (subst _ (trunc _ _)) -- comes from the ∨-eliminator
-          (cong
-            (subst (Equiv (box .Tube .fst _)) ◆
-              (coerceEquiv S (reindexFib (box .Tube) ((ρ δ , u) ,_) .snd) (s (ρ δ)) (r (ρ δ))))
-            uipImp))
+        cong
+          (subst (Equiv (box .Tube .fst _)) ◆
+            (coerceEquiv S (reindexFib (box .Tube) ((ρ δ , u) ,_) .snd) (s (ρ δ)) (r (ρ δ))))
+          uipImp)
       (λ v → refl)
 
 opaque

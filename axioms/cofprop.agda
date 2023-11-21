@@ -129,15 +129,19 @@ OI-rec r f g =
   .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
   → ---------------------------
   (w : [ φ ∨ ψ ]) → P w
-∨-elim φ ψ P f g p w =
-  subst P (trunc _ _) (∨-recΣ w .snd)
-  where
-  ∨-recΣ : [ φ ∨ ψ ] → Σ _ P
-  ∨-recΣ =
-    ∨-rec φ ψ
-      (λ u → ∨l u , f u)
-      (λ v → ∨r v , g v)
-      (λ u v → Σext (trunc _ _) (p u v))
+∨-elim φ ψ P f g p =
+  ∥∥-elim _ [ f ∣ g ] λ
+    { (inl u) (inl u') →
+      cong (subst P ◆ (f u)) uipImp
+      ∙ sym (substCongAssoc P ∨l (cofIsProp φ u u') _)
+      ∙ congdep f (cofIsProp φ u u')
+    ; (inl u) (inr v) → p u v
+    ; (inr v) (inl u) →
+      sym (adjustSubstEq P (trunc _ _) refl refl (trunc _ _) (p u v))
+    ; (inr v) (inr v') →
+      cong (subst P ◆ (g v)) uipImp
+      ∙ sym (substCongAssoc P ∨r (cofIsProp ψ v v') _)
+      ∙ congdep g (cofIsProp ψ v v')}
 
 ∨-elimProp : (φ ψ : CofProp)
   (P : [ φ ∨ ψ ] → Type ℓ)
@@ -178,7 +182,7 @@ opaque
     ∨-elim φ φ₀ _
       (λ u₀ → ∨-elimEq φ φ₁
         (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
-        (λ v₁ → p u₀ ∙ (cong f₁ (trunc _ _))))
+        (λ v₁ → p u₀ ∙ cong f₁ (trunc _ _)))
       (λ v₀ → ∨-elimEq φ φ₁
         (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
         (λ v₁ → q v₀ v₁))
