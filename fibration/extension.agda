@@ -158,7 +158,7 @@ opaque
     leftEquiv : Γ ,[ φ ] ⊢ Equivᴵ (Tu .fst ∘ (id ,, s ∘ wk[ φ ])) (Ca .fst ∘ wk[ φ ])
     leftEquiv (γ , u) =
       subst
-        (Equiv (Un.fib .fst (γ , ∨l u)))
+        (Equiv (Tu .fst _))
         (appCong (cong fst mat))
         (coerceEquiv S (reindexFib Tu ((γ , u) ,_) .snd) (s γ) (r γ))
 
