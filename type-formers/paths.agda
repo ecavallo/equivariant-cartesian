@@ -78,5 +78,4 @@ opaque
     cong₂
       retractIsFib
       (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
-      (reindexComp (ExtensionIsFib 𝕚 ∂ (reindex α fst)) (ρ ×id) (ctxMap _)
-        ∙ cong (λ fib → reindex fib (ctxMap _)) (reindexExtension (reindex α fst) ρ))
+      (cong (λ fib → reindex fib (ctxMap _)) (reindexExtension (reindex α fst) ρ))

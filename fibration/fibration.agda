@@ -140,25 +140,25 @@ reindexSubst ρ refl refl α = refl
 -- Reindexing is functorial
 ----------------------------------------------------------------------
 
-reindexAlongId : {Γ : Type ℓ}{A : Γ → Type ℓ'}{α : isFib A} → α ≡ reindex α id
-reindexAlongId = refl
+reindexId : {Γ : Type ℓ}{A : Γ → Type ℓ'}{α : isFib A} → α ≡ reindex α id
+reindexId = refl
 
-reindexComp :
+reindexTrans :
   {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''} {A : Γ₃ → Type ℓ'''}
   (α : isFib A) (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
   → ----------------------
   reindex α (g ∘ f) ≡ reindex (reindex α g) f
-reindexComp α g f = refl
+reindexTrans α g f = refl
 
-reindexAlongId' : {Γ : Type ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
-reindexAlongId' = refl
+reindexFibId : {Γ : Type ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
+reindexFibId = refl
 
-reindexComp' : {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''}
+reindexFibTrans : {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''}
   {Aα : Fib ℓ''' Γ₃}
   (f : Γ₁ → Γ₂)(g : Γ₂ → Γ₃)
   → ----------------------
   reindexFib Aα (g ∘ f) ≡ reindexFib (reindexFib Aα g) f
-reindexComp' g f = refl
+reindexFibTrans g f = refl
 
 ----------------------------------------------------------------------
 -- An extensionality principle for fibration structures

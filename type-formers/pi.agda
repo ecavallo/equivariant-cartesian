@@ -65,7 +65,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
   module S = ΠLift (reindex α ⟪ σ ⟫) (reindex β (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   varyA : ∀ s a i → T.coeA (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.coeA s a i
-  varyA s = coerceVary S T σ s α
+  varyA s = coerceVary σ s α
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =

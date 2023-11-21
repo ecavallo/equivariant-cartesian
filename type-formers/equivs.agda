@@ -196,6 +196,9 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (sym (q 1 .fill 0 .out≡ (∨r refl)))
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
+idEquivFib : (A : Fib ℓ 𝟙) → Equiv (A .fst tt) (A .fst tt)
+idEquivFib (_ , α) = idEquiv α
+
 coerceEquiv : (S : Shape) {A : ⟨ S ⟩ → Type ℓ}
   (α : isFib A) (r s : ⟨ S ⟩)
   → Equiv (A r) (A s)
@@ -214,11 +217,11 @@ opaque
       (EquivIsFib (reindex α (λ _ → r)) α)
       (idEquiv (reindex α (λ _ → r)))
 
-  coerceEquivVary : ∀ {ℓ} (S T : Shape) (σ : ShapeHom S T)
+  coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
     {A : ⟨ T ⟩ → Type ℓ} (α : isFib A) (r s : ⟨ S ⟩)
     → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (reindex α ⟪ σ ⟫) r s
-  coerceEquivVary S T σ {A = A} α r s =
-    coerceVary S T σ r
+  coerceEquivVary {S = S} σ α r s =
+    coerceVary σ r
       (EquivIsFib (reindex α (λ _ → ⟪ σ ⟫ r)) α)
       (idEquiv (reindex α (λ _ → ⟪ σ ⟫ r)))
       s

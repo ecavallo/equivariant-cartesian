@@ -1,6 +1,8 @@
 {-
 
-Fibration extension property
+Fibration extension property for the category of generating trivial cofibrations
+
+TODO add comments
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -14,163 +16,320 @@ open import type-formers.union
 open import type-formers.equivs
 open import type-formers.glue
 
-private variable ℓ ℓ' : Level
+private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
--- TODO do something about this
-fst' : {Γ : Type ℓ} {A B : Γ → Type ℓ'} → Σ Γ (A ×ᴵ B) → Σ Γ A
-fst' = id× fst
+record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Type (ℓ ⊔ lsuc ℓ')
+  where
+  constructor makeLargeBox
+  field
+    cof : Γ → CofProp
+    Tube : Fib ℓ' (Γ ,[ cof ] × ⟨ S ⟩)
+    Cap : Fib ℓ' Γ
+    match : reindexFib Tube (id ,, r ∘ wk[ cof ]) ≡ reindexFib Cap wk[ cof ]
 
-module Box {Γ : Type ℓ}
-  (S : Shape) (r : Γ → ⟨ S ⟩)
-  (φ : Γ → CofProp)
-  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, r ∘ fst) ≡ reindexFib X₀ fst)
+open LargeOpenBox public
+
+reshapeLargeBox : {S T : Shape} (σ : ShapeHom S T)
+  {Γ : Type ℓ} {r : Γ →  ⟨ S ⟩}
+  → LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ' → LargeOpenBox S r ℓ'
+reshapeLargeBox σ box .cof = box .cof
+reshapeLargeBox σ box .Tube = reindexFib (box .Tube) (id× ⟪ σ ⟫)
+reshapeLargeBox σ box .Cap = box .Cap
+reshapeLargeBox σ box .match = box .match
+
+reindexLargeBox : {S : Shape} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ'')
+  (ρ : Δ → Γ)
+  → LargeOpenBox S (r ∘ ρ) ℓ''
+reindexLargeBox box ρ .cof = box .cof ∘ ρ
+reindexLargeBox box ρ .Tube = reindexFib (box .Tube) (ρ ×id ×id)
+reindexLargeBox box ρ .Cap = reindexFib (box .Cap) ρ
+reindexLargeBox box ρ .match = cong (reindexFib ◆ (ρ ×id)) (box .match)
+
+largeBoxExt : {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+  {box box' : LargeOpenBox S r ℓ'}
+  (cof≡ : box .cof ≡ box' .cof)
+  → subst (λ φ → Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩)) cof≡ (box .Tube) ≡ box' .Tube
+  → box .Cap ≡ box' .Cap
+  → box ≡ box'
+largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uipImp
+
+record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ') : Type (ℓ ⊔ lsuc ℓ')
+  where
+  field
+    Fill : Fib ℓ' (Γ × ⟨ S ⟩)
+    Tube≡ : reindexFib Fill (wk[ box .cof ] ×id) ≡ box .Tube
+    Cap≡ : reindexFib Fill (id ,, r) ≡ box .Cap
+
+open LargeFiller public
+
+-- TODO move
+_⇒_ : CofProp → CofProp → Type
+φ ⇒ ψ = [ φ ] → [ ψ ]
+
+_⇒ᴵ_ : {Γ : Type ℓ} → (Γ → CofProp) → (Γ → CofProp) → (Γ → Type)
+(φ ⇒ᴵ ψ) γ = φ γ ⇒ ψ γ
+
+
+module LargeBoxUnion {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ')
   (s : Γ → ⟨ S ⟩)
+  (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
   where
 
-  ats : Γ ,[ φ ] → Γ ,[ φ ] × ⟨ S ⟩
-  ats = id ,, s ∘ fst
+  open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to p)
 
-  -- We want to isolate the parts that depend essentially on r and s, so that we can
-  -- prove equivariance more easily. Those parts are parameters to this module.
-  module Template (ψ : Γ → CofProp)
-    (ψMatch : reindexFib F (ats ∘ fst') ≡ reindexFib X₀ fst)
-    (φEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x))
-    (equivMatch : ∀ x → (u : [ φ x ]) (v : [ ψ x ]) →
-      subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , v)) ψMatch) (φEquiv x u)
-      ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd))
+  opaque
+    eqLemma :
+      (id ,, r ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ]
+      ≡ (id ,, s ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ]
+    eqLemma =
+      funext λ (γu , v) → cong (γu ,_) (toEq _ v)
+
+    matchLemma :
+      reindexFib Tu ((id ,, s ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ])
+      ≡ reindexFib Ca (wk[ φ ] ∘ wk[ ψ ∘ wk[ φ ] ])
+    matchLemma =
+      cong (reindexFib Tu) (sym eqLemma)
+      ∙ cong (reindexFib ◆ wk[ ψ ∘ wk[ φ ] ]) p
+
+  open FibUnion φ ψ
+    (reindexFib Tu (id ,, s ∘ wk[ φ ]))
+    (reindexFib Ca wk[ ψ ])
+    matchLemma
+    public
+
+LargeBoxUnion : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ')
+  (s : Γ → ⟨ S ⟩)
+  (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+  → Fib ℓ' (Γ ,[ box .cof ∨ᴵ ψ ])
+LargeBoxUnion = LargeBoxUnion.fib
+
+opaque
+  varyLargeBoxUnion : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq) .snd
+      ≡ LargeBoxUnion (reshapeLargeBox σ box) s ψ toEq .snd
+  varyLargeBoxUnion σ box s ψ toEq =
+    unionIsFibExt (box .cof) ψ (T.F.left ∙ sym S.F.left) (T.F.right ∙ sym S.F.right)
     where
+    module S = LargeBoxUnion (reshapeLargeBox σ box) s ψ toEq
+    module T = LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
 
-    module F = FibUnion φ ψ (reindexFib F ats) (reindexFib X₀ fst) ψMatch
-    open F public
+opaque
+  reindexLargeBoxUnion : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ'')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ρ : Δ → Γ)
+    → reindexFib (LargeBoxUnion box s ψ toEq) (ρ ×id) .snd
+      ≡ LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ) .snd
+  reindexLargeBoxUnion box s ψ toEq ρ =
+    unionIsFibExt (box .cof ∘ ρ) (ψ ∘ ρ)
+      (cong (reindex ◆ (ρ ×id)) Γ.F.left ∙ sym Δ.F.left)
+      (cong (reindex ◆ (ρ ×id)) Γ.F.right ∙ sym Δ.F.right)
+    where
+    module Γ = LargeBoxUnion box s ψ toEq
+    module Δ = LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
 
-    equiv : Γ ,[ φ ∨ᴵ ψ ] ⊢ Equivᴵ (fib .fst) (X₀ .fst ∘ fst)
-    equiv = uncurry λ x →
-      ∨-elim (φ x) (ψ x) _
-        (λ u → φEquiv x u)
-        (λ v → idEquiv (reindexFib X₀ (λ _ → x) .snd))
-        (λ u v →
-          substCongAssoc (Equiv ◆ X₀ .fst x) (curry (fib .fst) x) (trunc (∨l u) (∨r v)) _
-          ∙ cong (λ p → subst (Equiv ◆ X₀ .fst x) p (φEquiv x u)) uipImp
-          ∙ equivMatch x u v)
+opaque
+  largeBoxEquiv : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → Γ ,[ box .cof ∨ᴵ ψ ] ⊢
+      Equivᴵ
+        (LargeBoxUnion box s ψ toEq .fst)
+        (box .Cap .fst ∘ wk[ box .cof ∨ᴵ ψ ])
+  largeBoxEquiv {S = S} {Γ} {r} box s ψ toEq =
+    uncurry λ γ →
+    ∨-elim (φ γ) (ψ γ) _
+      (curry leftEquiv γ)
+      (curry rightEquiv γ)
+      (matchEquiv γ)
+    where
+    open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to mat)
+    module Un = LargeBoxUnion box s ψ toEq
 
-  opaque
-    rsMatch : reindexFib F (ats ∘ fst' {B = λ x → r x ≡ s x}) ≡ reindexFib X₀ fst
-    rsMatch =
-      cong (reindexFib F) (funext λ (x , u , eq) → Σext refl (sym eq))
-      ∙ cong (reindexFib ◆ fst') match
+    leftEquiv : Γ ,[ φ ] ⊢ Equivᴵ (Tu .fst ∘ (id ,, s ∘ wk[ φ ])) (Ca .fst ∘ wk[ φ ])
+    leftEquiv (γ , u) =
+      subst
+        (Equiv (Un.fib .fst (γ , ∨l u)))
+        (appCong (cong fst mat))
+        (coerceEquiv S (reindexFib Tu ((γ , u) ,_) .snd) (s γ) (r γ))
 
-  rsEquiv : ∀ x → (u : [ φ x ]) → Equiv (F .fst ((x , u) , s x)) (X₀ .fst x)
-  rsEquiv x u =
-    subst (Equiv (F .fst ((x , u) , s x)))
-      (cong (λ Bβ → Bβ .fst (x , u)) match)
-      (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
+    rightEquiv : Γ ,[ ψ ] ⊢ Equivᴵ (Ca .fst ∘ wk[ ψ ]) (Ca .fst ∘ wk[ ψ ])
+    rightEquiv (γ , _) = idEquiv (reindex (Ca .snd) (λ _ → γ))
 
-  opaque
-    rsEquivMatch : (x : Γ) (u : [ φ x ]) (eq : r x ≡ s x) →
-      subst (Equiv ◆ X₀ .fst x) (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch) (rsEquiv x u)
-      ≡ idEquiv (reindexFib X₀ (λ _ → x) .snd)
-    rsEquivMatch x u eq =
-      lemma
-        (reindexFib F (λ _ → (x , u) , r x) .snd)
-        (reindexFib X₀ (λ _ → x) .snd)
-        (cong (λ Bβ → Bβ .fst (x , u , eq)) rsMatch)
-        (cong (λ t → F .fst ((x , u) , t)) (sym eq))
-        (cong (λ Bβ → Bβ .fst (x , u)) match)
-        (Σeq₂
-          (cong (λ Bβ → (Bβ .fst (x , u) , reindexFib Bβ (λ _ → (x , u)) .snd)) match)
-          (cong (λ Bβ → Bβ .fst (x , u)) match))
-        (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
-        (sym
-          (substCongAssoc
-            (Equiv ◆ fst (reindexFib F (λ _ → (x , u) , r x)) tt)
-              (λ t → F .fst ((x , u) , t))
-              (sym eq)
-              (coerceEquiv S (reindexFib F ((x , u) ,_) .snd) (s x) (r x)))
-         ∙
-         congdep
-           (λ t → coerceEquiv S (reindexFib F ((x , u) ,_) .snd) t (r x))
-           (sym eq)
-         ∙
-         coerceEquivCap S (reindexFib F ((x , u) ,_) .snd) (r x))
-      where
-      lemma : {A B G : Type ℓ'}
-        (β : isFib (λ _ → B)) (γ : isFib (λ _ → G))
-        (eqAG : A ≡ G) (eqAB : A ≡ B) (eqBG : B ≡ G)
-        (eqβγ : subst (λ D → isFib (λ _ → D)) eqBG β ≡ γ)
-        (e : Equiv A B)
-        → subst (Equiv ◆ B) eqAB e ≡ idEquiv β
-        → subst (Equiv ◆ G) eqAG (subst (Equiv A) eqBG e) ≡ idEquiv γ
-      lemma β γ refl refl refl refl e eq = eq
+    eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Fib ℓ' Γ}
+      (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
+      (eqBD : B ≡ D)
+      {e : Equiv A (B .fst _)}
+      → subst (Equiv ◆ _) eqAB e ≡ idEquiv (reindex (B .snd) (λ _ → γ))
+      → subst (Equiv ◆ _) eqAD (subst (Equiv A) (appCong (cong fst eqBD)) e)
+        ≡ idEquiv (reindex (D .snd) (λ _ → γ))
+    eqLemma refl refl refl eq = eq
 
-  open Template (λ x → S ∋ r x ≈ s x) rsMatch rsEquiv rsEquivMatch public
-
-module _ {Γ : Type ℓ}
-  (S : Shape) (r : Γ → ⟨ S ⟩)
-  (φ : Γ → CofProp)
-  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, r ∘ fst) ≡ reindexFib X₀ fst)
-  where
-
-  module _ (s : Γ → ⟨ S ⟩) where
-
-    open Box S r φ F X₀ match s
-
-    LargeComp : Fib ℓ' Γ
-    LargeComp = FibSGlue (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv
-
-    LargeCompMatch : reindexFib F ats ≡ reindexFib LargeComp fst
-    LargeCompMatch =
-      sym left
+    matchEquiv : (γ : Γ) (u : [ φ γ ]) (v : [ ψ γ ])
+      → subst
+          (λ w → Equiv (Un.fib .fst (γ , w)) (Ca .fst γ))
+          (trunc (∨l u) (∨r v))
+          (leftEquiv (γ , u))
+        ≡ rightEquiv (γ , v)
+    matchEquiv γ u v =
+      substCongAssoc (Equiv ◆ _) (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)) _
       ∙
-      cong
-        (reindexFib ◆ (id× ∨l))
-        (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ s x) fib X₀ equiv)
+      eqLemma
+        (cong (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)))
+        (cong (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)))
+        mat
+        (sym (substCongAssoc (Equiv ◆ _) (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)) _)
+          ∙ congdep (coerceEquiv S (reindexFib Tu ((γ , u) ,_) .snd) ◆ (r γ)) (sym (toEq γ v))
+          ∙ coerceEquivCap S (reindexFib Tu ((γ , u) ,_) .snd) (r γ))
 
-  LargeCap : LargeComp r ≡ X₀
-  LargeCap =
-    cong (reindexFib ◆ (id× ∨r ∘ f₀))
-      (sym (FibSGlueStrictness (λ x → φ x ∨ S ∋ r x ≈ r x) fib X₀ equiv))
-    ∙
-    cong (reindexFib ◆ f₀) right
-    where
-    open Box S r φ F X₀ match r
+opaque
+  unfolding largeBoxEquiv
+  varyLargeBoxEquiv : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → largeBoxEquiv box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
+      ≡ largeBoxEquiv (reshapeLargeBox σ box) s ψ toEq
+  varyLargeBoxEquiv σ {r = r} box s ψ toEq =
+    funext $
+    uncurry λ γ →
+    ∨-elimEq (box .cof γ) (ψ γ)
+      (λ u →
+        cong (subst _ (trunc _ _)) -- comes from the ∨-eliminator
+          (cong (subst (Equiv (box .Tube .fst _)) (appCong (cong fst (box .match))))
+            (coerceEquivVary σ (reindexFib (box .Tube) ((γ , u) ,_) .snd) (s γ) (r γ))))
+      (λ v → refl)
 
-    f₀ : Γ → Γ ,[ (λ x → S ∋ r x ≈ r x) ]
-    f₀ x = x , refl
+opaque
+  unfolding largeBoxEquiv
+  reindexLargeBoxEquiv : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ'')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ρ : Δ → Γ)
+    → largeBoxEquiv box s ψ toEq ∘ (ρ ×id)
+      ≡ largeBoxEquiv (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
+  reindexLargeBoxEquiv {S = S} {r = r} box s ψ toEq ρ =
+    funext $
+    uncurry λ δ →
+    ∨-elimEq (box .cof (ρ δ)) (ψ (ρ δ))
+      (λ u →
+        cong (subst _ (trunc _ _)) -- comes from the ∨-eliminator
+          (cong
+            (subst (Equiv (box .Tube .fst _)) ◆
+              (coerceEquiv S (reindexFib (box .Tube) ((ρ δ , u) ,_) .snd) (s (ρ δ)) (r (ρ δ))))
+            uipImp))
+      (λ v → refl)
 
-module _ {Γ : Type ℓ}
-  (S T : Shape) (σ : ShapeHom S T) (r : Γ → ⟨ S ⟩)
-  (φ : Γ → CofProp)
-  (F : Fib ℓ' (Γ ,[ φ ] × ⟨ T ⟩))
-  (X₀ : Fib ℓ' Γ) (match : reindexFib F (id ,, ⟪ σ ⟫ ∘ r ∘ fst) ≡ reindexFib X₀ fst)
-  (s : Γ → ⟨ S ⟩)
-  where
+opaque
+  LargeBoxFillerψ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → Fib ℓ' Γ
+  LargeBoxFillerψ box s ψ toEq =
+    FibSGlue
+      (box .cof ∨ᴵ ψ)
+      (LargeBoxUnion box s ψ toEq)
+      (box .Cap)
+      (largeBoxEquiv box s ψ toEq)
 
-  module S = Box S r φ (reindexFib F (id× ⟪ σ ⟫)) X₀ match s
-  module T = Box T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)
+  reindexLargeBoxFillerψ : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ'')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ρ : Δ → Γ)
+    → reindexFib (LargeBoxFillerψ box s ψ toEq) ρ
+      ≡ LargeBoxFillerψ (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
+  reindexLargeBoxFillerψ box s ψ toEq ρ =
+    reindexFibSGlue _ _ _ _ ρ
+    ∙ cong₂
+      (λ isfib eqv → FibSGlue ((box .cof ∨ᴵ ψ) ∘ ρ) (_ , isfib) (reindexFib (box .Cap) ρ) eqv)
+      (reindexLargeBoxUnion box s ψ toEq ρ)
+      (reindexLargeBoxEquiv box s ψ toEq ρ)
 
-  varyEquiv : T.rsEquiv ≡ S.rsEquiv
-  varyEquiv = funext λ x → funext λ u →
-    cong
-      (subst (Equiv (F .fst ((x , u) , ⟪ σ ⟫ (s x)))) (cong (λ Bβ → Bβ .fst (x , u)) match))
-      (coerceEquivVary S T σ (reindexFib F ((x , u) ,_) .snd) (s x) (r x))
+opaque
+  unfolding LargeBoxFillerψ
+  LargeBoxψTube≡ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → reindexFib (LargeBoxFillerψ box s ψ toEq) wk[ box .cof ]
+      ≡ reindexFib (box .Tube) (id ,, s ∘ wk[ box .cof ])
+  LargeBoxψTube≡ {S = S} {r = r} box s ψ toEq =
+    cong (reindexFib ◆ id× ∨l) (sym (FibSGlueStrictness _ _ _ _))
+    ∙ LargeBoxUnion.left box s ψ toEq
 
-  LargeVary
-    : LargeComp T (⟪ σ ⟫ ∘ r) φ F X₀ match (⟪ σ ⟫ ∘ s)
-      ≡ LargeComp S r φ (reindexFib F (id× ⟪ σ ⟫)) X₀ match s
-  LargeVary =
-    congΣ
-      (λ ((ψ , ψMatch) , φEquiv) equivMatch →
-        FibSGlue (λ x → φ x ∨ ψ x)
-          (S.Template.fib ψ ψMatch φEquiv equivMatch)
-          X₀
-          (S.Template.equiv ψ ψMatch φEquiv equivMatch))
-      {x' = T.rsEquivMatch}
-      {y' = S.rsEquivMatch}
-      (×ext
-        (Σext (funext λ x → ≈Equivariant σ (r x) (s x)) uipImp)
-        varyEquiv)
-      (funext λ x → funext λ u → funext λ v → uipImp)
+opaque
+  unfolding LargeBoxFillerψ
+  LargeBoxCap≡ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ')
+    → LargeBoxFillerψ box r (S ∋ r ≈ᴵ r) (λ _ → id) ≡ box .Cap
+  LargeBoxCap≡ {S = S} {r = r} box =
+    cong (reindexFib ◆ (id ,, λ _ → ∨r refl)) (sym (FibSGlueStrictness _ _ _ _))
+    ∙ cong (reindexFib ◆ (id ,, λ _ → refl)) (LargeBoxUnion.right box r _ _)
 
--- EC: TODO stability of FEP under substitution in the context Γ
+LargeBoxFiller : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩} (box : LargeOpenBox S r ℓ')
+  → LargeFiller box
+LargeBoxFiller {S = S} {r = r} box .Fill =
+  LargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id)
+LargeBoxFiller {S = S} {r = r} box .Tube≡ =
+  cong
+    (reindexFib ◆ (λ ((γ , u) , s) → (γ , s) , u))
+    (LargeBoxψTube≡ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id))
+LargeBoxFiller {S = S} {r = r} box .Cap≡ =
+  reindexLargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id) (id ,, r)
+  ∙ cong (λ box' → LargeBoxFillerψ box' r (S ∋ r ≈ᴵ r) (λ _ → id)) (largeBoxExt refl refl refl)
+  ∙ LargeBoxCap≡ box
+
+opaque
+  unfolding LargeBoxFillerψ
+  varyLargeBoxFillerψ : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+    (s : Γ → ⟨ S ⟩)
+    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    → LargeBoxFillerψ box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
+      ≡ LargeBoxFillerψ (reshapeLargeBox σ box) s ψ toEq
+  varyLargeBoxFillerψ {S = S} σ {r = r} box s ψ toEq =
+    cong₂
+      (λ isfib eqv → FibSGlue (box .cof ∨ᴵ ψ) (_ , isfib) (box .Cap) eqv)
+      (varyLargeBoxUnion σ box s ψ toEq)
+      (varyLargeBoxEquiv σ box s ψ toEq)
+
+varyLargeBoxFiller : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+  → reindexFib (LargeBoxFiller box .Fill) (id× ⟪ σ ⟫) ≡ LargeBoxFiller (reshapeLargeBox σ box) .Fill
+varyLargeBoxFiller {S = S} {T = T} σ {r = r} box =
+  reindexLargeBoxFillerψ _ _ _ _ (id× ⟪ σ ⟫)
+  ∙
+  cong (LargeBoxFillerψ _ _ _) (funext λ _ → funext λ _ → uipImp)
+  ∙
+  varyLargeBoxFillerψ _ _ _ _ (λ γ → subst [_] (≈Equivariant σ _ _))
+  ∙
+  cong
+    (λ box' → LargeBoxFillerψ box' snd (T ∋ _ ≈ᴵ _) (λ γ → subst [_] (≈Equivariant σ _ _)))
+    (largeBoxExt refl refl refl)
+  ∙
+  congΣ (LargeBoxFillerψ _ _)
+    (funext λ _ → ≈Equivariant σ _ _)
+    (funext λ _ → funext λ _ → uipImp)
+
+reindexLargeBoxFiller :  ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ'')
+    (ρ : Δ → Γ)
+    → reindexFib (LargeBoxFiller box .Fill) (ρ ×id) ≡ LargeBoxFiller (reindexLargeBox box ρ) .Fill
+reindexLargeBoxFiller {S = S} {r = r} box ρ =
+  reindexLargeBoxFillerψ _ _ _ _ (ρ ×id)
+  ∙
+  cong
+    (λ box' → LargeBoxFillerψ box' snd (S ∋ (r ∘ ρ ∘ fst) ≈ᴵ snd) (λ _ → id))
+    (largeBoxExt refl refl refl)

@@ -29,7 +29,7 @@ module _ (S : Shape) (r : ⟨ S ⟩) {A : ⟨ S ⟩ → Type ℓ} (α : isFib A)
   coerceCap : coerce r ≡ a
   coerceCap = coerceFiller .cap≡
 
-module _ (S T : Shape) (σ : ShapeHom S T)
+module _ {S T : Shape} (σ : ShapeHom S T)
   (r : ⟨ S ⟩) {A : ⟨ T ⟩ → Type ℓ} (α : isFib A) (a : A (⟪ σ ⟫ r))
   where
 
