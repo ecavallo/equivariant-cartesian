@@ -150,8 +150,11 @@ module GlueLift {S r Φ}
       boxR .cap .out≡ v≡ = C₂ (fiberR v≡) .at1
 
       fillR =
-        FiberIsFib β (reindex α fst) .lift
-          𝕚 1 (λ _ → (((s , us) , f (s , us)) , fillA .fill s .out)) boxR .fill 0
+        FiberIsFib
+          (reindex β (s ,_))
+          (reindex α (λ _ → s))
+          (f ∘ (s ,_)) (λ _ → fillA .fill s .out)
+          .lift 𝕚 1 (λ _ → us) boxR .fill 0
 
     boxFix : OpenBox 𝕚 1 (λ _ → A s)
     boxFix .cof = box .cof ∨ Φ s ∨ S ∋ r ≈ s
@@ -210,8 +213,7 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
 
   module T = GlueLift fe β α box
   module S =
-    GlueLift (fe ∘ (⟪ σ ⟫ ×id))
-      (reindex β (⟪ σ ⟫ ×id)) (reindex α ⟪ σ ⟫) (reshapeBox σ box)
+    GlueLift (fe ∘ (⟪ σ ⟫ ×id)) (reindex β (⟪ σ ⟫ ×id)) (reindex α ⟪ σ ⟫) (reshapeBox σ box)
 
   open T using (f ; e)
 
@@ -220,25 +222,22 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
     varyA : T.fillA .fill (⟪ σ ⟫ s) .out ≡ S.fillA .fill s .out
     varyA = α .vary S T σ r id T.boxA s
 
-    varyC₁ : ∀ uσs
-      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
+    varyC₁ : ∀ uσs → subst (Fiber (f _)) varyA (T.C₁ (⟪ σ ⟫ s) uσs) ≡ S.C₁ s uσs
     varyC₁ uσs = congdep (λ a → e (⟪ σ ⟫ s , uσs) a .fst) varyA
 
     varyC₂ : ∀ uσs {fib₀ fib₁} (i : 𝕀)
-      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA fib₀ ≡ fib₁
-      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i)
-        ≡ S.C₂ s uσs fib₁ .at i
+      → subst (Fiber (f _)) varyA fib₀ ≡ fib₁
+      → subst (Fiber (f _)) varyA (T.C₂ (⟪ σ ⟫ s) uσs fib₀ .at i) ≡ S.C₂ s uσs fib₁ .at i
     varyC₂ uσs i p =
       congdep₂ (λ a fib → e (_ , uσs) a .snd fib .at i) varyA p
 
     varyR : ∀ uσs
-      → subst (curry (Fiberᴵ B (A ∘ fst)) ((_ , uσs) , _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .out)
-        ≡ S.fillR s uσs .out
+      → subst (Fiber (f _)) varyA (T.fillR (⟪ σ ⟫ s) uσs .out) ≡ S.fillR s uσs .out
     varyR uσs =
       congdep₂
         (λ a box →
-          FiberIsFib β (reindex α fst) .lift 𝕚 1
-            (λ _ → (((_ , uσs) , _) , a)) box .fill 0 .out)
+          FiberIsFib (reindex β _) (reindex α _) _ (λ _ → a) .lift 𝕚 1
+            (λ _ → uσs) box .fill 0 .out)
         varyA
         (boxExtDep varyA
           (cong (box .cof ∨_) (≈Equivariant σ r s))
@@ -250,10 +249,6 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
               varyC₂ uσs i
                 (FiberExtDep varyA refl (λ _ → refl))}))
           (varyC₁ uσs))
-      ∙
-      cong
-        (λ δ → δ .lift 𝕚 1 (λ _ → (((s , uσs) , _) , _)) (S.boxR _ uσs) .fill 0 .out)
-        (reindexFiber β (reindex α fst) (⟪ σ ⟫ ×id))
 
     varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
     varyFix =

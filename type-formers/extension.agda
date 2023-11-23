@@ -19,16 +19,18 @@ Partial : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
   → Γ → Type ℓ'
 Partial Z Φ A γ = ∀ z → [ Φ z ] → A (γ , z)
 
-Extensionᴵ : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-  {Γ : Type ℓ}
+Extensionᴵ : (Z : Shape) {Γ : Type ℓ}
   (A : Γ × ⟨ Z ⟩ → Type ℓ')
-  → Σ Γ (Partial Z Φ A) → Type ℓ'
-Extensionᴵ Z Φ A (γ , a) = (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ a z ]
+  (Φ : ⟨ Z ⟩ → CofProp)
+  (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
+  → Γ → Type ℓ'
+Extensionᴵ Z A Φ a γ =
+  (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ curry a (γ , z) ]
 
 module ExtensionLift {Z Φ S r}
   {A : ⟨ S ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
-  {a : ⟨ S ⟩ ⊢ Partial Z Φ A}
-  (box : OpenBox S r (Extensionᴵ Z Φ A ∘ (id ,, a)))
+  {a : (⟨ S ⟩ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
+  (box : OpenBox S r (Extensionᴵ Z A Φ a))
   where
 
   module _ (z : ⟨ Z ⟩) where
@@ -38,7 +40,7 @@ module ExtensionLift {Z Φ S r}
     boxA .tube =
       ∨-rec (box .cof) (Φ z)
         (λ u s → box .tube u s z .out)
-        (λ v s → a s z v)
+        (λ v s → a ((s , z) , v))
         (λ u v → funext λ s → sym (box .tube u s z .out≡ v))
     boxA .cap .out = box .cap .out z .out
     boxA .cap .out≡ =
@@ -56,8 +58,8 @@ module ExtensionLift {Z Φ S r}
 
 module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
-  {a : ⟨ T ⟩ ⊢ Partial Z Φ A}
-  (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z Φ A ∘ (id ,, a)))
+  {a : (⟨ T ⟩ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
+  (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z A Φ a))
   where
 
   module T = ExtensionLift α box
@@ -75,22 +77,26 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
               refl))
 
 opaque
-  ExtensionIsFib : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
+  ExtensionIsFib : (Z : Shape)
     {Γ : Type ℓ}
     {A : Γ × ⟨ Z ⟩ → Type ℓ'}
     (α : isFib A)
-    → isFib (Extensionᴵ Z Φ A)
-  ExtensionIsFib Z Φ α .lift S r p = ExtensionLift.filler (reindex α ((fst ∘ p) ×id))
-  ExtensionIsFib Z Φ α .vary S T σ r p = ExtensionVary.eq σ (reindex α ((fst ∘ p) ×id))
+    (Φ : ⟨ Z ⟩ → CofProp)
+    (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
+    → isFib (Extensionᴵ Z A Φ a)
+  ExtensionIsFib Z α Φ a .lift S r p = ExtensionLift.filler (reindex α (p ×id))
+  ExtensionIsFib Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (reindex α (p ×id))
 
   ----------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------
-  reindexExtension : {Z : Shape} {Φ : ⟨ Z ⟩ → CofProp}
+  reindexExtension : {Z : Shape}
     {Δ : Type ℓ} {Γ : Type ℓ'}
     {A : Γ × ⟨ Z ⟩ → Type ℓ''}
+    {Φ : ⟨ Z ⟩ → CofProp}
+    {a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
     (α : isFib A)
     (ρ : Δ → Γ)
     → ----------------------
-    reindex (ExtensionIsFib Z Φ α) (ρ ×id) ≡ ExtensionIsFib Z Φ (reindex α (ρ ×id))
+    reindex (ExtensionIsFib Z α Φ a) ρ ≡ ExtensionIsFib Z (reindex α (ρ ×id)) Φ (a ∘ ρ ×id ×id)
   reindexExtension α ρ = isFibExt λ _ _ _ _ _ → refl
