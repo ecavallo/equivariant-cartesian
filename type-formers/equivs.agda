@@ -16,9 +16,9 @@ open import type-formers.sigma
 
 private variable ℓ ℓ' ℓ'' : Level
 
-----------------------------------------------------------------------
--- IsContr
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+-- Homotopy-contractibility
+------------------------------------------------------------------------------------------
 
 IsContr : Type ℓ → Type ℓ
 IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
@@ -45,9 +45,9 @@ opaque
     reindexΣ _ _ _
     ∙ cong (ΣIsFib _) (reindexΠ _ _ _ ∙ cong (ΠIsFib _) (reindexPath _ _))
 
-----------------------------------------------------------------------
--- Fiber type
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+-- Homotopy fiber type
+------------------------------------------------------------------------------------------
 
 Fiber : {A : Type ℓ} {B : Type ℓ} (f : A → B) (b : B) → Type ℓ
 Fiber f b = Σ a ∈ _ , f a ~ b
@@ -67,13 +67,13 @@ opaque
   FiberIsFib α β f b =
     ΣIsFib α (PathIsFib (reindex β fst) _ _)
 
-  reindexFiber : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A B : Γ → Type ℓ''}
+  reindexFiber : {Δ : Type ℓ} {Γ : Type ℓ'} {A B : Γ → Type ℓ''}
     (α : isFib A) (β : isFib B)
     {f : Γ ⊢ A →ᴵ B}
     {b : Γ ⊢ B}
     (ρ : Δ → Γ)
-    → reindex (FiberIsFib α β f b) ρ ≡ FiberIsFib (reindex α ρ) (reindex β ρ) (f ∘ ρ) (b ∘ ρ)
+    → reindex (FiberIsFib α β f b) ρ
+      ≡ FiberIsFib (reindex α ρ) (reindex β ρ) (f ∘ ρ) (b ∘ ρ)
   reindexFiber α β ρ =
     reindexΣ _ _ _ ∙ cong (ΣIsFib _) (reindexPath _ _)
 
@@ -103,9 +103,9 @@ fiberDomEqDep : {A B : Type ℓ} {f : A → B} {b b' : B} (p : b ≡ b')
   → subst (Fiber f) p x ≡ y → x .fst ≡ y .fst
 fiberDomEqDep refl refl = refl
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Equivalences
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 IsEquiv : {A B : Type ℓ} → (A → B) → Type ℓ
 IsEquiv f = ∀ b → IsContr (Fiber f b)
@@ -154,9 +154,9 @@ opaque
   reindexEquiv α β ρ =
     reindexΣ _ _ _ ∙ cong₂ ΣIsFib (reindexΠ _ _ _) (reindexIsEquiv (reindex α fst) _ _)
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Identity and coercion maps are equivalences
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 idEquiv : {A : Type ℓ} → isFib (λ (_ : 𝟙) → A) → Equiv A A
 idEquiv α .fst a = a
@@ -165,15 +165,9 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
   qBox : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A)
   qBox i .cof = ∂ i
-  qBox i .tube =
-    OI-rec i
-      (λ {refl → p .at})
-      (λ {refl _ → a})
+  qBox i .tube = OI-rec i (λ {refl → p .at}) (λ {refl _ → a})
   qBox i .cap .out = a
-  qBox i .cap .out≡ =
-    OI-elim i
-      (λ {refl → p .at1})
-      (λ {refl → refl})
+  qBox i .cap .out≡ = OI-elim i (λ {refl → p .at1}) (λ {refl → refl})
 
   q : (i : 𝕀) → Filler (qBox i)
   q i = α .lift 𝕚 1 (λ _ → _) (qBox i)

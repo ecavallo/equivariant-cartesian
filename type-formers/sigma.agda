@@ -12,12 +12,10 @@ open import fibration.fibration
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-Σᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Σ Γ A → Type ℓ'')
-  → Γ → Type (ℓ' ⊔ ℓ'')
+Σᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Σ Γ A → Type ℓ'') → Γ → Type (ℓ' ⊔ ℓ'')
 Σᴵ A B x = Σ a ∈ A x , B (x , a)
 
-_×ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'')
-  → Γ → Type (ℓ' ⊔ ℓ'')
+_×ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → Γ → Type (ℓ' ⊔ ℓ'')
 (A ×ᴵ B) x = A x × B x
 
 module ΣLift {S r}
@@ -88,35 +86,32 @@ opaque
     {B : (Σ x ∈ Γ , A x) → Type ℓ''}
     (α : isFib A)
     (β : isFib B)
-    → -----------
-    isFib (Σᴵ A B)
+    → isFib (Σᴵ A B)
   ΣIsFib α β .lift S r p = ΣLift.filler (reindex α p) (reindex β (p ×id))
   ΣIsFib α β .vary S T σ r p = ΣVary.eq σ (reindex α p) (reindex β (p ×id))
 
-  ----------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing
-  ----------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------
+
   reindexΣ : {Δ : Type ℓ} {Γ : Type ℓ'}
     {A : Γ → Type ℓ''}
     {B : Σ Γ A → Type ℓ'''}
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
-    → ----------------------
-    reindex (ΣIsFib α β) ρ ≡ ΣIsFib (reindex α ρ) (reindex β (ρ ×id))
+    → reindex (ΣIsFib α β) ρ ≡ ΣIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΣ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΣ : {Γ : Type ℓ}
   (A : Fib ℓ' Γ)
   (B : Fib ℓ'' (Σ x ∈ Γ , fst A x))
-  → -----------
-  Fib (ℓ' ⊔ ℓ'') Γ
+  → Fib (ℓ' ⊔ ℓ'') Γ
 FibΣ (A , α) (B , β) = Σᴵ A B , ΣIsFib α β
 
 reindexFibΣ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)
-  → ----------------------
-  reindexFib (FibΣ Aα Bβ) ρ ≡ FibΣ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
+  → reindexFib (FibΣ Aα Bβ) ρ ≡ FibΣ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
 reindexFibΣ (_ , α) (_ , β) ρ = Σext refl (reindexΣ α β ρ)

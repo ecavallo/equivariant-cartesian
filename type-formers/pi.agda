@@ -86,35 +86,32 @@ opaque
     {B : Σ Γ A → Type ℓ''}
     (α : isFib A)
     (β : isFib B)
-    → -----------
-    isFib (Πᴵ A B)
+    → isFib (Πᴵ A B)
   ΠIsFib α β .lift S r p = ΠLift.filler (reindex α p) (reindex β (p ×id))
   ΠIsFib α β .vary S T σ r p = ΠVary.eq σ (reindex α p) (reindex β (p ×id))
 
-  ----------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
-  ----------------------------------------------------------------------
+  ----------------------------------------------------------------------------------------
+
   reindexΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
     {A : Γ → Type ℓ''}
     {B : Σ Γ A → Type ℓ'''}
     (α : isFib A)
     (β : isFib B)
     (ρ : Δ → Γ)
-    → ----------------------
-    reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
+    → reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΠ : {Γ : Type ℓ}
   (Aα : Fib ℓ' Γ)
   (Bα : Fib ℓ'' (Σ Γ (Aα .fst)))
-  → -----------
-  Fib (ℓ' ⊔ ℓ'') Γ
+  → Fib (ℓ' ⊔ ℓ'') Γ
 FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
 
 reindexFibΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Aα : Fib ℓ'' Γ)
   (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
   (ρ : Δ → Γ)
-  → ----------------------
-  reindexFib (FibΠ Aα Bβ) ρ ≡ FibΠ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
+  → reindexFib (FibΠ Aα Bβ) ρ ≡ FibΠ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
 reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠ α β ρ)

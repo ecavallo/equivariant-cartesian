@@ -15,14 +15,13 @@ open import fibration.fibration
 
 private variable ℓ ℓ' ℓ'' : Level
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Realigning a fibration structure on a given family
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
-module RealignLift {S r}
-  (Φ : ⟨ S ⟩ → CofProp)
+module RealignLift {S r} (Φ : ⟨ S ⟩ → CofProp)
   {A : ⟨ S ⟩ → Type ℓ}
-  (β : isFib {Γ = ⟨ S ⟩ ,[ Φ ]} (A ∘ fst))
+  (β : isFib (A ∘ wk[ Φ ]))
   (α : isFib A)
   (box : OpenBox S r A)
   where
@@ -53,7 +52,7 @@ module RealignLift {S r}
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (Φ : ⟨ T ⟩ → CofProp)
   {A : ⟨ T ⟩ → Type ℓ}
-  (β : isFib {Γ = ⟨ T ⟩ ,[ Φ ]} (A ∘ fst))
+  (β : isFib (A ∘ wk[ Φ ]))
   (α : isFib A)
   (box : OpenBox T (⟪ σ ⟫ r) A)
   where
@@ -83,10 +82,9 @@ opaque
   realignIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Type ℓ')
-    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
+    (β : isFib (A ∘ wk[ Φ ]))
     (α : isFib A)
-    → ---------------
-    isFib A
+    → isFib A
   realignIsFib Φ A β α .lift S r p =
     RealignLift.filler (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
   realignIsFib Φ A β α .vary S T σ r p =
@@ -96,31 +94,30 @@ opaque
   isRealigned : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     {A : Γ → Type ℓ'}
-    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
+    (β : isFib (A ∘ wk[ Φ ]))
     (α : isFib A)
-    → ---------------
-    reindex (realignIsFib Φ A β α) fst ≡ β
+    → reindex (realignIsFib Φ A β α) fst ≡ β
   isRealigned Φ β α =
     isFibExt λ S r p box s →
-      let
-        open RealignLift (Φ ∘ fst ∘ p) (reindex β ((fst ∘ p) ×id)) (reindex α (fst ∘ p)) box
-      in
-      sym (fillA .fill s .out≡ (∨r (snd ∘ p)))
+      sym $
+      RealignLift.fillA _
+        (reindex β ((wk[ Φ ] ∘ p) ×id))
+        (reindex α (wk[ Φ ] ∘ p)) _
+        .fill s .out≡ (∨r (snd ∘ p))
 
   reindexRealignIsFib : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ → Type ℓ''}
-    (β : isFib {Γ = Γ ,[ Φ ]} (A ∘ fst))
+    (β : isFib (A ∘ wk[ Φ ]))
     (α : isFib A)
     (ρ : Δ → Γ)
-    → ---------------
-    reindex (realignIsFib Φ A β α) ρ
+    → reindex (realignIsFib Φ A β α) ρ
     ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex β (ρ ×id)) (reindex α ρ)
   reindexRealignIsFib Φ β α ρ = isFibExt λ S r p box s → refl
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Realigning a fibration
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 opaque
   FibRealign : {Γ : Type ℓ} (Φ : Γ → CofProp)

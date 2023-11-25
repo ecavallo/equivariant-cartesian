@@ -87,9 +87,9 @@ opaque
   ExtensionIsFib Z α Φ a .lift S r p = ExtensionLift.filler (reindex α (p ×id))
   ExtensionIsFib Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (reindex α (p ×id))
 
-  ----------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
-  ----------------------------------------------------------------------
+  ------------------------------------------------------------------------------------------
   reindexExtension : {Z : Shape}
     {Δ : Type ℓ} {Γ : Type ℓ'}
     {A : Γ × ⟨ Z ⟩ → Type ℓ''}

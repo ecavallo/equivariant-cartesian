@@ -11,9 +11,9 @@ open import axioms
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Open boxes
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type ℓ
   where
@@ -63,9 +63,9 @@ opaque
     → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
   boxExtDep refl f r x = boxExt f r x
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Solutions to individual lifting problems
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A) : Type ℓ
   where
@@ -100,9 +100,9 @@ opaque
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
   fillerCong p s = cong out (appCong (cong fill p))
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Equivariant fibrations
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 record isFib {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
@@ -117,9 +117,9 @@ open isFib public
 Fib : (ℓ' : Level) (Γ : Type ℓ) → Type (ℓ ⊔ lsuc ℓ')
 Fib ℓ' Γ = Σ (Γ → Type ℓ') isFib
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Fibrations can be reindexed
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 reindex : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''}
   (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
@@ -136,33 +136,10 @@ reindexSubst : {Δ : Type ℓ} {Γ : Type ℓ'} {A A' : Γ → Type ℓ''}
   → reindex (subst isFib P α) ρ ≡ subst isFib Q (reindex α ρ)
 reindexSubst ρ refl refl α = refl
 
-----------------------------------------------------------------------
--- Reindexing is functorial
-----------------------------------------------------------------------
-
-reindexId : {Γ : Type ℓ}{A : Γ → Type ℓ'}{α : isFib A} → α ≡ reindex α id
-reindexId = refl
-
-reindexTrans :
-  {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''} {A : Γ₃ → Type ℓ'''}
-  (α : isFib A) (f : Γ₁ → Γ₂) (g : Γ₂ → Γ₃)
-  → ----------------------
-  reindex α (g ∘ f) ≡ reindex (reindex α g) f
-reindexTrans α g f = refl
-
-reindexFibId : {Γ : Type ℓ} {Aα : Fib ℓ' Γ} → reindexFib Aα id ≡ Aα
-reindexFibId = refl
-
-reindexFibTrans : {Γ₁ : Type ℓ} {Γ₂ : Type ℓ'} {Γ₃ : Type ℓ''}
-  {Aα : Fib ℓ''' Γ₃}
-  (f : Γ₁ → Γ₂)(g : Γ₂ → Γ₃)
-  → ----------------------
-  reindexFib Aα (g ∘ f) ≡ reindexFib (reindexFib Aα g) f
-reindexFibTrans g f = refl
-
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- An extensionality principle for fibration structures
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+
 opaque
   isFibExt :  {Γ : Type ℓ} {A : Γ → Type ℓ'} {α α' : isFib A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
@@ -171,12 +148,12 @@ opaque
   isFibExt q =
     congΣ makeFib
       (funext λ S → funext λ r → funext λ p → funext λ box → fillerExt (q S r p box))
-      (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p → funext λ box → funext λ s →
-        uipImp)
+      (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p → funext λ box →
+        funext λ s → uipImp)
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- A retract of a fibration is a fibration
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 Retractᴵ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
 Retractᴵ A B γ = Retract (A γ) (B γ)
@@ -208,9 +185,9 @@ opaque
     → reindex (retractIsFib retract β) ρ ≡ retractIsFib (retract ∘ ρ) (reindex β ρ)
   reindexRetract retract β ρ = isFibExt λ _ _ _ _ _ → refl
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Corollary: fibration structures can be transferred across isomorphisms
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 _≅ᴵ_ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
 _≅ᴵ_ A B γ = A γ ≅ B γ
@@ -220,8 +197,7 @@ isomorphIsFib : {Γ : Type ℓ} {A B : Γ → Type ℓ'}
 isomorphIsFib iso β = retractIsFib (isoToRetract ∘ iso) β
 
 reindexIsomorph : {Δ : Type ℓ} {Γ : Type ℓ'} {A B : Γ → Type ℓ''}
-  (iso : Γ ⊢ A ≅ᴵ B)
-  (β : isFib B)
+  (iso : Γ ⊢ A ≅ᴵ B) (β : isFib B)
   (ρ : Δ → Γ)
   → reindex (isomorphIsFib iso β) ρ ≡ isomorphIsFib (iso ∘ ρ) (reindex β ρ)
 reindexIsomorph _ = reindexRetract _

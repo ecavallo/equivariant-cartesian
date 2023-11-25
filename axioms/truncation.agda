@@ -10,9 +10,9 @@ open import prelude
 
 private variable ℓ ℓ' : Level
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Propositional truncation
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 postulate
   ∥_∥ : Type ℓ → Type ℓ
@@ -23,26 +23,20 @@ module _ {A : Type ℓ} where
 
     trunc : isProp ∥ A ∥
 
-    ∥∥-rec : (P : Type ℓ')
-      (f : A → P)
-      .(p : ∀ a b → f a ≡ f b)
-      → ---------------
-      ∥ A ∥ → P
+    ∥∥-rec : (P : Type ℓ') (f : A → P) .(p : ∀ a b → f a ≡ f b)
+      → ∥ A ∥ → P
 
-    ∥∥-rec-β : ∀ (P : Type ℓ') f p a
-      → ∥∥-rec P f p ∣ a ∣ ≡ f a
+    ∥∥-rec-β : ∀ (P : Type ℓ') f p a → ∥∥-rec P f p ∣ a ∣ ≡ f a
 
     ∥∥-elim : (P : ∥ A ∥ → Type ℓ')
       (f : (a : A) → P ∣ a ∣)
       .(p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
-      → ---------------
-      (t : ∥ A ∥) → P t
+      → (t : ∥ A ∥) → P t
 
     ∥∥-elim-β : ∀ (P : ∥ A ∥ → Type ℓ') f p a
       → ∥∥-elim P f p ∣ a ∣ ≡ f a
 
     {-# REWRITE ∥∥-rec-β ∥∥-elim-β #-}
 
-∥_∥` : {A : Type ℓ} {B : Type ℓ'}
-  → (A → B) → ∥ A ∥ → ∥ B ∥
+∥_∥` : {A : Type ℓ} {B : Type ℓ'} → (A → B) → ∥ A ∥ → ∥ B ∥
 ∥_∥` f = ∥∥-rec _ (∣_∣ ∘ f) (λ _ _ → trunc _ _)

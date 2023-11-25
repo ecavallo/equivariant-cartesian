@@ -10,17 +10,13 @@ open import prelude
 
 private variable ℓ ℓ' ℓ'' : Level
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Function extensionality
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 
 postulate
-  funext :
-     {A : Type ℓ}
-     {B : A → Type ℓ'}
-     {f g : (x : A) → B x}
-     → ----------------------------
-     ((x : A) → f x ≡ g x) → f ≡ g
+  funext : {A : Type ℓ} {B : A → Type ℓ'} {f g : (x : A) → B x}
+    → ((x : A) → f x ≡ g x) → f ≡ g
 
 funextDepCod : {A : Type ℓ} {B : Type ℓ'} {C : A → Type ℓ''}
   {a₀ a₁ : A} (p : a₀ ≡ a₁)
@@ -29,13 +25,10 @@ funextDepCod : {A : Type ℓ} {B : Type ℓ'} {C : A → Type ℓ''}
   → subst (λ a → B → C a) p f₀ ≡ f₁
 funextDepCod refl = funext
 
-funext♭ :
-   {@♭ ℓ : Level} {ℓ' : Level}
-   {@♭ A : Type ℓ}
-   {B : @♭ A → Type ℓ'}
+funext♭ : {@♭ ℓ : Level} {ℓ' : Level}
+   {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
    {f g : (@♭ x : A) → B x}
-   → ----------------------------
-   ((@♭ x : A) → f x ≡ g x) → f ≡ g
+   → ((@♭ x : A) → f x ≡ g x) → f ≡ g
 funext♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
   cong (λ k (@♭ a) → k (in♭ a)) (funext h')
   where

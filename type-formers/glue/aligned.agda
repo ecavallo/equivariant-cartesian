@@ -41,12 +41,11 @@ opaque
     (Aα : Fib ℓ'' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Bβ .fst) (Aα .fst ∘ fst))
     (ρ : Δ → Γ)
-    → ----------------------
-    reindexFib (FibSGlue Φ Bβ Aα fe) ρ
-    ≡ FibSGlue (Φ ∘ ρ)(reindexFib Bβ (ρ ×id)) (reindexFib Aα ρ) (fe ∘ ρ ×id)
+    → reindexFib (FibSGlue Φ Bβ Aα fe) ρ
+      ≡ FibSGlue (Φ ∘ ρ)(reindexFib Bβ (ρ ×id)) (reindexFib Aα ρ) (fe ∘ ρ ×id)
   reindexFibSGlue Φ (_ , β) (_ , α) fe ρ =
     reindexFibRealign Φ _ _ _ ρ
     ∙
     cong
-      (λ α' → FibRealign (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) (equivFun fe ∘ (ρ ×id))))
+      (λ α' → FibRealign (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
       (reindexGlue Φ fe β α ρ)

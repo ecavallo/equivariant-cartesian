@@ -12,9 +12,10 @@ open import axioms.truncation
 open import axioms.shape
 open import axioms.cofprop
 
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
 -- Each shape is tiny (exponentiation by it has a right adjoint)
-----------------------------------------------------------------------
+------------------------------------------------------------------------------------------
+
 module Tiny (@♭ S : Shape) where
 
   postulate
@@ -68,8 +69,7 @@ module Tiny (@♭ S : Shape) where
   L√ : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ B : Type ℓ'} {@♭ C : Type ℓ''}
     (@♭ g : B → C) (@♭ f : A → √ B)
-    → ---------------------
-    g ∘ L f  ≡ L (√` g ∘ f)
+    → g ∘ L f  ≡ L (√` g ∘ f)
   L√ g f = cong♭ L (sym (√R g (L f)))
 
 open Tiny
