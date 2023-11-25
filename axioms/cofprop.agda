@@ -119,12 +119,12 @@ OI-rec r f g =
   ∨-rec (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) f g
     (λ u v → 0≠1 (sym u ∙ v))
 
-∨-elim : (φ ψ : CofProp) (P : [ φ ∨ ψ ] → Type ℓ)
+∨-elim : (φ ψ : CofProp) {P : [ φ ∨ ψ ] → Type ℓ}
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
   .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
   (w : [ φ ∨ ψ ]) → P w
-∨-elim φ ψ P f g p =
+∨-elim φ ψ {P = P} f g p =
   ∥∥-elim _ [ f ∣ g ] λ
     { (inl u) (inl u') →
       cong (subst P ◆ (f u)) uipImp
@@ -138,20 +138,20 @@ OI-rec r f g =
       ∙ sym (substCongAssoc P ∨r (cofIsProp ψ v v') _)
       ∙ congdep g (cofIsProp ψ v v')}
 
-∨-elimProp : (φ ψ : CofProp) (P : [ φ ∨ ψ ] → Type ℓ)
+∨-elimProp : (φ ψ : CofProp) {P : [ φ ∨ ψ ] → Type ℓ}
   (propP : ∀ uv → isProp (P uv))
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
   (w : [ φ ∨ ψ ]) → P w
-∨-elimProp φ ψ P propP f g =
-  ∨-elim φ ψ _ f g (λ _ _ → propP _ _ _)
+∨-elimProp φ ψ propP f g =
+  ∨-elim φ ψ f g (λ _ _ → propP _ _ _)
 
 OI-elim : (r : 𝕀) {A : [ ∂ r ] → Type ℓ}
   → ((rO : [ 𝕚 ∋ r ≈ 0 ]) → A (∨l rO))
   → ((rI : [ 𝕚 ∋ r ≈ 1 ]) → A (∨r rI))
   → (rOI : [ ∂ r ]) → A rOI
 OI-elim r f g =
-  ∨-elim (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) _ f g (λ {refl r≡I → 0≠1 r≡I})
+  ∨-elim (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) f g (λ {refl r≡I → 0≠1 r≡I})
 
 opaque
   ∨-elimEq : (φ ψ : CofProp) {A : [ φ ∨ ψ ] → Type ℓ}
@@ -160,7 +160,7 @@ opaque
     → ((v : [ ψ ]) → f (∨r v) ≡ g (∨r v))
     → (w : [ φ ∨ ψ ]) → f w ≡ g w
   ∨-elimEq φ ψ =
-    ∨-elimProp φ ψ _ (λ _ → uip)
+    ∨-elimProp φ ψ (λ _ → uip)
 
 opaque
   takeOutCof : {A : Type ℓ} (φ φ₀ φ₁ : CofProp)
@@ -169,7 +169,7 @@ opaque
     → (∀ v₀ v₁ → f₀ (∨r v₀) ≡ f₁ (∨r v₁))
     → (∀ uv₀ uv₁ → f₀ uv₀ ≡ f₁ uv₁)
   takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
-    ∨-elim φ φ₀ _
+    ∨-elim φ φ₀
       (λ u₀ → ∨-elimEq φ φ₁
         (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
         (λ v₁ → p u₀ ∙ cong f₁ (trunc _ _)))

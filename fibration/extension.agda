@@ -147,10 +147,7 @@ opaque
         (box .Cap .fst ∘ wk[ box .cof ∨ᴵ ψ ])
   largeBoxEquiv {S = S} {Γ} {r} box s ψ toEq =
     uncurry λ γ →
-    ∨-elim (φ γ) (ψ γ) _
-      (curry leftEquiv γ)
-      (curry rightEquiv γ)
-      (matchEquiv γ)
+    ∨-elim (φ γ) (ψ γ) (curry leftEquiv γ) (curry rightEquiv γ) (matchEquiv γ)
     where
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to mat)
     module Un = LargeBoxUnion box s ψ toEq
