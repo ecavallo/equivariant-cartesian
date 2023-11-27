@@ -54,7 +54,7 @@ opaque
     retract γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
     retract γ .inv = funext λ p → PathExt λ i → refl
 
-  PathFibStr :{Γ : Type ℓ}
+  PathFibStr : {Γ : Type ℓ}
     {A : Γ → Type ℓ'} (α : FibStr A)
     (a₀ a₁ : Γ ⊢ A)
     → FibStr (Pathᴵ A a₀ a₁)
@@ -77,3 +77,17 @@ opaque
       retractFibStr
       (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
       (reindexExtensionFibStr (α ∘ᶠˢ fst) ρ)
+
+Pathᶠ : {Γ : Type ℓ}
+  (A : Fib ℓ' Γ)
+  (a₀ a₁ : Γ ⊢ A .fst)
+  → Fib ℓ' Γ
+Pathᶠ A a₀ a₁ .fst = Pathᴵ (A .fst) a₀ a₁
+Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
+
+reindexPathᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+  (A : Fib ℓ' Γ)
+  {a₀ a₁ : Γ ⊢ A .fst}
+  (ρ : Δ → Γ)
+  → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
+reindexPathᶠ A ρ = Σext refl (reindexPathFibStr (A .snd) ρ)

@@ -304,7 +304,7 @@ reindexUnionFibStr φ₀ φ₁ A α₀ α₁ eqFib ρ =
     (cong (_∘ᶠˢ (ρ ×id)) (UnionFibStr.right φ₀ φ₁ A α₀ α₁ eqFib)
       ∙ sym (UnionFibStr.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
 
-module UnionFib {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
+module Unionᶠ {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
   (A₀ : Fib ℓ' (Γ ,[ φ₀ ])) (A₁ : Fib ℓ' (Γ ,[ φ₁ ]))
   (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ (wk[ φ₀ ] ×id))
   where
@@ -329,16 +329,16 @@ module UnionFib {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
   right : fib ∘ᶠ (id× ∨r) ≡ A₁
   right = cong (A₁ .fst ,_) F.right
 
-reindexFibUnion : {Δ : Type ℓ} {Γ : Type ℓ'} (φ₀ φ₁ : Γ → CofProp)
+reindexUnionᶠ : {Δ : Type ℓ} {Γ : Type ℓ'} (φ₀ φ₁ : Γ → CofProp)
   (A₀ : Fib ℓ'' (Γ ,[ φ₀ ])) (A₁ : Fib ℓ'' (Γ ,[ φ₁ ]))
   (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ (wk[ φ₀ ] ×id))
   (ρ : Δ → Γ)
-  → (UnionFib.fib φ₀ φ₁ A₀ A₁ eqFib) ∘ᶠ (ρ ×id)
-    ≡ UnionFib.fib (φ₀ ∘ ρ) (φ₁ ∘ ρ) (A₀ ∘ᶠ (ρ ×id)) (A₁ ∘ᶠ (ρ ×id))
+  → (Unionᶠ.fib φ₀ φ₁ A₀ A₁ eqFib) ∘ᶠ (ρ ×id)
+    ≡ Unionᶠ.fib (φ₀ ∘ ρ) (φ₁ ∘ ρ) (A₀ ∘ᶠ (ρ ×id)) (A₁ ∘ᶠ (ρ ×id))
         (cong (_∘ᶠ (ρ ×id ×id)) eqFib)
-reindexFibUnion {Δ = Δ} φ₀ φ₁ A₀ A₁ eqFib ρ =
+reindexUnionᶠ {Δ = Δ} φ₀ φ₁ A₀ A₁ eqFib ρ =
   unionFibExt (φ₀ ∘ ρ) (φ₁ ∘ ρ)
-    (cong (_∘ᶠ (ρ ×id)) (UnionFib.left φ₀ φ₁ A₀ A₁ eqFib)
-      ∙ sym (UnionFib.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
-    (cong (_∘ᶠ (ρ ×id)) (UnionFib.right φ₀ φ₁ A₀ A₁ eqFib)
-      ∙ sym (UnionFib.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
+    (cong (_∘ᶠ (ρ ×id)) (Unionᶠ.left φ₀ φ₁ A₀ A₁ eqFib)
+      ∙ sym (Unionᶠ.left (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))
+    (cong (_∘ᶠ (ρ ×id)) (Unionᶠ.right φ₀ φ₁ A₀ A₁ eqFib)
+      ∙ sym (Unionᶠ.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _))

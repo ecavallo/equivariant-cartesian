@@ -98,3 +98,12 @@ opaque
     → ExtensionFibStr Z α Φ a ∘ᶠˢ ρ
       ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) Φ (a ∘ ρ ×id ×id)
   reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl
+
+Extensionᶠ : (Z : Shape)
+  {Γ : Type ℓ}
+  (A : Fib ℓ' (Γ × ⟨ Z ⟩))
+  (Φ : ⟨ Z ⟩ → CofProp)
+  (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A .fst ∘ wk[ Φ ∘ snd ])
+  → Fib ℓ' Γ
+Extensionᶠ Z A Φ a .fst = Extensionᴵ Z (A .fst) Φ a
+Extensionᶠ Z A Φ a .snd = ExtensionFibStr Z (A .snd) Φ a

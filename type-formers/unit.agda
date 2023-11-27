@@ -17,3 +17,7 @@ private variable ℓ : Level
 𝟙FibStr .lift _ _ _ _ .fill _ .out≡ u = refl
 𝟙FibStr .lift _ _ _ _ .cap≡ = refl
 𝟙FibStr .vary _ _ _ _ _ _ _ = refl
+
+𝟙ᶠ : {Γ : Type ℓ} → Fib lzero Γ
+𝟙ᶠ .fst _ = 𝟙
+𝟙ᶠ .snd = 𝟙FibStr

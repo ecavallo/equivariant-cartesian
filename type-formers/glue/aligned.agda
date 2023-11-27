@@ -15,36 +15,36 @@ open import type-formers.glue.weak
 
 private variable ℓ ℓ' ℓ'' : Level
 
-FibSGlue : {Γ : Type ℓ}
+SGlueᶠ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
   (A : Fib ℓ' (Γ ,[ Φ ]))
   (B : Fib ℓ' Γ)
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
   → Fib ℓ' Γ
-FibSGlue Φ A B fe =
-  FibRealign Φ A (FibGlue Φ A B fe) (includeAIsoᴵ Φ (equivFun fe))
+SGlueᶠ Φ A B fe =
+  Realignᶠ Φ A (Glueᶠ Φ A B fe) (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
-  FibSGlueStrictness : {Γ : Type ℓ}
+  SGlueᶠStrictness : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     (A : Fib ℓ' (Γ ,[ Φ ]))
     (B : Fib ℓ' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
-    → A ≡ FibSGlue Φ A B fe ∘ᶠ fst
-  FibSGlueStrictness Φ A B fe =
+    → A ≡ SGlueᶠ Φ A B fe ∘ᶠ fst
+  SGlueᶠStrictness Φ A B fe =
     isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
-  reindexFibSGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
+  reindexSGlueᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
     (B : Fib ℓ'' (Γ ,[ Φ ]))
     (A : Fib ℓ'' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
     (ρ : Δ → Γ)
-    → FibSGlue Φ B A fe ∘ᶠ ρ ≡ FibSGlue (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
-  reindexFibSGlue Φ (_ , β) (_ , α) fe ρ =
-    reindexFibRealign Φ _ _ _ ρ
+    → SGlueᶠ Φ B A fe ∘ᶠ ρ ≡ SGlueᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
+  reindexSGlueᶠ Φ (_ , β) (_ , α) fe ρ =
+    reindexRealignᶠ Φ _ _ _ ρ
     ∙
     cong
-      (λ α' → FibRealign (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
+      (λ α' → Realignᶠ (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
       (reindexGlueFibStr Φ β α fe ρ)

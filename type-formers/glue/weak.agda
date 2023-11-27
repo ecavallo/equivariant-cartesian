@@ -286,20 +286,20 @@ opaque
   reindexGlueFibStr Φ β α fe ρ =
     FibStrExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
 
-FibGlue : {Γ : Type ℓ}
+Glueᶠ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
   (B : Fib ℓ' (Γ ,[ Φ ]))
   (A : Fib ℓ' Γ)
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   → Fib ℓ' Γ
-FibGlue Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
-FibGlue Φ (_ , β) (_ , α) fe .snd = GlueFibStr Φ β α fe
+Glueᶠ Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
+Glueᶠ Φ (_ , β) (_ , α) fe .snd = GlueFibStr Φ β α fe
 
-reindexFibGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
+reindexGlueᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Φ : Γ → CofProp)
   (B : Fib ℓ'' (Γ ,[ Φ ]))
   (A : Fib ℓ'' Γ)
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   (ρ : Δ → Γ)
-  → FibGlue Φ B A fe ∘ᶠ ρ ≡ FibGlue (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
-reindexFibGlue Φ fe B A ρ = Σext refl (reindexGlueFibStr _ _ _ _ _)
+  → Glueᶠ Φ B A fe ∘ᶠ ρ ≡ Glueᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
+reindexGlueᶠ Φ fe B A ρ = Σext refl (reindexGlueFibStr _ _ _ _ _)

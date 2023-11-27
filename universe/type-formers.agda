@@ -19,17 +19,15 @@ private variable ℓ' : Level
 
 module _ {@♭ ℓ : Level} where
 
-  ----------------------------------------------------------------------------------------
-  -- The universe is closed under Σ-types
-  ----------------------------------------------------------------------------------------
+  -- ----------------------------------------------------------------------------------------
+  -- -- The universe is closed under Σ-types
+  -- ----------------------------------------------------------------------------------------
 
-  ΣFibStrUniversal :
-    FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → Σ x ∈ El A , El (B x))
-  ΣFibStrUniversal =
-    ΣFibStr (υ ∘ᶠˢ fst) (υ ∘ᶠˢ (λ ((A , B) , a) → B a))
+  universalΣᶠ : Fib ℓ (Σ A ∈ U ℓ , (El A → U ℓ))
+  universalΣᶠ = Σᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
-  sigma a b = encode (_ , ΣFibStrUniversal) (a , b)
+  sigma a b = encode universalΣᶠ (a , b)
 
   sigmaᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
@@ -37,30 +35,28 @@ module _ {@♭ ℓ : Level} where
 
   decodeSigma : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
-    → decode (sigmaᴵ a b) ≡ FibΣ (decode a) (decode b)
+    → decode (sigmaᴵ a b) ≡ Σᶠ (decode a) (decode b)
   decodeSigma a b =
     cong
-      (_∘ᶠ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΣFibStrUniversal))}
-      (decodeEncode (_ , ΣFibStrUniversal))
+      (_∘ᶠ (a ,, curry b))
+      {x = decode (encode universalΣᶠ)}
+      (decodeEncode universalΣᶠ)
     ∙
-    reindexFibΣ
+    reindexΣᶠ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}
-      ((El , υ) ∘ᶠ fst)
-      ((El , υ) ∘ᶠ (λ ((A , B) , a) → B a))
+      (Elᶠ ∘ᶠ fst)
+      (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
       (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
   -- The universe is closed under Π-types
   ----------------------------------------------------------------------------------------
 
-  ΠFibStrUniversal :
-    FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → (x : El A) → El (B x))
-  ΠFibStrUniversal =
-    ΠFibStr (υ ∘ᶠˢ fst) (υ ∘ᶠˢ (λ ((A , B) , a) → B a))
+  universalΠᶠ : Fib ℓ (Σ A ∈ U ℓ , (El A → U ℓ))
+  universalΠᶠ = Πᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
-  pi a b = encode (_ , ΠFibStrUniversal) (a , b)
+  pi a b = encode universalΠᶠ (a , b)
 
   piᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
@@ -68,17 +64,17 @@ module _ {@♭ ℓ : Level} where
 
   decodePi : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
-    → decode (piᴵ a b) ≡ FibΠ (decode a) (decode b)
+    → decode (piᴵ a b) ≡ Πᶠ (decode a) (decode b)
   decodePi a b =
     cong
-      (_∘ᶠ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΠFibStrUniversal))}
-      (decodeEncode (_ , ΠFibStrUniversal))
+      (_∘ᶠ (a ,, curry b))
+      {x = decode (encode universalΠᶠ)}
+      (decodeEncode universalΠᶠ)
     ∙
-    reindexFibΠ
+    reindexΠᶠ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}
-      ((El , υ) ∘ᶠ fst)
-      ((El , υ) ∘ᶠ (λ ((A , B) , a) → B a))
+      (Elᶠ ∘ᶠ fst)
+      (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
       (a ,, curry b)
 
   -- TODO other types
