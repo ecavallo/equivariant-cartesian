@@ -21,8 +21,8 @@ private variable ℓ ℓ' ℓ'' : Level
 
 module RealignLift {S r} (Φ : ⟨ S ⟩ → CofProp)
   {A : ⟨ S ⟩ → Type ℓ}
-  (β : isFib (A ∘ wk[ Φ ]))
-  (α : isFib A)
+  (β : FibStr (A ∘ wk[ Φ ]))
+  (α : FibStr A)
   (box : OpenBox S r A)
   where
 
@@ -52,15 +52,15 @@ module RealignLift {S r} (Φ : ⟨ S ⟩ → CofProp)
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (Φ : ⟨ T ⟩ → CofProp)
   {A : ⟨ T ⟩ → Type ℓ}
-  (β : isFib (A ∘ wk[ Φ ]))
-  (α : isFib A)
+  (β : FibStr (A ∘ wk[ Φ ]))
+  (α : FibStr A)
   (box : OpenBox T (⟪ σ ⟫ r) A)
   where
 
   module T = RealignLift Φ β α box
   module S =
     RealignLift (Φ ∘ ⟪ σ ⟫)
-      (reindex β (⟪ σ ⟫ ×id)) (reindex α ⟪ σ ⟫) (reshapeBox σ box)
+      (reindexFibStr β (⟪ σ ⟫ ×id)) (reindexFibStr α ⟪ σ ⟫) (reshapeBox σ box)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
@@ -79,41 +79,41 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
-  realignIsFib : {Γ : Type ℓ}
+  realignFibStr : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     (A : Γ → Type ℓ')
-    (β : isFib (A ∘ wk[ Φ ]))
-    (α : isFib A)
-    → isFib A
-  realignIsFib Φ A β α .lift S r p =
-    RealignLift.filler (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
-  realignIsFib Φ A β α .vary S T σ r p =
-    RealignVary.eq σ (Φ ∘ p) (reindex β (p ×id)) (reindex α p)
+    (β : FibStr (A ∘ wk[ Φ ]))
+    (α : FibStr A)
+    → FibStr A
+  realignFibStr Φ A β α .lift S r p =
+    RealignLift.filler (Φ ∘ p) (reindexFibStr β (p ×id)) (reindexFibStr α p)
+  realignFibStr Φ A β α .vary S T σ r p =
+    RealignVary.eq σ (Φ ∘ p) (reindexFibStr β (p ×id)) (reindexFibStr α p)
 
   -- TODO prove this in RealignLift?
   isRealigned : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
     {A : Γ → Type ℓ'}
-    (β : isFib (A ∘ wk[ Φ ]))
-    (α : isFib A)
-    → reindex (realignIsFib Φ A β α) fst ≡ β
+    (β : FibStr (A ∘ wk[ Φ ]))
+    (α : FibStr A)
+    → reindexFibStr (realignFibStr Φ A β α) fst ≡ β
   isRealigned Φ β α =
-    isFibExt λ S r p box s →
+    FibStrExt λ S r p box s →
       sym $
       RealignLift.fillA _
-        (reindex β ((wk[ Φ ] ∘ p) ×id))
-        (reindex α (wk[ Φ ] ∘ p)) _
+        (reindexFibStr β ((wk[ Φ ] ∘ p) ×id))
+        (reindexFibStr α (wk[ Φ ] ∘ p)) _
         .fill s .out≡ (∨r (snd ∘ p))
 
-  reindexRealignIsFib : {Δ : Type ℓ} {Γ : Type ℓ'}
+  reindexRealignFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
     {A : Γ → Type ℓ''}
-    (β : isFib (A ∘ wk[ Φ ]))
-    (α : isFib A)
+    (β : FibStr (A ∘ wk[ Φ ]))
+    (α : FibStr A)
     (ρ : Δ → Γ)
-    → reindex (realignIsFib Φ A β α) ρ
-    ≡ realignIsFib (Φ ∘ ρ) (A ∘ ρ) (reindex β (ρ ×id)) (reindex α ρ)
-  reindexRealignIsFib Φ β α ρ = isFibExt λ S r p box s → refl
+    → reindexFibStr (realignFibStr Φ A β α) ρ
+    ≡ realignFibStr (Φ ∘ ρ) (A ∘ ρ) (reindexFibStr β (ρ ×id)) (reindexFibStr α ρ)
+  reindexRealignFibStr Φ β α ρ = FibStrExt λ S r p box s → refl
 
 ------------------------------------------------------------------------------------------
 -- Realigning a fibration
@@ -127,9 +127,9 @@ opaque
     → Fib ℓ' Γ
   FibRealign Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
   FibRealign Φ (_ , β) (_ , α) iso .snd =
-    realignIsFib Φ _
-      (subst isFib (funext (uncurry λ γ → restrictsToA (Φ γ) _ _ (iso ∘ (γ ,_)))) β)
-      (isomorphIsFib (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
+    realignFibStr Φ _
+      (subst FibStr (funext (uncurry λ γ → restrictsToA (Φ γ) _ _ (iso ∘ (γ ,_)))) β)
+      (isomorphFibStr (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
 
   isRealignedFib : {Γ : Type ℓ} (Φ : Γ → CofProp)
     (B : Fib ℓ' (Γ ,[ Φ ]))
@@ -156,7 +156,7 @@ opaque
       ≡ FibRealign (Φ ∘ ρ) (reindexFib B (ρ ×id)) (reindexFib A ρ) (iso ∘ (ρ ×id))
   reindexFibRealign Φ (_ , β) (_ , α) iso ρ =
     Σext refl
-      (reindexRealignIsFib _ _ _ ρ
-        ∙ cong₂ (realignIsFib (Φ ∘ ρ) _)
+      (reindexRealignFibStr _ _ _ ρ
+        ∙ cong₂ (realignFibStr (Φ ∘ ρ) _)
             (reindexSubst (ρ ×id) _ _ β)
-            (reindexIsomorph (λ _ → isoB _ _ _ _) _ ρ))
+            (reindexIsomorphFibStr (λ _ → isoB _ _ _ _) _ ρ))

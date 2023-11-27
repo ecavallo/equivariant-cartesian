@@ -28,7 +28,7 @@ Extensionᴵ Z A Φ a γ =
   (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ curry a (γ , z) ]
 
 module ExtensionLift {Z Φ S r}
-  {A : ⟨ S ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
+  {A : ⟨ S ⟩ × ⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : (⟨ S ⟩ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
   (box : OpenBox S r (Extensionᴵ Z A Φ a))
   where
@@ -57,13 +57,13 @@ module ExtensionLift {Z Φ S r}
   filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
 
 module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ × ⟨ Z ⟩ → Type ℓ} (α : isFib A)
+  {A : ⟨ T ⟩ × ⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : (⟨ T ⟩ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
   (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z A Φ a))
   where
 
   module T = ExtensionLift α box
-  module S = ExtensionLift (reindex α (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+  module S = ExtensionLift (reindexFibStr α (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
@@ -77,24 +77,24 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
               refl))
 
 opaque
-  ExtensionIsFib : (Z : Shape)
+  ExtensionFibStr : (Z : Shape)
     {Γ : Type ℓ}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ'} (α : isFib A)
+    {A : Γ × ⟨ Z ⟩ → Type ℓ'} (α : FibStr A)
     (Φ : ⟨ Z ⟩ → CofProp)
     (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
-    → isFib (Extensionᴵ Z A Φ a)
-  ExtensionIsFib Z α Φ a .lift S r p = ExtensionLift.filler (reindex α (p ×id))
-  ExtensionIsFib Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (reindex α (p ×id))
+    → FibStr (Extensionᴵ Z A Φ a)
+  ExtensionFibStr Z α Φ a .lift S r p = ExtensionLift.filler (reindexFibStr α (p ×id))
+  ExtensionFibStr Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (reindexFibStr α (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------------------------
-  reindexExtension : {Z : Shape}
+  reindexExtensionFibStr : {Z : Shape}
     {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ''} (α : isFib A)
+    {A : Γ × ⟨ Z ⟩ → Type ℓ''} (α : FibStr A)
     {Φ : ⟨ Z ⟩ → CofProp}
     {a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
     (ρ : Δ → Γ)
-    → reindex (ExtensionIsFib Z α Φ a) ρ
-      ≡ ExtensionIsFib Z (reindex α (ρ ×id)) Φ (a ∘ ρ ×id ×id)
-  reindexExtension α ρ = isFibExt λ _ _ _ _ _ → refl
+    → reindexFibStr (ExtensionFibStr Z α Φ a) ρ
+      ≡ ExtensionFibStr Z (reindexFibStr α (ρ ×id)) Φ (a ∘ ρ ×id ×id)
+  reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl

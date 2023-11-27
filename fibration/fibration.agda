@@ -104,7 +104,7 @@ opaque
 -- Equivariant fibrations
 ------------------------------------------------------------------------------------------
 
-record isFib {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
+record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
     lift : ∀ S r p → (box : OpenBox S r (A ∘ p)) → Filler box
@@ -112,27 +112,27 @@ record isFib {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
       → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .out
         ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .out
 
-open isFib public
+open FibStr public
 
 Fib : (ℓ' : Level) (Γ : Type ℓ) → Type (ℓ ⊔ lsuc ℓ')
-Fib ℓ' Γ = Σ (Γ → Type ℓ') isFib
+Fib ℓ' Γ = Σ (Γ → Type ℓ') FibStr
 
 ------------------------------------------------------------------------------------------
 -- Fibrations can be reindexed
 ------------------------------------------------------------------------------------------
 
-reindex : {Δ : Type ℓ} {Γ : Type ℓ'}
-  {A : Γ → Type ℓ''} (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
-reindex α ρ .lift S r p = α .lift S r (ρ ∘ p)
-reindex α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
+reindexFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
+  {A : Γ → Type ℓ''} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
+reindexFibStr α ρ .lift S r p = α .lift S r (ρ ∘ p)
+reindexFibStr α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
 reindexFib : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ) → Fib ℓ'' Δ
 reindexFib (A , α) ρ .fst = A ∘ ρ
-reindexFib (A , α) ρ .snd = reindex α ρ
+reindexFib (A , α) ρ .snd = reindexFibStr α ρ
 
 reindexSubst : {Δ : Type ℓ} {Γ : Type ℓ'} {A A' : Γ → Type ℓ''}
- (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : isFib A)
-  → reindex (subst isFib P α) ρ ≡ subst isFib Q (reindex α ρ)
+ (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : FibStr A)
+  → reindexFibStr (subst FibStr P α) ρ ≡ subst FibStr Q (reindexFibStr α ρ)
 reindexSubst ρ refl refl α = refl
 
 ------------------------------------------------------------------------------------------
@@ -140,11 +140,11 @@ reindexSubst ρ refl refl α = refl
 ------------------------------------------------------------------------------------------
 
 opaque
-  isFibExt :  {Γ : Type ℓ} {A : Γ → Type ℓ'} {α α' : isFib A} →
+  FibStrExt :  {Γ : Type ℓ} {A : Γ → Type ℓ'} {α α' : FibStr A} →
     ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
       → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
     → α ≡ α'
-  isFibExt q =
+  FibStrExt q =
     congΣ makeFib
       (funext λ S → funext λ r → funext λ p → funext λ box → fillerExt (q S r p box))
       (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p → funext λ box →
@@ -154,12 +154,13 @@ opaque
 -- A retract of a fibration is a fibration
 ------------------------------------------------------------------------------------------
 
-Retractᴵ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
+Retractᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → (Γ → Type (ℓ' ⊔ ℓ''))
 Retractᴵ A B γ = Retract (A γ) (B γ)
 
 opaque
-  retractIsFib : {Γ : Type ℓ} {A B : Γ → Type ℓ'} → Γ ⊢ Retractᴵ A B → isFib B → isFib A
-  retractIsFib retract β .lift S r p box = filler
+  retractFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
+    → Γ ⊢ Retractᴵ A B → FibStr B → FibStr A
+  retractFibStr retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
     fillerB = β .lift S r p (mapBox (sec ∘ retract ∘ p) box)
@@ -173,30 +174,31 @@ opaque
       cong (retract (p r) .ret) (fillerB .cap≡)
       ∙ appCong (retract (p r) .inv)
 
-  retractIsFib retract β .vary S T σ r p box s =
+  retractFibStr retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
-  reindexRetract : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A B : Γ → Type ℓ''}
+  reindexRetractFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A : Γ → Type ℓ''} {B : Γ → Type ℓ'''}
     (retract : Γ ⊢ Retractᴵ A B)
-    (β : isFib B)
+    (β : FibStr B)
     (ρ : Δ → Γ)
-    → reindex (retractIsFib retract β) ρ ≡ retractIsFib (retract ∘ ρ) (reindex β ρ)
-  reindexRetract retract β ρ = isFibExt λ _ _ _ _ _ → refl
+    → reindexFibStr (retractFibStr retract β) ρ
+      ≡ retractFibStr (retract ∘ ρ) (reindexFibStr β ρ)
+  reindexRetractFibStr retract β ρ = FibStrExt λ _ _ _ _ _ → refl
 
 ------------------------------------------------------------------------------------------
 -- Corollary: fibration structures can be transferred across isomorphisms
 ------------------------------------------------------------------------------------------
 
-_≅ᴵ_ : {Γ : Type ℓ} (A B : Γ → Type ℓ') → (Γ → Type ℓ')
+_≅ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → (Γ → Type (ℓ' ⊔ ℓ''))
 _≅ᴵ_ A B γ = A γ ≅ B γ
 
-isomorphIsFib : {Γ : Type ℓ} {A B : Γ → Type ℓ'}
-  → Γ ⊢ A ≅ᴵ B → isFib B → isFib A
-isomorphIsFib iso β = retractIsFib (isoToRetract ∘ iso) β
+isomorphFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
+  → Γ ⊢ A ≅ᴵ B → FibStr B → FibStr A
+isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
-reindexIsomorph : {Δ : Type ℓ} {Γ : Type ℓ'} {A B : Γ → Type ℓ''}
-  (iso : Γ ⊢ A ≅ᴵ B) (β : isFib B)
+reindexIsomorphFibStr : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''} {B : Γ → Type ℓ'''}
+  (iso : Γ ⊢ A ≅ᴵ B) (β : FibStr B)
   (ρ : Δ → Γ)
-  → reindex (isomorphIsFib iso β) ρ ≡ isomorphIsFib (iso ∘ ρ) (reindex β ρ)
-reindexIsomorph _ = reindexRetract _
+  → reindexFibStr (isomorphFibStr iso β) ρ ≡ isomorphFibStr (iso ∘ ρ) (reindexFibStr β ρ)
+reindexIsomorphFibStr _ = reindexRetractFibStr _

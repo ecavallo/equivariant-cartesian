@@ -12,8 +12,8 @@ open import fibration.fibration
 
 private variable ℓ : Level
 
-𝟙IsFib : {Γ : Type ℓ} → isFib (λ (_ : Γ) → 𝟙)
-𝟙IsFib .lift _ _ _ _ .fill _ .out = tt
-𝟙IsFib .lift _ _ _ _ .fill _ .out≡ u = refl
-𝟙IsFib .lift _ _ _ _ .cap≡ = refl
-𝟙IsFib .vary _ _ _ _ _ _ _ = refl
+𝟙FibStr : {Γ : Type ℓ} → FibStr (λ (_ : Γ) → 𝟙)
+𝟙FibStr .lift _ _ _ _ .fill _ .out = tt
+𝟙FibStr .lift _ _ _ _ .fill _ .out≡ u = refl
+𝟙FibStr .lift _ _ _ _ .cap≡ = refl
+𝟙FibStr .vary _ _ _ _ _ _ _ = refl

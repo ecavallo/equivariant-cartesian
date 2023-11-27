@@ -23,13 +23,13 @@ module _ {@♭ ℓ : Level} where
   -- The universe is closed under Σ-types
   ----------------------------------------------------------------------------------------
 
-  ΣIsFibUniversal :
-    isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → Σ x ∈ El A , El (B x))
-  ΣIsFibUniversal =
-    ΣIsFib (reindex υ fst) (reindex υ (λ ((A , B) , a) → B a))
+  ΣFibStrUniversal :
+    FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → Σ x ∈ El A , El (B x))
+  ΣFibStrUniversal =
+    ΣFibStr (reindexFibStr υ fst) (reindexFibStr υ (λ ((A , B) , a) → B a))
 
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
-  sigma a b = encode (_ , ΣIsFibUniversal) (a , b)
+  sigma a b = encode (_ , ΣFibStrUniversal) (a , b)
 
   sigmaᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
@@ -41,8 +41,8 @@ module _ {@♭ ℓ : Level} where
   decodeSigma a b =
     cong
       (reindexFib ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΣIsFibUniversal))}
-      (decodeEncode (_ , ΣIsFibUniversal))
+      {x = decode (encode (_ , ΣFibStrUniversal))}
+      (decodeEncode (_ , ΣFibStrUniversal))
     ∙
     reindexFibΣ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}
@@ -54,13 +54,13 @@ module _ {@♭ ℓ : Level} where
   -- The universe is closed under Π-types
   ----------------------------------------------------------------------------------------
 
-  ΠIsFibUniversal :
-    isFib {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → (x : El A) → El (B x))
-  ΠIsFibUniversal =
-    ΠIsFib (reindex υ fst) (reindex υ (λ ((A , B) , a) → B a))
+  ΠFibStrUniversal :
+    FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → (x : El A) → El (B x))
+  ΠFibStrUniversal =
+    ΠFibStr (reindexFibStr υ fst) (reindexFibStr υ (λ ((A , B) , a) → B a))
 
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
-  pi a b = encode (_ , ΠIsFibUniversal) (a , b)
+  pi a b = encode (_ , ΠFibStrUniversal) (a , b)
 
   piᴵ : {Γ : Type ℓ'}
     (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
@@ -72,8 +72,8 @@ module _ {@♭ ℓ : Level} where
   decodePi a b =
     cong
       (reindexFib ◆ λ x → (a x , curry b x))
-      {x = decode (encode (_ , ΠIsFibUniversal))}
-      (decodeEncode (_ , ΠIsFibUniversal))
+      {x = decode (encode (_ , ΠFibStrUniversal))}
+      (decodeEncode (_ , ΠFibStrUniversal))
     ∙
     reindexFibΠ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}

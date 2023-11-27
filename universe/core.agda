@@ -182,7 +182,7 @@ Lvaries S T σ C =
 -- El : U → Type is a fibration
 ------------------------------------------------------------------------------------------
 
-υ : ∀ {@♭ ℓ} → isFib (El {ℓ})
+υ : ∀ {@♭ ℓ} → FibStr (El {ℓ})
 υ .lift =
   ShapeIsDiscrete λ (@♭ S) → λ r C → getLifts S C r
 υ .vary =
@@ -241,7 +241,7 @@ decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ Aα : Fib ℓ' Γ)
   → decode (encode Aα) ≡ Aα
 decodeEncode Aα =
   Σext refl
-    (isFibExt
+    (FibStrExt
       (ShapeIsDiscrete λ (@♭ S) r p box s →
         cong
           {A = Σ C ∈ Type* _ , C .fst ≡ hasLifts S (A ∘ p)}

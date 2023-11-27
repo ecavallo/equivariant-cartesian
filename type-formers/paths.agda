@@ -54,29 +54,30 @@ opaque
     retract γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
     retract γ .inv = funext λ p → PathExt λ i → refl
 
-  PathIsFib :{Γ : Type ℓ}
-    {A : Γ → Type ℓ'} (α : isFib A)
+  PathFibStr :{Γ : Type ℓ}
+    {A : Γ → Type ℓ'} (α : FibStr A)
     (a₀ a₁ : Γ ⊢ A)
-    → isFib (Pathᴵ A a₀ a₁)
-  PathIsFib α a₀ a₁ =
-    retractIsFib retract (ExtensionIsFib 𝕚 (reindex α fst) ∂ _)
+    → FibStr (Pathᴵ A a₀ a₁)
+  PathFibStr α a₀ a₁ =
+    retractFibStr retract (ExtensionFibStr 𝕚 (reindexFibStr α fst) ∂ _)
 
   ----------------------------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
   reindexPath : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''} (α : isFib A)
+    {A : Γ → Type ℓ''} (α : FibStr A)
     {a₀ a₁ : Γ ⊢ A}
     (ρ : Δ → Γ)
-    → reindex (PathIsFib α a₀ a₁) ρ ≡ PathIsFib (reindex α ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
+    → reindexFibStr (PathFibStr α a₀ a₁) ρ
+      ≡ PathFibStr (reindexFibStr α ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
   reindexPath α ρ =
-    reindexRetract
+    reindexRetractFibStr
       retract
-      (ExtensionIsFib 𝕚 (reindex α fst) ∂ _)
+      (ExtensionFibStr 𝕚 (reindexFibStr α fst) ∂ _)
       ρ
     ∙
     cong₂
-      retractIsFib
+      retractFibStr
       (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
-      (reindexExtension (reindex α fst) ρ)
+      (reindexExtensionFibStr (reindexFibStr α fst) ρ)

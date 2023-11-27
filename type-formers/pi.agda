@@ -22,8 +22,8 @@ _→ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'')
 A →ᴵ B = Πᴵ A (B ∘ fst)
 
 module ΠLift {S r}
-  {A : ⟨ S ⟩ → Type ℓ} (α : isFib A)
-  {B : Σ ⟨ S ⟩ A → Type ℓ'} (β : isFib B)
+  {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
+  {B : Σ ⟨ S ⟩ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox S r (Πᴵ A B))
   where
 
@@ -56,13 +56,14 @@ module ΠLift {S r}
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ → Type ℓ} (α : isFib A)
-  {B : Σ ⟨ T ⟩ A → Type ℓ'} (β : isFib B)
+  {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
+  {B : Σ ⟨ T ⟩ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox T (⟪ σ ⟫ r) (Πᴵ A B))
   where
 
   module T = ΠLift α β box
-  module S = ΠLift (reindex α ⟪ σ ⟫) (reindex β (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+  module S =
+    ΠLift (reindexFibStr α ⟪ σ ⟫) (reindexFibStr β (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   varyA : ∀ s a i → T.coeA (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.coeA s a i
   varyA s = coerceVary σ s α
@@ -81,33 +82,34 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA s a)))
 
 opaque
-  ΠIsFib : {Γ : Type ℓ}
-    {A : Γ → Type ℓ'} (α : isFib A)
-    {B : Σ Γ A → Type ℓ''} (β : isFib B)
-    → isFib (Πᴵ A B)
-  ΠIsFib α β .lift S r p = ΠLift.filler (reindex α p) (reindex β (p ×id))
-  ΠIsFib α β .vary S T σ r p = ΠVary.eq σ (reindex α p) (reindex β (p ×id))
+  ΠFibStr : {Γ : Type ℓ}
+    {A : Γ → Type ℓ'} (α : FibStr A)
+    {B : Σ Γ A → Type ℓ''} (β : FibStr B)
+    → FibStr (Πᴵ A B)
+  ΠFibStr α β .lift S r p = ΠLift.filler (reindexFibStr α p) (reindexFibStr β (p ×id))
+  ΠFibStr α β .vary S T σ r p = ΠVary.eq σ (reindexFibStr α p) (reindexFibStr β (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''} (α : isFib A)
-    {B : Σ Γ A → Type ℓ'''} (β : isFib B)
+  reindexΠFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
+    {A : Γ → Type ℓ''} (α : FibStr A)
+    {B : Σ Γ A → Type ℓ'''} (β : FibStr B)
     (ρ : Δ → Γ)
-    → reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
-  reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
+    → reindexFibStr (ΠFibStr α β) ρ
+      ≡ ΠFibStr (reindexFibStr α ρ) (reindexFibStr β (ρ ×id))
+  reindexΠFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
 
 FibΠ : {Γ : Type ℓ}
   (A : Fib ℓ' Γ)
   (B : Fib ℓ'' (Σ Γ (A .fst)))
   → Fib (ℓ' ⊔ ℓ'') Γ
-FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
+FibΠ (A , α) (B , β) = (Πᴵ A B , ΠFibStr α β)
 
 reindexFibΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (A : Fib ℓ'' Γ)
   (B : Fib ℓ''' (Σ Γ (A .fst)))
   (ρ : Δ → Γ)
   → reindexFib (FibΠ A B) ρ ≡ FibΠ (reindexFib A ρ) (reindexFib B (ρ ×id))
-reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠ α β ρ)
+reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠFibStr α β ρ)

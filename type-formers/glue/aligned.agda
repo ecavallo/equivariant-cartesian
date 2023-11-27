@@ -48,4 +48,4 @@ opaque
     ∙
     cong
       (λ α' → FibRealign (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
-      (reindexGlue Φ β α fe ρ)
+      (reindexGlueFibStr Φ β α fe ρ)

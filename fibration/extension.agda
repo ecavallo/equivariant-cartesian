@@ -94,7 +94,7 @@ module LargeBoxUnion {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
       cong (reindexFib Tu) (sym eqLemma)
       ∙ cong (reindexFib ◆ wk[ ψ ∘ wk[ φ ] ]) p
 
-  open FibUnion φ ψ
+  open UnionFib φ ψ
     (reindexFib Tu (id ,, s ∘ wk[ φ ]))
     (reindexFib Ca wk[ ψ ])
     matchLemma
@@ -115,7 +115,7 @@ opaque
     → LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq) .snd
       ≡ LargeBoxUnion (reshapeLargeBox σ box) s ψ toEq .snd
   varyLargeBoxUnion σ box s ψ toEq =
-    unionIsFibExt (box .cof) ψ (T.F.left ∙ sym S.F.left) (T.F.right ∙ sym S.F.right)
+    unionFibStrExt (box .cof) ψ (T.F.left ∙ sym S.F.left) (T.F.right ∙ sym S.F.right)
     where
     module S = LargeBoxUnion (reshapeLargeBox σ box) s ψ toEq
     module T = LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
@@ -129,9 +129,9 @@ opaque
     → reindexFib (LargeBoxUnion box s ψ toEq) (ρ ×id) .snd
       ≡ LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ) .snd
   reindexLargeBoxUnion box s ψ toEq ρ =
-    unionIsFibExt (box .cof ∘ ρ) (ψ ∘ ρ)
-      (cong (reindex ◆ (ρ ×id)) Γ.F.left ∙ sym Δ.F.left)
-      (cong (reindex ◆ (ρ ×id)) Γ.F.right ∙ sym Δ.F.right)
+    unionFibStrExt (box .cof ∘ ρ) (ψ ∘ ρ)
+      (cong (reindexFibStr ◆ (ρ ×id)) Γ.F.left ∙ sym Δ.F.left)
+      (cong (reindexFibStr ◆ (ρ ×id)) Γ.F.right ∙ sym Δ.F.right)
     where
     module Γ = LargeBoxUnion box s ψ toEq
     module Δ = LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
@@ -160,15 +160,15 @@ opaque
         (coerceEquiv S (reindexFib Tu ((γ , u) ,_) .snd) (s γ) (r γ))
 
     rightEquiv : Γ ,[ ψ ] ⊢ Equivᴵ (Ca .fst ∘ wk[ ψ ]) (Ca .fst ∘ wk[ ψ ])
-    rightEquiv (γ , _) = idEquiv (reindex (Ca .snd) (λ _ → γ))
+    rightEquiv (γ , _) = idEquiv (reindexFibStr (Ca .snd) (λ _ → γ))
 
     eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Fib ℓ' Γ}
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
       (eqBD : B ≡ D)
       {e : Equiv A (B .fst _)}
-      → subst (Equiv ◆ _) eqAB e ≡ idEquiv (reindex (B .snd) (λ _ → γ))
+      → subst (Equiv ◆ _) eqAB e ≡ idEquiv (reindexFibStr (B .snd) (λ _ → γ))
       → subst (Equiv ◆ _) eqAD (subst (Equiv A) (appCong (cong fst eqBD)) e)
-        ≡ idEquiv (reindex (D .snd) (λ _ → γ))
+        ≡ idEquiv (reindexFibStr (D .snd) (λ _ → γ))
     eqLemma refl refl refl eq = eq
 
     matchEquiv : (γ : Γ) (u : [ φ γ ]) (v : [ ψ γ ])
