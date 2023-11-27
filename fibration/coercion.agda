@@ -34,7 +34,7 @@ module _ {S T : Shape} (σ : ShapeHom S T)
   where
 
   coerceVary : (s : ⟨ S ⟩) →
-    coerce T (⟪ σ ⟫ r) α a (⟪ σ ⟫ s) ≡ coerce S r (reindexFibStr α ⟪ σ ⟫) a s
+    coerce T (⟪ σ ⟫ r) α a (⟪ σ ⟫ s) ≡ coerce S r (α ∘ᶠˢ ⟪ σ ⟫) a s
   coerceVary s =
     α .vary S T σ r id (coerceBox T _ α a) s
     ∙ cong (λ box → α .lift S r ⟪ σ ⟫ box .fill s .out) (boxExt refl (λ ()) refl)

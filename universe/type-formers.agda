@@ -26,7 +26,7 @@ module _ {@♭ ℓ : Level} where
   ΣFibStrUniversal :
     FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → Σ x ∈ El A , El (B x))
   ΣFibStrUniversal =
-    ΣFibStr (reindexFibStr υ fst) (reindexFibStr υ (λ ((A , B) , a) → B a))
+    ΣFibStr (υ ∘ᶠˢ fst) (υ ∘ᶠˢ (λ ((A , B) , a) → B a))
 
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   sigma a b = encode (_ , ΣFibStrUniversal) (a , b)
@@ -40,14 +40,14 @@ module _ {@♭ ℓ : Level} where
     → decode (sigmaᴵ a b) ≡ FibΣ (decode a) (decode b)
   decodeSigma a b =
     cong
-      (reindexFib ◆ λ x → (a x , curry b x))
+      (_∘ᶠ λ x → (a x , curry b x))
       {x = decode (encode (_ , ΣFibStrUniversal))}
       (decodeEncode (_ , ΣFibStrUniversal))
     ∙
     reindexFibΣ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}
-      (reindexFib (El , υ) fst)
-      (reindexFib (El , υ) (λ ((A , B) , a) → B a))
+      ((El , υ) ∘ᶠ fst)
+      ((El , υ) ∘ᶠ (λ ((A , B) , a) → B a))
       (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ module _ {@♭ ℓ : Level} where
   ΠFibStrUniversal :
     FibStr {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} (λ (A , B) → (x : El A) → El (B x))
   ΠFibStrUniversal =
-    ΠFibStr (reindexFibStr υ fst) (reindexFibStr υ (λ ((A , B) , a) → B a))
+    ΠFibStr (υ ∘ᶠˢ fst) (υ ∘ᶠˢ (λ ((A , B) , a) → B a))
 
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   pi a b = encode (_ , ΠFibStrUniversal) (a , b)
@@ -71,14 +71,14 @@ module _ {@♭ ℓ : Level} where
     → decode (piᴵ a b) ≡ FibΠ (decode a) (decode b)
   decodePi a b =
     cong
-      (reindexFib ◆ λ x → (a x , curry b x))
+      (_∘ᶠ λ x → (a x , curry b x))
       {x = decode (encode (_ , ΠFibStrUniversal))}
       (decodeEncode (_ , ΠFibStrUniversal))
     ∙
     reindexFibΠ
       {Γ = Σ A ∈ U ℓ , (El A → U ℓ)}
-      (reindexFib (El , υ) fst)
-      (reindexFib (El , υ) (λ ((A , B) , a) → B a))
+      ((El , υ) ∘ᶠ fst)
+      ((El , υ) ∘ᶠ (λ ((A , B) , a) → B a))
       (a ,, curry b)
 
   -- TODO other types

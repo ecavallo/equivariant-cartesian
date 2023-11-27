@@ -145,8 +145,8 @@ module GlueLift {S r Φ}
 
       fillR =
         FiberFibStr
-          (reindexFibStr β (s ,_))
-          (reindexFibStr α (λ _ → s))
+          (β ∘ᶠˢ (s ,_))
+          (α ∘ᶠˢ (λ _ → s))
           (f ∘ (s ,_)) (λ _ → fillA .fill s .out)
           .lift 𝕚 1 (λ _ → us) boxR .fill 0
 
@@ -206,7 +206,7 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
 
   module T = GlueLift β α fe box
   module S =
-    GlueLift (reindexFibStr β (⟪ σ ⟫ ×id)) (reindexFibStr α ⟪ σ ⟫) (fe ∘ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+    GlueLift (β ∘ᶠˢ ⟪ σ ⟫ ×id) (α ∘ᶠˢ ⟪ σ ⟫) (fe ∘ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   open T using (f ; e)
 
@@ -229,7 +229,7 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
     varyR uσs =
       congdep₂
         (λ a box →
-          FiberFibStr (reindexFibStr β _) (reindexFibStr α _) _ (λ _ → a) .lift 𝕚 1
+          FiberFibStr (β ∘ᶠˢ _) (α ∘ᶠˢ _) _ (λ _ → a) .lift 𝕚 1
             (λ _ → uσs) box .fill 0 .out)
         varyA
         (boxExtDep varyA
@@ -271,9 +271,9 @@ opaque
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     → FibStr (Glueᴵ Φ B A (equivFun fe))
   GlueFibStr Φ β α fe .lift S r p =
-    GlueLift.filler (reindexFibStr β (p ×id)) (reindexFibStr α p) (fe ∘ p ×id)
+    GlueLift.filler (β ∘ᶠˢ p ×id) (α ∘ᶠˢ p) (fe ∘ p ×id)
   GlueFibStr Φ β α fe .vary S T σ r p =
-    GlueVary.eq σ (reindexFibStr β (p ×id)) (reindexFibStr α p) (fe ∘ p ×id)
+    GlueVary.eq σ (β ∘ᶠˢ p ×id) (α ∘ᶠˢ p) (fe ∘ p ×id)
 
   reindexGlueFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
@@ -281,8 +281,8 @@ opaque
     {A : Γ → Type ℓ''} (α : FibStr A)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
     (ρ : Δ → Γ)
-    → reindexFibStr (GlueFibStr Φ β α fe) ρ
-      ≡ GlueFibStr (Φ ∘ ρ) (reindexFibStr β (ρ ×id)) (reindexFibStr α ρ) (fe ∘ ρ ×id)
+    → GlueFibStr Φ β α fe ∘ᶠˢ ρ
+      ≡ GlueFibStr (Φ ∘ ρ) (β ∘ᶠˢ ρ ×id) (α ∘ᶠˢ ρ) (fe ∘ ρ ×id)
   reindexGlueFibStr Φ β α fe ρ =
     FibStrExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
 
@@ -301,6 +301,5 @@ reindexFibGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
   (A : Fib ℓ'' Γ)
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   (ρ : Δ → Γ)
-  → reindexFib (FibGlue Φ B A fe) ρ
-    ≡ FibGlue (Φ ∘ ρ)(reindexFib B (ρ ×id)) (reindexFib A ρ) (fe ∘ ρ ×id)
+  → FibGlue Φ B A fe ∘ᶠ ρ ≡ FibGlue (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
 reindexFibGlue Φ fe B A ρ = Σext refl (reindexGlueFibStr _ _ _ _ _)

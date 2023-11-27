@@ -11,6 +11,8 @@ open import axioms
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
+infixl 5 _∘ᶠˢ_ _∘ᶠ_
+
 ------------------------------------------------------------------------------------------
 -- Open boxes
 ------------------------------------------------------------------------------------------
@@ -118,21 +120,21 @@ Fib : (ℓ' : Level) (Γ : Type ℓ) → Type (ℓ ⊔ lsuc ℓ')
 Fib ℓ' Γ = Σ (Γ → Type ℓ') FibStr
 
 ------------------------------------------------------------------------------------------
--- Fibrations can be reindexed
+-- Reindexing fibration structures and fibrations
 ------------------------------------------------------------------------------------------
 
-reindexFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
+_∘ᶠˢ_ : {Δ : Type ℓ} {Γ : Type ℓ'}
   {A : Γ → Type ℓ''} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
-reindexFibStr α ρ .lift S r p = α .lift S r (ρ ∘ p)
-reindexFibStr α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
+(α ∘ᶠˢ ρ) .lift S r p = α .lift S r (ρ ∘ p)
+(α ∘ᶠˢ ρ) .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
-reindexFib : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ) → Fib ℓ'' Δ
-reindexFib (A , α) ρ .fst = A ∘ ρ
-reindexFib (A , α) ρ .snd = reindexFibStr α ρ
+_∘ᶠ_ : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ) → Fib ℓ'' Δ
+(A ∘ᶠ ρ) .fst = A .fst ∘ ρ
+(A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 
 reindexSubst : {Δ : Type ℓ} {Γ : Type ℓ'} {A A' : Γ → Type ℓ''}
  (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : FibStr A)
-  → reindexFibStr (subst FibStr P α) ρ ≡ subst FibStr Q (reindexFibStr α ρ)
+  → subst FibStr P α ∘ᶠˢ ρ ≡ subst FibStr Q (α ∘ᶠˢ ρ)
 reindexSubst ρ refl refl α = refl
 
 ------------------------------------------------------------------------------------------
@@ -182,8 +184,7 @@ opaque
     (retract : Γ ⊢ Retractᴵ A B)
     (β : FibStr B)
     (ρ : Δ → Γ)
-    → reindexFibStr (retractFibStr retract β) ρ
-      ≡ retractFibStr (retract ∘ ρ) (reindexFibStr β ρ)
+    → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
   reindexRetractFibStr retract β ρ = FibStrExt λ _ _ _ _ _ → refl
 
 ------------------------------------------------------------------------------------------
@@ -200,5 +201,5 @@ isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 reindexIsomorphFibStr : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''} {B : Γ → Type ℓ'''}
   (iso : Γ ⊢ A ≅ᴵ B) (β : FibStr B)
   (ρ : Δ → Γ)
-  → reindexFibStr (isomorphFibStr iso β) ρ ≡ isomorphFibStr (iso ∘ ρ) (reindexFibStr β ρ)
+  → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
 reindexIsomorphFibStr _ = reindexRetractFibStr _

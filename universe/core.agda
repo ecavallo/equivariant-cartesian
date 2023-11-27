@@ -192,7 +192,7 @@ Lvaries S T σ C =
   λ r C → getVaries S T σ C .rel r
 
 decode : ∀ {@♭ ℓ'} {Γ : Type ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
-decode = reindexFib (El , υ)
+decode = (El , υ) ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
 -- Any fibration induces a map into U
@@ -261,7 +261,7 @@ decodeEncode Aα =
 
 encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
   (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)
-  → encode (reindexFib Aα ρ) x ≡ encode Aα (ρ x)
+  → encode (Aα ∘ᶠ ρ) x ≡ encode Aα (ρ x)
 encodeReindexFib Aα ρ x =
   UExt
     refl

@@ -30,7 +30,7 @@ opaque
     (A : Fib ℓ' (Γ ,[ Φ ]))
     (B : Fib ℓ' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
-    → A ≡ reindexFib (FibSGlue Φ A B fe) fst
+    → A ≡ FibSGlue Φ A B fe ∘ᶠ fst
   FibSGlueStrictness Φ A B fe =
     isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
 
@@ -41,8 +41,7 @@ opaque
     (A : Fib ℓ'' Γ)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
     (ρ : Δ → Γ)
-    → reindexFib (FibSGlue Φ B A fe) ρ
-      ≡ FibSGlue (Φ ∘ ρ)(reindexFib B (ρ ×id)) (reindexFib A ρ) (fe ∘ ρ ×id)
+    → FibSGlue Φ B A fe ∘ᶠ ρ ≡ FibSGlue (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
   reindexFibSGlue Φ (_ , β) (_ , α) fe ρ =
     reindexFibRealign Φ _ _ _ ρ
     ∙

@@ -59,25 +59,21 @@ opaque
     (a₀ a₁ : Γ ⊢ A)
     → FibStr (Pathᴵ A a₀ a₁)
   PathFibStr α a₀ a₁ =
-    retractFibStr retract (ExtensionFibStr 𝕚 (reindexFibStr α fst) ∂ _)
+    retractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ fst) ∂ _)
 
   ----------------------------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexPath : {Δ : Type ℓ} {Γ : Type ℓ'}
+  reindexPathFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
     {A : Γ → Type ℓ''} (α : FibStr A)
     {a₀ a₁ : Γ ⊢ A}
     (ρ : Δ → Γ)
-    → reindexFibStr (PathFibStr α a₀ a₁) ρ
-      ≡ PathFibStr (reindexFibStr α ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
-  reindexPath α ρ =
-    reindexRetractFibStr
-      retract
-      (ExtensionFibStr 𝕚 (reindexFibStr α fst) ∂ _)
-      ρ
+    → PathFibStr α a₀ a₁ ∘ᶠˢ ρ ≡ PathFibStr (α ∘ᶠˢ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
+  reindexPathFibStr α ρ =
+    reindexRetractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ fst) ∂ _) ρ
     ∙
     cong₂
       retractFibStr
       (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
-      (reindexExtensionFibStr (reindexFibStr α fst) ρ)
+      (reindexExtensionFibStr (α ∘ᶠˢ fst) ρ)

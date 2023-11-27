@@ -63,7 +63,7 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
   where
 
   module T = ExtensionLift α box
-  module S = ExtensionLift (reindexFibStr α (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+  module S = ExtensionLift (α ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
@@ -83,8 +83,8 @@ opaque
     (Φ : ⟨ Z ⟩ → CofProp)
     (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
     → FibStr (Extensionᴵ Z A Φ a)
-  ExtensionFibStr Z α Φ a .lift S r p = ExtensionLift.filler (reindexFibStr α (p ×id))
-  ExtensionFibStr Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (reindexFibStr α (p ×id))
+  ExtensionFibStr Z α Φ a .lift S r p = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
+  ExtensionFibStr Z α Φ a .vary S T σ r p = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming extension types is stable under reindexing
@@ -95,6 +95,6 @@ opaque
     {Φ : ⟨ Z ⟩ → CofProp}
     {a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
     (ρ : Δ → Γ)
-    → reindexFibStr (ExtensionFibStr Z α Φ a) ρ
-      ≡ ExtensionFibStr Z (reindexFibStr α (ρ ×id)) Φ (a ∘ ρ ×id ×id)
+    → ExtensionFibStr Z α Φ a ∘ᶠˢ ρ
+      ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) Φ (a ∘ ρ ×id ×id)
   reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl

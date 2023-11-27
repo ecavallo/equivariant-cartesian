@@ -63,7 +63,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 
   module T = ΠLift α β box
   module S =
-    ΠLift (reindexFibStr α ⟪ σ ⟫) (reindexFibStr β (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+    ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   varyA : ∀ s a i → T.coeA (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.coeA s a i
   varyA s = coerceVary σ s α
@@ -86,8 +86,8 @@ opaque
     {A : Γ → Type ℓ'} (α : FibStr A)
     {B : Σ Γ A → Type ℓ''} (β : FibStr B)
     → FibStr (Πᴵ A B)
-  ΠFibStr α β .lift S r p = ΠLift.filler (reindexFibStr α p) (reindexFibStr β (p ×id))
-  ΠFibStr α β .vary S T σ r p = ΠVary.eq σ (reindexFibStr α p) (reindexFibStr β (p ×id))
+  ΠFibStr α β .lift S r p = ΠLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΠFibStr α β .vary S T σ r p = ΠVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing
@@ -97,8 +97,7 @@ opaque
     {A : Γ → Type ℓ''} (α : FibStr A)
     {B : Σ Γ A → Type ℓ'''} (β : FibStr B)
     (ρ : Δ → Γ)
-    → reindexFibStr (ΠFibStr α β) ρ
-      ≡ ΠFibStr (reindexFibStr α ρ) (reindexFibStr β (ρ ×id))
+    → ΠFibStr α β ∘ᶠˢ ρ ≡ ΠFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΠFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
 
 FibΠ : {Γ : Type ℓ}
@@ -111,5 +110,5 @@ reindexFibΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (A : Fib ℓ'' Γ)
   (B : Fib ℓ''' (Σ Γ (A .fst)))
   (ρ : Δ → Γ)
-  → reindexFib (FibΠ A B) ρ ≡ FibΠ (reindexFib A ρ) (reindexFib B (ρ ×id))
+  → FibΠ A B ∘ᶠ ρ ≡ FibΠ (A ∘ᶠ ρ) (B ∘ᶠ (ρ ×id))
 reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠFibStr α β ρ)
