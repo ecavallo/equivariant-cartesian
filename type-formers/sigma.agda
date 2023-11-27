@@ -101,14 +101,14 @@ opaque
   reindexΣFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Σᶠ : {Γ : Type ℓ}
-  (A : Fib ℓ' Γ)
-  (B : Fib ℓ'' (Σ Γ (A .fst)))
-  → Fib (ℓ' ⊔ ℓ'') Γ
+  (A : Γ ⊢ᶠType ℓ')
+  (B : Σ Γ (A .fst) ⊢ᶠType ℓ'')
+  → Γ ⊢ᶠType (ℓ' ⊔ ℓ'')
 Σᶠ (A , α) (B , β) = Σᴵ A B , ΣFibStr α β
 
 reindexΣᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  (A : Fib ℓ'' Γ)
-  (B : Fib ℓ''' (Σ Γ (A .fst)))
+  (A : Γ ⊢ᶠType ℓ'')
+  (B : Σ Γ (A .fst) ⊢ᶠType ℓ''')
   (ρ : Δ → Γ)
   → Σᶠ A B ∘ᶠ ρ ≡ Σᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ ×id)
 reindexΣᶠ (_ , α) (_ , β) ρ = Σext refl (reindexΣFibStr α β ρ)

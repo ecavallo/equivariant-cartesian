@@ -191,22 +191,22 @@ ElFibStr .vary =
   ShapeHomIsDiscrete λ (@♭ σ) →
   λ r C → getVaries S T σ C .rel r
 
-Elᶠ : ∀ {@♭ ℓ} → Fib ℓ (U ℓ)
+Elᶠ : ∀ {@♭ ℓ} → U ℓ ⊢ᶠType ℓ
 Elᶠ .fst = El
 Elᶠ .snd = ElFibStr
 
-decode : ∀ {@♭ ℓ'} {Γ : Type ℓ} → (Γ → U ℓ') → Fib ℓ' Γ
+decode : ∀ {@♭ ℓ'} {Γ : Type ℓ} → (Γ → U ℓ') → Γ ⊢ᶠType ℓ'
 decode = Elᶠ ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
 -- Any fibration induces a map into U
 ------------------------------------------------------------------------------------------
 
-FibLifts : {Γ : Type ℓ} → Fib ℓ' Γ
+FibLifts : {Γ : Type ℓ} → Γ ⊢ᶠType ℓ'
   → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ'
 FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
-FibVaries : {Γ : Type ℓ} → Fib ℓ' Γ
+FibVaries : {Γ : Type ℓ} → Γ ⊢ᶠType ℓ'
   → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ'
 FibVaries (A , α) S T σ p .fst =
   hasVaries S T σ (A ∘ p)
@@ -215,28 +215,28 @@ FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
 FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
 opaque
-  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Fib ℓ' Γ) → (Γ → U ℓ')
-  encode {ℓ' = ℓ'} {Γ} Aα = encoding
+  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ → U ℓ')
+  encode {ℓ' = ℓ'} {Γ} A = encoding
     where
     Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
-    Rl S = R S (FibLifts Aα S)
+    Rl S = R S (FibLifts A S)
 
     Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
-    Rv S T σ = R T (FibVaries Aα S T σ)
+    Rv S T σ = R T (FibVaries A S T σ)
 
     encoding : Γ → U ℓ'
-    encoding x .El = Aα .fst x
+    encoding x .El = A .fst x
     encoding x .lifts S = Rl S x
     encoding x .liftsBase S =
-      appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S (Aα .fst) (hasLifts S))
+      appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S (A .fst) (hasLifts S))
     encoding x .varies S T σ = Rv S T σ x
     encoding x .variesBase S T σ =
-      appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T (Aα .fst) (hasVaries S T σ))
+      appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T (A .fst) (hasVaries S T σ))
     encoding x .variesSrc S T σ =
       appCong (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
     encoding x .variesDst S T σ =
       appCong
-        (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts Aα S)))
+        (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
 ------------------------------------------------------------------------------------------
 -- Inverse conditions for the correspondence between Fib Γ and Γ → U
@@ -244,7 +244,7 @@ opaque
 
 opaque
   unfolding encode
-  decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ A : Fib ℓ' Γ)
+  decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → decode (encode A) ≡ A
   decodeEncode A =
     Σext refl
@@ -267,15 +267,15 @@ opaque
 opaque
   unfolding encode
   encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
-    (@♭ Aα : Fib ℓ'' Γ) (@♭ ρ : Δ → Γ) (x : Δ)
-    → encode (Aα ∘ᶠ ρ) x ≡ encode Aα (ρ x)
-  encodeReindexFib Aα ρ x =
+    (@♭ A : Γ ⊢ᶠType ℓ'') (@♭ ρ : Δ → Γ) (x : Δ)
+    → encode (A ∘ᶠ ρ) x ≡ encode A (ρ x)
+  encodeReindexFib A ρ x =
     UExt
       refl
       (funext♭ λ S →
-        appCong (R℘ S ρ (FibLifts Aα S)))
+        appCong (R℘ S ρ (FibLifts A S)))
       (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
-        appCong (R℘ T ρ (FibVaries Aα S T σ)))
+        appCong (R℘ T ρ (FibVaries A S T σ)))
 
 opaque
   unfolding encode

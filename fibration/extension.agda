@@ -23,8 +23,8 @@ record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Ty
   constructor makeLargeBox
   field
     cof : Γ → CofProp
-    Tube : Fib ℓ' (Γ ,[ cof ] × ⟨ S ⟩)
-    Cap : Fib ℓ' Γ
+    Tube : Γ ,[ cof ] × ⟨ S ⟩ ⊢ᶠType ℓ'
+    Cap : Γ ⊢ᶠType ℓ'
     match : Tube ∘ᶠ (id ,, r ∘ wk[ cof ]) ≡ Cap ∘ᶠ wk[ cof ]
 
 open LargeOpenBox public
@@ -49,7 +49,7 @@ reindexLargeBox box ρ .match = cong (_∘ᶠ (ρ ×id)) (box .match)
 largeBoxExt : {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
   {box box' : LargeOpenBox S r ℓ'}
   (cof≡ : box .cof ≡ box' .cof)
-  → subst (λ φ → Fib ℓ' (Γ ,[ φ ] × ⟨ S ⟩)) cof≡ (box .Tube) ≡ box' .Tube
+  → subst (λ φ → Γ ,[ φ ] × ⟨ S ⟩ ⊢ᶠType ℓ') cof≡ (box .Tube) ≡ box' .Tube
   → box .Cap ≡ box' .Cap
   → box ≡ box'
 largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uipImp
@@ -58,7 +58,7 @@ record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ') : Type (ℓ ⊔ lsuc ℓ')
   where
   field
-    Fill : Fib ℓ' (Γ × ⟨ S ⟩)
+    Fill : Γ × ⟨ S ⟩ ⊢ᶠType ℓ'
     Tube≡ : Fill ∘ᶠ (wk[ box .cof ] ×id) ≡ box .Tube
     Cap≡ : Fill ∘ᶠ (id ,, r) ≡ box .Cap
 
@@ -103,7 +103,7 @@ LargeBoxUnion : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ')
   (s : Γ → ⟨ S ⟩)
   (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-  → Fib ℓ' (Γ ,[ box .cof ∨ᴵ ψ ])
+  → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ'
 LargeBoxUnion = LargeBoxUnion.fib
 
 opaque
@@ -161,7 +161,7 @@ opaque
     rightEquiv : Γ ,[ ψ ] ⊢ Equivᴵ (Ca .fst ∘ wk[ ψ ]) (Ca .fst ∘ wk[ ψ ])
     rightEquiv (γ , _) = idEquivᶠ (Ca ∘ᶠ (λ _ → γ))
 
-    eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Fib ℓ' Γ}
+    eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Γ ⊢ᶠType ℓ'}
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
       (eqBD : B ≡ D)
       {e : Equiv A (B .fst _)}
@@ -233,7 +233,7 @@ opaque
     (box : LargeOpenBox S r ℓ')
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-    → Fib ℓ' Γ
+    → Γ ⊢ᶠType ℓ'
   LargeBoxFillerψ box s ψ toEq =
     SGlueᶠ
       (box .cof ∨ᴵ ψ)

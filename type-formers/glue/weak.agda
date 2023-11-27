@@ -289,17 +289,17 @@ opaque
 
 Glueᶠ : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  (B : Fib ℓ' (Γ ,[ Φ ]))
-  (A : Fib ℓ' Γ)
+  (B : Γ ,[ Φ ] ⊢ᶠType ℓ')
+  (A : Γ ⊢ᶠType ℓ')
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
-  → Fib ℓ' Γ
+  → Γ ⊢ᶠType ℓ'
 Glueᶠ Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
 Glueᶠ Φ (_ , β) (_ , α) fe .snd = GlueFibStr Φ β α fe
 
 reindexGlueᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Φ : Γ → CofProp)
-  (B : Fib ℓ'' (Γ ,[ Φ ]))
-  (A : Fib ℓ'' Γ)
+  (B : Γ ,[ Φ ] ⊢ᶠType ℓ'')
+  (A : Γ ⊢ᶠType ℓ'')
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   (ρ : Δ → Γ)
   → Glueᶠ Φ B A fe ∘ᶠ ρ ≡ Glueᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)

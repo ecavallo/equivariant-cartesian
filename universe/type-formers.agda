@@ -23,7 +23,7 @@ module _ {@♭ ℓ : Level} where
   -- -- The universe is closed under Σ-types
   -- ----------------------------------------------------------------------------------------
 
-  universalΣᶠ : Fib ℓ (Σ A ∈ U ℓ , (El A → U ℓ))
+  universalΣᶠ : (Σ A ∈ U ℓ , (El A → U ℓ)) ⊢ᶠType ℓ
   universalΣᶠ = Σᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
@@ -52,7 +52,7 @@ module _ {@♭ ℓ : Level} where
   -- The universe is closed under Π-types
   ----------------------------------------------------------------------------------------
 
-  universalΠᶠ : Fib ℓ (Σ A ∈ U ℓ , (El A → U ℓ))
+  universalΠᶠ : (Σ A ∈ U ℓ , (El A → U ℓ)) ⊢ᶠType ℓ
   universalΠᶠ = Πᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ

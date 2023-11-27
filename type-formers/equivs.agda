@@ -26,12 +26,12 @@ IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 IsContrᴵ : {Γ : Type ℓ} → (Γ → Type ℓ') → (Γ → Type ℓ')
 IsContrᴵ A x = IsContr (A x)
 
-IsContrᶠ : {Γ : Type ℓ} → Fib ℓ' Γ → Fib ℓ' Γ
+IsContrᶠ : {Γ : Type ℓ} → Γ ⊢ᶠType ℓ' → Γ ⊢ᶠType ℓ'
 IsContrᶠ A = Σᶠ A (Πᶠ (A ∘ᶠ fst) (Pathᶠ (A ∘ᶠ fst ∘ᶠ fst) snd (snd ∘ fst)))
 
 opaque
   reindexIsContrᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (A : Fib ℓ'' Γ)
+    (A : Γ ⊢ᶠType ℓ'')
     (ρ : Δ → Γ)
     → IsContrᶠ A ∘ᶠ ρ ≡ IsContrᶠ (A ∘ᶠ ρ)
   reindexIsContrᶠ A ρ =
@@ -50,15 +50,15 @@ Fiberᴵ : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ → Type (ℓ' ⊔ ℓ'')
 Fiberᴵ f b γ = Fiber (f γ) (b γ)
 
-Fiberᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ)
+Fiberᶠ : {Γ : Type ℓ} (A : Γ ⊢ᶠType ℓ') (B : Γ ⊢ᶠType ℓ'')
   (f : Γ ⊢ A .fst →ᴵ B .fst)
   (b : Γ ⊢ B .fst)
-  → Fib (ℓ' ⊔ ℓ'') Γ
+  → Γ ⊢ᶠType (ℓ' ⊔ ℓ'')
 Fiberᶠ A B f b = Σᶠ A (Pathᶠ (B ∘ᶠ fst) (uncurry f) (b ∘ fst))
 
 opaque
   reindexFiberᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (A : Fib ℓ'' Γ) (B : Fib ℓ''' Γ) {f : Γ ⊢ A .fst →ᴵ B .fst} {b : Γ ⊢ B .fst}
+    (A : Γ ⊢ᶠType ℓ'') (B : Γ ⊢ᶠType ℓ''') {f : Γ ⊢ A .fst →ᴵ B .fst} {b : Γ ⊢ B .fst}
     (ρ : Δ → Γ)
     → Fiberᶠ A B f b ∘ᶠ ρ ≡ Fiberᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ) (f ∘ ρ) (b ∘ ρ)
   reindexFiberᶠ A B ρ =
@@ -104,14 +104,14 @@ IsEquivᴵ : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ → Type (ℓ' ⊔ ℓ'')
 IsEquivᴵ f = Πᴵ _ (IsContrᴵ (Fiberᴵ (f ∘ fst) snd))
 
-IsEquivᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ)
+IsEquivᶠ : {Γ : Type ℓ} (A : Γ ⊢ᶠType ℓ') (B : Γ ⊢ᶠType ℓ'')
   (f : Γ ⊢ A .fst →ᴵ B .fst)
-  → Fib (ℓ' ⊔ ℓ'') Γ
+  → Γ ⊢ᶠType (ℓ' ⊔ ℓ'')
 IsEquivᶠ A B f = Πᶠ B (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
 
 reindexIsEquivᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  (A : Fib ℓ'' Γ)
-  (B : Fib ℓ''' Γ)
+  (A : Γ ⊢ᶠType ℓ'')
+  (B : Γ ⊢ᶠType ℓ''')
   {f : Γ ⊢ A .fst →ᴵ B .fst}
   (ρ : Δ → Γ)
   → IsEquivᶠ A B f ∘ᶠ ρ ≡ IsEquivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ) (f ∘ ρ)
@@ -131,20 +131,20 @@ equivFun : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ ⊢ A →ᴵ B
 equivFun = fst ∘_
 
-Equivᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ) → Fib (ℓ' ⊔ ℓ'') Γ
+Equivᶠ : {Γ : Type ℓ} (A : Γ ⊢ᶠType ℓ') (B : Γ ⊢ᶠType ℓ'') → Γ ⊢ᶠType (ℓ' ⊔ ℓ'')
 Equivᶠ A B = Σᶠ (Πᶠ A (B ∘ᶠ fst)) (IsEquivᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) snd)
 
 opaque
   reindexEquivᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (A : Fib ℓ'' Γ)
-    (B : Fib ℓ''' Γ)
+    (A : Γ ⊢ᶠType ℓ'')
+    (B : Γ ⊢ᶠType ℓ''')
     (ρ : Δ → Γ)
     → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
   reindexEquivᶠ A B ρ =
     reindexΣᶠ _ _ _
     ∙ congΣ Σᶠ
       (reindexΠᶠ _ _ _)
-      (substCongAssoc (Fib _ ∘ Σ _) fst (reindexΠᶠ _ _ _) _
+      (substCongAssoc ((_⊢ᶠType _) ∘ Σ _) fst (reindexΠᶠ _ _ _) _
         ∙ substConst _ _ _
         ∙ reindexIsEquivᶠ (A ∘ᶠ fst) _ _)
 
@@ -178,18 +178,18 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (sym (q 1 .fill 0 .out≡ (∨r refl)))
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
-idEquivᶠ : (A : Fib ℓ 𝟙) → Equiv (A .fst tt) (A .fst tt)
+idEquivᶠ : (A : 𝟙 ⊢ᶠType ℓ) → Equiv (A .fst tt) (A .fst tt)
 idEquivᶠ (_ , α) = idEquiv α
 
 opaque
   coerceEquiv : (S : Shape)
-    (A : Fib ℓ ⟨ S ⟩)
+    (A : ⟨ S ⟩ ⊢ᶠType ℓ )
     (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
   coerceEquiv S A r s =
     coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ (A ∘ᶠ (λ _ → r))) s
 
   coerceEquivCap : (S : Shape)
-    (A : Fib ℓ ⟨ S ⟩)
+    (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ (A ∘ᶠ (λ _ → r))
   coerceEquivCap S A r =
     coerceCap S r
@@ -197,7 +197,7 @@ opaque
       (idEquivᶠ (A ∘ᶠ (λ _ → r)))
 
   coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
-    (A : Fib ℓ ⟨ T ⟩)
+    (A : ⟨ T ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩)
     → coerceEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
   coerceEquivVary {S = S} σ A r s =

@@ -11,6 +11,7 @@ open import axioms
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
+infix  1 _⊢ᶠType_ _⊢ᶠ_
 infixl 5 _∘ᶠˢ_ _∘ᶠ_
 
 ------------------------------------------------------------------------------------------
@@ -116,8 +117,11 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
 
 open FibStr public
 
-Fib : (ℓ' : Level) (Γ : Type ℓ) → Type (ℓ ⊔ lsuc ℓ')
-Fib ℓ' Γ = Σ (Γ → Type ℓ') FibStr
+_⊢ᶠType_ : (Γ : Type ℓ) (ℓ' : Level) → Type (ℓ ⊔ lsuc ℓ')
+Γ ⊢ᶠType ℓ' = Σ (Γ → Type ℓ') FibStr
+
+_⊢ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
+Γ ⊢ᶠ A = Γ ⊢ A .fst
 
 ------------------------------------------------------------------------------------------
 -- Reindexing fibration structures and fibrations
@@ -128,7 +132,8 @@ _∘ᶠˢ_ : {Δ : Type ℓ} {Γ : Type ℓ'}
 (α ∘ᶠˢ ρ) .lift S r p = α .lift S r (ρ ∘ p)
 (α ∘ᶠˢ ρ) .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
-_∘ᶠ_ : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ) → Fib ℓ'' Δ
+_∘ᶠ_ : {Δ : Type ℓ} {Γ : Type ℓ'}
+  → (Γ ⊢ᶠType ℓ'') → (Δ → Γ) → Δ ⊢ᶠType ℓ''
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
 (A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 

@@ -101,9 +101,9 @@ opaque
 
 Extensionᶠ : (Z : Shape)
   {Γ : Type ℓ}
-  (A : Fib ℓ' (Γ × ⟨ Z ⟩))
+  (A : Γ × ⟨ Z ⟩ ⊢ᶠType ℓ')
   (Φ : ⟨ Z ⟩ → CofProp)
   (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A .fst ∘ wk[ Φ ∘ snd ])
-  → Fib ℓ' Γ
+  → Γ ⊢ᶠType ℓ'
 Extensionᶠ Z A Φ a .fst = Extensionᴵ Z (A .fst) Φ a
 Extensionᶠ Z A Φ a .snd = ExtensionFibStr Z (A .snd) Φ a
