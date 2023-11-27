@@ -3,7 +3,7 @@
 Definitions of contractible, fibers, equivalences.
 
 -}
-{-# OPTIONS --rewriting #-}
+{-# OPTIONS --rewriting --lossy-unification #-}
 module type-formers.equivs where
 
 open import prelude
@@ -26,24 +26,16 @@ IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 IsContrᴵ : {Γ : Type ℓ} → (Γ → Type ℓ') → (Γ → Type ℓ')
 IsContrᴵ A x = IsContr (A x)
 
-opaque
-  IsContrFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'}
-    → FibStr A → FibStr (IsContrᴵ A)
-  IsContrFibStr α =
-    ΣFibStr
-      α
-      (ΠFibStr
-        (α ∘ᶠˢ fst)
-        (PathFibStr (α ∘ᶠˢ (fst ∘ fst)) snd (snd ∘ fst)))
+IsContrᶠ : {Γ : Type ℓ} → Fib ℓ' Γ → Fib ℓ' Γ
+IsContrᶠ A = Σᶠ A (Πᶠ (A ∘ᶠ fst) (Pathᶠ (A ∘ᶠ fst ∘ᶠ fst) snd (snd ∘ fst)))
 
-  reindexIsContrFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''}
-    (α : FibStr A)
+opaque
+  reindexIsContrᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+    (A : Fib ℓ'' Γ)
     (ρ : Δ → Γ)
-    → IsContrFibStr α ∘ᶠˢ ρ ≡ IsContrFibStr (α ∘ᶠˢ ρ)
-  reindexIsContrFibStr α ρ =
-    reindexΣFibStr _ _ _
-    ∙ cong (ΣFibStr _) (reindexΠFibStr _ _ _ ∙ cong (ΠFibStr _) (reindexPathFibStr _ _))
+    → IsContrᶠ A ∘ᶠ ρ ≡ IsContrᶠ (A ∘ᶠ ρ)
+  reindexIsContrᶠ A ρ =
+    reindexΣᶠ _ _ _ ∙ cong (Σᶠ _) (reindexΠᶠ _ _ _ ∙ cong (Πᶠ _) (reindexPathᶠ _ _))
 
 ------------------------------------------------------------------------------------------
 -- Homotopy fiber type
@@ -58,25 +50,19 @@ Fiberᴵ : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ → Type (ℓ' ⊔ ℓ'')
 Fiberᴵ f b γ = Fiber (f γ) (b γ)
 
-opaque
-  FiberFibStr : {Γ : Type ℓ}
-    {A : Γ → Type ℓ'} (α : FibStr A)
-    {B : Γ → Type ℓ''} (b : FibStr B)
-    (f : Γ ⊢ A →ᴵ B)
-    (b : Γ ⊢ B)
-    → FibStr (Fiberᴵ f b)
-  FiberFibStr α β f b =
-    ΣFibStr α (PathFibStr (β ∘ᶠˢ fst) _ _)
+Fiberᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ)
+  (f : Γ ⊢ A .fst →ᴵ B .fst)
+  (b : Γ ⊢ B .fst)
+  → Fib (ℓ' ⊔ ℓ'') Γ
+Fiberᶠ A B f b = Σᶠ A (Pathᶠ (B ∘ᶠ fst) (uncurry f) (b ∘ fst))
 
-  reindexFiberFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''} (α : FibStr A)
-    {B : Γ → Type ℓ'''} (β : FibStr B)
-    {f : Γ ⊢ A →ᴵ B}
-    {b : Γ ⊢ B}
+opaque
+  reindexFiberᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+    (A : Fib ℓ'' Γ) (B : Fib ℓ''' Γ) {f : Γ ⊢ A .fst →ᴵ B .fst} {b : Γ ⊢ B .fst}
     (ρ : Δ → Γ)
-    → FiberFibStr α β f b ∘ᶠˢ ρ ≡ FiberFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ) (b ∘ ρ)
-  reindexFiberFibStr α β ρ =
-    reindexΣFibStr _ _ _ ∙ cong (ΣFibStr _) (reindexPathFibStr _ _)
+    → Fiberᶠ A B f b ∘ᶠ ρ ≡ Fiberᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ) (f ∘ ρ) (b ∘ ρ)
+  reindexFiberᶠ A B ρ =
+    reindexΣᶠ _ _ _ ∙ cong (Σᶠ _) (reindexPathᶠ _ _)
 
 module _ {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
 
@@ -118,24 +104,20 @@ IsEquivᴵ : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ → Type (ℓ' ⊔ ℓ'')
 IsEquivᴵ f = Πᴵ _ (IsContrᴵ (Fiberᴵ (f ∘ fst) snd))
 
-IsEquivFibStr : {Γ : Type ℓ}
-  {A : Γ → Type ℓ'} (α : FibStr A)
-  {B : Γ → Type ℓ''} (β : FibStr B)
-  (f : Γ ⊢ A →ᴵ B)
-  → FibStr (IsEquivᴵ f)
-IsEquivFibStr α β f =
-  ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ _) (β ∘ᶠˢ _) _ _))
+IsEquivᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ)
+  (f : Γ ⊢ A .fst →ᴵ B .fst)
+  → Fib (ℓ' ⊔ ℓ'') Γ
+IsEquivᶠ A B f = Πᶠ B (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
 
-reindexIsEquivFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-  {A : Γ → Type ℓ''} (α : FibStr A)
-  {B : Γ → Type ℓ'''} (β : FibStr B)
-  {f : Γ ⊢ A →ᴵ B}
+reindexIsEquivᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+  (A : Fib ℓ'' Γ)
+  (B : Fib ℓ''' Γ)
+  {f : Γ ⊢ A .fst →ᴵ B .fst}
   (ρ : Δ → Γ)
-  → IsEquivFibStr α β f ∘ᶠˢ ρ ≡ IsEquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ)
-reindexIsEquivFibStr α β ρ =
-  reindexΠFibStr _ _ _
-  ∙ cong (ΠFibStr _)
-      (reindexIsContrFibStr _ _ ∙ cong IsContrFibStr (reindexFiberFibStr _ _ _))
+  → IsEquivᶠ A B f ∘ᶠ ρ ≡ IsEquivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ) (f ∘ ρ)
+reindexIsEquivᶠ A B {f = f} ρ =
+  reindexΠᶠ _ _ _
+  ∙ cong (Πᶠ _) (reindexIsContrᶠ _ _ ∙ cong IsContrᶠ (reindexFiberᶠ _ (B ∘ᶠ fst) _))
 
 Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
 Equiv A B = Σ (A → B) IsEquiv
@@ -149,24 +131,22 @@ equivFun : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
   → Γ ⊢ A →ᴵ B
 equivFun = fst ∘_
 
-opaque
-  EquivFibStr : {Γ : Type ℓ}
-    {A : Γ → Type ℓ'} (α : FibStr A)
-    {B : Γ → Type ℓ''} (β : FibStr B)
-    → FibStr (Equivᴵ A B)
-  EquivFibStr α β =
-    ΣFibStr (ΠFibStr α (β ∘ᶠˢ fst)) (IsEquivFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) _)
+Equivᶠ : {Γ : Type ℓ} (A : Fib ℓ' Γ) (B : Fib ℓ'' Γ) → Fib (ℓ' ⊔ ℓ'') Γ
+Equivᶠ A B = Σᶠ (Πᶠ A (B ∘ᶠ fst)) (IsEquivᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) snd)
 
-  reindexEquivFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''} (α : FibStr A)
-    {B : Γ → Type ℓ'''} (β : FibStr B)
+opaque
+  reindexEquivᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
+    (A : Fib ℓ'' Γ)
+    (B : Fib ℓ''' Γ)
     (ρ : Δ → Γ)
-    → EquivFibStr α β ∘ᶠˢ ρ ≡ EquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ)
-  reindexEquivFibStr α β ρ =
-    reindexΣFibStr _ _ _
-    ∙ cong₂ (λ α β → ΣFibStr α β)
-        (reindexΠFibStr _ _ _)
-        (reindexIsEquivFibStr (α ∘ᶠˢ fst) _ _)
+    → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
+  reindexEquivᶠ A B ρ =
+    reindexΣᶠ _ _ _
+    ∙ congΣ Σᶠ
+      (reindexΠᶠ _ _ _)
+      (substCongAssoc (Fib _ ∘ Σ _) fst (reindexΠᶠ _ _ _) _
+        ∙ substConst _ _ _
+        ∙ reindexIsEquivᶠ (A ∘ᶠ fst) _ _)
 
 ------------------------------------------------------------------------------------------
 -- Identity and coercion maps are equivalences
@@ -198,37 +178,34 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (sym (q 1 .fill 0 .out≡ (∨r refl)))
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
-idEquivFib : (A : Fib ℓ 𝟙) → Equiv (A .fst tt) (A .fst tt)
-idEquivFib (_ , α) = idEquiv α
-
-coerceEquiv : (S : Shape)
-  {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
-  (r s : ⟨ S ⟩) → Equiv (A r) (A s)
-coerceEquiv S {A} α r s =
-  coerce S r
-    (EquivFibStr (α ∘ᶠˢ (λ _ → r)) α)
-    (idEquiv (α ∘ᶠˢ (λ _ → r)))
-    s
+idEquivᶠ : (A : Fib ℓ 𝟙) → Equiv (A .fst tt) (A .fst tt)
+idEquivᶠ (_ , α) = idEquiv α
 
 opaque
+  coerceEquiv : (S : Shape)
+    (A : Fib ℓ ⟨ S ⟩)
+    (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
+  coerceEquiv S A r s =
+    coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ (A ∘ᶠ (λ _ → r))) s
+
   coerceEquivCap : (S : Shape)
-    {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
-    (r : ⟨ S ⟩) → coerceEquiv S α r r ≡ idEquiv (α ∘ᶠˢ (λ _ → r))
-  coerceEquivCap S {A} α r =
+    (A : Fib ℓ ⟨ S ⟩)
+    (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ (A ∘ᶠ (λ _ → r))
+  coerceEquivCap S A r =
     coerceCap S r
-      (EquivFibStr (α ∘ᶠˢ (λ _ → r)) α)
-      (idEquiv (α ∘ᶠˢ (λ _ → r)))
+      (Equivᶠ (A ∘ᶠ (λ _ → r)) A)
+      (idEquivᶠ (A ∘ᶠ (λ _ → r)))
 
   coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
-    {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
+    (A : Fib ℓ ⟨ T ⟩)
     (r s : ⟨ S ⟩)
-    → coerceEquiv T α (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (α ∘ᶠˢ ⟪ σ ⟫) r s
-  coerceEquivVary {S = S} σ α r s =
+    → coerceEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
+  coerceEquivVary {S = S} σ A r s =
     coerceVary σ r
-      (EquivFibStr (α ∘ᶠˢ (λ _ → ⟪ σ ⟫ r)) α)
-      (idEquiv (α ∘ᶠˢ (λ _ → ⟪ σ ⟫ r)))
+      (Equivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)) A)
+      (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)))
       s
     ∙
     cong
-      (λ β → coerce S r β (idEquiv (α ∘ᶠˢ (λ _ → ⟪ σ ⟫ r))) s)
-      (reindexEquivFibStr (α ∘ᶠˢ (λ _ → ⟪ σ ⟫ r)) α ⟪ σ ⟫)
+      (λ β → coerce S r (_ , β) (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r))) s)
+      (Σeq₂ (reindexEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)) A ⟪ σ ⟫) refl)

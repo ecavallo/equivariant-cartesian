@@ -91,6 +91,11 @@ substCongAssoc : {A : Type ℓ} {B : Type ℓ'}
   → subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
 substCongAssoc _ _ refl _ = refl
 
+substConst : {A : Type ℓ} (B : A → Type ℓ')
+  {x : A} (p : x ≡ x) (b : B x)
+  → subst B p b ≡ b
+substConst _ refl b = refl
+
 substTrans : {A : Type ℓ} (B : A → Type ℓ')
   {x y z : A} (q : y ≡ z) (p : x ≡ y) {b : B x}
   → subst B (p ∙ q) b ≡ subst B q (subst B p b)
@@ -149,11 +154,13 @@ A × B = Σ A (λ _ → B)
 
 _×id : {A : Type ℓ} {A' : Type ℓ'} {B : A' → Type ℓ''}
   (f : A → A') → Σ A (B ∘ f) → Σ A' B
-(f ×id) (a , b) = (f a , b)
+(f ×id) ab .fst = f (ab .fst)
+(f ×id) ab .snd = ab .snd
 
 id× : {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''}
   (f : ∀ {a} → B a → B' a) → Σ A B → Σ A B'
-(id× f) (a , b) = (a , f b)
+(id× f) ab .fst = ab .fst
+(id× f) ab .snd = f (ab .snd)
 
 ×ext : {A : Type ℓ} {B : Type ℓ'}
   {x x' : A} (p : x ≡ x')
@@ -162,9 +169,10 @@ id× : {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''}
 ×ext refl refl = refl
 
 Σext : {A : Type ℓ} {B : A → Type ℓ'}
-  {x x' : A} (p : x ≡ x')
-  {y : B x} {y' : B x'} (q : subst B p y ≡ y')
-  → (x , y) ≡ (x' , y')
+  {ab ab' : Σ A B}
+  (p : ab .fst ≡ ab' .fst)
+  (q : subst B p (ab .snd) ≡ ab' .snd)
+  → ab ≡ ab'
 Σext refl refl = refl
 
 Σeq₂ : {A  : Type ℓ} {B : A → Type ℓ'} {x y : Σ A B}
@@ -180,7 +188,7 @@ _,,_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
 uncurry : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
   → (∀ a b → C a b)
   → ((p : Σ A B) → C (p .fst) (p .snd))
-uncurry f (a , b) = f a b
+uncurry f ab = f (ab .fst) (ab .snd)
 
 curry : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
   → ((p : Σ A B) → C (p .fst) (p .snd))

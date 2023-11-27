@@ -93,7 +93,7 @@ module LargeBoxUnion {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
     matchLemma =
       cong (Tu ∘ᶠ_) (sym eqLemma) ∙ cong (_∘ᶠ wk[ ψ ∘ wk[ φ ] ]) p
 
-  open UnionFib φ ψ
+  open Unionᶠ φ ψ
     (Tu ∘ᶠ (id ,, s ∘ wk[ φ ]))
     (Ca ∘ᶠ wk[ ψ ])
     matchLemma
@@ -156,10 +156,10 @@ opaque
       subst
         (Equiv (Tu .fst _))
         (appCong (cong fst mat))
-        (coerceEquiv S ((Tu ∘ᶠ ((γ , u) ,_)) .snd) (s γ) (r γ))
+        (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) (s γ) (r γ))
 
     rightEquiv : Γ ,[ ψ ] ⊢ Equivᴵ (Ca .fst ∘ wk[ ψ ]) (Ca .fst ∘ wk[ ψ ])
-    rightEquiv (γ , _) = idEquiv (Ca .snd ∘ᶠˢ (λ _ → γ))
+    rightEquiv (γ , _) = idEquivᶠ (Ca ∘ᶠ (λ _ → γ))
 
     eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Fib ℓ' Γ}
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
@@ -184,8 +184,8 @@ opaque
         (cong (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)))
         mat
         (sym (substCongAssoc (Equiv ◆ _) (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)) _)
-          ∙ congdep (coerceEquiv S ((Tu ∘ᶠ ((γ , u) ,_)) .snd) ◆ (r γ)) (sym (toEq γ v))
-          ∙ coerceEquivCap S ((Tu ∘ᶠ ((γ , u) ,_)) .snd) (r γ))
+          ∙ congdep (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) ◆ (r γ)) (sym (toEq γ v))
+          ∙ coerceEquivCap S (Tu ∘ᶠ ((γ , u) ,_)) (r γ))
 
 opaque
   unfolding largeBoxEquiv
@@ -198,11 +198,13 @@ opaque
   varyLargeBoxEquiv σ {r = r} box s ψ toEq =
     funext $
     uncurry λ γ →
-    ∨-elimEq (box .cof γ) (ψ γ)
+    ∨-elimEq (φ γ) (ψ γ)
       (λ u →
-        cong (subst (Equiv (box .Tube .fst _)) (appCong (cong fst (box .match))))
-          (coerceEquivVary σ ((box .Tube ∘ᶠ ((γ , u) ,_)) .snd) (s γ) (r γ)))
+        cong (subst (Equiv (Tu .fst _)) (appCong (cong fst mat)))
+          (coerceEquivVary σ (Tu ∘ᶠ ((γ , u) ,_)) (s γ) (r γ)))
       (λ v → refl)
+    where
+    open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; match to mat)
 
 opaque
   unfolding largeBoxEquiv
@@ -216,13 +218,15 @@ opaque
   reindexLargeBoxEquiv {S = S} {r = r} box s ψ toEq ρ =
     funext $
     uncurry λ δ →
-    ∨-elimEq (box .cof (ρ δ)) (ψ (ρ δ))
+    ∨-elimEq (φ (ρ δ)) (ψ (ρ δ))
       (λ u →
         cong
-          (subst (Equiv (box .Tube .fst _)) ◆
-            (coerceEquiv S ((box .Tube ∘ᶠ ((ρ δ , u) ,_)) .snd) (s (ρ δ)) (r (ρ δ))))
+          (subst (Equiv (Tu .fst _)) ◆
+            (coerceEquiv S (Tu ∘ᶠ ((ρ δ , u) ,_)) (s (ρ δ)) (r (ρ δ))))
           uipImp)
       (λ v → refl)
+    where
+    open LargeOpenBox box renaming (cof to φ ; Tube to Tu)
 
 opaque
   LargeBoxFillerψ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
@@ -231,7 +235,7 @@ opaque
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → Fib ℓ' Γ
   LargeBoxFillerψ box s ψ toEq =
-    FibSGlue
+    SGlueᶠ
       (box .cof ∨ᴵ ψ)
       (LargeBoxUnion box s ψ toEq)
       (box .Cap)
@@ -245,9 +249,9 @@ opaque
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ ρ
       ≡ LargeBoxFillerψ (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
   reindexLargeBoxFillerψ box s ψ toEq ρ =
-    reindexFibSGlue _ _ _ _ ρ
+    reindexSGlueᶠ _ _ _ _ ρ
     ∙ cong₂
-      (λ isfib eqv → FibSGlue ((box .cof ∨ᴵ ψ) ∘ ρ) (_ , isfib) (box .Cap ∘ᶠ ρ) eqv)
+      (λ isfib eqv → SGlueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (_ , isfib) (box .Cap ∘ᶠ ρ) eqv)
       (reindexLargeBoxUnion box s ψ toEq ρ)
       (reindexLargeBoxEquiv box s ψ toEq ρ)
 
@@ -260,7 +264,7 @@ opaque
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ wk[ box .cof ]
       ≡ box .Tube ∘ᶠ (id ,, s ∘ wk[ box .cof ])
   LargeBoxψTube≡ {S = S} {r = r} box s ψ toEq =
-    cong (_∘ᶠ id× ∨l) (sym (FibSGlueStrictness _ _ _ _))
+    cong (_∘ᶠ id× ∨l) (sym (SGlueᶠStrictness _ _ _ _))
     ∙ LargeBoxUnion.left box s ψ toEq
 
 opaque
@@ -269,7 +273,7 @@ opaque
     (box : LargeOpenBox S r ℓ')
     → LargeBoxFillerψ box r (S ∋ r ≈ᴵ r) (λ _ → id) ≡ box .Cap
   LargeBoxCap≡ {S = S} {r = r} box =
-    cong (_∘ᶠ (id ,, λ _ → ∨r refl)) (sym (FibSGlueStrictness _ _ _ _))
+    cong (_∘ᶠ (id ,, λ _ → ∨r refl)) (sym (SGlueᶠStrictness _ _ _ _))
     ∙ cong (_∘ᶠ (id ,, λ _ → refl)) (LargeBoxUnion.right box r _ _)
 
 LargeBoxFiller : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩} (box : LargeOpenBox S r ℓ')
@@ -295,7 +299,7 @@ opaque
       ≡ LargeBoxFillerψ (reshapeLargeBox σ box) s ψ toEq
   varyLargeBoxFillerψ {S = S} σ {r = r} box s ψ toEq =
     cong₂
-      (λ isfib eqv → FibSGlue (box .cof ∨ᴵ ψ) (_ , isfib) (box .Cap) eqv)
+      (λ isfib eqv → SGlueᶠ (box .cof ∨ᴵ ψ) (_ , isfib) (box .Cap) eqv)
       (varyLargeBoxUnion σ box s ψ toEq)
       (varyLargeBoxEquiv σ box s ψ toEq)
 

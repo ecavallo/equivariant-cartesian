@@ -29,8 +29,8 @@ module ΠLift {S r}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    fillA = coerceFiller S s α a
-    coeA = coerce S s α a
+    fillA = coerceFiller S s (A , α) a
+    coeA = coerce S s (A , α) a
 
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
@@ -66,7 +66,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
     ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   varyA : ∀ s a i → T.coeA (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.coeA s a i
-  varyA s = coerceVary σ s α
+  varyA s = coerceVary σ s (A , α)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =

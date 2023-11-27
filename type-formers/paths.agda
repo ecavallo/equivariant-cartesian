@@ -86,7 +86,7 @@ Pathᶠ A a₀ a₁ .fst = Pathᴵ (A .fst) a₀ a₁
 Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
 
 reindexPathᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  (A : Fib ℓ' Γ)
+  (A : Fib ℓ'' Γ)
   {a₀ a₁ : Γ ⊢ A .fst}
   (ρ : Δ → Γ)
   → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)

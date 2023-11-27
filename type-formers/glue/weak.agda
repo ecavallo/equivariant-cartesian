@@ -144,11 +144,12 @@ module GlueLift {S r Φ}
       boxR .cap .out≡ v≡ = C₂ (fiberR v≡) .at1
 
       fillR =
-        FiberFibStr
-          (β ∘ᶠˢ (s ,_))
-          (α ∘ᶠˢ (λ _ → s))
-          (f ∘ (s ,_)) (λ _ → fillA .fill s .out)
-          .lift 𝕚 1 (λ _ → us) boxR .fill 0
+        Fiberᶠ
+          (_ , β ∘ᶠˢ (s ,_))
+          (_ , α ∘ᶠˢ (λ _ → s))
+          (f ∘ (s ,_))
+          (λ _ → fillA .fill s .out)
+          .snd .lift 𝕚 1 (λ _ → us) boxR .fill 0
 
     boxFix : OpenBox 𝕚 1 (λ _ → A s)
     boxFix .cof = box .cof ∨ Φ s ∨ S ∋ r ≈ s
@@ -229,7 +230,7 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
     varyR uσs =
       congdep₂
         (λ a box →
-          FiberFibStr (β ∘ᶠˢ _) (α ∘ᶠˢ _) _ (λ _ → a) .lift 𝕚 1
+          Fiberᶠ (_ , β ∘ᶠˢ _) (_ , α ∘ᶠˢ _) _ (λ _ → a) .snd .lift 𝕚 1
             (λ _ → uσs) box .fill 0 .out)
         varyA
         (boxExtDep varyA
