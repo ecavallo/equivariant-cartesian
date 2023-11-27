@@ -17,35 +17,35 @@ private variable ℓ ℓ' ℓ'' : Level
 
 FibSGlue : {Γ : Type ℓ}
   (Φ : Γ → CofProp)
-  (Aα : Fib ℓ' (Γ ,[ Φ ]))
-  (Bβ : Fib ℓ' Γ)
-  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
+  (A : Fib ℓ' (Γ ,[ Φ ]))
+  (B : Fib ℓ' Γ)
+  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
   → Fib ℓ' Γ
-FibSGlue Φ Aα Bβ fe =
-  FibRealign Φ Aα (FibGlue Φ Aα Bβ fe) (includeAIsoᴵ Φ (equivFun fe))
+FibSGlue Φ A B fe =
+  FibRealign Φ A (FibGlue Φ A B fe) (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
   FibSGlueStrictness : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    (Aα : Fib ℓ' (Γ ,[ Φ ]))
-    (Bβ : Fib ℓ' Γ)
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Aα .fst) (Bβ .fst ∘ fst))
-    → Aα ≡ reindexFib (FibSGlue Φ Aα Bβ fe) fst
-  FibSGlueStrictness Φ Aα Bβ fe =
+    (A : Fib ℓ' (Γ ,[ Φ ]))
+    (B : Fib ℓ' Γ)
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
+    → A ≡ reindexFib (FibSGlue Φ A B fe) fst
+  FibSGlueStrictness Φ A B fe =
     isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
   reindexFibSGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    (Bβ : Fib ℓ'' (Γ ,[ Φ ]))
-    (Aα : Fib ℓ'' Γ)
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Bβ .fst) (Aα .fst ∘ fst))
+    (B : Fib ℓ'' (Γ ,[ Φ ]))
+    (A : Fib ℓ'' Γ)
+    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
     (ρ : Δ → Γ)
-    → reindexFib (FibSGlue Φ Bβ Aα fe) ρ
-      ≡ FibSGlue (Φ ∘ ρ)(reindexFib Bβ (ρ ×id)) (reindexFib Aα ρ) (fe ∘ ρ ×id)
+    → reindexFib (FibSGlue Φ B A fe) ρ
+      ≡ FibSGlue (Φ ∘ ρ)(reindexFib B (ρ ×id)) (reindexFib A ρ) (fe ∘ ρ ×id)
   reindexFibSGlue Φ (_ , β) (_ , α) fe ρ =
     reindexFibRealign Φ _ _ _ ρ
     ∙
     cong
       (λ α' → FibRealign (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
-      (reindexGlue Φ fe β α ρ)
+      (reindexGlue Φ β α fe ρ)

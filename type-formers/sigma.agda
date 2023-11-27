@@ -19,8 +19,8 @@ _×ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → Γ 
 (A ×ᴵ B) x = A x × B x
 
 module ΣLift {S r}
-  {A : ⟨ S ⟩ → Type ℓ} {B : Σ ⟨ S ⟩ A → Type ℓ'}
-  (α : isFib A) (β : isFib B)
+  {A : ⟨ S ⟩ → Type ℓ} (α : isFib A)
+  {B : Σ ⟨ S ⟩ A → Type ℓ'} (β : isFib B)
   (box : OpenBox S r (Σᴵ A B))
   where
 
@@ -57,8 +57,8 @@ module ΣLift {S r}
         (fillB fillA .cap≡))
 
 module ΣVary {S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ → Type ℓ} {B : Σ ⟨ T ⟩ A → Type ℓ'}
-  (α : isFib A) (β : isFib B)
+  {A : ⟨ T ⟩ → Type ℓ} (α : isFib A)
+  {B : Σ ⟨ T ⟩ A → Type ℓ'} (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Σᴵ A B))
   where
 
@@ -82,10 +82,8 @@ module ΣVary {S T} (σ : ShapeHom S T) {r}
 
 opaque
   ΣIsFib : {Γ : Type ℓ}
-    {A : Γ → Type ℓ'}
-    {B : (Σ x ∈ Γ , A x) → Type ℓ''}
-    (α : isFib A)
-    (β : isFib B)
+    {A : Γ → Type ℓ'} (α : isFib A)
+    {B : (Σ x ∈ Γ , A x) → Type ℓ''} (β : isFib B)
     → isFib (Σᴵ A B)
   ΣIsFib α β .lift S r p = ΣLift.filler (reindex α p) (reindex β (p ×id))
   ΣIsFib α β .vary S T σ r p = ΣVary.eq σ (reindex α p) (reindex β (p ×id))
@@ -95,10 +93,8 @@ opaque
   ----------------------------------------------------------------------------------------
 
   reindexΣ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''}
-    {B : Σ Γ A → Type ℓ'''}
-    (α : isFib A)
-    (β : isFib B)
+    {A : Γ → Type ℓ''} (α : isFib A)
+    {B : Σ Γ A → Type ℓ'''} (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (ΣIsFib α β) ρ ≡ ΣIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΣ α β ρ = isFibExt λ _ _ _ _ _ → refl
@@ -110,8 +106,8 @@ FibΣ : {Γ : Type ℓ}
 FibΣ (A , α) (B , β) = Σᴵ A B , ΣIsFib α β
 
 reindexFibΣ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  (Aα : Fib ℓ'' Γ)
-  (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
+  (A : Fib ℓ'' Γ)
+  (B : Fib ℓ''' (Σ Γ (A .fst)))
   (ρ : Δ → Γ)
-  → reindexFib (FibΣ Aα Bβ) ρ ≡ FibΣ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
+  → reindexFib (FibΣ A B) ρ ≡ FibΣ (reindexFib A ρ) (reindexFib B (ρ ×id))
 reindexFibΣ (_ , α) (_ , β) ρ = Σext refl (reindexΣ α β ρ)

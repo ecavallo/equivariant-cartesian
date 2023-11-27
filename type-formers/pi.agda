@@ -22,8 +22,8 @@ _→ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'')
 A →ᴵ B = Πᴵ A (B ∘ fst)
 
 module ΠLift {S r}
-  {A : ⟨ S ⟩ → Type ℓ} {B : Σ ⟨ S ⟩ A → Type ℓ'}
-  (α : isFib A) (β : isFib B)
+  {A : ⟨ S ⟩ → Type ℓ} (α : isFib A)
+  {B : Σ ⟨ S ⟩ A → Type ℓ'} (β : isFib B)
   (box : OpenBox S r (Πᴵ A B))
   where
 
@@ -56,8 +56,8 @@ module ΠLift {S r}
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
-  {A : ⟨ T ⟩ → Type ℓ} {B : Σ ⟨ T ⟩ A → Type ℓ'}
-  (α : isFib A) (β : isFib B)
+  {A : ⟨ T ⟩ → Type ℓ} (α : isFib A)
+  {B : Σ ⟨ T ⟩ A → Type ℓ'} (β : isFib B)
   (box : OpenBox T (⟪ σ ⟫ r) (Πᴵ A B))
   where
 
@@ -82,10 +82,8 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 
 opaque
   ΠIsFib : {Γ : Type ℓ}
-    {A : Γ → Type ℓ'}
-    {B : Σ Γ A → Type ℓ''}
-    (α : isFib A)
-    (β : isFib B)
+    {A : Γ → Type ℓ'} (α : isFib A)
+    {B : Σ Γ A → Type ℓ''} (β : isFib B)
     → isFib (Πᴵ A B)
   ΠIsFib α β .lift S r p = ΠLift.filler (reindex α p) (reindex β (p ×id))
   ΠIsFib α β .vary S T σ r p = ΠVary.eq σ (reindex α p) (reindex β (p ×id))
@@ -95,23 +93,21 @@ opaque
   ----------------------------------------------------------------------------------------
 
   reindexΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''}
-    {B : Σ Γ A → Type ℓ'''}
-    (α : isFib A)
-    (β : isFib B)
+    {A : Γ → Type ℓ''} (α : isFib A)
+    {B : Σ Γ A → Type ℓ'''} (β : isFib B)
     (ρ : Δ → Γ)
     → reindex (ΠIsFib α β) ρ ≡ ΠIsFib (reindex α ρ) (reindex β (ρ ×id))
   reindexΠ α β ρ = isFibExt λ _ _ _ _ _ → refl
 
 FibΠ : {Γ : Type ℓ}
-  (Aα : Fib ℓ' Γ)
-  (Bα : Fib ℓ'' (Σ Γ (Aα .fst)))
+  (A : Fib ℓ' Γ)
+  (B : Fib ℓ'' (Σ Γ (A .fst)))
   → Fib (ℓ' ⊔ ℓ'') Γ
 FibΠ (A , α) (B , β) = (Πᴵ A B , ΠIsFib α β)
 
 reindexFibΠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  (Aα : Fib ℓ'' Γ)
-  (Bβ : Fib ℓ''' (Σ Γ (Aα .fst)))
+  (A : Fib ℓ'' Γ)
+  (B : Fib ℓ''' (Σ Γ (A .fst)))
   (ρ : Δ → Γ)
-  → reindexFib (FibΠ Aα Bβ) ρ ≡ FibΠ (reindexFib Aα ρ) (reindexFib Bβ (ρ ×id))
+  → reindexFib (FibΠ A B) ρ ≡ FibΠ (reindexFib A ρ) (reindexFib B (ρ ×id))
 reindexFibΠ (_ , α) (_ , β) ρ = Σext refl (reindexΠ α β ρ)

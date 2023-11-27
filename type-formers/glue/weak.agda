@@ -101,10 +101,9 @@ includeAIsoᴵ φ w (γ , u) = includeAIso (φ γ) (w ∘ (γ ,_)) u
 ------------------------------------------------------------------------------------------
 
 module GlueLift {S r Φ}
-  {B : ⟨ S ⟩ ,[ Φ ] → Type ℓ}
-  {A : ⟨ S ⟩ → Type ℓ}
+  {B : ⟨ S ⟩ ,[ Φ ] → Type ℓ} (β : isFib B)
+  {A : ⟨ S ⟩ → Type ℓ} (α : isFib A)
   (fe : ⟨ S ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
-  (β : isFib B) (α : isFib A)
   (box : OpenBox S r (Glueᴵ Φ B A (equivFun fe)))
   where
 
@@ -199,16 +198,15 @@ module GlueLift {S r Φ}
         (sym (fillFix r .out≡ (∨r (∨r refl))))
 
 module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
-  {B : ⟨ T ⟩ ,[ Φ ] → Type ℓ}
-  {A : ⟨ T ⟩ → Type ℓ}
+  {B : ⟨ T ⟩ ,[ Φ ] → Type ℓ} (β : isFib B)
+  {A : ⟨ T ⟩ → Type ℓ} (α : isFib A)
   (fe : ⟨ T ⟩ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
-  (β : isFib B) (α : isFib A)
   (box : OpenBox T (⟪ σ ⟫ r) (Glueᴵ Φ B A (equivFun fe)))
   where
 
-  module T = GlueLift fe β α box
+  module T = GlueLift β α fe box
   module S =
-    GlueLift (fe ∘ (⟪ σ ⟫ ×id)) (reindex β (⟪ σ ⟫ ×id)) (reindex α ⟪ σ ⟫) (reshapeBox σ box)
+    GlueLift (reindex β (⟪ σ ⟫ ×id)) (reindex α ⟪ σ ⟫) (fe ∘ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   open T using (f ; e)
 
@@ -266,26 +264,24 @@ module GlueVary {S T} (σ : ShapeHom S T) {r Φ}
 opaque
   GlueIsFib : {Γ : Type ℓ}
     (Φ : Γ → CofProp)
-    {B : Γ ,[ Φ ] → Type ℓ'}
-    {A : Γ → Type ℓ'}
+    {B : Γ ,[ Φ ] → Type ℓ'} (β : isFib B)
+    {A : Γ → Type ℓ'} (α : isFib A)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
-    → isFib B → isFib A → isFib (Glueᴵ Φ B A (equivFun fe))
-  GlueIsFib Φ fe β α .lift S r p =
-    GlueLift.filler (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p)
-  GlueIsFib Φ fe β α .vary S T σ r p =
-    GlueVary.eq σ (fe ∘ p ×id) (reindex β (p ×id)) (reindex α p)
+    → isFib (Glueᴵ Φ B A (equivFun fe))
+  GlueIsFib Φ β α fe .lift S r p =
+    GlueLift.filler (reindex β (p ×id)) (reindex α p) (fe ∘ p ×id)
+  GlueIsFib Φ β α fe .vary S T σ r p =
+    GlueVary.eq σ (reindex β (p ×id)) (reindex α p) (fe ∘ p ×id)
 
   reindexGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
     (Φ : Γ → CofProp)
-    {B : Γ ,[ Φ ] → Type ℓ''}
-    {A : Γ → Type ℓ''}
+    {B : Γ ,[ Φ ] → Type ℓ''} (β : isFib B)
+    {A : Γ → Type ℓ''} (α : isFib A)
     (fe : Γ ,[ Φ ] ⊢ Equivᴵ B (A ∘ fst))
-    (β : isFib B)
-    (α : isFib A)
     (ρ : Δ → Γ)
-    → reindex (GlueIsFib Φ fe β α) ρ
-      ≡ GlueIsFib (Φ ∘ ρ) (fe ∘ ρ ×id) (reindex β (ρ ×id)) (reindex α ρ)
-  reindexGlue Φ fe β α ρ =
+    → reindex (GlueIsFib Φ β α fe) ρ
+      ≡ GlueIsFib (Φ ∘ ρ) (reindex β (ρ ×id)) (reindex α ρ) (fe ∘ ρ ×id)
+  reindexGlue Φ β α fe ρ =
     isFibExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
 
 FibGlue : {Γ : Type ℓ}
@@ -295,14 +291,14 @@ FibGlue : {Γ : Type ℓ}
   (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   → Fib ℓ' Γ
 FibGlue Φ (B , _) (A , _) fe .fst = Glueᴵ Φ B A (equivFun fe)
-FibGlue Φ (_ , β) (_ , α) fe .snd = GlueIsFib Φ fe β α
+FibGlue Φ (_ , β) (_ , α) fe .snd = GlueIsFib Φ β α fe
 
 reindexFibGlue : {Δ : Type ℓ} {Γ : Type ℓ'}
   (Φ : Γ → CofProp)
-  (Bβ : Fib ℓ'' (Γ ,[ Φ ]))
-  (Aα : Fib ℓ'' Γ)
-  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (Bβ .fst) (Aα .fst ∘ fst))
+  (B : Fib ℓ'' (Γ ,[ Φ ]))
+  (A : Fib ℓ'' Γ)
+  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
   (ρ : Δ → Γ)
-  → reindexFib (FibGlue Φ Bβ Aα fe) ρ
-    ≡ FibGlue (Φ ∘ ρ)(reindexFib Bβ (ρ ×id)) (reindexFib Aα ρ) (fe ∘ ρ ×id)
-reindexFibGlue Φ fe Bβ Aα ρ = Σext refl (reindexGlue _ _ _ _ _)
+  → reindexFib (FibGlue Φ B A fe) ρ
+    ≡ FibGlue (Φ ∘ ρ)(reindexFib B (ρ ×id)) (reindexFib A ρ) (fe ∘ ρ ×id)
+reindexFibGlue Φ fe B A ρ = Σext refl (reindexGlue _ _ _ _ _)

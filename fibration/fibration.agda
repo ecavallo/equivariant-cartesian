@@ -121,13 +121,12 @@ Fib ℓ' Γ = Σ (Γ → Type ℓ') isFib
 -- Fibrations can be reindexed
 ------------------------------------------------------------------------------------------
 
-reindex : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''}
-  (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
+reindex : {Δ : Type ℓ} {Γ : Type ℓ'}
+  {A : Γ → Type ℓ''} (α : isFib A) (ρ : Δ → Γ) → isFib (A ∘ ρ)
 reindex α ρ .lift S r p = α .lift S r (ρ ∘ p)
 reindex α ρ .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
-reindexFib : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ)
-  → Fib ℓ'' Δ
+reindexFib : {Δ : Type ℓ} {Γ : Type ℓ'} (Aα : Fib ℓ'' Γ) (ρ : Δ → Γ) → Fib ℓ'' Δ
 reindexFib (A , α) ρ .fst = A ∘ ρ
 reindexFib (A , α) ρ .snd = reindex α ρ
 

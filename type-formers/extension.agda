@@ -79,8 +79,7 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
 opaque
   ExtensionIsFib : (Z : Shape)
     {Γ : Type ℓ}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ'}
-    (α : isFib A)
+    {A : Γ × ⟨ Z ⟩ → Type ℓ'} (α : isFib A)
     (Φ : ⟨ Z ⟩ → CofProp)
     (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
     → isFib (Extensionᴵ Z A Φ a)
@@ -92,10 +91,9 @@ opaque
   ----------------------------------------------------------------------------------------
   reindexExtension : {Z : Shape}
     {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ''}
+    {A : Γ × ⟨ Z ⟩ → Type ℓ''} (α : isFib A)
     {Φ : ⟨ Z ⟩ → CofProp}
     {a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
-    (α : isFib A)
     (ρ : Δ → Γ)
     → reindex (ExtensionIsFib Z α Φ a) ρ
       ≡ ExtensionIsFib Z (reindex α (ρ ×id)) Φ (a ∘ ρ ×id ×id)

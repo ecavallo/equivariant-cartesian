@@ -55,8 +55,7 @@ opaque
     retract γ .inv = funext λ p → PathExt λ i → refl
 
   PathIsFib :{Γ : Type ℓ}
-    {A : Γ → Type ℓ'}
-    (α : isFib A)
+    {A : Γ → Type ℓ'} (α : isFib A)
     (a₀ a₁ : Γ ⊢ A)
     → isFib (Pathᴵ A a₀ a₁)
   PathIsFib α a₀ a₁ =
@@ -67,8 +66,7 @@ opaque
   ----------------------------------------------------------------------------------------
 
   reindexPath : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''}
-    (α : isFib A)
+    {A : Γ → Type ℓ''} (α : isFib A)
     {a₀ a₁ : Γ ⊢ A}
     (ρ : Δ → Γ)
     → reindex (PathIsFib α a₀ a₁) ρ ≡ PathIsFib (reindex α ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
