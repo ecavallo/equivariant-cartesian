@@ -42,7 +42,7 @@ Pathᴵ A a₀ a₁ γ = a₀ γ ~ a₁ γ
 opaque
   private
     partialEl : {A : Γ → Type ℓ} (a₀ a₁ : Γ ⊢ A)
-      → (Γ × 𝕀) ▷[ ∂ ∘ snd ] ⊢ A ∘ fst ∘ wk[ ∂ ∘ snd ]
+      → Γ ▷𝕀 ▷[ ∂ ∘ snd ] ⊢ A ∘ fst ∘ wk[ ∂ ∘ snd ]
     partialEl a₀ a₁ =
       uncurry λ (γ , i) → OI-rec i (λ _ → a₀ γ) (λ _ → a₁ γ)
 
@@ -85,4 +85,4 @@ reindexPathᶠ : (A : Γ ⊢ᶠType ℓ) {a₀ a₁ : Γ ⊢ A .fst}
   (ρ : Δ → Γ) → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
 reindexPathᶠ A ρ = Σext refl (reindexPathFibStr (A .snd) ρ)
 
--- TODO J rule
+-- TODO weak J rule
