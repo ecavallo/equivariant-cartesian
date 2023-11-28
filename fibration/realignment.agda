@@ -13,7 +13,9 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-private variable ℓ ℓ' ℓ'' : Level
+private variable
+  ℓ : Level
+  Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
 -- Realigning a fibration structure on a given family
@@ -79,9 +81,8 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
-  realignFibStr : {Γ : Type ℓ}
-    (Φ : Γ → CofProp)
-    (A : Γ → Type ℓ')
+  realignFibStr : (Φ : Γ → CofProp)
+    (A : Γ → Type ℓ)
     (β : FibStr (A ∘ wk[ Φ ]))
     (α : FibStr A)
     → FibStr A
@@ -91,9 +92,8 @@ opaque
     RealignVary.eq σ (Φ ∘ p) (β ∘ᶠˢ p ×id) (α ∘ᶠˢ p)
 
   -- TODO prove this in RealignLift?
-  isRealigned : {Γ : Type ℓ}
-    (Φ : Γ → CofProp)
-    {A : Γ → Type ℓ'}
+  isRealigned : (Φ : Γ → CofProp)
+    {A : Γ → Type ℓ}
     (β : FibStr (A ∘ wk[ Φ ]))
     (α : FibStr A)
     → realignFibStr Φ A β α ∘ᶠˢ fst ≡ β
@@ -105,9 +105,8 @@ opaque
         (α ∘ᶠˢ (wk[ Φ ] ∘ p)) _
         .fill s .out≡ (∨r (snd ∘ p))
 
-  reindexRealignFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (Φ : Γ → CofProp)
-    {A : Γ → Type ℓ''}
+  reindexRealignFibStr : (Φ : Γ → CofProp)
+    {A : Γ → Type ℓ}
     (β : FibStr (A ∘ wk[ Φ ]))
     (α : FibStr A)
     (ρ : Δ → Γ)
@@ -120,36 +119,35 @@ opaque
 ------------------------------------------------------------------------------------------
 
 opaque
-  Realignᶠ : {Γ : Type ℓ} (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ')
-    (A : Γ ⊢ᶠType ℓ')
+  Realignᶠ : (Φ : Γ → CofProp)
+    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (A : Γ ⊢ᶠType ℓ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
-    → Γ ⊢ᶠType ℓ'
+    → Γ ⊢ᶠType ℓ
   Realignᶠ Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
   Realignᶠ Φ (_ , β) (_ , α) iso .snd =
     realignFibStr Φ _
       (subst FibStr (funext (uncurry λ γ → restrictsToA (Φ γ) _ _ (iso ∘ (γ ,_)))) β)
       (isomorphFibStr (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
 
-  isRealignedFib : {Γ : Type ℓ} (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ')
-    (A : Γ ⊢ᶠType ℓ')
+  isRealignedFib : (Φ : Γ → CofProp)
+    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (A : Γ ⊢ᶠType ℓ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → B ≡ Realignᶠ Φ B A iso ∘ᶠ fst
   isRealignedFib Φ (_ , β) (_ , α) iso =
     Σext _ (sym (isRealigned Φ _ _))
 
-  RealignᶠIso : {Γ : Type ℓ} (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ')
-    (A : Γ ⊢ᶠType ℓ')
+  RealignᶠIso : (Φ : Γ → CofProp)
+    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (A : Γ ⊢ᶠType ℓ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → Γ ⊢ Realignᶠ Φ B A iso .fst ≅ᴵ A .fst
   RealignᶠIso Φ B A iso γ = isoB _ _ _ _
 
-  reindexRealignᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ'')
-    (A : Γ ⊢ᶠType ℓ'')
+  reindexRealignᶠ : (Φ : Γ → CofProp)
+    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (A : Γ ⊢ᶠType ℓ)
     (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     (ρ : Δ → Γ)
     → Realignᶠ Φ B A iso ∘ᶠ ρ ≡ Realignᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (iso ∘ ρ ×id)

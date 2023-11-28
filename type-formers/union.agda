@@ -10,22 +10,24 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-private variable ℓ ℓ' ℓ'' : Level
+private variable
+  ℓ : Level
+  Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
 -- Equality of fibration structures on a union of families
 ------------------------------------------------------------------------------------------
 
-unionFibStrExt : {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ'} {α₀ α₁ : FibStr A}
+unionFibStrExt : (φ₀ φ₁ : Γ → CofProp)
+  {A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ} {α₀ α₁ : FibStr A}
   → α₀ ∘ᶠˢ (id× ∨l) ≡ α₁ ∘ᶠˢ (id× ∨l)
   → α₀ ∘ᶠˢ (id× ∨r) ≡ α₁ ∘ᶠˢ (id× ∨r)
   → α₀ ≡ α₁
-unionFibStrExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
+unionFibStrExt φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
   FibStrExt λ S r p box s →
     lemma S r p box s (shape→∨ S (φ₀ ∘ fst ∘ p) (φ₁ ∘ fst ∘ p) (snd ∘ p))
   where
-  module _ (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ ,[ φ₀ ∨ᴵ φ₁ ])
+  module _ (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → _ ,[ φ₀ ∨ᴵ φ₁ ])
     (box : OpenBox S r (A ∘ p)) (s : ⟨ S ⟩)
     where
     move : (u : [ all S ((φ₀ ∨ᴵ φ₁) ∘ fst ∘ p) ]) (eq : u ≡ snd ∘ p)
@@ -58,8 +60,8 @@ unionFibStrExt {Γ = Γ} φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
                 eq₁
           ∙ sym (moveEq (∨r ∘ u₁) (funext λ _ → trunc _ _) α₁))
 
-unionFibExt : {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
-  {A₀ A₁ : Γ ,[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ'}
+unionFibExt : (φ₀ φ₁ : Γ → CofProp)
+  {A₀ A₁ : Γ ,[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ}
   → A₀ ∘ᶠ (id× ∨l) ≡ A₁ ∘ᶠ (id× ∨l)
   → A₀ ∘ᶠ (id× ∨r) ≡ A₁ ∘ᶠ (id× ∨r)
   → A₀ ≡ A₁
@@ -217,8 +219,8 @@ module UnionVary {S T r} (σ : ShapeHom S T)
       (shape→∨ T φ₀ φ₁ u)
 
 
-module UnionFibStr {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
-  (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ')
+module UnionFibStr (φ₀ φ₁ : Γ → CofProp)
+  (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
   (α₀ : FibStr (A ∘ id× ∨l))
   (α₁ : FibStr (A ∘ id× ∨r))
   (eqFib : (_ , α₀) ∘ᶠ wk[ φ₁ ∘ fst ] ≡ (_ , α₁) ∘ᶠ (wk[ φ₀ ] ×id))
@@ -287,8 +289,8 @@ module UnionFibStr {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
         (uip (funext λ _ → trunc _ _) refl)
 
 opaque
-  reindexUnionFibStr : {Δ : Type ℓ} {Γ : Type ℓ'} (φ₀ φ₁ : Γ → CofProp)
-    (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ'')
+  reindexUnionFibStr : (φ₀ φ₁ : Γ → CofProp)
+    (A : Γ ,[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
     (α₀ : FibStr (A ∘ id× ∨l))
     (α₁ : FibStr (A ∘ id× ∨r))
     (eqFib : (_ , α₀) ∘ᶠ wk[ φ₁ ∘ fst ] ≡ (_ , α₁) ∘ᶠ (wk[ φ₀ ] ×id))
@@ -305,8 +307,8 @@ opaque
       (cong (_∘ᶠˢ (ρ ×id)) (UnionFibStr.right φ₀ φ₁ A α₀ α₁ eqFib)
         ∙ sym (UnionFibStr.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
 
-module Unionᶠ {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
-  (A₀ : Γ ,[ φ₀ ] ⊢ᶠType ℓ') (A₁ : Γ ,[ φ₁ ] ⊢ᶠType ℓ')
+module Unionᶠ (φ₀ φ₁ : Γ → CofProp)
+  (A₀ : Γ ,[ φ₀ ] ⊢ᶠType ℓ) (A₁ : Γ ,[ φ₁ ] ⊢ᶠType ℓ)
   (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ (wk[ φ₀ ] ×id))
   where
 
@@ -321,18 +323,19 @@ module Unionᶠ {Γ : Type ℓ} (φ₀ φ₁ : Γ → CofProp)
     (A₁ .snd)
     eqFib
 
-  fib : Γ ,[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ'
+  fib : Γ ,[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ
   fib = (_ , F.fib)
 
-  left : fib ∘ᶠ (id× ∨l) ≡ A₀
-  left = cong (A₀ .fst ,_) F.left
+  opaque
+    left : fib ∘ᶠ (id× ∨l) ≡ A₀
+    left = cong (A₀ .fst ,_) F.left
 
-  right : fib ∘ᶠ (id× ∨r) ≡ A₁
-  right = cong (A₁ .fst ,_) F.right
+    right : fib ∘ᶠ (id× ∨r) ≡ A₁
+    right = cong (A₁ .fst ,_) F.right
 
 opaque
-  reindexUnionᶠ : {Δ : Type ℓ} {Γ : Type ℓ'} (φ₀ φ₁ : Γ → CofProp)
-    (A₀ : Γ ,[ φ₀ ] ⊢ᶠType ℓ'') (A₁ : Γ ,[ φ₁ ] ⊢ᶠType ℓ'')
+  reindexUnionᶠ : (φ₀ φ₁ : Γ → CofProp)
+    (A₀ : Γ ,[ φ₀ ] ⊢ᶠType ℓ) (A₁ : Γ ,[ φ₁ ] ⊢ᶠType ℓ)
     (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ (wk[ φ₀ ] ×id))
     (ρ : Δ → Γ)
     → (Unionᶠ.fib φ₀ φ₁ A₀ A₁ eqFib) ∘ᶠ (ρ ×id)

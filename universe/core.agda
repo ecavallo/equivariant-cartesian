@@ -10,7 +10,9 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-private variable ℓ ℓ' : Level
+private variable
+  ℓ ℓ' : Level
+  Γ : Type ℓ
 
 open Tiny
 
@@ -195,19 +197,17 @@ Elᶠ : ∀ {@♭ ℓ} → U ℓ ⊢ᶠType ℓ
 Elᶠ .fst = El
 Elᶠ .snd = ElFibStr
 
-decode : ∀ {@♭ ℓ'} {Γ : Type ℓ} → (Γ → U ℓ') → Γ ⊢ᶠType ℓ'
+decode : ∀ {@♭ ℓ} → (Γ → U ℓ) → Γ ⊢ᶠType ℓ
 decode = Elᶠ ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
 -- Any fibration induces a map into U
 ------------------------------------------------------------------------------------------
 
-FibLifts : {Γ : Type ℓ} → Γ ⊢ᶠType ℓ'
-  → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ'
+FibLifts : Γ ⊢ᶠType ℓ → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ
 FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
 
-FibVaries : {Γ : Type ℓ} → Γ ⊢ᶠType ℓ'
-  → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ'
+FibVaries : Γ ⊢ᶠType ℓ → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ
 FibVaries (A , α) S T σ p .fst =
   hasVaries S T σ (A ∘ p)
 FibVaries (A , α) S T σ p .snd .src r = α .lift T r p

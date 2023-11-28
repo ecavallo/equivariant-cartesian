@@ -9,7 +9,9 @@ module fibration.fibration where
 open import prelude
 open import axioms
 
-private variable ℓ ℓ' ℓ'' ℓ''' : Level
+private variable
+  ℓ ℓ' : Level
+  Γ Δ : Type ℓ
 
 infix  1 _⊢ᶠType_ _⊢ᶠ_
 infixl 5 _∘ᶠˢ_ _∘ᶠ_
@@ -127,17 +129,15 @@ _⊢ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
 -- Reindexing fibration structures and fibrations
 ------------------------------------------------------------------------------------------
 
-_∘ᶠˢ_ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  {A : Γ → Type ℓ''} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
+_∘ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
 (α ∘ᶠˢ ρ) .lift S r p = α .lift S r (ρ ∘ p)
 (α ∘ᶠˢ ρ) .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
 
-_∘ᶠ_ : {Δ : Type ℓ} {Γ : Type ℓ'}
-  → (Γ ⊢ᶠType ℓ'') → (Δ → Γ) → Δ ⊢ᶠType ℓ''
+_∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
 (A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 
-reindexSubst : {Δ : Type ℓ} {Γ : Type ℓ'} {A A' : Γ → Type ℓ''}
+reindexSubst : {A A' : Γ → Type ℓ}
  (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : FibStr A)
   → subst FibStr P α ∘ᶠˢ ρ ≡ subst FibStr Q (α ∘ᶠˢ ρ)
 reindexSubst ρ refl refl α = refl
@@ -147,9 +147,9 @@ reindexSubst ρ refl refl α = refl
 ------------------------------------------------------------------------------------------
 
 opaque
-  FibStrExt :  {Γ : Type ℓ} {A : Γ → Type ℓ'} {α α' : FibStr A} →
-    ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
-      → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
+  FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A}
+    → ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
+         → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
     → α ≡ α'
   FibStrExt q =
     congΣ makeFib
@@ -161,11 +161,11 @@ opaque
 -- A retract of a fibration is a fibration
 ------------------------------------------------------------------------------------------
 
-Retractᴵ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → (Γ → Type (ℓ' ⊔ ℓ''))
+Retractᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
 Retractᴵ A B γ = Retract (A γ) (B γ)
 
 opaque
-  retractFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
+  retractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
     → Γ ⊢ Retractᴵ A B → FibStr B → FibStr A
   retractFibStr retract β .lift S r p box = filler
     where
@@ -184,8 +184,7 @@ opaque
   retractFibStr retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
-  reindexRetractFibStr : {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ → Type ℓ''} {B : Γ → Type ℓ'''}
+  reindexRetractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
     (retract : Γ ⊢ Retractᴵ A B)
     (β : FibStr B)
     (ρ : Δ → Γ)
@@ -196,14 +195,14 @@ opaque
 -- Corollary: fibration structures can be transferred across isomorphisms
 ------------------------------------------------------------------------------------------
 
-_≅ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ') (B : Γ → Type ℓ'') → (Γ → Type (ℓ' ⊔ ℓ''))
+_≅ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
 _≅ᴵ_ A B γ = A γ ≅ B γ
 
-isomorphFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'} {B : Γ → Type ℓ''}
+isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
   → Γ ⊢ A ≅ᴵ B → FibStr B → FibStr A
 isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
-reindexIsomorphFibStr : {Δ : Type ℓ} {Γ : Type ℓ'} {A : Γ → Type ℓ''} {B : Γ → Type ℓ'''}
+reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
   (iso : Γ ⊢ A ≅ᴵ B) (β : FibStr B)
   (ρ : Δ → Γ)
   → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)

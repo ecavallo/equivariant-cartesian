@@ -10,20 +10,21 @@ open import prelude
 open import axioms
 open import fibration.fibration
 
-private variable ℓ ℓ' ℓ'' : Level
+private variable
+  ℓ : Level
+  Γ Δ : Type ℓ
 
 -- TODO do something better with this
 Partial : (Z : Shape) (Φ : ⟨ Z ⟩ → CofProp)
-  {Γ : Type ℓ}
-  (A : Γ × ⟨ Z ⟩ → Type ℓ')
-  → Γ → Type ℓ'
+  (A : Γ × ⟨ Z ⟩ → Type ℓ)
+  → Γ → Type ℓ
 Partial Z Φ A γ = ∀ z → [ Φ z ] → A (γ , z)
 
-Extensionᴵ : (Z : Shape) {Γ : Type ℓ}
-  (A : Γ × ⟨ Z ⟩ → Type ℓ')
+Extensionᴵ : (Z : Shape)
+  (A : Γ × ⟨ Z ⟩ → Type ℓ)
   (Φ : ⟨ Z ⟩ → CofProp)
   (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
-  → Γ → Type ℓ'
+  → Γ → Type ℓ
 Extensionᴵ Z A Φ a γ =
   (z : ⟨ Z ⟩) → A (γ , z) [ Φ z ↦ curry a (γ , z) ]
 
@@ -78,8 +79,7 @@ module ExtensionVary {Z Φ S T} (σ : ShapeHom S T) {r}
 
 opaque
   ExtensionFibStr : (Z : Shape)
-    {Γ : Type ℓ}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ'} (α : FibStr A)
+    {A : Γ × ⟨ Z ⟩ → Type ℓ} (α : FibStr A)
     (Φ : ⟨ Z ⟩ → CofProp)
     (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ])
     → FibStr (Extensionᴵ Z A Φ a)
@@ -90,8 +90,7 @@ opaque
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------------------------
   reindexExtensionFibStr : {Z : Shape}
-    {Δ : Type ℓ} {Γ : Type ℓ'}
-    {A : Γ × ⟨ Z ⟩ → Type ℓ''} (α : FibStr A)
+    {A : Γ × ⟨ Z ⟩ → Type ℓ} (α : FibStr A)
     {Φ : ⟨ Z ⟩ → CofProp}
     {a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A ∘ wk[ Φ ∘ snd ]}
     (ρ : Δ → Γ)
@@ -100,10 +99,9 @@ opaque
   reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Extensionᶠ : (Z : Shape)
-  {Γ : Type ℓ}
-  (A : Γ × ⟨ Z ⟩ ⊢ᶠType ℓ')
+  (A : Γ × ⟨ Z ⟩ ⊢ᶠType ℓ)
   (Φ : ⟨ Z ⟩ → CofProp)
-  (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ A .fst ∘ wk[ Φ ∘ snd ])
-  → Γ ⊢ᶠType ℓ'
+  (a : (Γ × ⟨ Z ⟩) ,[ Φ ∘ snd ] ⊢ᶠ A ∘ᶠ wk[ Φ ∘ snd ])
+  → Γ ⊢ᶠType ℓ
 Extensionᶠ Z A Φ a .fst = Extensionᴵ Z (A .fst) Φ a
 Extensionᶠ Z A Φ a .snd = ExtensionFibStr Z (A .snd) Φ a

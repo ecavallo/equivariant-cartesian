@@ -16,7 +16,9 @@ open import type-formers.union
 open import type-formers.equivs
 open import type-formers.glue
 
-private variable ℓ ℓ' ℓ'' ℓ''' : Level
+private variable
+  ℓ ℓ' : Level
+  Γ Δ : Type ℓ
 
 record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Type (ℓ ⊔ lsuc ℓ')
   where
@@ -29,27 +31,24 @@ record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Ty
 
 open LargeOpenBox public
 
-reshapeLargeBox : {S T : Shape} (σ : ShapeHom S T)
-  {Γ : Type ℓ} {r : Γ →  ⟨ S ⟩}
-  → LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ' → LargeOpenBox S r ℓ'
+reshapeLargeBox : {S T : Shape} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
+  → LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ → LargeOpenBox S r ℓ
 reshapeLargeBox σ box .cof = box .cof
 reshapeLargeBox σ box .Tube = box .Tube ∘ᶠ id× ⟪ σ ⟫
 reshapeLargeBox σ box .Cap = box .Cap
 reshapeLargeBox σ box .match = box .match
 
-reindexLargeBox : {S : Shape} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
-  (box : LargeOpenBox S r ℓ'')
-  (ρ : Δ → Γ)
-  → LargeOpenBox S (r ∘ ρ) ℓ''
+reindexLargeBox : {S : Shape} {r : Γ → ⟨ S ⟩}
+  → LargeOpenBox S r ℓ → (ρ : Δ → Γ) → LargeOpenBox S (r ∘ ρ) ℓ
 reindexLargeBox box ρ .cof = box .cof ∘ ρ
 reindexLargeBox box ρ .Tube = box .Tube ∘ᶠ ρ ×id ×id
 reindexLargeBox box ρ .Cap = box .Cap ∘ᶠ ρ
 reindexLargeBox box ρ .match = cong (_∘ᶠ (ρ ×id)) (box .match)
 
-largeBoxExt : {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-  {box box' : LargeOpenBox S r ℓ'}
+largeBoxExt : {S : Shape} {r : Γ → ⟨ S ⟩}
+  {box box' : LargeOpenBox S r ℓ}
   (cof≡ : box .cof ≡ box' .cof)
-  → subst (λ φ → Γ ,[ φ ] × ⟨ S ⟩ ⊢ᶠType ℓ') cof≡ (box .Tube) ≡ box' .Tube
+  → subst (λ φ → Γ ,[ φ ] × ⟨ S ⟩ ⊢ᶠType ℓ) cof≡ (box .Tube) ≡ box' .Tube
   → box .Cap ≡ box' .Cap
   → box ≡ box'
 largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uipImp
@@ -68,12 +67,12 @@ open LargeFiller public
 _⇒_ : CofProp → CofProp → Type
 φ ⇒ ψ = [ φ ] → [ ψ ]
 
-_⇒ᴵ_ : {Γ : Type ℓ} → (Γ → CofProp) → (Γ → CofProp) → (Γ → Type)
+_⇒ᴵ_ : (Γ → CofProp) → (Γ → CofProp) → (Γ → Type)
 (φ ⇒ᴵ ψ) γ = φ γ ⇒ ψ γ
 
 
-module LargeBoxUnion {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-  (box : LargeOpenBox S r ℓ')
+module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
   (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
   where
@@ -99,16 +98,16 @@ module LargeBoxUnion {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
     matchLemma
     public
 
-LargeBoxUnion : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-  (box : LargeOpenBox S r ℓ')
+LargeBoxUnion : ∀ {S} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
   (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-  → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ'
+  → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ
 LargeBoxUnion = LargeBoxUnion.fib
 
 opaque
-  varyLargeBoxUnion : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+  varyLargeBoxUnion : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq) .snd
@@ -120,8 +119,8 @@ opaque
     module T = LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
 
 opaque
-  reindexLargeBoxUnion : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ'')
+  reindexLargeBoxUnion : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
@@ -136,29 +135,27 @@ opaque
     module Δ = LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
 
 opaque
-  largeBoxEquiv : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ')
+  largeBoxEquiv : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-    → Γ ,[ box .cof ∨ᴵ ψ ] ⊢
-      Equivᴵ
-        (LargeBoxUnion box s ψ toEq .fst)
-        (box .Cap .fst ∘ wk[ box .cof ∨ᴵ ψ ])
-  largeBoxEquiv {S = S} {Γ} {r} box s ψ toEq =
+    → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠ
+      Equivᶠ (LargeBoxUnion box s ψ toEq) (box .Cap ∘ᶠ wk[ box .cof ∨ᴵ ψ ])
+  largeBoxEquiv {S = S} {r} box s ψ toEq =
     uncurry λ γ →
     ∨-elim (φ γ) (ψ γ) (curry leftEquiv γ) (curry rightEquiv γ) (matchEquiv γ)
     where
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to mat)
     module Un = LargeBoxUnion box s ψ toEq
 
-    leftEquiv : Γ ,[ φ ] ⊢ Equivᴵ (Tu .fst ∘ (id ,, s ∘ wk[ φ ])) (Ca .fst ∘ wk[ φ ])
+    leftEquiv : _ ,[ φ ] ⊢ᶠ Equivᶠ (Tu ∘ᶠ (id ,, s ∘ wk[ φ ])) (Ca ∘ᶠ wk[ φ ])
     leftEquiv (γ , u) =
       subst
         (Equiv (Tu .fst _))
         (appCong (cong fst mat))
         (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) (s γ) (r γ))
 
-    rightEquiv : Γ ,[ ψ ] ⊢ Equivᴵ (Ca .fst ∘ wk[ ψ ]) (Ca .fst ∘ wk[ ψ ])
+    rightEquiv : _ ,[ ψ ] ⊢ᶠ Equivᶠ (Ca ∘ᶠ wk[ ψ ]) (Ca ∘ᶠ wk[ ψ ])
     rightEquiv (γ , _) = idEquivᶠ (Ca ∘ᶠ (λ _ → γ))
 
     eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Γ ⊢ᶠType ℓ'}
@@ -170,7 +167,7 @@ opaque
         ≡ idEquiv (D .snd ∘ᶠˢ (λ _ → γ))
     eqLemma refl refl refl eq = eq
 
-    matchEquiv : (γ : Γ) (u : [ φ γ ]) (v : [ ψ γ ])
+    matchEquiv : ∀ γ (u : [ φ γ ]) (v : [ ψ γ ])
       → subst
           (λ w → Equiv (Un.fib .fst (γ , w)) (Ca .fst γ))
           (trunc (∨l u) (∨r v))
@@ -189,8 +186,8 @@ opaque
 
 opaque
   unfolding largeBoxEquiv
-  varyLargeBoxEquiv : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+  varyLargeBoxEquiv : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → largeBoxEquiv box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
@@ -208,8 +205,8 @@ opaque
 
 opaque
   unfolding largeBoxEquiv
-  reindexLargeBoxEquiv : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ'')
+  reindexLargeBoxEquiv : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
@@ -229,11 +226,11 @@ opaque
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu)
 
 opaque
-  LargeBoxFillerψ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ')
+  LargeBoxFillerψ : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-    → Γ ⊢ᶠType ℓ'
+    → Γ ⊢ᶠType ℓ
   LargeBoxFillerψ box s ψ toEq =
     SGlueᶠ
       (box .cof ∨ᴵ ψ)
@@ -241,43 +238,42 @@ opaque
       (box .Cap)
       (largeBoxEquiv box s ψ toEq)
 
-  reindexLargeBoxFillerψ : ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ'')
+  reindexLargeBoxFillerψ : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ ρ
       ≡ LargeBoxFillerψ (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
   reindexLargeBoxFillerψ box s ψ toEq ρ =
-    reindexSGlueᶠ _ _ _ _ ρ
+    reindexSGlueᶠ _ _ _ _ _
     ∙ cong₂
       (λ isfib eqv → SGlueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (_ , isfib) (box .Cap ∘ᶠ ρ) eqv)
       (reindexLargeBoxUnion box s ψ toEq ρ)
-      (reindexLargeBoxEquiv box s ψ toEq ρ)
+      (reindexLargeBoxEquiv _ _ _ _ _)
 
 opaque
   unfolding LargeBoxFillerψ
-  LargeBoxψTube≡ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ')
+  LargeBoxψTube≡ : ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ wk[ box .cof ]
       ≡ box .Tube ∘ᶠ (id ,, s ∘ wk[ box .cof ])
-  LargeBoxψTube≡ {S = S} {r = r} box s ψ toEq =
+  LargeBoxψTube≡ box s ψ toEq =
     cong (_∘ᶠ id× ∨l) (sym (SGlueᶠStrictness _ _ _ _))
-    ∙ LargeBoxUnion.left box s ψ toEq
+    ∙ LargeBoxUnion.left _ _ _ _
 
 opaque
   unfolding LargeBoxFillerψ
-  LargeBoxCap≡ : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ')
+  LargeBoxCap≡ : ∀ {S} {r : Γ → ⟨ S ⟩} (box : LargeOpenBox S r ℓ)
     → LargeBoxFillerψ box r (S ∋ r ≈ᴵ r) (λ _ → id) ≡ box .Cap
-  LargeBoxCap≡ {S = S} {r = r} box =
+  LargeBoxCap≡ box =
     cong (_∘ᶠ (id ,, λ _ → ∨r refl)) (sym (SGlueᶠStrictness _ _ _ _))
-    ∙ cong (_∘ᶠ (id ,, λ _ → refl)) (LargeBoxUnion.right box r _ _)
+    ∙ cong (_∘ᶠ (id ,, λ _ → refl)) (LargeBoxUnion.right box _ _ _)
 
-LargeBoxFiller : ∀ {S} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩} (box : LargeOpenBox S r ℓ')
-  → LargeFiller box
+LargeBoxFiller : ∀ {S} {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox S r ℓ) → LargeFiller box
 LargeBoxFiller {S = S} {r = r} box .Fill =
   LargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id)
 LargeBoxFiller {S = S} {r = r} box .Tube≡ =
@@ -291,20 +287,20 @@ LargeBoxFiller {S = S} {r = r} box .Cap≡ =
 
 opaque
   unfolding LargeBoxFillerψ
-  varyLargeBoxFillerψ : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+  varyLargeBoxFillerψ : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxFillerψ box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
       ≡ LargeBoxFillerψ (reshapeLargeBox σ box) s ψ toEq
-  varyLargeBoxFillerψ {S = S} σ {r = r} box s ψ toEq =
+  varyLargeBoxFillerψ σ box s ψ toEq =
     cong₂
       (λ isfib eqv → SGlueᶠ (box .cof ∨ᴵ ψ) (_ , isfib) (box .Cap) eqv)
       (varyLargeBoxUnion σ box s ψ toEq)
-      (varyLargeBoxEquiv σ box s ψ toEq)
+      (varyLargeBoxEquiv _ _ _ _ _)
 
-varyLargeBoxFiller : ∀ {S T} (σ : ShapeHom S T) {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
-  (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ')
+varyLargeBoxFiller : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
+  (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
   → LargeBoxFiller box .Fill ∘ᶠ (id× ⟪ σ ⟫) ≡ LargeBoxFiller (reshapeLargeBox σ box) .Fill
 varyLargeBoxFiller {S = S} {T = T} σ {r = r} box =
   reindexLargeBoxFillerψ _ _ _ _ (id× ⟪ σ ⟫)
@@ -321,9 +317,8 @@ varyLargeBoxFiller {S = S} {T = T} σ {r = r} box =
     (funext λ _ → ≈Equivariant σ _ _)
     (funext λ _ → funext λ _ → uipImp)
 
-reindexLargeBoxFiller :  ∀ {S} {Δ : Type ℓ} {Γ : Type ℓ'} {r : Γ → ⟨ S ⟩}
-    (box : LargeOpenBox S r ℓ'')
-    (ρ : Δ → Γ)
+reindexLargeBoxFiller :  ∀ {S} {r : Γ → ⟨ S ⟩}
+    (box : LargeOpenBox S r ℓ) (ρ : Δ → Γ)
     → LargeBoxFiller box .Fill ∘ᶠ ρ ×id ≡ LargeBoxFiller (reindexLargeBox box ρ) .Fill
 reindexLargeBoxFiller {S = S} {r = r} box ρ =
   reindexLargeBoxFillerψ _ _ _ _ (ρ ×id)

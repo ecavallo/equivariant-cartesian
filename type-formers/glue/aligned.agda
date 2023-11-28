@@ -13,33 +13,32 @@ open import fibration.realignment
 open import type-formers.equivs
 open import type-formers.glue.weak
 
-private variable ℓ ℓ' ℓ'' : Level
+private variable
+  ℓ : Level
+  Γ Δ : Type ℓ
 
-SGlueᶠ : {Γ : Type ℓ}
-  (Φ : Γ → CofProp)
-  (A : Γ ,[ Φ ] ⊢ᶠType ℓ')
-  (B : Γ ⊢ᶠType ℓ')
-  (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
-  → Γ ⊢ᶠType ℓ'
+SGlueᶠ : (Φ : Γ → CofProp)
+  (A : Γ ,[ Φ ] ⊢ᶠType ℓ)
+  (B : Γ ⊢ᶠType ℓ)
+  (fe : Γ ,[ Φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
+  → Γ ⊢ᶠType ℓ
 SGlueᶠ Φ A B fe =
   Realignᶠ Φ A (Glueᶠ Φ A B fe) (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
-  SGlueᶠStrictness : {Γ : Type ℓ}
-    (Φ : Γ → CofProp)
-    (A : Γ ,[ Φ ] ⊢ᶠType ℓ')
-    (B : Γ ⊢ᶠType ℓ')
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (A .fst) (B .fst ∘ fst))
+  SGlueᶠStrictness : (Φ : Γ → CofProp)
+    (A : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (B : Γ ⊢ᶠType ℓ)
+    (fe : Γ ,[ Φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
     → A ≡ SGlueᶠ Φ A B fe ∘ᶠ fst
   SGlueᶠStrictness Φ A B fe =
     isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
 
 opaque
-  reindexSGlueᶠ : {Δ : Type ℓ} {Γ : Type ℓ'}
-    (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ'')
-    (A : Γ ⊢ᶠType ℓ'')
-    (fe : Γ ,[ Φ ] ⊢ Equivᴵ (B .fst) (A .fst ∘ fst))
+  reindexSGlueᶠ : (Φ : Γ → CofProp)
+    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (A : Γ ⊢ᶠType ℓ)
+    (fe : Γ ,[ Φ ] ⊢ᶠ Equivᶠ B (A ∘ᶠ fst))
     (ρ : Δ → Γ)
     → SGlueᶠ Φ B A fe ∘ᶠ ρ ≡ SGlueᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
   reindexSGlueᶠ Φ (_ , β) (_ , α) fe ρ =
