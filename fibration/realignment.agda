@@ -120,9 +120,9 @@ opaque
 
 opaque
   Realignᶠ : (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (B : Γ ▷[ Φ ] ⊢ᶠType ℓ)
     (A : Γ ⊢ᶠType ℓ)
-    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    (iso : Γ ▷[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → Γ ⊢ᶠType ℓ
   Realignᶠ Φ _ _ iso .fst γ = realign (Φ γ) _ _ (iso ∘ (γ ,_))
   Realignᶠ Φ (_ , β) (_ , α) iso .snd =
@@ -131,24 +131,24 @@ opaque
       (isomorphFibStr (λ γ → isoB (Φ γ) _ _ (iso ∘ (γ ,_))) α)
 
   isRealignedFib : (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (B : Γ ▷[ Φ ] ⊢ᶠType ℓ)
     (A : Γ ⊢ᶠType ℓ)
-    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    (iso : Γ ▷[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → B ≡ Realignᶠ Φ B A iso ∘ᶠ fst
   isRealignedFib Φ (_ , β) (_ , α) iso =
     Σext _ (sym (isRealigned Φ _ _))
 
   RealignᶠIso : (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (B : Γ ▷[ Φ ] ⊢ᶠType ℓ)
     (A : Γ ⊢ᶠType ℓ)
-    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    (iso : Γ ▷[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     → Γ ⊢ Realignᶠ Φ B A iso .fst ≅ᴵ A .fst
   RealignᶠIso Φ B A iso γ = isoB _ _ _ _
 
   reindexRealignᶠ : (Φ : Γ → CofProp)
-    (B : Γ ,[ Φ ] ⊢ᶠType ℓ)
+    (B : Γ ▷[ Φ ] ⊢ᶠType ℓ)
     (A : Γ ⊢ᶠType ℓ)
-    (iso : Γ ,[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
+    (iso : Γ ▷[ Φ ] ⊢ B .fst ≅ᴵ (A .fst ∘ fst))
     (ρ : Δ → Γ)
     → Realignᶠ Φ B A iso ∘ᶠ ρ ≡ Realignᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (iso ∘ ρ ×id)
   reindexRealignᶠ Φ (_ , β) (_ , α) iso ρ =

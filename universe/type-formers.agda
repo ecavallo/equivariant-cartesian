@@ -31,10 +31,10 @@ module _ {@♭ ℓ : Level} where
   sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   sigma a b = encode universalΣᶠ (a , b)
 
-  sigmaᴵ : (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
+  sigmaᴵ : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ) → (Γ → U ℓ)
   sigmaᴵ a b x = sigma (a x) (curry b x)
 
-  decodeSigma : (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
+  decodeSigma : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ)
     → decode (sigmaᴵ a b) ≡ Σᶠ (decode a) (decode b)
   decodeSigma a b =
     cong
@@ -54,10 +54,10 @@ module _ {@♭ ℓ : Level} where
   pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
   pi a b = encode universalΠᶠ (a , b)
 
-  piᴵ : (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ) → (Γ → U ℓ)
+  piᴵ : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ) → (Γ → U ℓ)
   piᴵ a b x = pi (a x) (curry b x)
 
-  decodePi : (a : Γ → U ℓ) (b : Σ Γ (El ∘ a) → U ℓ)
+  decodePi : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ)
     → decode (piᴵ a b) ≡ Πᶠ (decode a) (decode b)
   decodePi a b =
     cong

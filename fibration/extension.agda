@@ -25,7 +25,7 @@ record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Ty
   constructor makeLargeBox
   field
     cof : Γ → CofProp
-    Tube : Γ ,[ cof ] × ⟨ S ⟩ ⊢ᶠType ℓ'
+    Tube : Γ ▷[ cof ] ▷⟨ S ⟩ ⊢ᶠType ℓ'
     Cap : Γ ⊢ᶠType ℓ'
     match : Tube ∘ᶠ (id ,, r ∘ wk[ cof ]) ≡ Cap ∘ᶠ wk[ cof ]
 
@@ -48,7 +48,7 @@ reindexLargeBox box ρ .match = cong (_∘ᶠ (ρ ×id)) (box .match)
 largeBoxExt : {S : Shape} {r : Γ → ⟨ S ⟩}
   {box box' : LargeOpenBox S r ℓ}
   (cof≡ : box .cof ≡ box' .cof)
-  → subst (λ φ → Γ ,[ φ ] × ⟨ S ⟩ ⊢ᶠType ℓ) cof≡ (box .Tube) ≡ box' .Tube
+  → subst (λ φ → Γ ▷[ φ ] ▷⟨ S ⟩ ⊢ᶠType ℓ) cof≡ (box .Tube) ≡ box' .Tube
   → box .Cap ≡ box' .Cap
   → box ≡ box'
 largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uipImp
@@ -57,7 +57,7 @@ record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ') : Type (ℓ ⊔ lsuc ℓ')
   where
   field
-    Fill : Γ × ⟨ S ⟩ ⊢ᶠType ℓ'
+    Fill : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ'
     Tube≡ : Fill ∘ᶠ (wk[ box .cof ] ×id) ≡ box .Tube
     Cap≡ : Fill ∘ᶠ (id ,, r) ≡ box .Cap
 
@@ -102,7 +102,7 @@ LargeBoxUnion : ∀ {S} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
   (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-  → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ
+  → Γ ▷[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ
 LargeBoxUnion = LargeBoxUnion.fib
 
 opaque
@@ -139,7 +139,7 @@ opaque
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
     (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
-    → Γ ,[ box .cof ∨ᴵ ψ ] ⊢ᶠ
+    → Γ ▷[ box .cof ∨ᴵ ψ ] ⊢ᶠ
       Equivᶠ (LargeBoxUnion box s ψ toEq) (box .Cap ∘ᶠ wk[ box .cof ∨ᴵ ψ ])
   largeBoxEquiv {S = S} {r} box s ψ toEq =
     uncurry λ γ →
@@ -148,14 +148,14 @@ opaque
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to mat)
     module Un = LargeBoxUnion box s ψ toEq
 
-    leftEquiv : _ ,[ φ ] ⊢ᶠ Equivᶠ (Tu ∘ᶠ (id ,, s ∘ wk[ φ ])) (Ca ∘ᶠ wk[ φ ])
+    leftEquiv : _ ▷[ φ ] ⊢ᶠ Equivᶠ (Tu ∘ᶠ (id ,, s ∘ wk[ φ ])) (Ca ∘ᶠ wk[ φ ])
     leftEquiv (γ , u) =
       subst
         (Equiv (Tu .fst _))
         (appCong (cong fst mat))
         (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) (s γ) (r γ))
 
-    rightEquiv : _ ,[ ψ ] ⊢ᶠ Equivᶠ (Ca ∘ᶠ wk[ ψ ]) (Ca ∘ᶠ wk[ ψ ])
+    rightEquiv : _ ▷[ ψ ] ⊢ᶠ Equivᶠ (Ca ∘ᶠ wk[ ψ ]) (Ca ∘ᶠ wk[ ψ ])
     rightEquiv (γ , _) = idEquivᶠ (Ca ∘ᶠ (λ _ → γ))
 
     eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Γ ⊢ᶠType ℓ'}

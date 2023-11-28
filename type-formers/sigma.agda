@@ -14,15 +14,15 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
-Σᴵ : (A : Γ → Type ℓ) (B : Σ Γ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
+Σᴵ : (A : Γ → Type ℓ) (B : Γ ▷ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 Σᴵ A B x = Σ a ∈ A x , B (x , a)
 
-_×ᴵ_ : {Γ : Type ℓ} (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
+_×ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 (A ×ᴵ B) x = A x × B x
 
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
-  {B : Σ ⟨ S ⟩ A → Type ℓ'} (β : FibStr B)
+  {B : ⟨ S ⟩ ▷ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox S r (Σᴵ A B))
   where
 
@@ -60,7 +60,7 @@ module ΣLift {S r}
 
 module ΣVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
-  {B : Σ ⟨ T ⟩ A → Type ℓ'} (β : FibStr B)
+  {B : ⟨ T ⟩ ▷ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox T (⟪ σ ⟫ r) (Σᴵ A B))
   where
 
@@ -84,7 +84,7 @@ module ΣVary {S T} (σ : ShapeHom S T) {r}
        ∙ congdep (λ cA → S.fillB cA .fill s .out) varyA)
 
 opaque
-  ΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Σ Γ A → Type ℓ'} (β : FibStr B)
+  ΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
     → FibStr (Σᴵ A B)
   ΣFibStr α β .lift S r p = ΣLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
   ΣFibStr α β .vary S T σ r p = ΣVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
@@ -93,7 +93,7 @@ opaque
   -- Forming Σ-types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Σ Γ A → Type ℓ'} (β : FibStr B)
+  reindexΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
     (ρ : Δ → Γ)
     → ΣFibStr α β ∘ᶠˢ ρ ≡ ΣFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΣFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
@@ -102,6 +102,6 @@ opaque
 Σᶠ A B .fst = Σᴵ (A .fst) (B .fst)
 Σᶠ A B .snd = ΣFibStr (A .snd) (B .snd)
 
-reindexΣᶠ : (A : Γ ⊢ᶠType ℓ) (B : Σ Γ (A .fst) ⊢ᶠType ℓ')
+reindexΣᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
   (ρ : Δ → Γ) → Σᶠ A B ∘ᶠ ρ ≡ Σᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ ×id)
 reindexΣᶠ (_ , α) (_ , β) ρ = Σext refl (reindexΣFibStr α β ρ)

@@ -63,11 +63,11 @@ postulate
 ∨r : {A : Type ℓ} {B : Type ℓ'} → B → ∥ A ⊎ B ∥
 ∨r b = ∣ inr b ∣
 
-_,[_] : (Γ : Type ℓ) (Φ : Γ → CofProp) → Type ℓ
-Γ ,[ Φ ] = Σ x ∈ Γ , [ Φ x ]
+_▷[_] : (Γ : Type ℓ) (Φ : Γ → CofProp) → Type ℓ
+Γ ▷[ Φ ] = Σ x ∈ Γ , [ Φ x ]
 
 wk[_] : {Γ : Type ℓ} (Φ : Γ → CofProp)
-  → Γ ,[ Φ ] → Γ
+  → Γ ▷[ Φ ] → Γ
 wk[ Φ ] = fst
 
 _∋_≈ᴵ_ : {Γ : Type ℓ} (S : Shape)
