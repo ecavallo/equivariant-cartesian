@@ -12,7 +12,7 @@ private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
 infix  1 Σ _⊢_
 infixr 3 _,_ _,,_ _×_ _⊎_
-infixr 5 _∘_ _∙_
+infixr 5 _∘_ _∙_ _$_
 
 ------------------------------------------------------------------------------------------
 -- Functions
@@ -98,11 +98,11 @@ substTrans : {A : Type ℓ} (B : A → Type ℓ')
   → subst B (p ∙ q) b ≡ subst B q (subst B p b)
 substTrans B refl refl = refl
 
-substNaturality : {A : Type ℓ} (B : A → Type ℓ') (C : A → Type ℓ'')
+substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
   (η : ∀ a → B a → C a)
-  {a a' : A} (p : a ≡ a') (b : B a)
+  {a a' : A} {p : a ≡ a'} {b : B a}
   → η a' (subst B p b) ≡ subst C p (η a b)
-substNaturality B C η refl b = refl
+substNaturality η {p = refl} = refl
 
 appCong : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
   {x : A} (p : f ≡ g) → f x ≡ g x
@@ -122,8 +122,8 @@ adjustSubstEq B refl refl refl refl = id
 uip : {A : Type ℓ} {x y : A} (p q : x ≡ y) → p ≡ q
 uip refl refl = refl
 
-uipImp : {A : Type ℓ} {x y : A} {p q : x ≡ y} → p ≡ q
-uipImp {p = refl} {q = refl} = refl
+uip' : {A : Type ℓ} {x y : A} {p q : x ≡ y} → p ≡ q
+uip' {p = refl} {q = refl} = refl
 
 ------------------------------------------------------------------------------------------
 -- Unit type
@@ -244,7 +244,7 @@ retractExt : {A : Type ℓ} {B : Type ℓ'}
   → retract₀ .sec ≡ retract₁ .sec
   → retract₀ .ret ≡ retract₁ .ret
   → retract₀ ≡ retract₁
-retractExt refl refl = cong (makeRetract _ _) uipImp
+retractExt refl refl = cong (makeRetract _ _) uip'
 
 ------------------------------------------------------------------------------------------
 -- Isomorphism

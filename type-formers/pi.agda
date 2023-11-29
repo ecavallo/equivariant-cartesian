@@ -45,12 +45,12 @@ module ΠLift {S r}
       (fillA s a .cap≡)
       (fillB s a (coeA s a) .fill s .out)
   filler .fill s .out≡ u =
-    funext λ a →
+    funExt λ a →
     sym (congdep (box .tube u s) (fillA s a .cap≡))
     ∙ cong (subst (curry B s) (fillA s a .cap≡))
         (fillB s a (coeA s a) .fill s .out≡ u)
   filler .cap≡ =
-    funext λ a →
+    funExt λ a →
     cong (subst (curry B r) (fillA r a .cap≡))
       (fillB r a (coeA r a) .cap≡)
     ∙ congdep (box .cap .out) (fillA r a .cap≡)
@@ -70,16 +70,16 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
-    funext λ a →
+    funExt λ a →
     cong
       (subst (curry B (⟪ σ ⟫ s)) (T.fillA _ a .cap≡))
       (β .vary S T σ r (id ,, T.coeA _ a) (T.boxB _ a (T.coeA _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
-      (appCong (funext (varyA s a))) refl
+      (appCong (funExt (varyA s a))) refl
       (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
-      (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funext (varyA s a)) _)
-        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funext (varyA s a)))
+      (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyA s a)) _)
+        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funExt (varyA s a)))
 
 opaque
   ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)

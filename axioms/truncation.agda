@@ -38,5 +38,8 @@ module _ {A : Type ℓ} where
 
     {-# REWRITE ∥∥-rec-β ∥∥-elim-β #-}
 
+trunc' : {A : Type ℓ} {x y : ∥ A ∥} → x ≡ y
+trunc' = trunc _ _
+
 ∥_∥` : {A : Type ℓ} {B : Type ℓ'} → (A → B) → ∥ A ∥ → ∥ B ∥
-∥_∥` f = ∥∥-rec _ (∣_∣ ∘ f) (λ _ _ → trunc _ _)
+∥_∥` f = ∥∥-rec _ (∣_∣ ∘ f) (λ _ _ → trunc')

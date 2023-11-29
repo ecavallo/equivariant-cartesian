@@ -27,8 +27,8 @@ module _ (@♭ S : Shape) where
     record
     { to = forward
     ; from = L S back
-    ; inv₁ = funext back∘forward
-    ; inv₂ = L√ S forward back ∙ cong♭ (L S) (funext forward∘back)
+    ; inv₁ = funExt back∘forward
+    ; inv₂ = L√ S forward back ∙ cong♭ (L S) (funExt forward∘back)
     }
     where
     forward = [ inl ∘_ ∣ inr ∘_ ]
@@ -89,7 +89,7 @@ module _ (@♭ S : Shape) where
       cong ∇ fromNatural
       ∙ sym (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))
       ∙ cong (∇ ∘_) (appCong (iso .inv₂))
-      ∙ funext fsth'
+      ∙ funExt fsth'
 
     main : Π A ⊎ Π B
     main with shape→⊎♭ .from h' | baseEq

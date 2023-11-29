@@ -77,6 +77,9 @@ _∋_≈ᴵ_ : {Γ : Type ℓ} (S : Shape)
 _∨ᴵ_ : {Γ : Type ℓ} → (φ ψ : Γ → CofProp) → (Γ → CofProp)
 (φ ∨ᴵ ψ) γ = φ γ ∨ ψ γ
 
+cofIsProp' : (φ : CofProp) {u v : [ φ ]} → u ≡ v
+cofIsProp' φ = cofIsProp φ _ _
+
 ------------------------------------------------------------------------------------------
 -- Restricted types
 ------------------------------------------------------------------------------------------
@@ -93,7 +96,7 @@ restrictExt : {A : Type ℓ} {φ : CofProp} {a : [ φ ] → A}
   {z z' : A [ φ ↦ a ]}
   → z .out ≡ z' .out
   → z ≡ z'
-restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
+restrictExt refl = cong (makeRestrict _) (funExt' uip')
 
 ------------------------------------------------------------------------------------------
 -- Combining compatible partial functions
@@ -106,10 +109,10 @@ restrictExt refl = cong (makeRestrict _) (funext λ _ → uipImp)
   → [ φ ∨ ψ ] → A
 ∨-rec {A = A} φ ψ f g p =
   ∥∥-rec _ [ f ∣ g ] λ
-    { (inl _) (inl _) → cong f (cofIsProp φ _ _)
+    { (inl _) (inl _) → cong f (cofIsProp' φ)
     ; (inl u) (inr v) → p u v
     ; (inr v) (inl u) → sym (p u v)
-    ; (inr _) (inr _) → cong g (cofIsProp ψ _ _)}
+    ; (inr _) (inr _) → cong g (cofIsProp' ψ)}
 
 OI-rec : (r : 𝕀) {A : Type ℓ}
   → ([ 𝕚 ∋ r ≈ 0 ] → A)
@@ -122,19 +125,19 @@ OI-rec r f g =
 ∨-elim : (φ ψ : CofProp) {P : [ φ ∨ ψ ] → Type ℓ}
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
-  .(p : (u : [ φ ]) (v : [ ψ ]) → subst P (trunc _ _) (f u) ≡ g v)
+  .(p : (u : [ φ ]) (v : [ ψ ]) → subst P trunc' (f u) ≡ g v)
   (w : [ φ ∨ ψ ]) → P w
 ∨-elim φ ψ {P = P} f g p =
   ∥∥-elim _ [ f ∣ g ] λ
     { (inl u) (inl u') →
-      cong (subst P ⦅–⦆ (f u)) uipImp
+      cong (subst P ⦅–⦆ (f u)) uip'
       ∙ sym (substCongAssoc P ∨l (cofIsProp φ u u') _)
       ∙ congdep f (cofIsProp φ u u')
     ; (inl u) (inr v) → p u v
     ; (inr v) (inl u) →
-      sym (adjustSubstEq P (trunc _ _) refl refl (trunc _ _) (p u v))
+      sym (adjustSubstEq P trunc' refl refl trunc' (p u v))
     ; (inr v) (inr v') →
-      cong (subst P ⦅–⦆ (g v)) uipImp
+      cong (subst P ⦅–⦆ (g v)) uip'
       ∙ sym (substCongAssoc P ∨r (cofIsProp ψ v v') _)
       ∙ congdep g (cofIsProp ψ v v')}
 
@@ -171,12 +174,12 @@ opaque
   takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
     ∨-elim φ φ₀
       (λ u₀ → ∨-elimEq φ φ₁
-        (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
-        (λ v₁ → p u₀ ∙ cong f₁ (trunc _ _)))
+        (λ u₁ → cong f₀ trunc' ∙ p u₁)
+        (λ v₁ → p u₀ ∙ cong f₁ trunc'))
       (λ v₀ → ∨-elimEq φ φ₁
-        (λ u₁ → cong f₀ (trunc _ _) ∙ p u₁)
+        (λ u₁ → cong f₀ trunc' ∙ p u₁)
         (λ v₁ → q v₀ v₁))
-      (λ _ _ → funext λ _ → uipImp)
+      (λ _ _ → funExt' uip')
 
 substCofEl : (φ : CofProp) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
 substCofEl φ {P} p v = subst P (cofIsProp φ _ v) p

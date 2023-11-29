@@ -44,21 +44,13 @@ unionFibStrExt φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
     lemma =
       ∨-elimEq (all S (φ₀ ∘ fst ∘ p)) (all S (φ₁ ∘ fst ∘ p))
         (λ u₀ →
-          moveEq (∨l ∘ u₀) (funext λ _ → trunc _ _) α₀
-          ∙ cong
-                (λ β →
-                  move (∨l ∘ u₀) (funext λ _ → trunc _ _)
-                    (β ∘ᶠˢ (fst ∘ p ,, u₀)))
-                eq₀
-          ∙ sym (moveEq (∨l ∘ u₀) (funext λ _ → trunc _ _) α₁))
+          moveEq (∨l ∘ u₀) (funExt' trunc') α₀
+          ∙ cong (λ β → move (∨l ∘ u₀) (funExt' trunc') (β ∘ᶠˢ (fst ∘ p ,, u₀))) eq₀
+          ∙ sym (moveEq (∨l ∘ u₀) (funExt' trunc') α₁))
         (λ u₁ →
-          moveEq (∨r ∘ u₁) (funext λ _ → trunc _ _) α₀
-          ∙ cong
-                (λ β →
-                  move (∨r ∘ u₁) (funext λ _ → trunc _ _)
-                    (β ∘ᶠˢ (fst ∘ p ,, u₁)))
-                eq₁
-          ∙ sym (moveEq (∨r ∘ u₁) (funext λ _ → trunc _ _) α₁))
+          moveEq (∨r ∘ u₁) (funExt' trunc') α₀
+          ∙ cong (λ β → move (∨r ∘ u₁) (funExt' trunc') (β ∘ᶠˢ (fst ∘ p ,, u₁))) eq₁
+          ∙ sym (moveEq (∨r ∘ u₁) (funExt' trunc') α₁))
 
 unionFibExt : (φ₀ φ₁ : Γ → CofProp)
   {A₀ A₁ : Γ ▷[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ}
@@ -67,17 +59,14 @@ unionFibExt : (φ₀ φ₁ : Γ → CofProp)
   → A₀ ≡ A₁
 unionFibExt φ₀ φ₁ {A₀} {A₁} eq₀ eq₁ =
   lemma
-    (funext
+    (funExt
       (uncurry λ x → ∨-elimEq (φ₀ x) (φ₁ x)
-        (λ u₀ → appCong (cong fst eq₀))
-        (λ u₁ → appCong (cong fst eq₁))))
+        (λ u₀ → appCong $ cong fst eq₀)
+        (λ u₁ → appCong $ cong fst eq₁)))
   where
   lemma : A₀ .fst ≡ A₁ .fst → A₀ ≡ A₁
   lemma refl =
-    cong (A₁ .fst ,_)
-      (unionFibStrExt φ₀ φ₁
-        (Σeq₂ eq₀ refl)
-        (Σeq₂ eq₁ refl))
+    cong (A₁ .fst ,_) (unionFibStrExt φ₀ φ₁ (Σeq₂ eq₀ refl) (Σeq₂ eq₁ refl))
 
 ------------------------------------------------------------------------------------------
 -- Deriving a fibrancy structure on a union
@@ -96,34 +85,30 @@ module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
   fillSys s =
     ∨-rec (all S φ₀) (all S φ₁)
       (λ u₀ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₀ ∘ᶠˢ (id ,, u₀))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
           .lift S r id box .fill s)
       (λ u₁ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₁ ∘ᶠˢ (id ,, u₁))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
           .lift S r id box .fill s)
       (λ u₀ u₁ →
         congΣ
           (λ u' α' →
-            subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc (u' s) _) α'
+            subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') α'
               .lift S r id box .fill s)
-          (funext λ _ → trunc _ _)
-          (substCongAssoc FibStr (λ u' → A ∘ (id ,, u')) (funext λ s → trunc _ _) _
+          (funExt' trunc')
+          (substCongAssoc FibStr (λ u' → A ∘ (id ,, u')) (funExt' trunc') _
             ∙ Σeq₂
                 (cong (_∘ᶠ ((id ,, u₀) ,, u₁)) eqFib)
-                (cong (λ u' → A ∘ (id ,, u')) (funext λ _ → trunc _ _))))
+                (cong (λ u' → A ∘ (id ,, u')) (funExt' trunc'))))
 
   capSys : (u : [ all S φ₀ ∨ all S φ₁ ]) → fillSys r u .out ≡ box .cap .out
   capSys =
     ∨-elimEq (all S φ₀) (all S φ₁)
       (λ u₀ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₀ ∘ᶠˢ (id ,, u₀))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
           .lift S r id box .cap≡)
       (λ u₁ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₁ ∘ᶠˢ (id ,, u₁))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
           .lift S r id box .cap≡)
 
   filler : Filler box
@@ -155,62 +140,42 @@ module UnionVary {S T r} (σ : ShapeHom S T)
       {f = λ u → T.fillSys (⟪ σ ⟫ s) u .out}
       {g = λ _ → S.fillSys s (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫)) .out}
       (λ u₀ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₀ ∘ᶠˢ (id ,, u₀))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
           .vary S T σ r id box s
         ∙
         cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-          (substNaturality
-                (λ u' → FibStr (A ∘ (id ,, u')))
-                (λ u' → FibStr (A ∘ (id ,, u') ∘ ⟪ σ ⟫))
-                (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
-                (funext λ t → trunc (∨l (u₀ t)) (u t))
-                (α₀ ∘ᶠˢ (id ,, u₀))
+          (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
            ∙
            substCongAssoc
              (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
              (_∘ ⟪ σ ⟫)
-             (funext λ t → trunc _ _)
+             (funExt' trunc')
              (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫)
            ∙
            cong
-             (λ eq →
-                subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) eq
-                  (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫))
-             (uip
-               (cong (_∘ ⟪ σ ⟫) (funext λ t → trunc _ (u t)))
-               (funext λ s → trunc _ (u (⟪ σ ⟫ s)))))
+             (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫))
+             (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
         ∙
         cong (λ u' → S.fillSys s u' .out)
           (trunc
             (∨l (u₀ ∘ ⟪ σ ⟫))
             (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫))))
       (λ u₁ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funext λ s → trunc _ _)
-          (α₁ ∘ᶠˢ (id ,, u₁))
+        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
           .vary S T σ r id box s
         ∙
         cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-          (substNaturality
-            (λ u' → FibStr (A ∘ (id ,, u')))
-            (λ u' → FibStr (A ∘ (id ,, u') ∘ ⟪ σ ⟫))
-            (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
-            (funext λ t → trunc (∨r (u₁ t)) (u t))
-            (α₁ ∘ᶠˢ (id ,, u₁))
+          (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
            ∙
            substCongAssoc
              (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
              (_∘ ⟪ σ ⟫)
-             (funext λ t → trunc _ _)
+             (funExt' trunc')
              (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫)
            ∙
            cong
-             (λ eq →
-               subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) eq
-                 (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫))
-             (uip
-               (cong (_∘ ⟪ σ ⟫) (funext λ t → trunc _ (u t)))
-                 (funext λ s → trunc _ (u (⟪ σ ⟫ s)))))
+             (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫))
+             (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
         ∙
         cong (λ u' → S.fillSys s u' .out)
           (trunc
@@ -265,7 +230,7 @@ module UnionFibStr (φ₀ φ₁ : Γ → CofProp)
         (λ eq →
           subst (λ u' → FibStr (A ∘ (fst ∘ p ,, u'))) eq (α₀ ∘ᶠˢ p)
             .lift S r id box .fill s .out)
-        (uip (funext λ _ → trunc _ _) refl)
+        (uip (funExt' trunc') refl)
 
     right : fib ∘ᶠˢ (id× ∨r) ≡ α₁
     right = FibStrExt λ S r p box s →
@@ -286,7 +251,7 @@ module UnionFibStr (φ₀ φ₁ : Γ → CofProp)
         (λ eq →
           subst (λ u' → FibStr (A ∘ (fst ∘ p ,, u'))) eq (α₁ ∘ᶠˢ p)
             .lift S r id box .fill s .out)
-        (uip (funext λ _ → trunc _ _) refl)
+        (uip (funExt' trunc') refl)
 
 opaque
   reindexUnionFibStr : (φ₀ φ₁ : Γ → CofProp)

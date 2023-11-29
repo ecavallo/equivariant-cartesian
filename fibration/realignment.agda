@@ -34,7 +34,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → CofProp)
     ∨-rec (box .cof) (all S φ)
       (box .tube)
       (λ u i → fillA u .fill i .out)
-      (λ v u → funext λ i → fillA u .fill i .out≡ v)
+      (λ v u → funExt λ i → fillA u .fill i .out≡ v)
   box' .cap .out = box .cap .out
   box' .cap .out≡ =
     ∨-elimEq (box .cof) (all S φ)
@@ -71,10 +71,10 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         (cong (λ φ → box .cof ∨ φ) (allEquivariant σ φ))
         (takeOutCof (box .cof) (all T φ) (all S (φ ∘ ⟪ σ ⟫))
           (λ _ → refl)
-          (λ uS uT → funext λ i →
+          (λ uS uT → funExt λ i →
             α .vary S T σ r (id ,, uS) box i
             ∙ cong (λ w → α .lift S r (⟪ σ ⟫ ,, w) (reshapeBox σ box) .fill i .out)
-              (funext λ s → cofIsProp (φ (⟪ σ ⟫ s)) _ _)))
+              (funExt λ s → cofIsProp' (φ (⟪ σ ⟫ s)))))
         refl)
 
 opaque
@@ -122,7 +122,7 @@ opaque
   ≅Realignᶠ φ (_ , β) (_ , α) iso .snd =
     realignFibStr φ
       (isomorphFibStr (λ γ → ≅realign (φ γ) _ _ (iso ∘ (γ ,_))) β)
-      (subst FibStr (funext (uncurry λ γ → ≅RealignMatch (φ γ) _ _ (iso ∘ (γ ,_)))) α)
+      (subst FibStr (funExt (uncurry λ γ → ≅RealignMatch (φ γ) _ _ (iso ∘ (γ ,_)))) α)
 
   ≅RealignᶠMatch : (φ : Γ → CofProp)
     (B : Γ ⊢ᶠType ℓ)

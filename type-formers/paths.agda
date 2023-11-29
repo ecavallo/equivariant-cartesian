@@ -34,7 +34,7 @@ refl~ a = eqToPath refl
 PathExt : {A : Type ℓ} {a a' : A} {p q : a ~ a'}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
-  congΣ (uncurry ∘ path) (funext t) (×ext uipImp uipImp)
+  congΣ (uncurry ∘ path) (funExt t) (×ext uip' uip')
 
 Pathᴵ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → Γ → Type ℓ
 Pathᴵ A a₀ a₁ γ = a₀ γ ~ a₁ γ
@@ -54,7 +54,7 @@ opaque
     retract γ .ret ex .at i = ex i .out
     retract γ .ret ex .at0 = sym (ex 0 .out≡ (∨l refl))
     retract γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
-    retract γ .inv = funext λ p → PathExt λ i → refl
+    retract γ .inv = funExt' $ PathExt λ _ → refl
 
   PathFibStr : {A : Γ → Type ℓ} (α : FibStr A) (a₀ a₁ : Γ ⊢ A)
     → FibStr (Pathᴵ A a₀ a₁)
@@ -74,7 +74,7 @@ opaque
     ∙
     cong₂
       retractFibStr
-      (funext λ _ → retractExt (funext λ _ → funext λ _ → restrictExt refl) refl)
+      (funExt' $ retractExt (funExt' $ funExt' $ restrictExt refl) refl)
       (reindexExtensionFibStr (α ∘ᶠˢ fst) ρ)
 
 Pathᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ

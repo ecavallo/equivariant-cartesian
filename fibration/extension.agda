@@ -51,7 +51,7 @@ largeBoxExt : {S : Shape} {r : Γ → ⟨ S ⟩}
   → subst (λ φ → Γ ▷[ φ ] ▷⟨ S ⟩ ⊢ᶠType ℓ) cof≡ (box .Tube) ≡ box' .Tube
   → box .Cap ≡ box' .Cap
   → box ≡ box'
-largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uipImp
+largeBoxExt refl refl refl = cong (makeLargeBox _ _ _) uip'
 
 record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ') : Type (ℓ ⊔ lsuc ℓ')
@@ -84,7 +84,7 @@ module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
       (id ,, r ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ]
       ≡ (id ,, s ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ]
     eqLemma =
-      funext λ (γu , v) → cong (γu ,_) (toEq _ v)
+      funExt λ (γu , v) → cong (γu ,_) (toEq _ v)
 
     matchLemma :
       Tu ∘ᶠ ((id ,, s ∘ wk[ φ ]) ∘ wk[ ψ ∘ wk[ φ ] ])
@@ -193,7 +193,7 @@ opaque
     → largeBoxEquiv box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
       ≡ largeBoxEquiv (reshapeLargeBox σ box) s ψ toEq
   varyLargeBoxEquiv σ {r = r} box s ψ toEq =
-    funext $
+    funExt $
     uncurry λ γ →
     ∨-elimEq (φ γ) (ψ γ)
       (λ u →
@@ -213,14 +213,14 @@ opaque
     → largeBoxEquiv box s ψ toEq ∘ (ρ ×id)
       ≡ largeBoxEquiv (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
   reindexLargeBoxEquiv {S = S} {r = r} box s ψ toEq ρ =
-    funext $
+    funExt $
     uncurry λ δ →
     ∨-elimEq (φ (ρ δ)) (ψ (ρ δ))
       (λ u →
         cong
           (subst (Equiv (Tu .fst _)) ⦅–⦆
             (coerceEquiv S (Tu ∘ᶠ ((ρ δ , u) ,_)) (s (ρ δ)) (r (ρ δ))))
-          uipImp)
+          uip')
       (λ v → refl)
     where
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu)
@@ -305,7 +305,7 @@ varyLargeBoxFiller : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
 varyLargeBoxFiller {S = S} {T = T} σ {r = r} box =
   reindexLargeBoxFillerψ _ _ _ _ (id× ⟪ σ ⟫)
   ∙
-  cong (LargeBoxFillerψ _ _ _) (funext λ _ → funext λ _ → uipImp)
+  cong (LargeBoxFillerψ _ _ _) (funExt' $ funExt' uip')
   ∙
   varyLargeBoxFillerψ _ _ _ _ (λ γ → subst [_] (≈Equivariant σ _ _))
   ∙
@@ -314,8 +314,8 @@ varyLargeBoxFiller {S = S} {T = T} σ {r = r} box =
     (largeBoxExt refl refl refl)
   ∙
   congΣ (LargeBoxFillerψ _ _)
-    (funext λ _ → ≈Equivariant σ _ _)
-    (funext λ _ → funext λ _ → uipImp)
+    (funExt' $ ≈Equivariant σ _ _)
+    (funExt' $ funExt' uip')
 
 reindexLargeBoxFiller :  ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ) (ρ : Δ → Γ)

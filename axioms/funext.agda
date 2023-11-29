@@ -15,22 +15,30 @@ private variable ℓ ℓ' ℓ'' : Level
 ------------------------------------------------------------------------------------------
 
 postulate
-  funext : {A : Type ℓ} {B : A → Type ℓ'} {f g : (x : A) → B x}
-    → ((x : A) → f x ≡ g x) → f ≡ g
+  funExt : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
+    → ((a : A) → f a ≡ g a) → f ≡ g
 
-funextDepCod : {A : Type ℓ} {B : Type ℓ'} {C : A → Type ℓ''}
+funExt' : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
+  → ({a : A} → f a ≡ g a) → f ≡ g
+funExt' p = funExt λ _ → p
+
+funExtDepCod : {A : Type ℓ} {B : Type ℓ'} {C : A → Type ℓ''}
   {a₀ a₁ : A} (p : a₀ ≡ a₁)
   {f₀ : B → C a₀} {f₁ : B → C a₁}
   → (∀ b → subst C p (f₀ b) ≡ f₁ b)
   → subst (λ a → B → C a) p f₀ ≡ f₁
-funextDepCod refl = funext
+funExtDepCod refl = funExt
 
-funext♭ : {@♭ ℓ : Level} {ℓ' : Level}
+------------------------------------------------------------------------------------------
+-- Function extensionality for flat-modal functions
+------------------------------------------------------------------------------------------
+
+funExt♭ : {@♭ ℓ : Level} {ℓ' : Level}
    {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
-   {f g : (@♭ x : A) → B x}
-   → ((@♭ x : A) → f x ≡ g x) → f ≡ g
-funext♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
-  cong (λ k (@♭ a) → k (in♭ a)) (funext h')
+   {f g : (@♭ a : A) → B a}
+   → ((@♭ a : A) → f a ≡ g a) → f ≡ g
+funExt♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
+  cong (λ k (@♭ a) → k (in♭ a)) (funExt h')
   where
   B' : ♭ A → Type ℓ'
   B' (in♭ a) = B a
@@ -41,3 +49,9 @@ funext♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
 
   h' : (a : ♭ A) → f' a ≡ g' a
   h' (in♭ a) = h a
+
+funExt♭' : {@♭ ℓ : Level} {ℓ' : Level}
+   {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
+   {f g : (@♭ a : A) → B a}
+   → ({@♭ a : A} → f a ≡ g a) → f ≡ g
+funExt♭' h = funExt♭ λ _ → h

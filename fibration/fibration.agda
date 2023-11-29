@@ -55,8 +55,8 @@ opaque
     → box ≡ box'
   boxExt {box = box} refl q refl =
     congΣ (λ t c → makeBox (box .cof) t (makeRestrict (box .cap .out) c))
-      (funext λ _ → q _ _)
-      (funext λ _ → uipImp)
+      (funExt' $ q _ _)
+      (funExt' uip')
 
   boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
     {b₀ b₁ : B} (b : b₀ ≡ b₁)
@@ -96,7 +96,7 @@ opaque
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
     → co ≡ co'
   fillerExt p =
-    congΣ makeFiller (funext λ s → restrictExt (p s)) uipImp
+    congΣ makeFiller (funExt $ restrictExt ∘ p) uip'
 
   fillerCong : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box : OpenBox S r A}
@@ -156,9 +156,9 @@ opaque
     → α ≡ α'
   FibStrExt q =
     congΣ makeFib
-      (funext λ S → funext λ r → funext λ p → funext λ box → fillerExt (q S r p box))
-      (funext λ S → funext λ T → funext λ σ → funext λ r → funext λ p → funext λ box →
-        funext λ s → uipImp)
+      (funExt' $ funExt' $ funExt' $ funExt' $ fillerExt $ q _ _ _ _)
+      (funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' uip')
+
 
 ------------------------------------------------------------------------------------------
 -- A retract of a fibration is a fibration

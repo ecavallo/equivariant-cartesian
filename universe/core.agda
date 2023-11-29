@@ -72,27 +72,25 @@ record 𝑼 (@♭ ℓ) : Type (lsuc ℓ) where
 
 open 𝑼 public
 
-𝑼Ext : ∀ {@♭ ℓ} {A B : 𝑼 ℓ}
-  → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies
-  → A ≡ B
-𝑼Ext {A = A} refl refl refl =
-  cong
-    (λ {(cBase , vBase , vSrc , vDst) → record
-      { El = A .El
-      ; lifts = A .lifts
-      ; liftsBase = cBase
-      ; varies = A .varies
-      ; variesBase = vBase
-      ; variesSrc = vSrc
-      ; variesDst = vDst
-      }})
-    (×ext
-      (funext♭ λ S → uipImp)
-      (×ext
-        (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp)
-        (×ext
-          (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp)
-          (funext♭ λ S → funext♭ λ T → funext♭ λ σ → uipImp))))
+opaque
+  𝑼Ext : ∀ {@♭ ℓ} {A B : 𝑼 ℓ}
+    → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies
+    → A ≡ B
+  𝑼Ext {A = A} refl refl refl =
+    cong
+      (λ {(cBase , vBase , vSrc , vDst) → record
+        { El = A .El
+        ; lifts = A .lifts
+        ; liftsBase = cBase
+        ; varies = A .varies
+        ; variesBase = vBase
+        ; variesSrc = vSrc
+        ; variesDst = vDst
+        }})
+      (×ext (funExt♭' uip')
+        (×ext (funExt♭' $ funExt♭' $ funExt♭' $ uip')
+          (×ext (funExt♭' $ funExt♭' $ funExt♭' $ uip')
+            (funExt♭' $ funExt♭' $ funExt♭' $ uip'))))
 
 ------------------------------------------------------------------------------------------
 -- Extracting lifts from a map into U
@@ -102,7 +100,7 @@ fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
   fst ∘ L S {A = 𝑼 ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
 fstLlifts S =
   L√ S fst (λ A → A .lifts S)
-  ∙ cong♭ (L S) (funext (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
+  ∙ cong♭ (L S) (funExt (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
 
 getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ) → hasLifts S (El ∘ C)
 getLifts S C = coe (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
@@ -119,15 +117,15 @@ fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
   → fst ∘ L T {A = 𝑼 ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
 fstLvaries S T σ =
   L√ T fst (λ A → A .varies S T σ)
-  ∙ cong♭ (L T) (funext (λ A → A .variesBase S T σ) ∙ sym (R℘ T El (hasVaries S T σ)))
+  ∙ cong♭ (L T) (funExt (λ A → A .variesBase S T σ) ∙ sym (R℘ T El (hasVaries S T σ)))
 
 srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
 srcLvaries S T σ C =
   appCong
     (L√ T src* (λ A → A .varies S T σ)
-      ∙ cong♭ (L T) (funext (λ A → A .variesSrc S T σ))
-      ∙ funext (Llifts T))
+      ∙ cong♭ (L T) (funExt (λ A → A .variesSrc S T σ))
+      ∙ funExt (Llifts T))
 
 dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → dst* (L T (λ A → A .varies S T σ) C)
@@ -135,9 +133,9 @@ dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨
 dstLvaries S T σ C =
   appCong
     (L√ T dst* (λ A → A .varies S T σ)
-      ∙ cong♭ (L T) (funext (λ A → A .variesDst S T σ))
+      ∙ cong♭ (L T) (funExt (λ A → A .variesDst S T σ))
       ∙ LShapeHom σ (λ A → A .lifts S)
-      ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (funext (Llifts S)))
+      ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (funExt (Llifts S)))
 
 substSpan : {A : Type ℓ} (D : A → Span ℓ')
   {x y : A} (p : x ≡ y)
@@ -169,7 +167,7 @@ Lvaries S T σ C =
       (appCong (fstLvaries S T σ))
       (srcLvaries S T σ C)
       (dstLvaries S T σ C)
-      (λ _ _ → funext λ r → funext λ box → funext λ s → uipImp))
+      (λ _ _ → funExt' $ funExt' $ funExt' $ uip'))
   where
   witnessExtLemma : {D D' : Span _} (p : D ≡ D')
     {w : Witness D} {w' : Witness D'}
@@ -256,7 +254,7 @@ opaque
             (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
             {x = _ , appCong (fstLlifts S)}
             {y = _ , refl}
-            (Σext (lemma S p) uipImp)))
+            (Σext (lemma S p) uip')))
     where
     lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → _)
       → L S (λ C → C .lifts S) (encode A ∘ p)
@@ -273,10 +271,8 @@ opaque
   encodeReindexFib A ρ γ =
     𝑼Ext
       refl
-      (funext♭ λ S →
-        appCong (R℘ S ρ (FibLifts A S)))
-      (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
-        appCong (R℘ T ρ (FibVaries A S T σ)))
+      (funExt♭ λ S → appCong (R℘ S ρ (FibLifts A S)))
+      (funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ → appCong (R℘ T ρ (FibVaries A S T σ)))
 
 opaque
   unfolding encode
@@ -284,24 +280,23 @@ opaque
   encodeEl C =
     𝑼Ext
       refl
-      (funext♭ λ S →
+      (funExt♭ λ S →
         appCong
           (cong♭ (R S)
             {y = L S (λ D → D .lifts S)}
-            (sym (funext (Llifts S)))))
-      (funext♭ λ S → funext♭ λ T → funext♭ λ σ →
+            (sym (funExt (Llifts S)))))
+      (funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
         appCong
           (cong♭ (R T)
-            (sym (funext λ C →
+            (sym (funExt λ C →
               Lvaries S T σ C
               ∙ cong
                   (λ w →
                     ( hasVaries S T σ (El ∘ C)
                     , witness (getLifts T C) (getLifts S (C ∘ ⟪ σ ⟫)) w
                     ))
-                  (funext λ r → funext λ box → funext λ s → uipImp)))))
+                  (funExt' $ funExt' $ funExt' $ uip')))))
 
 opaque
   encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ → 𝑼 ℓ') → encode (decode C) ≡ C
-  encodeDecode C = funext λ γ →
-    encodeReindexFib Elᶠ C γ ∙ encodeEl (C γ)
+  encodeDecode C = funExt λ γ → encodeReindexFib Elᶠ C γ ∙ encodeEl (C γ)

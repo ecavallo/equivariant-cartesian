@@ -42,7 +42,7 @@ module ExtensionLift {Z φ S r}
       ∨-rec (box .cof) (φ z)
         (λ u s → box .tube u s z .out)
         (λ v s → a ((s , z) , v))
-        (λ u v → funext λ s → sym (box .tube u s z .out≡ v))
+        (λ u v → funExt λ s → sym (box .tube u s z .out≡ v))
     boxA .cap .out = box .cap .out z .out
     boxA .cap .out≡ =
       ∨-elimEq (box .cof) (φ z)
@@ -54,8 +54,8 @@ module ExtensionLift {Z φ S r}
   filler : Filler box
   filler .fill s .out z .out = fillA z .fill s .out
   filler .fill s .out z .out≡ v = fillA z .fill s .out≡ (∨r v)
-  filler .fill s .out≡ u = funext λ z → restrictExt (fillA z .fill s .out≡ (∨l u))
-  filler .cap≡ = funext λ z → restrictExt (fillA z .cap≡)
+  filler .fill s .out≡ u = funExt λ z → restrictExt (fillA z .fill s .out≡ (∨l u))
+  filler .cap≡ = funExt λ z → restrictExt (fillA z .cap≡)
 
 module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
@@ -68,7 +68,7 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
-    funext λ z →
+    funExt λ z →
     restrictExt
       (α .vary S T σ r (_, z) (T.boxA z) s
         ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
