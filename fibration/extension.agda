@@ -24,7 +24,7 @@ record LargeOpenBox (S : Shape) {Γ : Type ℓ} (r : Γ → ⟨ S ⟩) ℓ' : Ty
   where
   constructor makeLargeBox
   field
-    cof : Γ → CofProp
+    cof : Γ → Cof
     Tube : Γ ▷[ cof ] ▷⟨ S ⟩ ⊢ᶠType ℓ'
     Cap : Γ ⊢ᶠType ℓ'
     match : Tube ∘ᶠ (id ,, r ∘ wk[ cof ]) ≡ Cap ∘ᶠ wk[ cof ]
@@ -64,17 +64,17 @@ record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
 open LargeFiller public
 
 -- TODO move
-_⇒_ : CofProp → CofProp → Type
+_⇒_ : Cof → Cof → Type
 φ ⇒ ψ = [ φ ] → [ ψ ]
 
-_⇒ᴵ_ : (Γ → CofProp) → (Γ → CofProp) → (Γ → Type)
+_⇒ᴵ_ : (Γ → Cof) → (Γ → Cof) → (Γ → Type)
 (φ ⇒ᴵ ψ) γ = φ γ ⇒ ψ γ
 
 
 module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
-  (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+  (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
   where
 
   open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; Cap to Ca ; match to p)
@@ -101,7 +101,7 @@ module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
 LargeBoxUnion : ∀ {S} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
-  (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+  (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
   → Γ ▷[ box .cof ∨ᴵ ψ ] ⊢ᶠType ℓ
 LargeBoxUnion = LargeBoxUnion.fib
 
@@ -109,7 +109,7 @@ opaque
   varyLargeBoxUnion : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxUnion box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq) .snd
       ≡ LargeBoxUnion (reshapeLargeBox σ box) s ψ toEq .snd
   varyLargeBoxUnion σ box s ψ toEq =
@@ -122,7 +122,7 @@ opaque
   reindexLargeBoxUnion : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
     → (LargeBoxUnion box s ψ toEq ∘ᶠ ρ ×id) .snd
       ≡ LargeBoxUnion (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ) .snd
@@ -138,7 +138,7 @@ opaque
   largeBoxEquiv : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → Γ ▷[ box .cof ∨ᴵ ψ ] ⊢ᶠ
       Equivᶠ (LargeBoxUnion box s ψ toEq) (box .Cap ∘ᶠ wk[ box .cof ∨ᴵ ψ ])
   largeBoxEquiv {S = S} {r} box s ψ toEq =
@@ -189,7 +189,7 @@ opaque
   varyLargeBoxEquiv : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → largeBoxEquiv box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
       ≡ largeBoxEquiv (reshapeLargeBox σ box) s ψ toEq
   varyLargeBoxEquiv σ {r = r} box s ψ toEq =
@@ -208,7 +208,7 @@ opaque
   reindexLargeBoxEquiv : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
     → largeBoxEquiv box s ψ toEq ∘ (ρ ×id)
       ≡ largeBoxEquiv (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
@@ -229,7 +229,7 @@ opaque
   LargeBoxFillerψ : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → Γ ⊢ᶠType ℓ
   LargeBoxFillerψ box s ψ toEq =
     SGlueᶠ
@@ -241,7 +241,7 @@ opaque
   reindexLargeBoxFillerψ : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     (ρ : Δ → Γ)
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ ρ
       ≡ LargeBoxFillerψ (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
@@ -257,7 +257,7 @@ opaque
   LargeBoxψTube≡ : ∀ {S} {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox S r ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ wk[ box .cof ]
       ≡ box .Tube ∘ᶠ (id ,, s ∘ wk[ box .cof ])
   LargeBoxψTube≡ box s ψ toEq =
@@ -290,7 +290,7 @@ opaque
   varyLargeBoxFillerψ : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
     (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)
     (s : Γ → ⟨ S ⟩)
-    (ψ : Γ → CofProp) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
+    (ψ : Γ → Cof) (toEq : Γ ⊢ ψ ⇒ᴵ (S ∋ r ≈ᴵ s))
     → LargeBoxFillerψ box (⟪ σ ⟫ ∘ s) ψ ((cong ⟪ σ ⟫ ∘_) ∘ toEq)
       ≡ LargeBoxFillerψ (reshapeLargeBox σ box) s ψ toEq
   varyLargeBoxFillerψ σ box s ψ toEq =

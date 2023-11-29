@@ -17,7 +17,7 @@ private variable
   ℓ : Level
   Γ Δ : Type ℓ
 
-SGlueᶠ : (φ : Γ → CofProp)
+SGlueᶠ : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
@@ -26,7 +26,7 @@ SGlueᶠ φ B A fe =
   ≅Realignᶠ φ (Glueᶠ φ B A fe) A (includeAIsoᴵ φ (equivFun fe))
 
 opaque
-  SGlueᶠStrictness : (φ : Γ → CofProp)
+  SGlueᶠStrictness : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
@@ -35,7 +35,7 @@ opaque
     ≅RealignᶠMatch φ _ _ (includeAIsoᴵ φ (equivFun fe))
 
 opaque
-  reindexSGlueᶠ : (φ : Γ → CofProp)
+  reindexSGlueᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))

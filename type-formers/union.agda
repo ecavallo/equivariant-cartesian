@@ -18,7 +18,7 @@ private variable
 -- Equality of fibration structures on a union of families
 ------------------------------------------------------------------------------------------
 
-unionFibStrExt : (φ₀ φ₁ : Γ → CofProp)
+unionFibStrExt : (φ₀ φ₁ : Γ → Cof)
   {A : Γ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ} {α₀ α₁ : FibStr A}
   → α₀ ∘ᶠˢ id× ∨l ≡ α₁ ∘ᶠˢ id× ∨l
   → α₀ ∘ᶠˢ id× ∨r ≡ α₁ ∘ᶠˢ id× ∨r
@@ -52,7 +52,7 @@ unionFibStrExt φ₀ φ₁ {A} {α₀} {α₁} eq₀ eq₁ =
           ∙ cong (λ β → move (∨r ∘ u₁) (funExt' trunc') (β ∘ᶠˢ (fst ∘ p ,, u₁))) eq₁
           ∙ sym (moveEq (∨r ∘ u₁) (funExt' trunc') α₁))
 
-unionFibExt : (φ₀ φ₁ : Γ → CofProp)
+unionFibExt : (φ₀ φ₁ : Γ → Cof)
   {A₀ A₁ : Γ ▷[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ}
   → A₀ ∘ᶠ id× ∨l ≡ A₁ ∘ᶠ id× ∨l
   → A₀ ∘ᶠ id× ∨r ≡ A₁ ∘ᶠ id× ∨r
@@ -72,7 +72,7 @@ unionFibExt φ₀ φ₁ {A₀} {A₁} eq₀ eq₁ =
 -- Deriving a fibrancy structure on a union
 ------------------------------------------------------------------------------------------
 
-module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
+module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → Cof)
   (A : ⟨ S ⟩ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
   (α₀ : FibStr (A ∘ id× ∨l))
   (α₁ : FibStr (A ∘ id× ∨r))
@@ -116,7 +116,7 @@ module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → CofProp)
   filler .cap≡ = capSys (shape→∨ S φ₀ φ₁ u)
 
 module UnionVary {S T r} (σ : ShapeHom S T)
-  (φ₀ φ₁ : ⟨ T ⟩ → CofProp)
+  (φ₀ φ₁ : ⟨ T ⟩ → Cof)
   (A : ⟨ T ⟩ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
   (α₀ : FibStr (A ∘ id× ∨l))
   (α₁ : FibStr (A ∘ id× ∨r))
@@ -184,7 +184,7 @@ module UnionVary {S T r} (σ : ShapeHom S T)
       (shape→∨ T φ₀ φ₁ u)
 
 
-module UnionFibStr (φ₀ φ₁ : Γ → CofProp)
+module UnionFibStr (φ₀ φ₁ : Γ → Cof)
   (A : Γ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
   (α₀ : FibStr (A ∘ id× ∨l))
   (α₁ : FibStr (A ∘ id× ∨r))
@@ -254,7 +254,7 @@ module UnionFibStr (φ₀ φ₁ : Γ → CofProp)
         (uip (funExt' trunc') refl)
 
 opaque
-  reindexUnionFibStr : (φ₀ φ₁ : Γ → CofProp)
+  reindexUnionFibStr : (φ₀ φ₁ : Γ → Cof)
     (A : Γ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ)
     (α₀ : FibStr (A ∘ id× ∨l))
     (α₁ : FibStr (A ∘ id× ∨r))
@@ -272,7 +272,7 @@ opaque
       (cong (_∘ᶠˢ (ρ ×id)) (UnionFibStr.right φ₀ φ₁ A α₀ α₁ eqFib)
         ∙ sym (UnionFibStr.right (φ₀ ∘ ρ) (φ₁ ∘ ρ) _ _ _ _))
 
-module Unionᶠ (φ₀ φ₁ : Γ → CofProp)
+module Unionᶠ (φ₀ φ₁ : Γ → Cof)
   (A₀ : Γ ▷[ φ₀ ] ⊢ᶠType ℓ) (A₁ : Γ ▷[ φ₁ ] ⊢ᶠType ℓ)
   (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ wk[ φ₀ ] ×id)
   where
@@ -299,7 +299,7 @@ module Unionᶠ (φ₀ φ₁ : Γ → CofProp)
     right = cong (A₁ .fst ,_) F.right
 
 opaque
-  reindexUnionᶠ : (φ₀ φ₁ : Γ → CofProp)
+  reindexUnionᶠ : (φ₀ φ₁ : Γ → Cof)
     (A₀ : Γ ▷[ φ₀ ] ⊢ᶠType ℓ) (A₁ : Γ ▷[ φ₁ ] ⊢ᶠType ℓ)
     (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ wk[ φ₀ ] ×id)
     (ρ : Δ → Γ)

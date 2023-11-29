@@ -15,14 +15,14 @@ private variable
   Γ Δ : Type ℓ
 
 -- TODO do something better with this
-Partial : (Z : Shape) (φ : ⟨ Z ⟩ → CofProp)
+Partial : (Z : Shape) (φ : ⟨ Z ⟩ → Cof)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
   → Γ → Type ℓ
 Partial Z φ A γ = ∀ z → [ φ z ] → A (γ , z)
 
 Extensionᴵ : (Z : Shape)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
-  (φ : ⟨ Z ⟩ → CofProp)
+  (φ : ⟨ Z ⟩ → Cof)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ])
   → Γ → Type ℓ
 Extensionᴵ Z A φ a γ =
@@ -80,7 +80,7 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
 opaque
   ExtensionFibStr : (Z : Shape)
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
-    (φ : ⟨ Z ⟩ → CofProp)
+    (φ : ⟨ Z ⟩ → Cof)
     (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ])
     → FibStr (Extensionᴵ Z A φ a)
   ExtensionFibStr Z α φ a .lift S r p = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
@@ -91,14 +91,14 @@ opaque
   ----------------------------------------------------------------------------------------
   reindexExtensionFibStr : {Z : Shape}
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
-    {φ : ⟨ Z ⟩ → CofProp}
+    {φ : ⟨ Z ⟩ → Cof}
     {a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ]}
     (ρ : Δ → Γ)
     → ExtensionFibStr Z α φ a ∘ᶠˢ ρ
       ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) φ (a ∘ ρ ×id ×id)
   reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl
 
-Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → CofProp)
+Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → Cof)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ᶠ A ∘ᶠ wk[ φ ∘ snd ])
   → Γ ⊢ᶠType ℓ
 Extensionᶠ Z A φ a .fst = Extensionᴵ Z (A .fst) φ a

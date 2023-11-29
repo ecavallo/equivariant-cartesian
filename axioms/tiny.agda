@@ -10,7 +10,7 @@ open import prelude
 open import axioms.funext
 open import axioms.truncation
 open import axioms.shape
-open import axioms.cofprop
+open import axioms.cofibration
 
 ------------------------------------------------------------------------------------------
 -- Each shape is tiny (exponentiation by it has a right adjoint)

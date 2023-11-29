@@ -24,7 +24,7 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type �
   where
   constructor makeBox
   field
-    cof : CofProp
+    cof : Cof
     tube : [ cof ] → Π A
     cap : A r [ cof ↦ tube ⦅–⦆ r ]
 

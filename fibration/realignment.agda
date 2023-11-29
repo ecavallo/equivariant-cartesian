@@ -18,7 +18,7 @@ private variable
 -- Realigning a fibration structure on a given family
 ------------------------------------------------------------------------------------------
 
-module RealignLift {S r} (φ : ⟨ S ⟩ → CofProp)
+module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   {B : ⟨ S ⟩ → Type ℓ}
   (β : FibStr B)
   (α : FibStr (B ∘ wk[ φ ]))
@@ -49,7 +49,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → CofProp)
   filler .cap≡ = fillB .cap≡
 
 module RealignVary {S T} (σ : ShapeHom S T) {r}
-  (φ : ⟨ T ⟩ → CofProp)
+  (φ : ⟨ T ⟩ → Cof)
   {B : ⟨ T ⟩ → Type ℓ}
   (β : FibStr B)
   (α : FibStr (B ∘ wk[ φ ]))
@@ -68,7 +68,7 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
     cong
       (λ box' → β .lift S r ⟪ σ ⟫ box' .fill s .out)
       (boxExt
-        (cong (λ φ → box .cof ∨ φ) (allEquivariant σ φ))
+        (cong (box .cof ∨_) (allEquivariant σ φ))
         (takeOutCof (box .cof) (all T φ) (all S (φ ∘ ⟪ σ ⟫))
           (λ _ → refl)
           (λ uS uT → funExt λ i →
@@ -78,7 +78,7 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
-  realignFibStr : (φ : Γ → CofProp)
+  realignFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ}
     (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
@@ -89,7 +89,7 @@ opaque
     RealignVary.eq σ (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
 
   -- TODO prove this in RealignLift?
-  isRealigned : (φ : Γ → CofProp)
+  isRealigned : (φ : Γ → Cof)
     {B : Γ → Type ℓ}
     (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
@@ -99,7 +99,7 @@ opaque
       RealignLift.fillB _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
       .fill s .out≡ (∨r (snd ∘ p))
 
-  reindexRealignFibStr : (φ : Γ → CofProp)
+  reindexRealignFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ}
     (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
@@ -113,7 +113,7 @@ opaque
 ------------------------------------------------------------------------------------------
 
 opaque
-  ≅Realignᶠ : (φ : Γ → CofProp)
+  ≅Realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
@@ -124,7 +124,7 @@ opaque
       (isomorphFibStr (λ γ → ≅realign (φ γ) _ _ (iso ∘ (γ ,_))) β)
       (subst FibStr (funExt (uncurry λ γ → ≅RealignMatch (φ γ) _ _ (iso ∘ (γ ,_)))) α)
 
-  ≅RealignᶠMatch : (φ : Γ → CofProp)
+  ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
@@ -132,14 +132,14 @@ opaque
   ≅RealignᶠMatch _ _ _ _ =
     Σext _ (isRealigned _ _ _)
 
-  ≅realignᶠ : (φ : Γ → CofProp)
+  ≅realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
     → Γ ⊢ ≅Realignᶠ φ B A iso .fst ≅ᴵ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _ _ _
 
-  reindexRealignᶠ : (φ : Γ → CofProp)
+  reindexRealignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))

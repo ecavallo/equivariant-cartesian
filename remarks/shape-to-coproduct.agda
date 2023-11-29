@@ -14,7 +14,7 @@ open import prelude
 open import axioms.funext
 open import axioms.truncation
 open import axioms.shape
-open import axioms.cofprop
+open import axioms.cofibration
 open import axioms.tiny
 
 open Tiny

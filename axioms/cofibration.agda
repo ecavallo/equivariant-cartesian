@@ -1,12 +1,11 @@
 {-
 
-Definition of the universe of propositional cofibrations and basic
-operations involving these.
+Axiomatization of the universe of cofibrations and basic operations involving these.
 
 -}
 {-# OPTIONS --rewriting #-}
 
-module axioms.cofprop where
+module axioms.cofibration where
 
 open import prelude
 open import axioms.funext
@@ -18,43 +17,43 @@ private variable ℓ ℓ' : Level
 infixr 4 _∨_ _∨ᴵ_
 
 ------------------------------------------------------------------------------------------
--- Propositional cofibrations
+-- Cofibration classifier
 ------------------------------------------------------------------------------------------
 
 postulate
-  CofProp : Type
-  [_] : CofProp → Type
+  Cof : Type
+  [_] : Cof → Type
 
-  _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → CofProp
+  _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → Cof
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
-  ⊥ : CofProp
+  ⊥ : Cof
   [⊥] : [ ⊥ ] ≡ 𝟘
 
-  _∨_ : CofProp → CofProp → CofProp
+  _∨_ : Cof → Cof → Cof
   [∨] : ∀ φ ψ → [ φ ∨ ψ ] ≡ ∥ [ φ ] ⊎ [ ψ ] ∥
 
-  all : (S : Shape) → (⟨ S ⟩ → CofProp) → CofProp
+  all : (S : Shape) → (⟨ S ⟩ → Cof) → Cof
   [all] : ∀ S φ → [ all S φ ] ≡ ((s : ⟨ S ⟩) → [ φ s ])
 
   {-# REWRITE [≈] [⊥] [∨] [all] #-}
 
-  cofIsProp : (φ : CofProp) → isProp [ φ ]
+  cofIsProp : (φ : Cof) → isProp [ φ ]
 
-  shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → CofProp)
+  shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → Cof)
     → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]
 
   ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) → (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
-  allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → CofProp)
+  allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → Cof)
     → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)
 
 ------------------------------------------------------------------------------------------
 -- Shorthands
 ------------------------------------------------------------------------------------------
 
-∂ : 𝕀 → CofProp
+∂ : 𝕀 → Cof
 ∂ i = 𝕚 ∋ i ≈ 0 ∨ 𝕚 ∋ i ≈ 1
 
 ∨l : {A : Type ℓ} {B : Type ℓ'} → A → ∥ A ⊎ B ∥
@@ -63,28 +62,28 @@ postulate
 ∨r : {A : Type ℓ} {B : Type ℓ'} → B → ∥ A ⊎ B ∥
 ∨r b = ∣ inr b ∣
 
-_▷[_] : (Γ : Type ℓ) (φ : Γ → CofProp) → Type ℓ
+_▷[_] : (Γ : Type ℓ) (φ : Γ → Cof) → Type ℓ
 Γ ▷[ φ ] = Σ x ∈ Γ , [ φ x ]
 
-wk[_] : {Γ : Type ℓ} (φ : Γ → CofProp)
+wk[_] : {Γ : Type ℓ} (φ : Γ → Cof)
   → Γ ▷[ φ ] → Γ
 wk[ φ ] = fst
 
 _∋_≈ᴵ_ : {Γ : Type ℓ} (S : Shape)
-  → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → CofProp)
+  → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → Cof)
 (S ∋ r ≈ᴵ s) γ = S ∋ r γ ≈ s γ
 
-_∨ᴵ_ : {Γ : Type ℓ} → (φ ψ : Γ → CofProp) → (Γ → CofProp)
+_∨ᴵ_ : {Γ : Type ℓ} → (φ ψ : Γ → Cof) → (Γ → Cof)
 (φ ∨ᴵ ψ) γ = φ γ ∨ ψ γ
 
-cofIsProp' : (φ : CofProp) {u v : [ φ ]} → u ≡ v
+cofIsProp' : (φ : Cof) {u v : [ φ ]} → u ≡ v
 cofIsProp' φ = cofIsProp φ _ _
 
 ------------------------------------------------------------------------------------------
 -- Restricted types
 ------------------------------------------------------------------------------------------
 
-record _[_↦_] (A : Type ℓ) (φ : CofProp) (a : [ φ ] → A) : Type ℓ where
+record _[_↦_] (A : Type ℓ) (φ : Cof) (a : [ φ ] → A) : Type ℓ where
   constructor makeRestrict
   field
     out : A
@@ -92,7 +91,7 @@ record _[_↦_] (A : Type ℓ) (φ : CofProp) (a : [ φ ] → A) : Type ℓ wher
 
 open _[_↦_] public
 
-restrictExt : {A : Type ℓ} {φ : CofProp} {a : [ φ ] → A}
+restrictExt : {A : Type ℓ} {φ : Cof} {a : [ φ ] → A}
   {z z' : A [ φ ↦ a ]}
   → z .out ≡ z' .out
   → z ≡ z'
@@ -102,7 +101,7 @@ restrictExt refl = cong (makeRestrict _) (funExt' uip')
 -- Combining compatible partial functions
 ------------------------------------------------------------------------------------------
 
-∨-rec : {A : Type ℓ} (φ ψ : CofProp)
+∨-rec : {A : Type ℓ} (φ ψ : Cof)
   (f : [ φ ] → A)
   (g : [ ψ ] → A)
   .(p : ∀ u v → f u ≡ g v)
@@ -122,7 +121,7 @@ OI-rec r f g =
   ∨-rec (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) f g
     (λ u v → 0≠1 (sym u ∙ v))
 
-∨-elim : (φ ψ : CofProp) {P : [ φ ∨ ψ ] → Type ℓ}
+∨-elim : (φ ψ : Cof) {P : [ φ ∨ ψ ] → Type ℓ}
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
   .(p : (u : [ φ ]) (v : [ ψ ]) → subst P trunc' (f u) ≡ g v)
@@ -141,7 +140,7 @@ OI-rec r f g =
       ∙ sym (substCongAssoc P ∨r (cofIsProp ψ v v') _)
       ∙ congdep g (cofIsProp ψ v v')}
 
-∨-elimProp : (φ ψ : CofProp) {P : [ φ ∨ ψ ] → Type ℓ}
+∨-elimProp : (φ ψ : Cof) {P : [ φ ∨ ψ ] → Type ℓ}
   (propP : ∀ uv → isProp (P uv))
   (f : (u : [ φ ]) → P (∨l u))
   (g : (v : [ ψ ]) → P (∨r v))
@@ -157,7 +156,7 @@ OI-elim r f g =
   ∨-elim (𝕚 ∋ r ≈ 0) (𝕚 ∋ r ≈ 1) f g (λ {refl r≡I → 0≠1 r≡I})
 
 opaque
-  ∨-elimEq : (φ ψ : CofProp) {A : [ φ ∨ ψ ] → Type ℓ}
+  ∨-elimEq : (φ ψ : Cof) {A : [ φ ∨ ψ ] → Type ℓ}
     {f g : (uv : [ φ ∨ ψ ]) → A uv}
     → ((u : [ φ ]) → f (∨l u) ≡ g (∨l u))
     → ((v : [ ψ ]) → f (∨r v) ≡ g (∨r v))
@@ -166,7 +165,7 @@ opaque
     ∨-elimProp φ ψ (λ _ → uip)
 
 opaque
-  takeOutCof : {A : Type ℓ} (φ φ₀ φ₁ : CofProp)
+  takeOutCof : {A : Type ℓ} (φ φ₀ φ₁ : Cof)
     {f₀ : [ φ ∨ φ₀ ] → A} {f₁ : [ φ ∨ φ₁ ] → A}
     → (∀ u → f₀ (∨l u) ≡ f₁ (∨l u))
     → (∀ v₀ v₁ → f₀ (∨r v₀) ≡ f₁ (∨r v₁))
@@ -181,9 +180,9 @@ opaque
         (λ v₁ → q v₀ v₁))
       (λ _ _ → funExt' uip')
 
-substCofEl : (φ : CofProp) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
+substCofEl : (φ : Cof) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
 substCofEl φ {P} p v = subst P (cofIsProp φ _ v) p
 
-diagonalCofElim : (φ : CofProp) {P : [ φ ] → [ φ ] → Type ℓ}
+diagonalCofElim : (φ : Cof) {P : [ φ ] → [ φ ] → Type ℓ}
   → (∀ u → P u u) → (∀ u v → P u v)
 diagonalCofElim φ f = substCofEl φ ∘ f
