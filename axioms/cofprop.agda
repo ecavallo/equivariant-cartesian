@@ -127,14 +127,14 @@ OI-rec r f g =
 ∨-elim φ ψ {P = P} f g p =
   ∥∥-elim _ [ f ∣ g ] λ
     { (inl u) (inl u') →
-      cong (subst P ◆ (f u)) uipImp
+      cong (subst P ⦅–⦆ (f u)) uipImp
       ∙ sym (substCongAssoc P ∨l (cofIsProp φ u u') _)
       ∙ congdep f (cofIsProp φ u u')
     ; (inl u) (inr v) → p u v
     ; (inr v) (inl u) →
       sym (adjustSubstEq P (trunc _ _) refl refl (trunc _ _) (p u v))
     ; (inr v) (inr v') →
-      cong (subst P ◆ (g v)) uipImp
+      cong (subst P ⦅–⦆ (g v)) uipImp
       ∙ sym (substCongAssoc P ∨r (cofIsProp ψ v v') _)
       ∙ congdep g (cofIsProp ψ v v')}
 

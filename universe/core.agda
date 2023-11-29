@@ -56,7 +56,7 @@ hasVaries S T σ A .Rel cT cS =
 -- Definition of the universe
 ------------------------------------------------------------------------------------------
 
-record U (@♭ ℓ) : Type (lsuc ℓ) where
+record 𝑼 (@♭ ℓ) : Type (lsuc ℓ) where
   field
     El : Type ℓ
     lifts : (@♭ S : Shape) → √ S (Type* ℓ)
@@ -70,12 +70,12 @@ record U (@♭ ℓ) : Type (lsuc ℓ) where
     variesDst : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
       → √` T dst* (varies S T σ) ≡ √ShapeHom σ (lifts S)
 
-open U public
+open 𝑼 public
 
-UExt : ∀ {@♭ ℓ} {A B : U ℓ}
+𝑼Ext : ∀ {@♭ ℓ} {A B : 𝑼 ℓ}
   → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies
   → A ≡ B
-UExt {A = A} refl refl refl =
+𝑼Ext {A = A} refl refl refl =
   cong
     (λ {(cBase , vBase , vSrc , vDst) → record
       { El = A .El
@@ -99,15 +99,15 @@ UExt {A = A} refl refl refl =
 ------------------------------------------------------------------------------------------
 
 fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
-  fst ∘ L S {A = U ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
+  fst ∘ L S {A = 𝑼 ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
 fstLlifts S =
   L√ S fst (λ A → A .lifts S)
   ∙ cong♭ (L S) (funext (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
 
-getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → U ℓ) → hasLifts S (El ∘ C)
+getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ) → hasLifts S (El ∘ C)
 getLifts S C = coe (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
 
-Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → U ℓ)
+Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ)
   → L S (λ A → A .lifts S) C ≡ (hasLifts S (El ∘ C) , getLifts S C)
 Llifts S C = Σext (appCong (fstLlifts S)) refl
 
@@ -116,12 +116,12 @@ Llifts S C = Σext (appCong (fstLlifts S)) refl
 ------------------------------------------------------------------------------------------
 
 fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-  → fst ∘ L T {A = U ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
+  → fst ∘ L T {A = 𝑼 ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
 fstLvaries S T σ =
   L√ T fst (λ A → A .varies S T σ)
   ∙ cong♭ (L T) (funext (λ A → A .variesBase S T σ) ∙ sym (R℘ T El (hasVaries S T σ)))
 
-srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
+srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
 srcLvaries S T σ C =
   appCong
@@ -129,7 +129,7 @@ srcLvaries S T σ C =
       ∙ cong♭ (L T) (funext (λ A → A .variesSrc S T σ))
       ∙ funext (Llifts T))
 
-dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
+dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → dst* (L T (λ A → A .varies S T σ) C)
     ≡ (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))
 dstLvaries S T σ C =
@@ -146,7 +146,7 @@ substSpan D p w .src = subst (Src ∘ D) p (w .src)
 substSpan D p w .dst = subst (Dst ∘ D) p (w .dst)
 substSpan D refl w .rel = w .rel
 
-getVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
+getVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → Witness (hasVaries S T σ (El ∘ C))
 getVaries S T σ C .src = getLifts T C
 getVaries S T σ C .dst = getLifts S (C ∘ ⟪ σ ⟫)
@@ -160,7 +160,7 @@ getVaries S T σ C .rel =
          ∙ Σeq₂ (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ))))
     (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
 
-Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → U ℓ)
+Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → L T (λ A → A .varies S T σ) C ≡ (hasVaries S T σ (El ∘ C) , getVaries S T σ C)
 Lvaries S T σ C =
   Σext
@@ -193,11 +193,11 @@ ElFibStr .vary =
   ShapeHomIsDiscrete λ (@♭ σ) →
   λ r C → getVaries S T σ C .rel r
 
-Elᶠ : ∀ {@♭ ℓ} → U ℓ ⊢ᶠType ℓ
+Elᶠ : ∀ {@♭ ℓ} → 𝑼 ℓ ⊢ᶠType ℓ
 Elᶠ .fst = El
 Elᶠ .snd = ElFibStr
 
-decode : ∀ {@♭ ℓ} → (Γ → U ℓ) → Γ ⊢ᶠType ℓ
+decode : ∀ {@♭ ℓ} → (Γ → 𝑼 ℓ) → Γ ⊢ᶠType ℓ
 decode = Elᶠ ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
@@ -205,7 +205,8 @@ decode = Elᶠ ∘ᶠ_
 ------------------------------------------------------------------------------------------
 
 FibLifts : Γ ⊢ᶠType ℓ → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ
-FibLifts (A , α) S p = (hasLifts S (A ∘ p) , λ r → α .lift S r p)
+FibLifts (A , α) S p .fst = hasLifts S (A ∘ p)
+FibLifts (A , α) S p .snd r = α .lift S r p
 
 FibVaries : Γ ⊢ᶠType ℓ → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ
 FibVaries (A , α) S T σ p .fst =
@@ -215,7 +216,7 @@ FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
 FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
 opaque
-  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ → U ℓ')
+  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ → 𝑼 ℓ')
   encode {ℓ' = ℓ'} {Γ} A = encoding
     where
     Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
@@ -224,17 +225,17 @@ opaque
     Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
     Rv S T σ = R T (FibVaries A S T σ)
 
-    encoding : Γ → U ℓ'
-    encoding x .El = A .fst x
-    encoding x .lifts S = Rl S x
-    encoding x .liftsBase S =
+    encoding : Γ → 𝑼 ℓ'
+    encoding γ .El = A .fst γ
+    encoding γ .lifts S = Rl S γ
+    encoding γ .liftsBase S =
       appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S (A .fst) (hasLifts S))
-    encoding x .varies S T σ = Rv S T σ x
-    encoding x .variesBase S T σ =
+    encoding γ .varies S T σ = Rv S T σ γ
+    encoding γ .variesBase S T σ =
       appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T (A .fst) (hasVaries S T σ))
-    encoding x .variesSrc S T σ =
+    encoding γ .variesSrc S T σ =
       appCong (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
-    encoding x .variesDst S T σ =
+    encoding γ .variesDst S T σ =
       appCong
         (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
@@ -267,10 +268,10 @@ opaque
 opaque
   unfolding encode
   encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
-    (@♭ A : Γ ⊢ᶠType ℓ'') (@♭ ρ : Δ → Γ) (x : Δ)
-    → encode (A ∘ᶠ ρ) x ≡ encode A (ρ x)
-  encodeReindexFib A ρ x =
-    UExt
+    (@♭ A : Γ ⊢ᶠType ℓ'') (@♭ ρ : Δ → Γ) (δ : Δ)
+    → encode (A ∘ᶠ ρ) δ ≡ encode A (ρ δ)
+  encodeReindexFib A ρ γ =
+    𝑼Ext
       refl
       (funext♭ λ S →
         appCong (R℘ S ρ (FibLifts A S)))
@@ -279,9 +280,9 @@ opaque
 
 opaque
   unfolding encode
-  encodeEl : ∀ {@♭ ℓ} → (C : U ℓ) → encode Elᶠ C ≡ C
+  encodeEl : ∀ {@♭ ℓ} → (C : 𝑼 ℓ) → encode Elᶠ C ≡ C
   encodeEl C =
-    UExt
+    𝑼Ext
       refl
       (funext♭ λ S →
         appCong
@@ -301,6 +302,6 @@ opaque
                   (funext λ r → funext λ box → funext λ s → uipImp)))))
 
 opaque
-  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ → U ℓ') → encode (decode C) ≡ C
-  encodeDecode C = funext λ x →
-    encodeReindexFib Elᶠ C x ∙ encodeEl (C x)
+  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ → 𝑼 ℓ') → encode (decode C) ≡ C
+  encodeDecode C = funext λ γ →
+    encodeReindexFib Elᶠ C γ ∙ encodeEl (C γ)

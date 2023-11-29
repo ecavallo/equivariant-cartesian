@@ -25,16 +25,16 @@ module _ {@♭ ℓ : Level} where
   -- The universe is closed under Σ-types
   ----------------------------------------------------------------------------------------
 
-  universalΣᶠ : (Σ A ∈ U ℓ , (El A → U ℓ)) ⊢ᶠType ℓ
+  universalΣᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
   universalΣᶠ = Σᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
-  sigma : (a : U ℓ) (b : El a → U ℓ) → U ℓ
+  sigma : (a : 𝑼 ℓ) (b : El a → 𝑼 ℓ) → 𝑼 ℓ
   sigma a b = encode universalΣᶠ (a , b)
 
-  sigmaᴵ : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ) → (Γ → U ℓ)
+  sigmaᴵ : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ) → (Γ → 𝑼 ℓ)
   sigmaᴵ a b x = sigma (a x) (curry b x)
 
-  decodeSigma : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ)
+  decodeSigma : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
     → decode (sigmaᴵ a b) ≡ Σᶠ (decode a) (decode b)
   decodeSigma a b =
     cong
@@ -42,22 +42,22 @@ module _ {@♭ ℓ : Level} where
       {x = decode (encode universalΣᶠ)}
       (decodeEncode universalΣᶠ)
     ∙
-    reindexΣᶠ {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} _ _ (a ,, curry b)
+    reindexΣᶠ {Γ = Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)} _ _ (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
   -- The universe is closed under Π-types
   ----------------------------------------------------------------------------------------
 
-  universalΠᶠ : (Σ A ∈ U ℓ , (El A → U ℓ)) ⊢ᶠType ℓ
+  universalΠᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
   universalΠᶠ = Πᶠ (Elᶠ ∘ᶠ fst) (Elᶠ ∘ᶠ λ ((A , B) , a) → B a)
 
-  pi : (a : U ℓ) (b : El a → U ℓ) → U ℓ
+  pi : (a : 𝑼 ℓ) (b : El a → 𝑼 ℓ) → 𝑼 ℓ
   pi a b = encode universalΠᶠ (a , b)
 
-  piᴵ : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ) → (Γ → U ℓ)
+  piᴵ : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ) → (Γ → 𝑼 ℓ)
   piᴵ a b x = pi (a x) (curry b x)
 
-  decodePi : (a : Γ → U ℓ) (b : Γ ▷ (El ∘ a) → U ℓ)
+  decodePi : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
     → decode (piᴵ a b) ≡ Πᶠ (decode a) (decode b)
   decodePi a b =
     cong
@@ -65,6 +65,6 @@ module _ {@♭ ℓ : Level} where
       {x = decode (encode universalΠᶠ)}
       (decodeEncode universalΠᶠ)
     ∙
-    reindexΠᶠ {Γ = Σ A ∈ U ℓ , (El A → U ℓ)} _ _ (a ,, curry b)
+    reindexΠᶠ {Γ = Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)} _ _ (a ,, curry b)
 
   -- TODO other types

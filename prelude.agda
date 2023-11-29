@@ -31,9 +31,9 @@ _∘_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''
 _$_ : {A : Type ℓ} {B : A → Type ℓ'} → ((a : A) → B a) → (a : A) → B a
 f $ a = f a
 
-_◆_ : {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
+_⦅–⦆_ : {A : Type ℓ} {B : Type ℓ'} {C : A → B → Type ℓ''}
   → ((a : A) (b : B) → C a b) → (b : B) (a : A) → C a b
-(f ◆ b) a = f a b
+(f ⦅–⦆ b) a = f a b
 
 ------------------------------------------------------------------------------------------
 -- Propositional equality

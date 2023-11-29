@@ -26,7 +26,7 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type �
   field
     cof : CofProp
     tube : [ cof ] → Π A
-    cap : A r [ cof ↦ tube ◆ r ]
+    cap : A r [ cof ↦ tube ⦅–⦆ r ]
 
 open OpenBox public
 
@@ -64,7 +64,7 @@ opaque
     {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
     → box₀ .cof ≡ box₁ .cof
     → (∀ u v → subst (λ b' → Π (A b')) b (box₀ .tube u) ≡ box₁ .tube v)
-    → subst (A ◆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
+    → subst (A ⦅–⦆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
     → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
   boxExtDep refl f r x = boxExt f r x
 
@@ -76,7 +76,7 @@ record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : Op
   where
   constructor makeFiller
   field
-    fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube ◆ s ]
+    fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube ⦅–⦆ s ]
     cap≡ : fill r .out ≡ box .cap .out
 
 open Filler public

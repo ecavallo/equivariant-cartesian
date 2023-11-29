@@ -162,8 +162,8 @@ opaque
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
       (eqBD : B ≡ D)
       {e : Equiv A (B .fst _)}
-      → subst (Equiv ◆ _) eqAB e ≡ idEquiv (B .snd ∘ᶠˢ (λ _ → γ))
-      → subst (Equiv ◆ _) eqAD (subst (Equiv A) (appCong (cong fst eqBD)) e)
+      → subst (Equiv ⦅–⦆ _) eqAB e ≡ idEquiv (B .snd ∘ᶠˢ (λ _ → γ))
+      → subst (Equiv ⦅–⦆ _) eqAD (subst (Equiv A) (appCong (cong fst eqBD)) e)
         ≡ idEquiv (D .snd ∘ᶠˢ (λ _ → γ))
     eqLemma refl refl refl eq = eq
 
@@ -174,14 +174,14 @@ opaque
           (leftEquiv (γ , u))
         ≡ rightEquiv (γ , v)
     matchEquiv γ u v =
-      substCongAssoc (Equiv ◆ _) (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)) _
+      substCongAssoc (Equiv ⦅–⦆ _) (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)) _
       ∙
       eqLemma
         (cong (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)))
         (cong (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)))
         mat
-        (sym (substCongAssoc (Equiv ◆ _) (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)) _)
-          ∙ congdep (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) ◆ (r γ)) (sym (toEq γ v))
+        (sym (substCongAssoc (Equiv ⦅–⦆ _) (Tu .fst ∘ ((γ , u) ,_)) (sym (toEq γ v)) _)
+          ∙ congdep (coerceEquiv S (Tu ∘ᶠ ((γ , u) ,_)) ⦅–⦆ (r γ)) (sym (toEq γ v))
           ∙ coerceEquivCap S (Tu ∘ᶠ ((γ , u) ,_)) (r γ))
 
 opaque
@@ -218,7 +218,7 @@ opaque
     ∨-elimEq (φ (ρ δ)) (ψ (ρ δ))
       (λ u →
         cong
-          (subst (Equiv (Tu .fst _)) ◆
+          (subst (Equiv (Tu .fst _)) ⦅–⦆
             (coerceEquiv S (Tu ∘ᶠ ((ρ δ , u) ,_)) (s (ρ δ)) (r (ρ δ))))
           uipImp)
       (λ v → refl)
