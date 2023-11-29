@@ -17,33 +17,33 @@ private variable
   ℓ : Level
   Γ Δ : Type ℓ
 
-SGlueᶠ : (Φ : Γ → CofProp)
-  (A : Γ ▷[ Φ ] ⊢ᶠType ℓ)
+SGlueᶠ : (φ : Γ → CofProp)
+  (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (B : Γ ⊢ᶠType ℓ)
-  (fe : Γ ▷[ Φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
+  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
   → Γ ⊢ᶠType ℓ
-SGlueᶠ Φ A B fe =
-  Realignᶠ Φ A (Glueᶠ Φ A B fe) (includeAIsoᴵ Φ (equivFun fe))
+SGlueᶠ φ A B fe =
+  Realignᶠ φ A (Glueᶠ φ A B fe) (includeAIsoᴵ φ (equivFun fe))
 
 opaque
-  SGlueᶠStrictness : (Φ : Γ → CofProp)
-    (A : Γ ▷[ Φ ] ⊢ᶠType ℓ)
+  SGlueᶠStrictness : (φ : Γ → CofProp)
+    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (B : Γ ⊢ᶠType ℓ)
-    (fe : Γ ▷[ Φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
-    → A ≡ SGlueᶠ Φ A B fe ∘ᶠ fst
-  SGlueᶠStrictness Φ A B fe =
-    isRealignedFib Φ _ _ (includeAIsoᴵ Φ (equivFun fe))
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
+    → A ≡ SGlueᶠ φ A B fe ∘ᶠ fst
+  SGlueᶠStrictness φ A B fe =
+    isRealignedFib φ _ _ (includeAIsoᴵ φ (equivFun fe))
 
 opaque
-  reindexSGlueᶠ : (Φ : Γ → CofProp)
-    (B : Γ ▷[ Φ ] ⊢ᶠType ℓ)
+  reindexSGlueᶠ : (φ : Γ → CofProp)
+    (B : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (A : Γ ⊢ᶠType ℓ)
-    (fe : Γ ▷[ Φ ] ⊢ᶠ Equivᶠ B (A ∘ᶠ fst))
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ B (A ∘ᶠ fst))
     (ρ : Δ → Γ)
-    → SGlueᶠ Φ B A fe ∘ᶠ ρ ≡ SGlueᶠ (Φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
-  reindexSGlueᶠ Φ (_ , β) (_ , α) fe ρ =
-    reindexRealignᶠ Φ _ _ _ ρ
+    → SGlueᶠ φ B A fe ∘ᶠ ρ ≡ SGlueᶠ (φ ∘ ρ) (B ∘ᶠ ρ ×id) (A ∘ᶠ ρ) (fe ∘ ρ ×id)
+  reindexSGlueᶠ φ (_ , β) (_ , α) fe ρ =
+    reindexRealignᶠ φ _ _ _ ρ
     ∙
     cong
-      (λ α' → Realignᶠ (Φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (Φ ∘ ρ) _))
-      (reindexGlueFibStr Φ β α fe ρ)
+      (λ α' → Realignᶠ (φ ∘ ρ) _ (_ , α') (includeAIsoᴵ (φ ∘ ρ) _))
+      (reindexGlueFibStr φ β α fe ρ)

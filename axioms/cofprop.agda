@@ -47,8 +47,8 @@ postulate
   ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) → (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
-  allEquivariant : {S T : Shape} (σ : ShapeHom S T) (Φ : ⟨ T ⟩ → CofProp)
-    → all T Φ ≡ all S (Φ ∘ ⟪ σ ⟫)
+  allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → CofProp)
+    → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)
 
 ------------------------------------------------------------------------------------------
 -- Shorthands
@@ -63,12 +63,12 @@ postulate
 ∨r : {A : Type ℓ} {B : Type ℓ'} → B → ∥ A ⊎ B ∥
 ∨r b = ∣ inr b ∣
 
-_▷[_] : (Γ : Type ℓ) (Φ : Γ → CofProp) → Type ℓ
-Γ ▷[ Φ ] = Σ x ∈ Γ , [ Φ x ]
+_▷[_] : (Γ : Type ℓ) (φ : Γ → CofProp) → Type ℓ
+Γ ▷[ φ ] = Σ x ∈ Γ , [ φ x ]
 
-wk[_] : {Γ : Type ℓ} (Φ : Γ → CofProp)
-  → Γ ▷[ Φ ] → Γ
-wk[ Φ ] = fst
+wk[_] : {Γ : Type ℓ} (φ : Γ → CofProp)
+  → Γ ▷[ φ ] → Γ
+wk[ φ ] = fst
 
 _∋_≈ᴵ_ : {Γ : Type ℓ} (S : Shape)
   → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → CofProp)
