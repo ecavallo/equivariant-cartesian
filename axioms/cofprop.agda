@@ -178,6 +178,9 @@ opaque
         (λ v₁ → q v₀ v₁))
       (λ _ _ → funext λ _ → uipImp)
 
-diagonalElim : (φ : CofProp) {P : [ φ ] → [ φ ] → Type ℓ}
+substCofEl : (φ : CofProp) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
+substCofEl φ {P} p v = subst P (cofIsProp φ _ v) p
+
+diagonalCofElim : (φ : CofProp) {P : [ φ ] → [ φ ] → Type ℓ}
   → (∀ u → P u u) → (∀ u v → P u v)
-diagonalElim φ {P = P} f u v = subst (P u) (cofIsProp φ u v) (f u)
+diagonalCofElim φ f = substCofEl φ ∘ f

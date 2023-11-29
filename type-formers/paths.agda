@@ -34,7 +34,7 @@ refl~ a = eqToPath refl
 PathExt : {A : Type ℓ} {a a' : A} {p q : a ~ a'}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
-  cong (uncurry (uncurry ∘ path)) (Σext (funext t) (Σext uipImp uipImp))
+  congΣ (uncurry ∘ path) (funext t) (×ext uipImp uipImp)
 
 Pathᴵ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → Γ → Type ℓ
 Pathᴵ A a₀ a₁ γ = a₀ γ ~ a₁ γ

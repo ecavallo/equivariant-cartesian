@@ -1,6 +1,7 @@
 {-
 
-Postulates realignment for the universes of the extensional type theory.
+Postulates realignment of isomorphisms-up-to-strict-equality along cofibrations for the
+universes of the ambient type theory.
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -11,27 +12,30 @@ open import axioms.cofprop
 
 private variable ℓ : Level
 
+------------------------------------------------------------------------------------------
+-- We postulate realignment of isomorphisms along cofibrations for the universes of the
+-- ambient type theory.
+------------------------------------------------------------------------------------------
 postulate
- reIm : (φ : CofProp) (A : [ φ ] → Type ℓ) (B : Type ℓ)
-  (m : (u : [ φ ]) → A u ≅ B)
-  → Σ B' ∈ Type ℓ , Σ m' ∈ B' ≅ B , ((u : [ φ ]) → (A u , m u) ≡ (B' , m'))
+  ≅Realigns : (φ : CofProp) (B : Type ℓ)
+    (A : [ φ ] → Σ (Type ℓ) (_≅ B)) → Σ (Type ℓ) (_≅ B) [ φ ↦ A ]
 
-realign : (φ : CofProp) (A : [ φ ] → Type ℓ) (B : Type ℓ)
-  (m : (u : [ φ ]) → A u ≅ B)
+------------------------------------------------------------------------------------------
+-- Convenience functions unpacking the components of the postulated realignment for
+-- isomorphisms
+------------------------------------------------------------------------------------------
+≅Realign : (φ : CofProp) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
   → Type ℓ
-realign φ A B m = reIm φ A B m .fst
+≅Realign φ B A e = ≅Realigns φ B (A ,, e) .out .fst
 
-isoB : (φ : CofProp) (A : [ φ ] → Type ℓ) (B : Type ℓ)
-  (m : (u : [ φ ]) → A u ≅ B)
-  → realign φ A B m ≅ B
-isoB φ A B m = reIm φ A B m .snd .fst
+≅realign : (φ : CofProp) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
+  → ≅Realign φ B A e ≅ B
+≅realign φ B A e = ≅Realigns φ B (A ,, e) .out .snd
 
-restrictsToA : (φ : CofProp) (A : [ φ ] → Type ℓ) (B : Type ℓ)
-  (m : (u : [ φ ]) → A u ≅ B)
-  (u : [ φ ]) → A u ≡ realign φ A B m
-restrictsToA φ A B m u = cong fst (reIm φ A B m .snd .snd u)
+≅RealignMatch : (φ : CofProp) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
+  → ∀ u → A u ≡ ≅Realign φ B A e
+≅RealignMatch φ B A e u = cong fst (≅Realigns φ B (A ,, e) .out≡ u)
 
-restrictsToM : (φ : CofProp) (A : [ φ ] → Type ℓ) (B : Type ℓ)
-  (m : (u : [ φ ]) → A u ≅ B)
-  (u : [ φ ]) → (A u , m u) ≡ (realign φ A B m , isoB φ A B m)
-restrictsToM φ A B m u = reIm φ A B m .snd .snd u
+≅realignMatch : (φ : CofProp) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
+  → ∀ u → subst (_≅ B) (≅RealignMatch φ B A e u) (e u) ≡ ≅realign φ B A e
+≅realignMatch φ B A e u = Σeq₂ (≅Realigns φ B (A ,, e) .out≡ u) _

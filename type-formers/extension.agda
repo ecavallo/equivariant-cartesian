@@ -73,7 +73,7 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
       (α .vary S T σ r (_, z) (T.boxA z) s
         ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
             (boxExt refl
-              (diagonalElim (box .cof ∨ φ z)
+              (diagonalCofElim (box .cof ∨ φ z)
                 (∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl)))
               refl))
 
@@ -98,9 +98,7 @@ opaque
       ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) φ (a ∘ ρ ×id ×id)
   reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl
 
-Extensionᶠ : (Z : Shape)
-  (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ)
-  (φ : ⟨ Z ⟩ → CofProp)
+Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → CofProp)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ᶠ A ∘ᶠ wk[ φ ∘ snd ])
   → Γ ⊢ᶠType ℓ
 Extensionᶠ Z A φ a .fst = Extensionᴵ Z (A .fst) φ a

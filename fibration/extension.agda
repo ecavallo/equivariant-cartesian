@@ -234,8 +234,8 @@ opaque
   LargeBoxFillerψ box s ψ toEq =
     SGlueᶠ
       (box .cof ∨ᴵ ψ)
-      (LargeBoxUnion box s ψ toEq)
       (box .Cap)
+      (LargeBoxUnion box s ψ toEq)
       (largeBoxEquiv box s ψ toEq)
 
   reindexLargeBoxFillerψ : ∀ {S} {r : Γ → ⟨ S ⟩}
@@ -248,7 +248,7 @@ opaque
   reindexLargeBoxFillerψ box s ψ toEq ρ =
     reindexSGlueᶠ _ _ _ _ _
     ∙ cong₂
-      (λ isfib eqv → SGlueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (_ , isfib) (box .Cap ∘ᶠ ρ) eqv)
+      (curry (SGlueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (box .Cap ∘ᶠ ρ)) _)
       (reindexLargeBoxUnion box s ψ toEq ρ)
       (reindexLargeBoxEquiv _ _ _ _ _)
 
@@ -276,11 +276,11 @@ LargeBoxFiller : ∀ {S} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ) → LargeFiller box
 LargeBoxFiller {S = S} {r = r} box .Fill =
   LargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id)
-LargeBoxFiller {S = S} {r = r} box .Tube≡ =
+LargeBoxFiller {S = S} {r} box .Tube≡ =
   cong
     (_∘ᶠ (λ ((γ , u) , s) → (γ , s) , u))
     (LargeBoxψTube≡ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id))
-LargeBoxFiller {S = S} {r = r} box .Cap≡ =
+LargeBoxFiller {S = S} {r} box .Cap≡ =
   reindexLargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id) (id ,, r)
   ∙ cong (λ box' → LargeBoxFillerψ box' r (S ∋ r ≈ᴵ r) (λ _ → id)) (largeBoxExt refl refl refl)
   ∙ LargeBoxCap≡ box
@@ -295,7 +295,7 @@ opaque
       ≡ LargeBoxFillerψ (reshapeLargeBox σ box) s ψ toEq
   varyLargeBoxFillerψ σ box s ψ toEq =
     cong₂
-      (λ isfib eqv → SGlueᶠ (box .cof ∨ᴵ ψ) (_ , isfib) (box .Cap) eqv)
+      (curry (SGlueᶠ (box .cof ∨ᴵ ψ) (box .Cap)) _)
       (varyLargeBoxUnion σ box s ψ toEq)
       (varyLargeBoxEquiv _ _ _ _ _)
 
