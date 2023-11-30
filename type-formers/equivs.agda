@@ -177,7 +177,7 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
   qBox : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A)
   qBox i .cof = ∂ i
-  qBox i .tube = OI-rec i (λ {refl → p .at}) (λ {refl _ → a})
+  qBox i .tube j = OI-rec i (λ {refl → p .at j}) (λ {refl → a})
   qBox i .cap .out = a
   qBox i .cap .out≡ = OI-elim i (λ {refl → p .at1}) (λ {refl → refl})
 

@@ -35,7 +35,7 @@ module ΣLift {S r}
 
     boxB : OpenBox S r (B ∘ (id ,, out ∘ cA .fill))
     boxB .cof = box .cof
-    boxB .tube u i = subst (curry B i) (cA .fill i .out≡ u) (box .tube u i .snd)
+    boxB .tube i u = subst (curry B i) (cA .fill i .out≡ u) (box .tube i u .snd)
     boxB .cap .out = subst (curry B r) (sym (cA .cap≡)) (box .cap .out .snd)
     boxB .cap .out≡ u =
       adjustSubstEq (curry B r)

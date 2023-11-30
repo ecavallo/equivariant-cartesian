@@ -25,8 +25,8 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type �
   constructor makeBox
   field
     cof : Cof
-    tube : [ cof ] → Π A
-    cap : A r [ cof ↦ tube ⦅–⦆ r ]
+    tube : (i : ⟨ S ⟩) → [ cof ] → A i
+    cap : A r [ cof ↦ tube r ]
 
 open OpenBox public
 
@@ -34,7 +34,7 @@ reshapeBox : {S T : Shape} (σ : ShapeHom S T)
   {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Type ℓ}
   → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
 reshapeBox σ box .cof = box .cof
-reshapeBox σ box .tube u = box .tube u ∘ ⟪ σ ⟫
+reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
 
 mapBox : {S : Shape} {r : ⟨ S ⟩}
@@ -42,7 +42,7 @@ mapBox : {S : Shape} {r : ⟨ S ⟩}
   → (∀ s → A s → B s)
   → OpenBox S r A → OpenBox S r B
 mapBox f box .cof = box .cof
-mapBox f box .tube u i = f i (box .tube u i)
+mapBox f box .tube i u = f i (box .tube i u)
 mapBox f box .cap .out = f _ (box .cap .out)
 mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
@@ -50,12 +50,12 @@ opaque
   boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box box' : OpenBox S r A}
     → box .cof ≡ box' .cof
-    → (∀ u v → box .tube u ≡ box' .tube v)
+    → (∀ i u v → box .tube i u ≡ box' .tube i v)
     → box .cap .out ≡ box' .cap .out
     → box ≡ box'
   boxExt {box = box} refl q refl =
     congΣ (λ t c → makeBox (box .cof) t (makeRestrict (box .cap .out) c))
-      (funExt' $ q _ _)
+      (funExt' $ funExt' $ q _ _ _)
       (funExt' uip')
 
   boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
@@ -63,7 +63,7 @@ opaque
     {r : ⟨ S ⟩}
     {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
     → box₀ .cof ≡ box₁ .cof
-    → (∀ u v → subst (λ b' → Π (A b')) b (box₀ .tube u) ≡ box₁ .tube v)
+    → (∀ i u v → subst (λ b' → A b' i) b (box₀ .tube i u) ≡ box₁ .tube i v)
     → subst (A ⦅–⦆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
     → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
   boxExtDep refl f r x = boxExt f r x
@@ -76,7 +76,7 @@ record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : Op
   where
   constructor makeFiller
   field
-    fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube ⦅–⦆ s ]
+    fill : (s : ⟨ S ⟩) → A s [ box .cof ↦ box .tube s ]
     cap≡ : fill r .out ≡ box .cap .out
 
 open Filler public

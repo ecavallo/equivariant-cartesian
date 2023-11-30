@@ -46,7 +46,7 @@ module ΠLift {S r}
       (fillB s a (coeA s a) .fill s .out)
   filler .fill s .out≡ u =
     funExt λ a →
-    sym (congdep (box .tube u s) (fillA s a .cap≡))
+    sym (congdep (box .tube s u) (fillA s a .cap≡))
     ∙ cong (subst (curry B s) (fillA s a .cap≡))
         (fillB s a (coeA s a) .fill s .out≡ u)
   filler .cap≡ =

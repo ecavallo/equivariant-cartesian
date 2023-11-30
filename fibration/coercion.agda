@@ -16,7 +16,7 @@ module _ (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : A .fst 
 
   coerceBox : OpenBox S r (A .fst)
   coerceBox .cof = ⊥
-  coerceBox .tube e _ = 𝟘-rec e
+  coerceBox .tube _ = 𝟘-rec
   coerceBox .cap .out = a
   coerceBox .cap .out≡ ()
 
@@ -37,4 +37,4 @@ module _ {S T : Shape} (σ : ShapeHom S T)
     coerce T (⟪ σ ⟫ r) A a (⟪ σ ⟫ s) ≡ coerce S r (A ∘ᶠ ⟪ σ ⟫) a s
   coerceVary s =
     A .snd .vary S T σ r id (coerceBox T _ A a) s
-    ∙ cong (λ box → A .snd .lift S r ⟪ σ ⟫ box .fill s .out) (boxExt refl (λ ()) refl)
+    ∙ cong (λ box → A .snd .lift S r ⟪ σ ⟫ box .fill s .out) (boxExt refl (λ _ ()) refl)

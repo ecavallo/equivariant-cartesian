@@ -121,8 +121,8 @@ module GlueLift {S r φ}
         ∨-rec (box .cof) (S ∋ r ≈ s)
           (λ v →
             eqToFiber
-              (box .tube v s .dom us)
-              (box .tube v s .match us ∙ fillB .fill s .out≡ v))
+              (box .tube s v .dom us)
+              (box .tube s v .match us ∙ fillB .fill s .out≡ v))
           (λ {refl →
             eqToFiber
               (box .cap .out .dom us)
@@ -132,7 +132,7 @@ module GlueLift {S r φ}
 
       boxR : OpenBox 𝕚 1 (λ _ → Fiber (f (s , us)) (fillB .fill s .out))
       boxR .cof = box .cof ∨ S ∋ r ≈ s
-      boxR .tube v≡ k = C₂ (fiberR v≡) .at k
+      boxR .tube k v≡ = C₂ (fiberR v≡) .at k
       boxR .cap .out = C₁
       boxR .cap .out≡ v≡ = C₂ (fiberR v≡) .at1
 
@@ -146,21 +146,21 @@ module GlueLift {S r φ}
 
     boxFix : OpenBox 𝕚 1 (λ _ → B s)
     boxFix .cof = box .cof ∨ φ s ∨ S ∋ r ≈ s
-    boxFix .tube =
+    boxFix .tube i =
       ∨-rec (box .cof) (φ s ∨ S ∋ r ≈ s)
-        (λ v _ → boxB .tube v s)
+        (boxB .tube s)
         (∨-rec (φ s) (S ∋ r ≈ s)
-          (λ us → fillR us .out .snd .at)
-          (λ {refl _ → boxB .cap .out})
-          (λ {us refl → funExt λ i →
+          (λ us → fillR us .out .snd .at i)
+          (λ {refl → boxB .cap .out})
+          (λ {us refl →
             fiberPathEq (sym (fillR us .out≡ (∨r refl)) ∙ C₂ us (fiberR us (∨r refl)) .at0) i
             ∙ box .cap .out .match us}))
         (λ v →
           ∨-elimEq (φ s) (S ∋ r ≈ s)
-            (λ us → funExt λ i →
-              sym (box .tube v s .match us)
+            (λ us →
+              sym (box .tube s v .match us)
               ∙ fiberPathEq (sym (C₂ us (fiberR us (∨l v)) .at0) ∙ fillR us .out≡ (∨l v)) i)
-            (λ {refl → funExt' $ boxB .cap .out≡ v}))
+            (λ {refl → boxB .cap .out≡ v}))
     boxFix .cap .out = fillB .fill s .out
     boxFix .cap .out≡ =
       ∨-elimEq (box .cof) (φ s ∨ S ∋ r ≈ s)
@@ -228,13 +228,9 @@ module GlueVary {S T} (σ : ShapeHom S T) {r φ}
         varyB
         (boxExtDep varyB
           (cong (box .cof ∨_) (≈Equivariant σ r s))
-          (takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
-            (λ u → funExtDepCod varyB λ i →
-              varyC₂ uσs i
-                (FiberExtDep varyB refl (λ _ → refl)))
-            (λ {refl refl → funExtDepCod varyB λ i →
-              varyC₂ uσs i
-                (FiberExtDep varyB refl (λ _ → refl))}))
+          (λ i → takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
+            (λ u → varyC₂ uσs i (FiberExtDep varyB refl (λ _ → refl)))
+            (λ {refl refl → varyC₂ uσs i (FiberExtDep varyB refl (λ _ → refl))}))
           (varyC₁ uσs))
 
     varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
@@ -243,12 +239,12 @@ module GlueVary {S T} (σ : ShapeHom S T) {r φ}
         (λ box' → β .lift 𝕚 1 (λ _ → ⟪ σ ⟫ s) box' .fill 0 .out)
         (boxExt
           (cong (λ ψ → box .cof ∨ φ (⟪ σ ⟫ s) ∨ ψ) (≈Equivariant σ r s))
-          (takeOutCof (box .cof)
+          (λ i → takeOutCof (box .cof)
             (φ (⟪ σ ⟫ s) ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s)
             (φ (⟪ σ ⟫ s) ∨ S ∋ r ≈ s)
             (λ _ → refl)
             (takeOutCof (φ (⟪ σ ⟫ s)) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
-              (λ uσs → funExt (fiberPathEqDep varyB (varyR uσs)))
+              (λ uσs → fiberPathEqDep varyB (varyR uσs) i)
               (λ {refl refl → refl})))
           varyB)
 

@@ -81,7 +81,7 @@ module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → Cof)
   (box : OpenBox S r (A ∘ (id ,, u)))
   where
 
-  fillSys : ∀ s → [ all S φ₀ ∨ all S φ₁ ] → A (s , u s) [ box .cof ↦ box .tube ⦅–⦆ s ]
+  fillSys : ∀ s → [ all S φ₀ ∨ all S φ₁ ] → A (s , u s) [ box .cof ↦ box .tube s ]
   fillSys s =
     ∨-rec (all S φ₀) (all S φ₁)
       (λ u₀ →

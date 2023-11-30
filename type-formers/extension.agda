@@ -38,11 +38,11 @@ module ExtensionLift {Z φ S r}
 
     boxA : OpenBox S r (λ s → A (s , z))
     boxA .cof = box .cof ∨ φ z
-    boxA .tube =
+    boxA .tube s =
       ∨-rec (box .cof) (φ z)
-        (λ u s → box .tube u s z .out)
-        (λ v s → a ((s , z) , v))
-        (λ u v → funExt λ s → sym (box .tube u s z .out≡ v))
+        (λ u → box .tube s u z .out)
+        (λ v → a ((s , z) , v))
+        (λ u v → sym (box .tube s u z .out≡ v))
     boxA .cap .out = box .cap .out z .out
     boxA .cap .out≡ =
       ∨-elimEq (box .cof) (φ z)
@@ -73,8 +73,9 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
       (α .vary S T σ r (_, z) (T.boxA z) s
         ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
             (boxExt refl
-              (diagonalCofElim (box .cof ∨ φ z)
-                (∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl)))
+              (λ _ →
+                diagonalCofElim (box .cof ∨ φ z) $
+                ∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl))
               refl))
 
 opaque

@@ -30,11 +30,11 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
 
   box' : OpenBox S r B
   box' .cof = box .cof ∨ all S φ
-  box' .tube =
+  box' .tube i =
     ∨-rec (box .cof) (all S φ)
-      (box .tube)
-      (λ u i → fillA u .fill i .out)
-      (λ v u → funExt λ i → fillA u .fill i .out≡ v)
+      (box .tube i)
+      (λ u → fillA u .fill i .out)
+      (λ v u → fillA u .fill i .out≡ v)
   box' .cap .out = box .cap .out
   box' .cap .out≡ =
     ∨-elimEq (box .cof) (all S φ)
@@ -69,9 +69,9 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
       (λ box' → β .lift S r ⟪ σ ⟫ box' .fill s .out)
       (boxExt
         (cong (box .cof ∨_) (allEquivariant σ φ))
-        (takeOutCof (box .cof) (all T φ) (all S (φ ∘ ⟪ σ ⟫))
+        (λ i → takeOutCof (box .cof) (all T φ) (all S (φ ∘ ⟪ σ ⟫))
           (λ _ → refl)
-          (λ uS uT → funExt λ i →
+          (λ uS uT →
             α .vary S T σ r (id ,, uS) box i
             ∙ cong (λ w → α .lift S r (⟪ σ ⟫ ,, w) (reshapeBox σ box) .fill i .out)
               (funExt λ s → cofIsProp' (φ (⟪ σ ⟫ s)))))
