@@ -264,14 +264,14 @@ opaque
   GlueFibStr φ β α fe .vary S T σ r p =
     GlueVary.eq σ (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
 
-  reindexGlueFibStr : (φ : Γ → Cof)
-    {B : Γ → Type ℓ} (β : FibStr B)
-    {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
-    (fe : Γ ▷[ φ ] ⊢ Equivᴵ A (B ∘ fst))
+  reindexGlueFibStr : {φ : Γ → Cof}
+    {B : Γ → Type ℓ} {β : FibStr B}
+    {A : Γ ▷[ φ ] → Type ℓ} {α : FibStr A}
+    {fe : Γ ▷[ φ ] ⊢ Equivᴵ A (B ∘ fst)}
     (ρ : Δ → Γ)
     → GlueFibStr φ β α fe ∘ᶠˢ ρ
       ≡ GlueFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id) (fe ∘ ρ ×id)
-  reindexGlueFibStr φ β α fe ρ =
+  reindexGlueFibStr ρ =
     FibStrExt λ _ _ _ _ _ → GlueExt (λ _ → refl) refl
 
 Glueᶠ : (φ : Γ → Cof)
@@ -282,10 +282,10 @@ Glueᶠ : (φ : Γ → Cof)
 Glueᶠ φ (B , _) (A , _) fe .fst = Glueᴵ φ B A (equivFun fe)
 Glueᶠ φ (_ , β) (_ , α) fe .snd = GlueFibStr φ β α fe
 
-reindexGlueᶠ : (φ : Γ → Cof)
-  (B : Γ ⊢ᶠType ℓ)
-  (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
+reindexGlueᶠ : {φ : Γ → Cof}
+  {B : Γ ⊢ᶠType ℓ}
+  {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
+  {fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst)}
   (ρ : Δ → Γ)
   → Glueᶠ φ B A fe ∘ᶠ ρ ≡ Glueᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (fe ∘ ρ ×id)
-reindexGlueᶠ φ fe B A ρ = Σext refl (reindexGlueFibStr _ _ _ _ _)
+reindexGlueᶠ ρ = Σext refl (reindexGlueFibStr ρ)

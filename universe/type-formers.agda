@@ -37,12 +37,8 @@ module _ {@♭ ℓ : Level} where
   decodeSigma : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
     → decode (sigmaᴵ a b) ≡ Σᶠ (decode a) (decode b)
   decodeSigma a b =
-    cong
-      (_∘ᶠ (a ,, curry b))
-      {x = decode (encode universalΣᶠ)}
-      (decodeEncode universalΣᶠ)
-    ∙
-    reindexΣᶠ {Γ = Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)} _ _ (a ,, curry b)
+    cong (_∘ᶠ (a ,, curry b)) (decodeEncode universalΣᶠ)
+    ∙ reindexΣᶠ (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
   -- The universe is closed under Π-types
@@ -60,11 +56,7 @@ module _ {@♭ ℓ : Level} where
   decodePi : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
     → decode (piᴵ a b) ≡ Πᶠ (decode a) (decode b)
   decodePi a b =
-    cong
-      (_∘ᶠ (a ,, curry b))
-      {x = decode (encode universalΠᶠ)}
-      (decodeEncode universalΠᶠ)
-    ∙
-    reindexΠᶠ {Γ = Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)} _ _ (a ,, curry b)
+    cong (_∘ᶠ (a ,, curry b)) (decodeEncode universalΠᶠ)
+    ∙ reindexΠᶠ (a ,, curry b)
 
   -- TODO other types

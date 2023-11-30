@@ -91,17 +91,17 @@ opaque
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
+  reindexΠFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ A → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → ΠFibStr α β ∘ᶠˢ ρ ≡ ΠFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
-  reindexΠFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
+  reindexΠFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Πᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 Πᶠ A B .fst = Πᴵ (A .fst) (B .fst)
 Πᶠ A B .snd = ΠFibStr (A .snd) (B .snd)
 
-reindexΠᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
+reindexΠᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ▷ᶠ A ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Πᶠ A B ∘ᶠ ρ ≡ Πᶠ (A ∘ᶠ ρ) (B ∘ᶠ (ρ ×id))
-reindexΠᶠ (_ , α) (_ , β) ρ = Σext refl (reindexΠFibStr α β ρ)
+reindexΠᶠ ρ = Σext refl (reindexΠFibStr ρ)
 
 _→ᶠ_ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 A →ᶠ B = Πᶠ A (B ∘ᶠ fst)

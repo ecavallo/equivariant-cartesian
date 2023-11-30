@@ -35,15 +35,15 @@ opaque
     ≅RealignᶠMatch φ _ _ (includeAIsoᴵ φ (equivFun fe))
 
 opaque
-  reindexSGlueᶠ : (φ : Γ → Cof)
-    (B : Γ ⊢ᶠType ℓ)
-    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
+  reindexSGlueᶠ : {φ : Γ → Cof}
+    {B : Γ ⊢ᶠType ℓ}
+    {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
+    {fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst)}
     (ρ : Δ → Γ)
     → SGlueᶠ φ B A fe ∘ᶠ ρ ≡ SGlueᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (fe ∘ ρ ×id)
-  reindexSGlueᶠ φ (_ , β) (_ , α) fe ρ =
-    reindexRealignᶠ _ _ _ _ _
+  reindexSGlueᶠ {φ = φ} ρ =
+    reindexRealignᶠ _
     ∙
     cong
       (λ β' → ≅Realignᶠ _ (_ , β') _ (includeAIsoᴵ (φ ∘ ρ) _))
-      (reindexGlueFibStr _ _ _ _ _)
+      (reindexGlueFibStr _)

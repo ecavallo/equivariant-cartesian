@@ -33,11 +33,11 @@ opaque
   IsContrFibStr α  =
     ΣFibStr α (ΠFibStr (α ∘ᶠˢ fst) (PathFibStr (α ∘ᶠˢ fst ∘ᶠˢ fst) snd (snd ∘ fst)))
 
-  reindexIsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) (ρ : Δ → Γ)
+  reindexIsContrFibStr : {A : Γ → Type ℓ} {α : FibStr A} (ρ : Δ → Γ)
     → IsContrFibStr α ∘ᶠˢ ρ ≡ IsContrFibStr (α ∘ᶠˢ ρ)
-  reindexIsContrFibStr α ρ =
-    reindexΣFibStr _ _ _
-    ∙ cong (ΣFibStr _) (reindexΠFibStr _ _ _ ∙ cong (ΠFibStr _) (reindexPathFibStr _ _))
+  reindexIsContrFibStr ρ =
+    reindexΣFibStr _
+    ∙ cong (ΣFibStr _) (reindexΠFibStr _ ∙ cong (ΠFibStr _) (reindexPathFibStr _))
 
 IsContrᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
 IsContrᶠ A .fst = IsContrᴵ (A .fst)
@@ -62,12 +62,12 @@ opaque
   FiberFibStr α β f b =
     ΣFibStr α (PathFibStr (β ∘ᶠˢ fst) (uncurry f) (b ∘ fst))
 
-  reindexFiberFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
+  reindexFiberFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     {f : Γ ⊢ A →ᴵ B} {b : Γ ⊢ B}
     (ρ : Δ → Γ)
     → FiberFibStr α β f b ∘ᶠˢ ρ ≡ FiberFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ) (b ∘ ρ)
-  reindexFiberFibStr α β ρ =
-    reindexΣFibStr _ _ _ ∙ cong (ΣFibStr _) (reindexPathFibStr _ _)
+  reindexFiberFibStr ρ =
+    reindexΣFibStr _ ∙ cong (ΣFibStr _) (reindexPathFibStr _)
 
 Fiberᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B) (b : Γ ⊢ᶠ B)
   → Γ ⊢ᶠType (ℓ ⊔ ℓ')
@@ -119,15 +119,15 @@ opaque
   IsEquivFibStr α β f =
     ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) (f ∘ fst) snd))
 
-  reindexIsEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
+  reindexIsEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     {f : Γ ⊢ A →ᴵ B}
     (ρ : Δ → Γ)
     → IsEquivFibStr α β f ∘ᶠˢ ρ ≡ IsEquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ)
-  reindexIsEquivFibStr α β ρ =
-    reindexΠFibStr _ _ _
+  reindexIsEquivFibStr ρ =
+    reindexΠFibStr _
     ∙ cong (ΠFibStr _)
-        (reindexIsContrFibStr _ _
-          ∙ cong IsContrFibStr (reindexFiberFibStr _ (β ∘ᶠˢ fst) _))
+        (reindexIsContrFibStr _
+          ∙ cong IsContrFibStr (reindexFiberFibStr _))
 
 IsEquivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
   → Γ ⊢ᶠType (ℓ ⊔ ℓ')
@@ -150,21 +150,19 @@ opaque
   EquivFibStr α β =
     ΣFibStr (ΠFibStr α (β ∘ᶠˢ fst)) (IsEquivFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) snd)
 
-  reindexEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
+  reindexEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → EquivFibStr α β ∘ᶠˢ ρ ≡ EquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ)
-  reindexEquivFibStr α β ρ =
-    reindexΣFibStr _ _ _
-    ∙ cong₂ (λ α β → ΣFibStr α β)
-      (reindexΠFibStr _ _ _)
-      (reindexIsEquivFibStr _ _ _)
+  reindexEquivFibStr ρ =
+    reindexΣFibStr _
+    ∙ cong₂ (λ α β → ΣFibStr α β) (reindexΠFibStr _) (reindexIsEquivFibStr _)
 
 Equivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 Equivᶠ A B .fst = Equivᴵ (A .fst) (B .fst)
 Equivᶠ A B .snd = EquivFibStr (A .snd) (B .snd)
 
-reindexEquivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
+reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
-reindexEquivᶠ A B ρ = Σext refl (reindexEquivFibStr _ _ _)
+reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 
 ------------------------------------------------------------------------------------------
 -- Identity and coercion maps are equivalences
@@ -226,4 +224,4 @@ opaque
     ∙
     cong
       (λ β → coerce S r (_ , β) (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r))) s)
-      (Σeq₂ (reindexEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)) A ⟪ σ ⟫) refl)
+      (Σeq₂ (reindexEquivᶠ _) refl)

@@ -182,14 +182,15 @@ Lvaries S T σ C =
 -- El : U → Type is a fibration
 ------------------------------------------------------------------------------------------
 
-ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
-ElFibStr .lift =
-  ShapeIsDiscrete λ (@♭ S) → λ r C → getLifts S C r
-ElFibStr .vary =
-  ShapeIsDiscrete λ (@♭ S) →
-  ShapeIsDiscrete λ (@♭ T) →
-  ShapeHomIsDiscrete λ (@♭ σ) →
-  λ r C → getVaries S T σ C .rel r
+opaque
+  ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
+  ElFibStr .lift =
+    ShapeIsDiscrete λ (@♭ S) → λ r C → getLifts S C r
+  ElFibStr .vary =
+    ShapeIsDiscrete λ (@♭ S) →
+    ShapeIsDiscrete λ (@♭ T) →
+    ShapeHomIsDiscrete λ (@♭ σ) →
+    λ r C → getVaries S T σ C .rel r
 
 Elᶠ : ∀ {@♭ ℓ} → 𝑼 ℓ ⊢ᶠType ℓ
 Elᶠ .fst = El
@@ -242,7 +243,7 @@ opaque
 ------------------------------------------------------------------------------------------
 
 opaque
-  unfolding encode
+  unfolding encode ElFibStr
   decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → decode (encode A) ≡ A
   decodeEncode A =
@@ -275,7 +276,7 @@ opaque
       (funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ → appCong (R℘ T ρ (FibVaries A S T σ)))
 
 opaque
-  unfolding encode
+  unfolding encode ElFibStr
   encodeEl : ∀ {@♭ ℓ} → (C : 𝑼 ℓ) → encode Elᶠ C ≡ C
   encodeEl C =
     𝑼Ext

@@ -93,15 +93,14 @@ opaque
   -- Forming Σ-types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
-    (ρ : Δ → Γ)
-    → ΣFibStr α β ∘ᶠˢ ρ ≡ ΣFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
-  reindexΣFibStr α β ρ = FibStrExt λ _ _ _ _ _ → refl
+  reindexΣFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ A → Type ℓ'} {β : FibStr B}
+    (ρ : Δ → Γ) → ΣFibStr α β ∘ᶠˢ ρ ≡ ΣFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
+  reindexΣFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Σᶠ : (A : Γ ⊢ᶠType ℓ) (B : Σ Γ (A .fst) ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 Σᶠ A B .fst = Σᴵ (A .fst) (B .fst)
 Σᶠ A B .snd = ΣFibStr (A .snd) (B .snd)
 
-reindexΣᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
+reindexΣᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ▷ᶠ A ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Σᶠ A B ∘ᶠ ρ ≡ Σᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ ×id)
-reindexΣᶠ (_ , α) (_ , β) ρ = Σext refl (reindexΣFibStr α β ρ)
+reindexΣᶠ ρ = Σext refl (reindexΣFibStr ρ)

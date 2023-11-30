@@ -19,8 +19,7 @@ private variable
 ------------------------------------------------------------------------------------------
 
 module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
-  {B : ⟨ S ⟩ → Type ℓ}
-  (β : FibStr B)
+  {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   (α : FibStr (B ∘ wk[ φ ]))
   (box : OpenBox S r B)
   where
@@ -50,8 +49,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
 
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (φ : ⟨ T ⟩ → Cof)
-  {B : ⟨ T ⟩ → Type ℓ}
-  (β : FibStr B)
+  {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   (α : FibStr (B ∘ wk[ φ ]))
   (box : OpenBox T (⟪ σ ⟫ r) B)
   where
@@ -79,8 +77,7 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
 
 opaque
   realignFibStr : (φ : Γ → Cof)
-    {B : Γ → Type ℓ}
-    (β : FibStr B)
+    {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
     → FibStr B
   realignFibStr φ β α .lift S r p =
@@ -90,8 +87,7 @@ opaque
 
   -- TODO prove this in RealignLift?
   isRealigned : (φ : Γ → Cof)
-    {B : Γ → Type ℓ}
-    (β : FibStr B)
+    {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
     → α ≡ realignFibStr φ β α ∘ᶠˢ fst
   isRealigned φ β α =
@@ -99,14 +95,12 @@ opaque
       RealignLift.fillB _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
       .fill s .out≡ (∨r (snd ∘ p))
 
-  reindexRealignFibStr : (φ : Γ → Cof)
-    {B : Γ → Type ℓ}
-    (β : FibStr B)
-    (α : FibStr (B ∘ wk[ φ ]))
+  reindexRealignFibStr : {φ : Γ → Cof}
+    {B : Γ → Type ℓ} {β : FibStr B}
+    {α : FibStr (B ∘ wk[ φ ])}
     (ρ : Δ → Γ)
-    → realignFibStr φ β α ∘ᶠˢ ρ
-    ≡ realignFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id)
-  reindexRealignFibStr φ β α ρ = FibStrExt λ S r p box s → refl
+    → realignFibStr φ β α ∘ᶠˢ ρ ≡ realignFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id)
+  reindexRealignFibStr ρ = FibStrExt λ S r p box s → refl
 
 ------------------------------------------------------------------------------------------
 -- Realigning a fibration
@@ -118,11 +112,11 @@ opaque
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
     → Γ ⊢ᶠType ℓ
-  ≅Realignᶠ φ _ _ iso .fst γ = ≅Realign (φ γ) _ _ (iso ∘ (γ ,_))
+  ≅Realignᶠ φ _ _ iso .fst γ = ≅Realign (φ γ) (iso ∘ (γ ,_))
   ≅Realignᶠ φ (_ , β) (_ , α) iso .snd =
     realignFibStr φ
-      (isomorphFibStr (λ γ → ≅realign (φ γ) _ _ (iso ∘ (γ ,_))) β)
-      (subst FibStr (funExt (uncurry λ γ → ≅RealignMatch (φ γ) _ _ (iso ∘ (γ ,_)))) α)
+      (isomorphFibStr (λ γ → ≅realign (φ γ) (iso ∘ (γ ,_))) β)
+      (subst FibStr (funExt (uncurry λ γ → ≅RealignMatch (φ γ) (iso ∘ (γ ,_)))) α)
 
   ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
@@ -137,17 +131,17 @@ opaque
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
     → Γ ⊢ ≅Realignᶠ φ B A iso .fst ≅ᴵ B .fst
-  ≅realignᶠ φ B A iso γ = ≅realign _ _ _ _
+  ≅realignᶠ φ B A iso γ = ≅realign _ _
 
-  reindexRealignᶠ : (φ : Γ → Cof)
-    (B : Γ ⊢ᶠType ℓ)
-    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
+  reindexRealignᶠ : {φ : Γ → Cof}
+    {B : Γ ⊢ᶠType ℓ}
+    {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
+    {iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst)}
     (ρ : Δ → Γ)
     → ≅Realignᶠ φ B A iso ∘ᶠ ρ ≡ ≅Realignᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (iso ∘ ρ ×id)
-  reindexRealignᶠ φ (_ , β) (_ , α) iso ρ =
+  reindexRealignᶠ {A = _ , α} ρ =
     Σext refl
-      (reindexRealignFibStr _ _ _ ρ
-        ∙ cong₂ (realignFibStr (φ ∘ ρ))
-            (reindexIsomorphFibStr (λ _ → ≅realign _ _ _ _) _ ρ)
-            (reindexSubst (ρ ×id) _ _ α))
+      (reindexRealignFibStr _
+        ∙ cong₂ (realignFibStr _)
+            (reindexIsomorphFibStr (λ _ → ≅realign _ _) _)
+            (reindexSubst α _ _ _))

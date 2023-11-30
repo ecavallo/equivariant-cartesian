@@ -24,18 +24,18 @@ postulate
 -- Convenience functions unpacking the components of the postulated realignment for
 -- isomorphisms
 ------------------------------------------------------------------------------------------
-≅Realign : (φ : Cof) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
+≅Realign : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
   → Type ℓ
-≅Realign φ B A e = ≅Realigns φ B (A ,, e) .out .fst
+≅Realign φ e = ≅Realigns φ _ (_ ,, e) .out .fst
 
-≅realign : (φ : Cof) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
-  → ≅Realign φ B A e ≅ B
-≅realign φ B A e = ≅Realigns φ B (A ,, e) .out .snd
+≅realign : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
+  → ≅Realign φ e ≅ B
+≅realign φ e = ≅Realigns φ _ (_ ,, e) .out .snd
 
-≅RealignMatch : (φ : Cof) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
-  → ∀ u → A u ≡ ≅Realign φ B A e
-≅RealignMatch φ B A e u = cong fst (≅Realigns φ B (A ,, e) .out≡ u)
+≅RealignMatch : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
+  → ∀ u → A u ≡ ≅Realign φ e
+≅RealignMatch φ e u = cong fst (≅Realigns φ _ (_ ,, e) .out≡ u)
 
-≅realignMatch : (φ : Cof) (B : Type ℓ) (A : [ φ ] → Type ℓ) (e : (u : [ φ ]) → A u ≅ B)
-  → ∀ u → subst (_≅ B) (≅RealignMatch φ B A e u) (e u) ≡ ≅realign φ B A e
-≅realignMatch φ B A e u = Σeq₂ (≅Realigns φ B (A ,, e) .out≡ u) _
+≅realignMatch : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
+  → ∀ u → subst (_≅ B) (≅RealignMatch φ e u) (e u) ≡ ≅realign φ e
+≅realignMatch φ e u = Σeq₂ (≅Realigns φ _ (_ ,, e) .out≡ u) _

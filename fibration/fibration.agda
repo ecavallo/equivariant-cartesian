@@ -141,9 +141,9 @@ _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 
 reindexSubst : {A A' : Γ → Type ℓ}
- (ρ : Δ → Γ) (P : A ≡ A') (Q : A ∘ ρ ≡ A' ∘ ρ) (α : FibStr A)
+  (α : FibStr A) (P : A ≡ A') (ρ : Δ → Γ) (Q : A ∘ ρ ≡ A' ∘ ρ)
   → subst FibStr P α ∘ᶠˢ ρ ≡ subst FibStr Q (α ∘ᶠˢ ρ)
-reindexSubst ρ refl refl α = refl
+reindexSubst α refl ρ refl = refl
 
 ------------------------------------------------------------------------------------------
 -- An extensionality principle for fibration structures
@@ -188,11 +188,9 @@ opaque
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
   reindexRetractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    (retract : Γ ⊢ Retractᴵ A B)
-    (β : FibStr B)
-    (ρ : Δ → Γ)
+    (retract : Γ ⊢ Retractᴵ A B) {β : FibStr B} (ρ : Δ → Γ)
     → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
-  reindexRetractFibStr retract β ρ = FibStrExt λ _ _ _ _ _ → refl
+  reindexRetractFibStr retract ρ = FibStrExt λ _ _ _ _ _ → refl
 
 ------------------------------------------------------------------------------------------
 -- Corollary: fibration structures can be transferred across isomorphisms
@@ -206,7 +204,6 @@ isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
 isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
 reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-  (iso : Γ ⊢ A ≅ᴵ B) (β : FibStr B)
-  (ρ : Δ → Γ)
+  (iso : Γ ⊢ A ≅ᴵ B) {β : FibStr B} (ρ : Δ → Γ)
   → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
 reindexIsomorphFibStr _ = reindexRetractFibStr _

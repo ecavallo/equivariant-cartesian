@@ -253,7 +253,7 @@ opaque
     → LargeBoxFillerψ box s ψ toEq ∘ᶠ ρ
       ≡ LargeBoxFillerψ (reindexLargeBox box ρ) (s ∘ ρ) (ψ ∘ ρ) (toEq ∘ ρ)
   reindexLargeBoxFillerψ box s ψ toEq ρ =
-    reindexSGlueᶠ _ _ _ _ _
+    reindexSGlueᶠ _
     ∙ cong₂
       (curry (SGlueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (box .Cap ∘ᶠ ρ)) _)
       (reindexLargeBoxUnion box s ψ toEq ρ)

@@ -65,24 +65,23 @@ opaque
   -- Forming Path types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexPathFibStr : {A : Γ → Type ℓ} (α : FibStr A)
-    {a₀ a₁ : Γ ⊢ A}
+  reindexPathFibStr : {A : Γ → Type ℓ} {α : FibStr A} {a₀ a₁ : Γ ⊢ A}
     (ρ : Δ → Γ)
     → PathFibStr α a₀ a₁ ∘ᶠˢ ρ ≡ PathFibStr (α ∘ᶠˢ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
-  reindexPathFibStr α ρ =
-    reindexRetractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ fst) ∂ _) ρ
+  reindexPathFibStr ρ =
+    reindexRetractFibStr retract ρ
     ∙
     cong₂
       retractFibStr
       (funExt' $ retractExt (funExt' $ funExt' $ restrictExt refl) refl)
-      (reindexExtensionFibStr (α ∘ᶠˢ fst) ρ)
+      (reindexExtensionFibStr ρ)
 
 Pathᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
 Pathᶠ A a₀ a₁ .fst = Pathᴵ (A .fst) a₀ a₁
 Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
 
-reindexPathᶠ : (A : Γ ⊢ᶠType ℓ) {a₀ a₁ : Γ ⊢ A .fst}
+reindexPathᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ A .fst}
   (ρ : Δ → Γ) → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
-reindexPathᶠ A ρ = Σext refl (reindexPathFibStr (A .snd) ρ)
+reindexPathᶠ ρ = Σext refl (reindexPathFibStr ρ)
 
 -- TODO weak J rule

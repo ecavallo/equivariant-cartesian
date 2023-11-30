@@ -91,13 +91,13 @@ opaque
   -- Forming extension types is stable under reindexing
   ----------------------------------------------------------------------------------------
   reindexExtensionFibStr : {Z : Shape}
-    {A : Γ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
+    {A : Γ ▷⟨ Z ⟩ → Type ℓ} {α : FibStr A}
     {φ : ⟨ Z ⟩ → Cof}
     {a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ]}
     (ρ : Δ → Γ)
     → ExtensionFibStr Z α φ a ∘ᶠˢ ρ
       ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) φ (a ∘ ρ ×id ×id)
-  reindexExtensionFibStr α ρ = FibStrExt λ _ _ _ _ _ → refl
+  reindexExtensionFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → Cof)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ᶠ A ∘ᶠ wk[ φ ∘ snd ])
