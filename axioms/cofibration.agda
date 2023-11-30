@@ -43,7 +43,7 @@ postulate
   shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → Cof)
     → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]
 
-  ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) → (r s : ⟨ S ⟩)
+  ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
   allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → Cof)
