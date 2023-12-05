@@ -59,7 +59,7 @@ module _ (@♭ S : Shape) where
 
   shape→⊎ : ∀ {@♭ ℓ ℓ'}
     {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-    → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π A ⊎ Π B
+    → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
   shape→⊎ {ℓ} {ℓ'} {A} {B} h = main
     where
     Typeₗ = Σ AB ∈ Type ℓ × Type ℓ' , AB .fst
@@ -91,7 +91,7 @@ module _ (@♭ S : Shape) where
       ∙ cong (∇ ∘_) (appCong (iso .inv₂))
       ∙ funExt fsth'
 
-    main : Π A ⊎ Π B
+    main : Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
     main with shape→⊎♭ .from h' | baseEq
     main | inl f | eq = inl λ s → subst fst (appCong eq) (f s .snd)
     main | inr g | eq = inr λ s → subst snd (appCong eq) (g s .snd)

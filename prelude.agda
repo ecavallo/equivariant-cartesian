@@ -18,8 +18,8 @@ infixr 5 _∘_ _∙_ _$_
 -- Functions
 ------------------------------------------------------------------------------------------
 
-Π : {A : Type ℓ} → (A → Type ℓ') → Type (ℓ ⊔ ℓ')
-Π B = (a : _) → B a
+Π : (A : Type ℓ) → (A → Type ℓ') → Type (ℓ ⊔ ℓ')
+Π A B = (a : _) → B a
 
 id : {A : Type ℓ} → A → A
 id x = x
@@ -284,7 +284,7 @@ Type* ℓ = Σ (Type ℓ) id
 
 -- Term judgment
 _⊢_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-(Γ ⊢ A) = Π A
+(Γ ⊢ A) = Π Γ A
 
 -- Context extension
 _▷_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
