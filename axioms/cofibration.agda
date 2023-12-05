@@ -3,8 +3,6 @@
 Axiomatization of the universe of cofibrations and basic operations involving these.
 
 -}
-{-# OPTIONS --rewriting #-}
-
 module axioms.cofibration where
 
 open import prelude

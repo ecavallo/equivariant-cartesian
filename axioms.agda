@@ -3,7 +3,6 @@
 Postulated axioms and some basic consequences
 
 -}
-{-# OPTIONS --rewriting #-}
 module axioms where
 
 open import axioms.funext public

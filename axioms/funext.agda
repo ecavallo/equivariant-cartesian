@@ -3,7 +3,6 @@
 Function extensionality axiom and basic consequences
 
 -}
-{-# OPTIONS --rewriting #-}
 module axioms.funext where
 
 open import prelude

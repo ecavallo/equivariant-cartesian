@@ -3,7 +3,6 @@
 Coercion
 
 -}
-{-# OPTIONS --rewriting #-}
 module fibration.coercion where
 
 open import prelude

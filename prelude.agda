@@ -3,7 +3,6 @@
 Basics.
 
 -}
-{-# OPTIONS --rewriting #-}
 module prelude where
 
 open import Agda.Primitive public renaming (Set to Type)

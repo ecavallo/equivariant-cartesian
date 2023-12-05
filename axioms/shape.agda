@@ -4,7 +4,6 @@ Postulates a type of shapes, types of homomorphisms between shapes,
 and the interval shape
 
 -}
-{-# OPTIONS --rewriting #-}
 module axioms.shape where
 
 open import prelude

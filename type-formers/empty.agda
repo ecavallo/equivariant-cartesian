@@ -3,7 +3,6 @@
 Fibrancy of the empty type.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.empty where
 
 open import prelude

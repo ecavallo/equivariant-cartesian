@@ -3,7 +3,6 @@
 Showing the universe is closed under type formers
 
 -}
-{-# OPTIONS --rewriting #-}
 module universe.type-formers where
 
 open import prelude

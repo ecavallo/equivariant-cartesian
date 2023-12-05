@@ -3,7 +3,6 @@
 Fibrancy of the unit type.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.unit where
 
 open import prelude

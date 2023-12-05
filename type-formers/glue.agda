@@ -3,7 +3,6 @@
 Glue
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.glue where
 
 open import type-formers.glue.weak public

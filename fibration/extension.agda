@@ -5,7 +5,6 @@ Fibration extension property for the category of generating trivial cofibrations
 TODO add comments
 
 -}
-{-# OPTIONS --rewriting #-}
 module fibration.extension where
 
 open import prelude

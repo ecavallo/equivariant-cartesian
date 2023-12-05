@@ -3,7 +3,6 @@
 Tinyness of shapes. These axioms are only used for the universe.
 
 -}
-{-# OPTIONS --rewriting #-}
 module axioms.tiny where
 
 open import prelude

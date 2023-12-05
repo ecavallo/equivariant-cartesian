@@ -3,7 +3,6 @@
 Constructing a universe that classifies fibrations
 
 -}
-{-# OPTIONS --rewriting #-}
 module universe.core where
 
 open import prelude

@@ -3,7 +3,6 @@
 Fibration structure on Π-types.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.pi where
 
 open import prelude

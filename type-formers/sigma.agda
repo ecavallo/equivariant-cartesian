@@ -3,7 +3,6 @@
 Fibration structure on Σ-types.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.sigma where
 
 open import prelude

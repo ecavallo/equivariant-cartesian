@@ -3,7 +3,6 @@
 Fibrancy of extension types.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.extension where
 
 open import prelude

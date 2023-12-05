@@ -1,4 +1,4 @@
 name: equivariant
 include: .
 depend:
-flags: --flat --no-import-sorts
+flags: --flat --no-import-sorts --rewriting

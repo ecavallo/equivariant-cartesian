@@ -3,7 +3,6 @@
 Fibrancy of path and homotopy fiber types.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.paths where
 
 open import prelude

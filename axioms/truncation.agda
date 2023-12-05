@@ -3,7 +3,6 @@
 Propositional truncation (for the extensional type theory)
 
 -}
-{-# OPTIONS --rewriting #-}
 module axioms.truncation where
 
 open import prelude

@@ -3,7 +3,6 @@
 Definitions of contractibility and equivalences.
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.equivs where
 
 open import prelude

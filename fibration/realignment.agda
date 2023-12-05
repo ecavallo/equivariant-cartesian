@@ -3,7 +3,6 @@
 Realign a fibration structure to agree with another on some cofibration
 
 -}
-{-# OPTIONS --rewriting #-}
 module fibration.realignment where
 
 open import prelude

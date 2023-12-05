@@ -3,7 +3,6 @@
 Defines fibration structures and fibrations.
 
 -}
-{-# OPTIONS --rewriting #-}
 module fibration.fibration where
 
 open import prelude

@@ -7,7 +7,6 @@
   TODO elaborate
 
 -}
-{-# OPTIONS --rewriting #-}
 module remarks.shape-to-coproduct where
 
 open import prelude

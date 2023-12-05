@@ -3,7 +3,6 @@
 Composition structures on the union of partially defined types (i.e., a system of types)
 
 -}
-{-# OPTIONS --rewriting #-}
 module type-formers.union where
 
 open import prelude
