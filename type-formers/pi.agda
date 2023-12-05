@@ -28,30 +28,30 @@ module ΠLift {S r}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    module C = Coerce S s (A , α) a
+    module Dom = Coerce S s (A , α) a
 
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
-      boxB : OpenBox S r (B ∘ (id ,, coerceA))
-      boxB = mapBox (λ i f → f (coerceA i)) box
+      boxCod : OpenBox S r (B ∘ (id ,, coerceA))
+      boxCod = mapBox (λ i f → f (coerceA i)) box
 
-      fillB = β .lift S r (id ,, coerceA) boxB
+      fillCod = β .lift S r (id ,, coerceA) boxCod
 
   filler : Filler box
   filler .fill s .out a =
     subst (curry B s)
-      (C.cap≡ s a)
-      (fillB s a (C.coerce s a) .fill s .out)
+      (Dom.cap≡ s a)
+      (fillCod s a (Dom.coerce s a) .fill s .out)
   filler .fill s .out≡ u =
     funExt λ a →
-    sym (congdep (box .tube s u) (C.cap≡ s a))
-    ∙ cong (subst (curry B s) (C.cap≡ s a))
-        (fillB s a (C.coerce s a) .fill s .out≡ u)
+    sym (congdep (box .tube s u) (Dom.cap≡ s a))
+    ∙ cong (subst (curry B s) (Dom.cap≡ s a))
+        (fillCod s a (Dom.coerce s a) .fill s .out≡ u)
   filler .cap≡ =
     funExt λ a →
-    cong (subst (curry B r) (C.cap≡ r a))
-      (fillB r a (C.coerce r a) .cap≡)
-    ∙ congdep (box .cap .out) (C.cap≡ r a)
+    cong (subst (curry B r) (Dom.cap≡ r a))
+      (fillCod r a (Dom.coerce r a) .cap≡)
+    ∙ congdep (box .cap .out) (Dom.cap≡ r a)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
@@ -60,24 +60,23 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
   where
 
   module T = ΠLift α β box
-  module S =
-    ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
+  module S = ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
-  varyA : ∀ s a i → T.C.coerce (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.C.coerce s a i
-  varyA s = coerceVary σ s (A , α)
+  varyDom : ∀ s a i → T.Dom.coerce (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.Dom.coerce s a i
+  varyDom s = coerceVary σ s (A , α)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     funExt λ a →
     cong
-      (subst (curry B (⟪ σ ⟫ s)) (T.C.cap≡ _ a))
-      (β .vary S T σ r (id ,, T.C.coerce _ a) (T.boxB _ a (T.C.coerce _ a)) s)
+      (subst (curry B (⟪ σ ⟫ s)) (T.Dom.cap≡ _ a))
+      (β .vary S T σ r (id ,, T.Dom.coerce _ a) (T.boxCod _ a (T.Dom.coerce _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
-      (appCong (funExt (varyA s a))) refl
-      (T.C.cap≡ (⟪ σ ⟫ s) a) (S.C.cap≡ s a)
-      (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyA s a)) _)
-        ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funExt (varyA s a)))
+      (appCong (funExt (varyDom s a))) refl
+      (T.Dom.cap≡ (⟪ σ ⟫ s) a) (S.Dom.cap≡ s a)
+      (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyDom s a)) _)
+        ∙ congdep (λ cA → S.fillCod s a cA .fill s .out) (funExt (varyDom s a)))
 
 opaque
   ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
