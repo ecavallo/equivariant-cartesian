@@ -159,7 +159,6 @@ opaque
       (funExt' $ funExt' $ funExt' $ funExt' $ fillerExt $ q _ _ _ _)
       (funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' uip')
 
-
 ------------------------------------------------------------------------------------------
 -- A retract of a fibration is a fibration
 ------------------------------------------------------------------------------------------
