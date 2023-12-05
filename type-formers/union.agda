@@ -134,54 +134,55 @@ module UnionVary {S T r} (σ : ShapeHom S T)
       (cong (_∘ᶠ ⟪ σ ⟫ ×id ×id) eqFib)
       (reshapeBox σ box)
 
-  eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
-  eq s =
-    ∨-elimEq (all T φ₀) (all T φ₁)
-      {f = λ u → T.fillSys (⟪ σ ⟫ s) u .out}
-      {g = λ _ → S.fillSys s (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫)) .out}
-      (λ u₀ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
-          .vary S T σ r id box s
-        ∙
-        cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-          (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
-           ∙
-           substCongAssoc
-             (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
-             (_∘ ⟪ σ ⟫)
-             (funExt' trunc')
-             (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫)
-           ∙
-           cong
-             (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫))
-             (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
-        ∙
-        cong (λ u' → S.fillSys s u' .out)
-          (trunc
-            (∨l (u₀ ∘ ⟪ σ ⟫))
-            (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫))))
-      (λ u₁ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
-          .vary S T σ r id box s
-        ∙
-        cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-          (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
-           ∙
-           substCongAssoc
-             (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
-             (_∘ ⟪ σ ⟫)
-             (funExt' trunc')
-             (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫)
-           ∙
-           cong
-             (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫))
-             (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
-        ∙
-        cong (λ u' → S.fillSys s u' .out)
-          (trunc
-            (∨r (u₁ ∘ ⟪ σ ⟫))
-            (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫))))
-      (shape→∨ T φ₀ φ₁ u)
+  opaque
+    eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
+    eq s =
+      ∨-elimEq (all T φ₀) (all T φ₁)
+        {f = λ u → T.fillSys (⟪ σ ⟫ s) u .out}
+        {g = λ _ → S.fillSys s (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫)) .out}
+        (λ u₀ →
+          subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
+            .vary S T σ r id box s
+          ∙
+          cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
+            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
+             ∙
+             substCongAssoc
+               (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
+               (_∘ ⟪ σ ⟫)
+               (funExt' trunc')
+               (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫)
+             ∙
+             cong
+               (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₀ ∘ᶠˢ (id ,, u₀) ∘ᶠˢ ⟪ σ ⟫))
+               (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
+          ∙
+          cong (λ u' → S.fillSys s u' .out)
+            (trunc
+              (∨l (u₀ ∘ ⟪ σ ⟫))
+              (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫))))
+        (λ u₁ →
+          subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
+            .vary S T σ r id box s
+          ∙
+          cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
+            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
+             ∙
+             substCongAssoc
+               (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
+               (_∘ ⟪ σ ⟫)
+               (funExt' trunc')
+               (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫)
+             ∙
+             cong
+               (subst (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u'))) ⦅–⦆ (α₁ ∘ᶠˢ (id ,, u₁) ∘ᶠˢ ⟪ σ ⟫))
+               (uip (cong (_∘ ⟪ σ ⟫) $ funExt' trunc') (funExt' trunc')))
+          ∙
+          cong (λ u' → S.fillSys s u' .out)
+            (trunc
+              (∨r (u₁ ∘ ⟪ σ ⟫))
+              (shape→∨ S (φ₀ ∘ ⟪ σ ⟫) (φ₁ ∘ ⟪ σ ⟫) (u ∘ ⟪ σ ⟫))))
+        (shape→∨ T φ₀ φ₁ u)
 
 
 module UnionFibStr (φ₀ φ₁ : Γ → Cof)
@@ -258,19 +259,20 @@ module Unionᶠ (φ₀ φ₁ : Γ → Cof)
   (eqFib : A₀ ∘ᶠ wk[ φ₁ ∘ fst ] ≡ A₁ ∘ᶠ wk[ φ₀ ] ×id)
   where
 
-  -- TODO expose these in a better way
-  module F = UnionFibStr φ₀ φ₁
-    (uncurry λ γ →
+  private
+    Ty : Γ ▷[ φ₀ ∨ᴵ φ₁ ] → Type ℓ
+    Ty = uncurry λ γ →
       ∨-rec (φ₀ γ) (φ₁ γ)
         (curry (A₀ .fst) γ)
         (curry (A₁ .fst) γ)
-        (λ u₀ u₁ → cong (λ B → B .fst ((γ , u₀) , u₁)) eqFib))
-    (A₀ .snd)
-    (A₁ .snd)
-    eqFib
+        (λ u₀ u₁ → cong (λ B → B .fst ((γ , u₀) , u₁)) eqFib)
+
+  -- TODO expose these in a better way
+  module F = UnionFibStr φ₀ φ₁ Ty (A₀ .snd) (A₁ .snd) eqFib
 
   fib : Γ ▷[ φ₀ ∨ᴵ φ₁ ] ⊢ᶠType ℓ
-  fib = (_ , F.fib)
+  fib .fst = Ty
+  fib .snd = F.fib
 
   opaque
     left : fib ∘ᶠ (id× ∨l) ≡ A₀

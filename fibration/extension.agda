@@ -83,16 +83,15 @@ module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
     eqLemma :
       _≡_
         {A = Γ ▷[ φ ] ▷[ ψ ∘ wk[ φ ] ] → Γ ▷⟨ S ⟩ ▷[ φ ∘ fst ]}
-        ((id ,, r) ×id ∘ wk[ ψ ∘ wk[ φ ] ])
-        ((id ,, s) ×id ∘ wk[ ψ ∘ wk[ φ ] ])
+        ((id ,, r) ×id ∘ wk[ ψ ∘ _ ])
+        ((id ,, s) ×id ∘ wk[ ψ ∘ _ ])
     eqLemma =
       funExt λ ((γ , u) , v) →
       Σext (cong (γ ,_) (toEq _ v)) (cofIsProp' (φ γ))
 
     matchLemma :
       Tu ∘ᶠ (id ,, s) ×id ∘ᶠ wk[ ψ ∘ wk[ φ ] ] ≡ Ca ∘ᶠ wk[ φ ] ∘ᶠ wk[ ψ ∘ wk[ φ ] ]
-    matchLemma =
-      cong (Tu ∘ᶠ_) (sym eqLemma) ∙ cong (_∘ᶠ wk[ ψ ∘ wk[ φ ] ]) p
+    matchLemma = cong (Tu ∘ᶠ_) (sym eqLemma) ∙ cong (_∘ᶠ wk[ ψ ∘ _ ]) p
 
   open Unionᶠ φ ψ
     (Tu ∘ᶠ (id ,, s) ×id)
@@ -283,9 +282,9 @@ LargeBoxFiller : ∀ {S} {r : Γ → ⟨ S ⟩}
 LargeBoxFiller {S = S} {r = r} box .Fill =
   LargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id)
 LargeBoxFiller {S = S} {r} box .Tube≡ =
-  LargeBoxψTube≡ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id)
+  LargeBoxψTube≡ (reindexLargeBox box fst) snd _ _
 LargeBoxFiller {S = S} {r} box .Cap≡ =
-  reindexLargeBoxFillerψ (reindexLargeBox box fst) snd (S ∋ (r ∘ fst) ≈ᴵ snd) (λ _ → id) (id ,, r)
+  reindexLargeBoxFillerψ (reindexLargeBox box fst) snd _ _ (id ,, r)
   ∙ cong (λ box' → LargeBoxFillerψ box' r (S ∋ r ≈ᴵ r) (λ _ → id)) (largeBoxExt refl refl refl)
   ∙ LargeBoxCap≡ box
 
