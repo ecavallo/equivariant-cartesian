@@ -69,6 +69,9 @@ record 𝑼 (@♭ ℓ) : Type (lsuc ℓ) where
     variesDst : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
       → √` T dst* (varies S T σ) ≡ √ShapeHom σ (lifts S)
 
+𝑼ᴵ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
+𝑼ᴵ ℓ _ = 𝑼 ℓ
+
 open 𝑼 public
 
 opaque
@@ -198,7 +201,7 @@ Elᶠ : ∀ {@♭ ℓ} → 𝑼 ℓ ⊢ᶠType ℓ
 Elᶠ .fst = El
 Elᶠ .snd = ElFibStr
 
-decode : ∀ {@♭ ℓ} → (Γ → 𝑼 ℓ) → Γ ⊢ᶠType ℓ
+decode : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ᴵ ℓ) → Γ ⊢ᶠType ℓ
 decode = Elᶠ ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
@@ -217,7 +220,7 @@ FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
 FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
 opaque
-  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ → 𝑼 ℓ')
+  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ ⊢ 𝑼ᴵ ℓ')
   encode {ℓ' = ℓ'} {Γ} A = encoding
     where
     Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
@@ -226,7 +229,7 @@ opaque
     Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
     Rv S T σ = R T (FibVaries A S T σ)
 
-    encoding : Γ → 𝑼 ℓ'
+    encoding : Γ ⊢ 𝑼ᴵ ℓ'
     encoding γ .El = A .fst γ
     encoding γ .lifts S = Rl S γ
     encoding γ .liftsBase S =
@@ -241,7 +244,7 @@ opaque
         (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
 ------------------------------------------------------------------------------------------
--- Inverse conditions for the correspondence between Fib Γ and Γ → 𝑼
+-- Inverse conditions for the correspondence between Fib Γ and Γ ⊢ 𝑼ᴵ
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -301,5 +304,5 @@ opaque
                   (funExt' $ funExt' $ funExt' $ uip')))))
 
 opaque
-  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ → 𝑼 ℓ') → encode (decode C) ≡ C
+  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ 𝑼ᴵ ℓ') → encode (decode C) ≡ C
   encodeDecode C = funExt λ γ → encodeReindexFib Elᶠ C γ ∙ encodeEl (C γ)

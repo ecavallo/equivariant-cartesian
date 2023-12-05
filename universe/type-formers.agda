@@ -13,6 +13,7 @@ open import type-formers.pi
 open import type-formers.sigma
 
 open import universe.core
+open import universe.fibrant
 
 private variable
   ℓ : Level
@@ -21,7 +22,7 @@ private variable
 module _ {@♭ ℓ : Level} where
 
   ----------------------------------------------------------------------------------------
-  -- The universe is closed under Σ-types
+  -- The universe of fibrations is closed under Σ-types
   ----------------------------------------------------------------------------------------
 
   universalΣᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
@@ -30,17 +31,17 @@ module _ {@♭ ℓ : Level} where
   sigma : (a : 𝑼 ℓ) (b : El a → 𝑼 ℓ) → 𝑼 ℓ
   sigma a b = encode universalΣᶠ (a , b)
 
-  sigmaᴵ : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ) → (Γ → 𝑼 ℓ)
-  sigmaᴵ a b x = sigma (a x) (curry b x)
+  sigmaᵁ : (a : Γ ⊢ᶠ 𝑼ᶠ ℓ) (b : Γ ▷ᶠ (Elᶠ ∘ᶠ a) ⊢ᶠ 𝑼ᶠ ℓ) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+  sigmaᵁ a b x = sigma (a x) (curry b x)
 
-  decodeSigma : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
-    → decode (sigmaᴵ a b) ≡ Σᶠ (decode a) (decode b)
+  decodeSigma : (a : Γ ⊢ᶠ 𝑼ᶠ ℓ) (b : Γ ▷ᶠ (Elᶠ ∘ᶠ a) ⊢ᶠ 𝑼ᶠ ℓ)
+    → decode (sigmaᵁ a b) ≡ Σᶠ (decode a) (decode b)
   decodeSigma a b =
     cong (_∘ᶠ (a ,, curry b)) (decodeEncode universalΣᶠ)
     ∙ reindexΣᶠ (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
-  -- The universe is closed under Π-types
+  -- The universe of fibrations is closed under Π-types
   ----------------------------------------------------------------------------------------
 
   universalΠᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
@@ -49,15 +50,17 @@ module _ {@♭ ℓ : Level} where
   pi : (a : 𝑼 ℓ) (b : El a → 𝑼 ℓ) → 𝑼 ℓ
   pi a b = encode universalΠᶠ (a , b)
 
-  piᴵ : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ) → (Γ → 𝑼 ℓ)
-  piᴵ a b x = pi (a x) (curry b x)
+  piᵁ : (a : Γ ⊢ᶠ 𝑼ᶠ ℓ) (b : Γ ▷ᶠ (Elᶠ ∘ᶠ a) ⊢ᶠ 𝑼ᶠ ℓ) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+  piᵁ a b x = pi (a x) (curry b x)
 
-  decodePi : (a : Γ → 𝑼 ℓ) (b : Γ ▷ (El ∘ a) → 𝑼 ℓ)
-    → decode (piᴵ a b) ≡ Πᶠ (decode a) (decode b)
+  decodePi : (a : Γ ⊢ᶠ 𝑼ᶠ ℓ) (b : Γ ▷ᶠ (Elᶠ ∘ᶠ a) ⊢ᶠ 𝑼ᶠ ℓ)
+    → decode (piᵁ a b) ≡ Πᶠ (decode a) (decode b)
   decodePi a b =
     cong (_∘ᶠ (a ,, curry b)) (decodeEncode universalΠᶠ)
     ∙ reindexΠᶠ (a ,, curry b)
 
   ----------------------------------------------------------------------------------------
-  -- The universe is closed under Path types
+  -- The universe of fibrations is closed under Path types
   ----------------------------------------------------------------------------------------
+
+  -- TODO

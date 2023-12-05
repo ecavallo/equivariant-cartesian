@@ -108,6 +108,11 @@ appCong : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
   {x : A} (p : f ≡ g) → f x ≡ g x
 appCong p = cong (λ h → h _) p
 
+substDom : {A : Type ℓ} (B : A → Type ℓ') {C : Type ℓ''}
+  {x y : A} (p : x ≡ y) (f : B x → C)
+  → subst (λ x → B x → C) p f ≡ f ∘ subst B (sym p)
+substDom _ refl f = refl
+
 adjustSubstEq : {A : Type ℓ} (B : A → Type ℓ')
   {x y z w : A} (p : x ≡ z) (p' : y ≡ z) (q : x ≡ w) (q' : y ≡ w)
   {b : B x} {b' : B y}

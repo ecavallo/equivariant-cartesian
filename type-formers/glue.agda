@@ -30,7 +30,7 @@ record WeakGlue (φ : Cof)
   (B : Type ℓ) (A : [ φ ] → Type ℓ)
   (f : (u : [ φ ]) → A u → B) : Type ℓ
   where
-  constructor glue
+  constructor wglue
   field
     cod : B
     dom : (u : [ φ ]) → A u
@@ -54,7 +54,7 @@ opaque
     (p : ∀ us → g .dom us ≡ g' .dom us)
     (q : g .cod ≡ g' .cod)
     → g ≡ g'
-  WeakGlueExt p refl = congΣ (glue _) (funExt p) (funExt' uip')
+  WeakGlueExt p refl = congΣ (wglue _) (funExt p) (funExt' uip')
 
 ------------------------------------------------------------------------------------------
 -- Isomorphism to the total type
@@ -81,7 +81,7 @@ includeAIso φ {B} {A} w u = iso
 
   iso : A u ≅ WeakGlue φ B A w
   iso .to a = includeA φ w u a
-  iso .from (glue _ a _) = a u
+  iso .from (wglue _ a _) = a u
   iso .inv₁ = funExt prfIr
   iso .inv₂ = funExt fg≡id
     where
