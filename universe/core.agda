@@ -87,10 +87,13 @@ opaque
         ; variesSrc = vSrc
         ; variesDst = vDst
         }})
-      (×ext (funExt♭' uip')
-        (×ext (funExt♭' $ funExt♭' $ funExt♭' $ uip')
-          (×ext (funExt♭' $ funExt♭' $ funExt♭' $ uip')
-            (funExt♭' $ funExt♭' $ funExt♭' $ uip'))))
+      (×ext
+        (×ext
+          (×ext
+            (funExt♭' uip')
+            (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
+          (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
+        (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
 
 ------------------------------------------------------------------------------------------
 -- Extracting lifts from a map into U

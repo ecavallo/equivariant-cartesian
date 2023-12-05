@@ -265,7 +265,7 @@ module Unionᶠ (φ₀ φ₁ : Γ → Cof)
       ∨-rec (φ₀ γ) (φ₁ γ)
         (curry (A₀ .fst) γ)
         (curry (A₁ .fst) γ)
-        (λ u₀ u₁ → cong (λ B → B .fst ((γ , u₀) , u₁)) eqFib)
+        (λ u₀ u₁ → cong (λ B → B .fst (γ , u₀ , u₁)) eqFib)
 
   -- TODO expose these in a better way
   module F = UnionFibStr φ₀ φ₁ Ty (A₀ .snd) (A₁ .snd) eqFib

@@ -86,7 +86,7 @@ module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
         ((id ,, r) ×id ∘ wk[ ψ ∘ _ ])
         ((id ,, s) ×id ∘ wk[ ψ ∘ _ ])
     eqLemma =
-      funExt λ ((γ , u) , v) →
+      funExt λ (γ , u , v) →
       Σext (cong (γ ,_) (toEq _ v)) (cofIsProp' (φ γ))
 
     matchLemma :

@@ -41,7 +41,7 @@ module ExtensionLift {Z φ S r}
     boxA .tube s =
       ∨-rec (box .cof) (φ z)
         (λ u → box .tube s u z .out)
-        (λ v → a ((s , z) , v))
+        (λ v → a (s , z , v))
         (λ u v → sym (box .tube s u z .out≡ v))
     boxA .cap .out = box .cap .out z .out
     boxA .cap .out≡ =
