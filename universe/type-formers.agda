@@ -15,8 +15,8 @@ open import type-formers.sigma
 open import universe.core
 
 private variable
-  ℓ' : Level
-  Γ : Type ℓ'
+  ℓ : Level
+  Γ : Type ℓ
 
 module _ {@♭ ℓ : Level} where
 

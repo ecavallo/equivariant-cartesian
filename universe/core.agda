@@ -95,7 +95,7 @@ opaque
         (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
 
 ------------------------------------------------------------------------------------------
--- Extracting lifts from a map into U
+-- Extracting lifts from a map into 𝑼
 ------------------------------------------------------------------------------------------
 
 fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
@@ -112,7 +112,7 @@ Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ)
 Llifts S C = Σext (appCong (fstLlifts S)) refl
 
 ------------------------------------------------------------------------------------------
--- Extracting equivariance from a map into U
+-- Extracting equivariance from a map into 𝑼
 ------------------------------------------------------------------------------------------
 
 fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
@@ -181,7 +181,7 @@ Lvaries S T σ C =
     cong (witness _ _) (prop _ _)
 
 ------------------------------------------------------------------------------------------
--- El : U → Type is a fibration
+-- El : 𝑼 → Type is a fibration
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -202,7 +202,7 @@ decode : ∀ {@♭ ℓ} → (Γ → 𝑼 ℓ) → Γ ⊢ᶠType ℓ
 decode = Elᶠ ∘ᶠ_
 
 ------------------------------------------------------------------------------------------
--- Any fibration induces a map into U
+-- Any fibration induces a map into 𝑼
 ------------------------------------------------------------------------------------------
 
 FibLifts : Γ ⊢ᶠType ℓ → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ
@@ -241,7 +241,7 @@ opaque
         (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
 ------------------------------------------------------------------------------------------
--- Inverse conditions for the correspondence between Fib Γ and Γ → U
+-- Inverse conditions for the correspondence between Fib Γ and Γ → 𝑼
 ------------------------------------------------------------------------------------------
 
 opaque
