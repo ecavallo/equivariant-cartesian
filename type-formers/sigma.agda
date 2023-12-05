@@ -97,7 +97,7 @@ opaque
     (ρ : Δ → Γ) → ΣFibStr α β ∘ᶠˢ ρ ≡ ΣFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΣFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
-Σᶠ : (A : Γ ⊢ᶠType ℓ) (B : Σ Γ (A .fst) ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
+Σᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 Σᶠ A B .fst = Σᴵ (A .fst) (B .fst)
 Σᶠ A B .snd = ΣFibStr (A .snd) (B .snd)
 
