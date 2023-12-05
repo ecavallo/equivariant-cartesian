@@ -197,12 +197,10 @@ opaque
     ShapeHomIsDiscrete λ (@♭ σ) →
     λ r C → getVaries S T σ C .rel r
 
-Elᶠ : ∀ {@♭ ℓ} → 𝑼 ℓ ⊢ᶠType ℓ
-Elᶠ .fst = El
-Elᶠ .snd = ElFibStr
+Elᶠ : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ᴵ ℓ) → Γ ⊢ᶠType ℓ
+Elᶠ = (El , ElFibStr) ∘ᶠ_
 
-decode : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ᴵ ℓ) → Γ ⊢ᶠType ℓ
-decode = Elᶠ ∘ᶠ_
+decode = Elᶠ
 
 ------------------------------------------------------------------------------------------
 -- Any fibration induces a map into 𝑼
@@ -282,7 +280,7 @@ opaque
 
 opaque
   unfolding encode ElFibStr
-  encodeEl : ∀ {@♭ ℓ} → (C : 𝑼 ℓ) → encode Elᶠ C ≡ C
+  encodeEl : ∀ {@♭ ℓ} → (C : 𝑼 ℓ) → encode (Elᶠ id) C ≡ C
   encodeEl C =
     𝑼Ext
       refl
@@ -305,4 +303,4 @@ opaque
 
 opaque
   encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ 𝑼ᴵ ℓ') → encode (decode C) ≡ C
-  encodeDecode C = funExt λ γ → encodeReindexFib Elᶠ C γ ∙ encodeEl (C γ)
+  encodeDecode C = funExt λ γ → encodeReindexFib (Elᶠ id) C γ ∙ encodeEl (C γ)

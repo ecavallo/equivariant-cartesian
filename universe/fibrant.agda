@@ -38,8 +38,8 @@ module _ {@♭ ℓ} where
   universalGlueᶠ =
     Glueᶠ
       (λ (φ , _ , _ , _) → φ)
-      (Elᶠ ∘ᶠ λ (_ , B , _ , _) → B)
-      (Elᶠ ∘ᶠ λ (_ , _ , A , _ , u) → A u)
+      (Elᶠ λ (_ , B , _ , _) → B)
+      (Elᶠ λ (_ , _ , A , _ , u) → A u)
       (λ (_ , _ , _ , fe , u) → fe u)
 
   glue : (φ : Cof) (b : 𝑼 ℓ) (a : [ φ ] → 𝑼 ℓ)
@@ -55,15 +55,15 @@ module _ {@♭ ℓ} where
     ∙ appCong (cong♭ encode (GlueᶠMatch _ _ _ _))
     ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
 
-  glueᵁ : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ ∘ᶠ a) (Elᶠ ∘ᶠ (b ∘ fst)))
+  Glueᵁ : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
     → Γ ⊢ 𝑼ᴵ ℓ
-  glueᵁ φ b a fe γ =
+  Glueᵁ φ b a fe γ =
     glue (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
 
   decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ ∘ᶠ a) (Elᶠ ∘ᶠ (b ∘ fst)))
-    → decode (glueᵁ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
+    → decode (Glueᵁ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
   decodeGlue φ b a fe =
     cong (_∘ᶠ (φ ,, b ,, curry a ,, curry fe)) (decodeEncode universalGlueᶠ)
     ∙ reindexGlueᶠ (φ ,, b ,, curry a ,, curry fe)
@@ -81,16 +81,16 @@ module _ {@♭ ℓ} where
       ∨-rec (box .cof) (S ∋ r ≈ s)
         (λ u →
           box .tube s u ,
-          subst (Equiv _ ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ ∘ᶠ box .tube ⦅–⦆ u) s r))
-        (λ _ → box .cap .out , idEquivᶠ Elᶠ (box .cap .out))
+          subst (Equiv _ ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r))
+        (λ _ → box .cap .out , idEquivᶠ (Elᶠ id) (box .cap .out))
         (λ {u refl →
           Σext
             (box .cap .out≡ u)
-            (eqLemma (box .cap .out≡ u) (coerceEquivCap S (Elᶠ ∘ᶠ (box .tube ⦅–⦆ u)) r))})
+            (eqLemma (box .cap .out≡ u) (coerceEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r))})
       where
       eqLemma : {A B : 𝑼 ℓ} (eq : A ≡ B) {e : Equiv (El A) (El A)}
-        → e ≡ idEquivᶠ Elᶠ A
-        → subst ((Equiv ⦅–⦆ _) ∘ El) eq (subst (Equiv _ ∘ El) eq e) ≡ idEquivᶠ Elᶠ B
+        → e ≡ idEquivᶠ (Elᶠ id) A
+        → subst ((Equiv ⦅–⦆ _) ∘ El) eq (subst (Equiv _ ∘ El) eq e) ≡ idEquivᶠ (Elᶠ id) B
       eqLemma refl eq = eq
 
     filler : Filler box
@@ -124,7 +124,7 @@ module _ {@♭ ℓ} where
             cong (𝑼Lift.partialEquiv box (⟪ σ ⟫ s)) (trunc uv (∨l u))
             ∙ Σext refl
               (cong (subst (Equiv _ ∘ El) (box .cap .out≡ u))
-                (coerceEquivVary σ (Elᶠ ∘ᶠ (box .tube ⦅–⦆ u)) s r)))
+                (coerceEquivVary σ (Elᶠ (box .tube ⦅–⦆ u)) s r)))
           (λ {refl → cong (𝑼Lift.partialEquiv box (⟪ σ ⟫ s)) (trunc uv (∨r refl))})
 
 𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ )
