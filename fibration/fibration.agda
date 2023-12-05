@@ -46,6 +46,19 @@ mapBox f box .tube i u = f i (box .tube i u)
 mapBox f box .cap .out = f _ (box .cap .out)
 mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
+addToTube : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
+  (box : OpenBox S r A)
+  (φ : Cof)
+  (t : (i : ⟨ S ⟩) → [ φ ] → A i [ box .cof ↦ box .tube i ])
+  (matchCap : (v : [ φ ]) → t r v .out ≡ box .cap .out)
+  → OpenBox S r A
+addToTube box φ t matchCap .cof = box .cof ∨ φ
+addToTube box φ t matchCap .tube i =
+  ∨-rec (box .cof) φ (box .tube i) (out ∘ t i) (λ u v → t i v .out≡ u)
+addToTube box φ t matchCap .cap .out = box .cap .out
+addToTube box φ t matchCap .cap .out≡ =
+  ∨-elimEq (box .cof) φ (box .cap .out≡) matchCap
+
 opaque
   boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box box' : OpenBox S r A}

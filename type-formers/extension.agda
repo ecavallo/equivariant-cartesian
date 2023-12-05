@@ -35,26 +35,24 @@ module ExtensionLift {Z φ S r}
 
   module _ (z : ⟨ Z ⟩) where
 
-    boxA : OpenBox S r (λ s → A (s , z))
-    boxA .cof = box .cof ∨ φ z
-    boxA .tube s =
-      ∨-rec (box .cof) (φ z)
-        (λ u → box .tube s u z .out)
-        (λ v → a (s , z , v))
-        (λ u v → sym (box .tube s u z .out≡ v))
-    boxA .cap .out = box .cap .out z .out
-    boxA .cap .out≡ =
-      ∨-elimEq (box .cof) (φ z)
-        (λ u → cong (λ q → q z .out) (box .cap .out≡ u))
+    pointwiseBox : OpenBox S r (λ s → A (s , z))
+    pointwiseBox =
+      addToTube
+        (mapBox (λ _ → out ∘ (_$ z)) box)
+        (φ z)
+        (λ i v → λ where
+          .out → a (i , z , v)
+          .out≡ u → sym (box .tube i u z .out≡ v))
         (λ v → box .cap .out z .out≡ v)
 
-    fillA = α .lift S r (_, z) boxA
+    pointwiseFill = α .lift S r (_, z) pointwiseBox
 
   filler : Filler box
-  filler .fill s .out z .out = fillA z .fill s .out
-  filler .fill s .out z .out≡ v = fillA z .fill s .out≡ (∨r v)
-  filler .fill s .out≡ u = funExt λ z → restrictExt (fillA z .fill s .out≡ (∨l u))
-  filler .cap≡ = funExt λ z → restrictExt (fillA z .cap≡)
+  filler .fill s .out z .out = pointwiseFill z .fill s .out
+  filler .fill s .out z .out≡ v = pointwiseFill z .fill s .out≡ (∨r v)
+  filler .fill s .out≡ u =
+    funExt λ z → restrictExt (pointwiseFill z .fill s .out≡ (∨l u))
+  filler .cap≡ = funExt λ z → restrictExt (pointwiseFill z .cap≡)
 
 module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
@@ -68,14 +66,14 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     funExt λ z →
-    restrictExt
-      (α .vary S T σ r (_, z) (T.boxA z) s
-        ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
-            (boxExt refl
-              (λ _ →
-                diagonalCofElim (box .cof ∨ φ z) $
-                ∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl))
-              refl))
+    restrictExt $
+    α .vary S T σ r (_, z) (T.pointwiseBox z) s
+    ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
+        (boxExt refl
+          (λ _ →
+            diagonalCofElim (box .cof ∨ φ z) $
+            ∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl))
+          refl)
 
 opaque
   ExtensionFibStr : (Z : Shape)
