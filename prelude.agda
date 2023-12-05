@@ -11,6 +11,7 @@ open import Agda.Primitive public renaming (Set to Type)
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
 infix  1 Σ _⊢_
+infixl 3 _▷_
 infixr 3 _,_ _,,_ _×_ _⊎_
 infixr 5 _∘_ _∙_ _$_
 

@@ -1,6 +1,6 @@
 {-
 
-Definitions of contractible, fibers, equivalences.
+Definitions of contractibility and equivalences.
 
 -}
 {-# OPTIONS --rewriting #-}
@@ -42,65 +42,6 @@ opaque
 IsContrᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
 IsContrᶠ A .fst = IsContrᴵ (A .fst)
 IsContrᶠ A .snd = IsContrFibStr (A .snd)
-
-
-------------------------------------------------------------------------------------------
--- Homotopy fiber type
-------------------------------------------------------------------------------------------
-
-Fiber : {A : Type ℓ} {B : Type ℓ'} (f : A → B) (b : B) → Type (ℓ ⊔ ℓ')
-Fiber f b = Σ a ∈ _ , f a ~ b
-
-Fiberᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ᴵ B) (b : Γ ⊢ B)
-  → (Γ → Type (ℓ ⊔ ℓ'))
-Fiberᴵ f b γ = Fiber (f γ) (b γ)
-
-opaque
-  FiberFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    (f : Γ ⊢ A →ᴵ B) (b : Γ ⊢ B)
-    → FibStr (Fiberᴵ f b)
-  FiberFibStr α β f b =
-    ΣFibStr α (PathFibStr (β ∘ᶠˢ fst) (uncurry f) (b ∘ fst))
-
-  reindexFiberFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
-    {f : Γ ⊢ A →ᴵ B} {b : Γ ⊢ B}
-    (ρ : Δ → Γ)
-    → FiberFibStr α β f b ∘ᶠˢ ρ ≡ FiberFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ) (b ∘ ρ)
-  reindexFiberFibStr ρ =
-    reindexΣFibStr _ ∙ cong (ΣFibStr _) (reindexPathFibStr _)
-
-Fiberᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B) (b : Γ ⊢ᶠ B)
-  → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Fiberᶠ A B f b .fst = Fiberᴵ f b
-Fiberᶠ A B f b .snd = FiberFibStr (A .snd) (B .snd) f b
-
-module _ {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
-
-  FiberExt : {b : B} {x y : Fiber f b}
-    → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
-  FiberExt refl p = Σext refl (PathExt p)
-
-  FiberExtDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
-    → x .fst ≡ y .fst
-    → (∀ i → x .snd .at i ≡ y .snd .at i)
-    → subst (Fiber f) p x ≡ y
-  FiberExtDep refl = FiberExt
-
-  eqToFiber : {b : B} (a : A) → f a ≡ b → Fiber f b
-  eqToFiber a eq = (a , eqToPath eq)
-
-  fiberPathEq : {b : B} {x y : Fiber f b}
-    → x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
-  fiberPathEq refl _ = refl
-
-  fiberPathEqDep : {b b' : B} (p : b ≡ b')
-    {x : Fiber f b} {y : Fiber f b'}
-    → subst (Fiber f) p x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
-  fiberPathEqDep refl refl _ = refl
-
-  fiberDomEqDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
-    → subst (Fiber f) p x ≡ y → x .fst ≡ y .fst
-  fiberDomEqDep refl refl = refl
 
 ------------------------------------------------------------------------------------------
 -- Equivalences
@@ -168,6 +109,7 @@ reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 -- Identity and coercion maps are equivalences
 ------------------------------------------------------------------------------------------
 
+--- TODO use existing proof of singleton contractibility
 idEquiv : {A : Type ℓ} → FibStr (λ (_ : 𝟙) → A) → Equiv A A
 idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
@@ -202,13 +144,13 @@ opaque
     (A : ⟨ S ⟩ ⊢ᶠType ℓ )
     (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
   coerceEquiv S A r s =
-    coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ (A ∘ᶠ (λ _ → r))) s
+    Coerce.coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ (A ∘ᶠ (λ _ → r))) s
 
   coerceEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ (A ∘ᶠ (λ _ → r))
   coerceEquivCap S A r =
-    coerceCap S r
+    Coerce.cap≡ S r
       (Equivᶠ (A ∘ᶠ (λ _ → r)) A)
       (idEquivᶠ (A ∘ᶠ (λ _ → r)))
 
@@ -223,5 +165,5 @@ opaque
       s
     ∙
     cong
-      (λ β → coerce S r (_ , β) (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r))) s)
+      (λ β → Coerce.coerce S r (_ , β) (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r))) s)
       (Σeq₂ (reindexEquivᶠ _) refl)

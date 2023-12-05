@@ -29,8 +29,7 @@ module ΠLift {S r}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    fillA = coerceFiller S s (A , α) a
-    coeA = coerce S s (A , α) a
+    module C = Coerce S s (A , α) a
 
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
@@ -42,18 +41,18 @@ module ΠLift {S r}
   filler : Filler box
   filler .fill s .out a =
     subst (curry B s)
-      (fillA s a .cap≡)
-      (fillB s a (coeA s a) .fill s .out)
+      (C.cap≡ s a)
+      (fillB s a (C.coerce s a) .fill s .out)
   filler .fill s .out≡ u =
     funExt λ a →
-    sym (congdep (box .tube s u) (fillA s a .cap≡))
-    ∙ cong (subst (curry B s) (fillA s a .cap≡))
-        (fillB s a (coeA s a) .fill s .out≡ u)
+    sym (congdep (box .tube s u) (C.cap≡ s a))
+    ∙ cong (subst (curry B s) (C.cap≡ s a))
+        (fillB s a (C.coerce s a) .fill s .out≡ u)
   filler .cap≡ =
     funExt λ a →
-    cong (subst (curry B r) (fillA r a .cap≡))
-      (fillB r a (coeA r a) .cap≡)
-    ∙ congdep (box .cap .out) (fillA r a .cap≡)
+    cong (subst (curry B r) (C.cap≡ r a))
+      (fillB r a (C.coerce r a) .cap≡)
+    ∙ congdep (box .cap .out) (C.cap≡ r a)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
@@ -65,19 +64,19 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
   module S =
     ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
-  varyA : ∀ s a i → T.coeA (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.coeA s a i
+  varyA : ∀ s a i → T.C.coerce (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.C.coerce s a i
   varyA s = coerceVary σ s (A , α)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     funExt λ a →
     cong
-      (subst (curry B (⟪ σ ⟫ s)) (T.fillA _ a .cap≡))
-      (β .vary S T σ r (id ,, T.coeA _ a) (T.boxB _ a (T.coeA _ a)) s)
+      (subst (curry B (⟪ σ ⟫ s)) (T.C.cap≡ _ a))
+      (β .vary S T σ r (id ,, T.C.coerce _ a) (T.boxB _ a (T.C.coerce _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
       (appCong (funExt (varyA s a))) refl
-      (T.fillA (⟪ σ ⟫ s) a .cap≡) (S.fillA s a .cap≡)
+      (T.C.cap≡ (⟪ σ ⟫ s) a) (S.C.cap≡ s a)
       (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyA s a)) _)
         ∙ congdep (λ cA → S.fillB s a cA .fill s .out) (funExt (varyA s a)))
 

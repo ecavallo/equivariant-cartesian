@@ -104,3 +104,9 @@ opaque
 reindexΣᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ▷ᶠ A ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Σᶠ A B ∘ᶠ ρ ≡ Σᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ ×id)
 reindexΣᶠ ρ = Σext refl (reindexΣFibStr ρ)
+
+pairᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
+  (a : Γ ⊢ᶠ A)
+  (b : Γ ⊢ᶠ B ∘ᶠ (id ,, a))
+  → Γ ⊢ᶠ Σᶠ A B
+pairᶠ A B a b = a ,, b
