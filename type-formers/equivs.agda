@@ -136,23 +136,23 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (sym (q 1 .fill 0 .out≡ (∨r refl)))
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
-idEquivᶠ : (A : 𝟙 ⊢ᶠType ℓ) → Equivᶠ A A .fst tt
-idEquivᶠ (_ , α) = idEquiv α
+idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ Equivᶠ A A
+idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ λ _ → γ)
 
 opaque
   coerceEquiv : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ )
     (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
   coerceEquiv S A r s =
-    Coerce.coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ (A ∘ᶠ (λ _ → r))) s
+    Coerce.coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ A r) s
 
   coerceEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
-    (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ (A ∘ᶠ (λ _ → r))
+    (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ A r
   coerceEquivCap S A r =
     Coerce.cap≡ S r
       (Equivᶠ (A ∘ᶠ (λ _ → r)) A)
-      (idEquivᶠ (A ∘ᶠ (λ _ → r)))
+      (idEquivᶠ A r)
 
   coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
     (A : ⟨ T ⟩ ⊢ᶠType ℓ)
@@ -161,9 +161,9 @@ opaque
   coerceEquivVary {S = S} σ A r s =
     coerceVary σ r
       (Equivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)) A)
-      (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)))
+      (idEquivᶠ A (⟪ σ ⟫ r))
       s
     ∙
     cong
-      (λ β → Coerce.coerce S r (_ , β) (idEquivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r))) s)
+      (λ β → Coerce.coerce S r (_ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
       (Σeq₂ (reindexEquivᶠ _) refl)

@@ -59,4 +59,6 @@ module _ {@♭ ℓ : Level} where
     cong (_∘ᶠ (a ,, curry b)) (decodeEncode universalΠᶠ)
     ∙ reindexΠᶠ (a ,, curry b)
 
-  -- TODO other types
+  ----------------------------------------------------------------------------------------
+  -- The universe is closed under Path types
+  ----------------------------------------------------------------------------------------

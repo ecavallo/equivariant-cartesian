@@ -157,7 +157,7 @@ opaque
         (coerceEquiv S (Tu ∘ᶠ ((γ ,_) ,, λ _ → u)) (s γ) (r γ))
 
     rightEquiv : _ ▷[ ψ ] ⊢ᶠ Equivᶠ (Ca ∘ᶠ wk[ ψ ]) (Ca ∘ᶠ wk[ ψ ])
-    rightEquiv (γ , _) = idEquivᶠ (Ca ∘ᶠ (λ _ → γ))
+    rightEquiv (γ , _) = idEquivᶠ Ca γ
 
     eqLemma : {Γ : Type ℓ} {γ : Γ} {A : Type ℓ'} {B D : Γ ⊢ᶠType ℓ'}
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
