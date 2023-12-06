@@ -60,40 +60,40 @@ opaque
 -- Isomorphism to the total type
 ------------------------------------------------------------------------------------------
 
-includeA : (φ : Cof)
+domToGlue : (φ : Cof)
   {B : Type ℓ}
   {A : [ φ ] → Type ℓ}
   (f : (u : [ φ ]) → A u → B)
   (u : [ φ ]) → A u → WeakGlue φ B A f
-includeA φ f u b .cod = f u b
-includeA φ {A = A} f u a .dom v = subst A (cofIsProp' φ) a
-includeA φ f u a .match v = sym (congΣ f (cofIsProp' φ) refl)
+domToGlue φ f u b .cod = f u b
+domToGlue φ {A = A} f u a .dom v = subst A (cofIsProp' φ) a
+domToGlue φ f u a .match v = sym (congΣ f (cofIsProp' φ) refl)
 
-includeAIso : (φ : Cof)
+domIsoGlue : (φ : Cof)
   {B : Type ℓ}
   {A : [ φ ] → Type ℓ}
   (w : (u : [ φ ]) → A u → B)
   (u : [ φ ]) → A u ≅ WeakGlue φ B A w
-includeAIso φ {B} {A} w u = iso
+domIsoGlue φ {B} {A} w u = iso
   where
   prfIr : (a : A u) → subst A (cofIsProp φ u u) a ≡ a
   prfIr a = cong (subst A ⦅–⦆ a) uip'
 
   iso : A u ≅ WeakGlue φ B A w
-  iso .to a = includeA φ w u a
+  iso .to a = domToGlue φ w u a
   iso .from (wglue _ a _) = a u
   iso .inv₁ = funExt prfIr
   iso .inv₂ = funExt fg≡id
     where
-    fg≡id : (gl : WeakGlue φ B A w) → (includeA φ w u (gl .dom u)) ≡ gl
+    fg≡id : (gl : WeakGlue φ B A w) → (domToGlue φ w u (gl .dom u)) ≡ gl
     fg≡id gl = WeakGlueExt (substCofEl φ (prfIr _)) (gl .match u)
 
-includeAIsoᴵ : (φ : Γ → Cof)
+domIsoGlueᴵ : (φ : Γ → Cof)
   {B : Γ → Type ℓ'}
   {A : Γ ▷[ φ ] → Type ℓ'}
   (w : Γ ▷[ φ ] ⊢ A →ᴵ (B ∘ fst))
   → Γ ▷[ φ ] ⊢ A ≅ᴵ (WeakGlueᴵ φ B A w ∘ fst)
-includeAIsoᴵ φ w (γ , u) = includeAIso (φ γ) (w ∘ (γ ,_)) u
+domIsoGlueᴵ φ w (γ , u) = domIsoGlue (φ γ) (w ∘ (γ ,_)) u
 
 ------------------------------------------------------------------------------------------
 -- Fibrancy of weak Glue types
@@ -305,7 +305,7 @@ Glueᶠ : (φ : Γ → Cof)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
   → Γ ⊢ᶠType ℓ
 Glueᶠ φ B A fe =
-  ≅Realignᶠ φ (WeakGlueᶠ φ B A fe) A (includeAIsoᴵ φ (equivFun fe))
+  ≅Realignᶠ φ (WeakGlueᶠ φ B A fe) A (domIsoGlueᴵ φ (equivFun fe))
 
 opaque
   GlueᶠMatch : (φ : Γ → Cof)
@@ -314,7 +314,7 @@ opaque
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ fst))
     → A ≡ Glueᶠ φ B A fe ∘ᶠ fst
   GlueᶠMatch φ B A fe =
-    ≅RealignᶠMatch φ _ _ (includeAIsoᴵ φ (equivFun fe))
+    ≅RealignᶠMatch φ _ _ (domIsoGlueᴵ φ (equivFun fe))
 
 opaque
   reindexGlueᶠ : {φ : Γ → Cof}
@@ -327,5 +327,5 @@ opaque
     reindexRealignᶠ _
     ∙
     cong
-      (λ β' → ≅Realignᶠ _ (_ , β') _ (includeAIsoᴵ (φ ∘ ρ) _))
+      (λ β' → ≅Realignᶠ _ (_ , β') _ (domIsoGlueᴵ (φ ∘ ρ) _))
       (reindexWeakGlueFibStr _)
