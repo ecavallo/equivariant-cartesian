@@ -116,9 +116,9 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
   qBox : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A)
   qBox i .cof = ∂ i
-  qBox i .tube j = OI-rec i (λ {refl → p .at j}) (λ {refl → a})
+  qBox i .tube j = ∂-rec i (λ {refl → p .at j}) (λ {refl → a})
   qBox i .cap .out = a
-  qBox i .cap .out≡ = OI-elim i (λ {refl → p .at1}) (λ {refl → refl})
+  qBox i .cap .out≡ = ∂-elim i (λ {refl → p .at1}) (λ {refl → refl})
 
   q : (i : 𝕀) → Filler (qBox i)
   q i = α .lift 𝕚 1 (λ _ → _) (qBox i)

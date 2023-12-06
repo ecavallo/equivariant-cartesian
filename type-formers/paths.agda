@@ -45,13 +45,13 @@ opaque
     partialEl : {A : Γ → Type ℓ} (a₀ a₁ : Γ ⊢ A)
       → Γ ▷𝕀 ▷[ ∂ ∘ snd ] ⊢ A ∘ fst ∘ wk[ ∂ ∘ snd ]
     partialEl a₀ a₁ =
-      uncurry λ (γ , i) → OI-rec i (λ _ → a₀ γ) (λ _ → a₁ γ)
+      uncurry λ (γ , i) → ∂-rec i (λ _ → a₀ γ) (λ _ → a₁ γ)
 
     retract : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A}
       → Γ ⊢ Retractᴵ (Pathᴵ A a₀ a₁) (Extensionᴵ 𝕚 (A ∘ fst) ∂ (partialEl a₀ a₁))
     retract γ .sec p i .out = p .at i
     retract γ .sec p i .out≡ =
-      OI-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
+      ∂-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
     retract γ .ret ex .at i = ex i .out
     retract γ .ret ex .at0 = sym (ex 0 .out≡ (∨l refl))
     retract γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
@@ -169,9 +169,9 @@ singlContrᶠ A a c γ = homotopy
   where
   box : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A .fst γ)
   box i .cof = ∂ i
-  box i .tube j = OI-rec i (λ {refl → c γ .snd .at j}) (λ {refl → a γ})
+  box i .tube j = ∂-rec i (λ {refl → c γ .snd .at j}) (λ {refl → a γ})
   box i .cap .out = a γ
-  box i .cap .out≡ = OI-elim i (λ {refl → c γ .snd .at1}) (λ {refl → refl})
+  box i .cap .out≡ = ∂-elim i (λ {refl → c γ .snd .at1}) (λ {refl → refl})
 
   square : (i : 𝕀) → Filler (box i)
   square i = A .snd .lift 𝕚 1 (λ _ → _) (box i)

@@ -29,7 +29,7 @@ module _ {A : Type ℓ} where
 
     ∥∥-elim : (P : ∥ A ∥ → Type ℓ')
       (f : (a : A) → P ∣ a ∣)
-      .(p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
+      (p : ∀ a b → subst P (trunc ∣ a ∣ ∣ b ∣) (f a) ≡ f b)
       → (t : ∥ A ∥) → P t
 
     ∥∥-elim-β : ∀ (P : ∥ A ∥ → Type ℓ') f p a

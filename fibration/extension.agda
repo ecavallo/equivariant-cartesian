@@ -62,14 +62,6 @@ record LargeFiller {S : Shape} {Γ : Type ℓ} {r : Γ → ⟨ S ⟩}
 
 open LargeFiller public
 
--- TODO move
-_⇒_ : Cof → Cof → Type
-φ ⇒ ψ = [ φ ] → [ ψ ]
-
-_⇒ᴵ_ : (Γ → Cof) → (Γ → Cof) → (Γ → Type)
-(φ ⇒ᴵ ψ) γ = φ γ ⇒ ψ γ
-
-
 module LargeBoxUnion {S} {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox S r ℓ)
   (s : Γ → ⟨ S ⟩)
