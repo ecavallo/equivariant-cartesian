@@ -1,6 +1,6 @@
 {-
 
-Axiomatization of the universe of cofibrations and basic operations involving these.
+Axiomatization of the type of cofibrations.
 
 -}
 module axioms.cofibration where
@@ -17,7 +17,7 @@ private variable
 infixr 4 _∨_ _∨ᴵ_
 
 ------------------------------------------------------------------------------------------
--- Axiomatization of fibration classifier
+-- Axiomatization of cofibration classifier
 ------------------------------------------------------------------------------------------
 
 postulate
