@@ -63,15 +63,13 @@ postulate
   --↓ The shape equality and univeral quantification cofibrations are invariant under
   --↓ shape morphisms in an appropriate sense.
 
-  --↓ This axiom can be understood as asserting that shape morphisms are monic. It is used
-  --↓ in the proofs of fibrancy for glue types and the universe and the fibration
-  --↓ extension property.
+  --↓ The first axiom can be understood as asserting that shape morphisms are monic.
 
   ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
-  --↓ This axiom can be understood as asserting that shape morphisms are epic as seen by
-  --↓ cofibrations. It is used in the proof of realignment for fibrations.
+  --↓ The second axiom can be understood as asserting that shape morphisms are epic as
+  --↓ seen by cofibrations. It is used in the proof of realignment for fibrations.
 
   allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → Cof)
     → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)
