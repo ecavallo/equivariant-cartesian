@@ -30,7 +30,7 @@ module _ {@♭ ℓ} where
   universalGlueCtx : Type (lsuc ℓ)
   universalGlueCtx =
     Cof
-    ▷ (λ _ → 𝑼 ℓ)
+    ▷ 𝑼ᴵ ℓ
     ▷ (λ (φ , _) → [ φ ] → 𝑼 ℓ)
     ▷ (λ (φ , B , A) → (u : [ φ ]) → Equiv (El (A u)) (El B))
 
@@ -129,4 +129,4 @@ module _ {@♭ ℓ} where
 
 𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ )
 𝑼ᶠ ℓ .fst = 𝑼ᴵ ℓ
-𝑼ᶠ ℓ .snd = 𝑼FibStr ∘ᶠˢ (λ _ → _)
+𝑼ᶠ ℓ .snd = 𝑼FibStr ∘ᶠˢ cst tt

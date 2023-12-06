@@ -114,14 +114,14 @@ idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
 idEquiv {A = A} α .snd a .snd (a' , p) = h
   where
-  qBox : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A)
+  qBox : (i : 𝕀) → OpenBox 𝕚 1 (cst A)
   qBox i .cof = ∂ i
   qBox i .tube j = ∂-rec i (λ {refl → p .at j}) (λ {refl → a})
   qBox i .cap .out = a
   qBox i .cap .out≡ = ∂-elim i (λ {refl → p .at1}) (λ {refl → refl})
 
   q : (i : 𝕀) → Filler (qBox i)
-  q i = α .lift 𝕚 1 (λ _ → _) (qBox i)
+  q i = α .lift 𝕚 1 (cst _) (qBox i)
 
   h : (a' , p) ~ (a , refl~ a)
   h .at i .fst = q i .fill 0 .out
@@ -136,21 +136,21 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
 idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ Equivᶠ A A
-idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ λ _ → γ)
+idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ cst γ)
 
 opaque
   coerceEquiv : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ )
     (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
   coerceEquiv S A r s =
-    Coerce.coerce S r (Equivᶠ (A ∘ᶠ (λ _ → r)) A) (idEquivᶠ A r) s
+    Coerce.coerce S r (Equivᶠ (A ∘ᶠ cst r) A) (idEquivᶠ A r) s
 
   coerceEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ A r
   coerceEquivCap S A r =
     Coerce.cap≡ S r
-      (Equivᶠ (A ∘ᶠ (λ _ → r)) A)
+      (Equivᶠ (A ∘ᶠ cst r) A)
       (idEquivᶠ A r)
 
   coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
@@ -159,7 +159,7 @@ opaque
     → coerceEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
   coerceEquivVary {S = S} σ A r s =
     coerceVary σ r
-      (Equivᶠ (A ∘ᶠ (λ _ → ⟪ σ ⟫ r)) A)
+      (Equivᶠ (A ∘ᶠ cst (⟪ σ ⟫ r)) A)
       (idEquivᶠ A (⟪ σ ⟫ r))
       s
     ∙

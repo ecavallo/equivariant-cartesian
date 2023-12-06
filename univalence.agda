@@ -46,17 +46,11 @@ module _ (A B : Γ ⊢ᶠType ℓ) (e : Γ ⊢ᶠ Equivᶠ A B) where
   ua∂ : ua ∘ᶠ wk[ ∂ ∘ snd ] ≡ uaDom
   ua∂ = sym (GlueᶠMatch _ _ _ _)
 
-  ua₀ : ua ∘ᶠ (id ,, λ _ → 0) ≡ A
-  ua₀ =
-    cong (_∘ᶠ ρ) (cong (_∘ᶠ id× ∨l) ua∂ ∙ UADom.left)
-    where
-    ρ = id ,, (λ _ → 0) ,, λ _ → refl
+  ua₀ : ua ∘ᶠ (id ,, cst 0) ≡ A
+  ua₀ = cong (_∘ᶠ (id ,, cst 0 ,, cst refl)) (cong (_∘ᶠ id× ∨l) ua∂ ∙ UADom.left)
 
-  ua₁ : ua ∘ᶠ (id ,, λ _ → 1) ≡ B
-  ua₁ =
-    cong (_∘ᶠ ρ) (cong (_∘ᶠ id× ∨r) ua∂ ∙ UADom.right)
-    where
-    ρ = id ,, (λ _ → 1) ,, λ _ → refl
+  ua₁ : ua ∘ᶠ (id ,, cst 1) ≡ B
+  ua₁ = cong (_∘ᶠ (id ,, cst 1 ,, cst refl)) (cong (_∘ᶠ id× ∨r) ua∂ ∙ UADom.right)
 
   -- TODO
   -- uaβ : Γ ⊢ᶠ Pathᶠ (A →ᶠ B) {!!} (equivFun e)

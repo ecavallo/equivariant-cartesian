@@ -24,6 +24,9 @@ infixr 5 _∘_ _∙_ _$_
 id : {A : Type ℓ} → A → A
 id x = x
 
+cst : {A : Type ℓ} {B : Type ℓ''} → B → A → B
+cst b a = b
+
 _∘_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
   (g : {a : A} (b : B a) → C a b) (f : (a : A) → B a) → (a : A) → C a (f a)
 (g ∘ f) x = g (f x)
@@ -90,7 +93,7 @@ substCongAssoc _ _ refl _ = refl
 
 substConst : {A : Type ℓ} {B : Type ℓ'}
   {x y : A} (p : x ≡ y) (b : B)
-  → subst (λ _ → B) p b ≡ b
+  → subst (cst B) p b ≡ b
 substConst refl b = refl
 
 substTrans : {A : Type ℓ} (B : A → Type ℓ')
@@ -152,7 +155,7 @@ open Σ public
 syntax Σ A (λ x → B) = Σ x ∈ A , B
 
 _×_ : Type ℓ → Type ℓ' → Type (ℓ ⊔ ℓ')
-A × B = Σ A (λ _ → B)
+A × B = Σ A (cst B)
 
 _×id : {A : Type ℓ} {A' : Type ℓ'} {B : A' → Type ℓ''}
   (f : A → A') → Σ A (B ∘ f) → Σ A' B

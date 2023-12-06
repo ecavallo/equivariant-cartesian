@@ -135,7 +135,7 @@ module WeakGlueLift {S r φ}
           (λ {v refl →
             congΣ eqToFiber (appCong (cong dom (box .cap .out≡ v))) uip'})
 
-      boxR : OpenBox 𝕚 1 (λ _ → Fiber (f (s , us)) (fillB .fill s .out))
+      boxR : OpenBox 𝕚 1 (cst (Fiber (f (s , us)) (fillB .fill s .out)))
       boxR .cof = box .cof ∨ S ∋ r ≈ s
       boxR .tube k v≡ = C₂ (fiberR v≡) .at k
       boxR .cap .out = C₁
@@ -144,12 +144,12 @@ module WeakGlueLift {S r φ}
       fillR =
         Fiberᶠ
           (_ , α ∘ᶠˢ (s ,_))
-          (_ , β ∘ᶠˢ (λ _ → s))
+          (_ , β ∘ᶠˢ (cst s))
           (f ∘ (s ,_))
-          (λ _ → fillB .fill s .out)
-          .snd .lift 𝕚 1 (λ _ → us) boxR .fill 0
+          (cst (fillB .fill s .out))
+          .snd .lift 𝕚 1 (cst us) boxR .fill 0
 
-    boxFix : OpenBox 𝕚 1 (λ _ → B s)
+    boxFix : OpenBox 𝕚 1 (cst (B s))
     boxFix .cof = box .cof ∨ φ s ∨ S ∋ r ≈ s
     boxFix .tube i =
       ∨-rec (box .cof) (φ s ∨ S ∋ r ≈ s)
@@ -174,7 +174,7 @@ module WeakGlueLift {S r φ}
           (λ us → fillR us .out .snd .at1)
           (λ {refl → sym (fillB .cap≡)}))
 
-    fillFix = β .lift 𝕚 1 (λ _ → s) boxFix .fill 0
+    fillFix = β .lift 𝕚 1 (cst s) boxFix .fill 0
 
   opaque
     filler : Filler box
@@ -228,8 +228,8 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
     varyR uσs =
       congdep₂
         (λ b box →
-          Fiberᶠ (_ , α ∘ᶠˢ _) (_ , β ∘ᶠˢ _) _ (λ _ → b) .snd .lift 𝕚 1
-            (λ _ → uσs) box .fill 0 .out)
+          Fiberᶠ (_ , α ∘ᶠˢ _) (_ , β ∘ᶠˢ _) _ (cst b) .snd .lift 𝕚 1
+            (cst uσs) box .fill 0 .out)
         varyB
         (boxExtDep varyB
           (cong (box .cof ∨_) (≈Equivariant σ r s))
@@ -241,7 +241,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
     varyFix : T.fillFix (⟪ σ ⟫ s) .out ≡ S.fillFix s .out
     varyFix =
       cong
-        (λ box' → β .lift 𝕚 1 (λ _ → ⟪ σ ⟫ s) box' .fill 0 .out)
+        (λ box' → β .lift 𝕚 1 (cst (⟪ σ ⟫ s)) box' .fill 0 .out)
         (boxExt
           (cong (λ ψ → box .cof ∨ φ (⟪ σ ⟫ s) ∨ ψ) (≈Equivariant σ r s))
           (λ i → takeOutCof (box .cof)

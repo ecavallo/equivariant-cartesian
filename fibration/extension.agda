@@ -145,7 +145,7 @@ opaque
       subst
         (Equiv (Tu .fst _))
         (appCong (cong fst mat))
-        (coerceEquiv S (Tu ∘ᶠ ((γ ,_) ,, λ _ → u)) (s γ) (r γ))
+        (coerceEquiv S (Tu ∘ᶠ ((γ ,_) ,, cst u)) (s γ) (r γ))
 
     rightEquiv : _ ▷[ ψ ] ⊢ᶠ Equivᶠ (Ca ∘ᶠ wk[ ψ ]) (Ca ∘ᶠ wk[ ψ ])
     rightEquiv (γ , _) = idEquivᶠ Ca γ
@@ -154,9 +154,9 @@ opaque
       (eqAD : A ≡ D .fst γ) (eqAB : A ≡ B .fst γ)
       (eqBD : B ≡ D)
       {e : Equiv A (B .fst _)}
-      → subst (Equiv ⦅–⦆ _) eqAB e ≡ idEquiv (B .snd ∘ᶠˢ (λ _ → γ))
+      → subst (Equiv ⦅–⦆ _) eqAB e ≡ idEquiv (B .snd ∘ᶠˢ cst γ)
       → subst (Equiv ⦅–⦆ _) eqAD (subst (Equiv A) (appCong (cong fst eqBD)) e)
-        ≡ idEquiv (D .snd ∘ᶠˢ (λ _ → γ))
+        ≡ idEquiv (D .snd ∘ᶠˢ cst γ)
     eqLemma refl refl refl eq = eq
 
     matchEquiv : ∀ γ (u : [ φ γ ]) (v : [ ψ γ ])
@@ -170,16 +170,16 @@ opaque
       ∙
       eqLemma
         (cong (Un.fib .fst ∘ (γ ,_)) (trunc (∨l u) (∨r v)))
-        (cong (Tu .fst ∘ ((γ ,_) ,, λ _ → u)) (sym (toEq γ v)))
+        (cong (Tu .fst ∘ ((γ ,_) ,, cst u)) (sym (toEq γ v)))
         mat
         (sym
           (substCongAssoc
             (Equiv ⦅–⦆ _)
-            (Tu .fst ∘ ((γ ,_) ,, λ _ → u))
+            (Tu .fst ∘ ((γ ,_) ,, cst u))
             (sym (toEq γ v))
             _)
-          ∙ congdep (coerceEquiv S (Tu ∘ᶠ ((γ ,_) ,, λ _ → u)) ⦅–⦆ (r γ)) (sym (toEq γ v))
-          ∙ coerceEquivCap S (Tu ∘ᶠ ((γ ,_) ,, λ _ → u)) (r γ))
+          ∙ congdep (coerceEquiv S (Tu ∘ᶠ ((γ ,_) ,, cst u)) ⦅–⦆ (r γ)) (sym (toEq γ v))
+          ∙ coerceEquivCap S (Tu ∘ᶠ ((γ ,_) ,, cst u)) (r γ))
 
 opaque
   unfolding largeBoxEquiv
@@ -195,7 +195,7 @@ opaque
     ∨-elimEq (φ γ) (ψ γ)
       (λ u →
         cong (subst (Equiv (Tu .fst _)) (appCong (cong fst mat)))
-          (coerceEquivVary σ (Tu ∘ᶠ ((γ ,_) ,, λ _ → u)) (s γ) (r γ)))
+          (coerceEquivVary σ (Tu ∘ᶠ ((γ ,_) ,, cst u)) (s γ) (r γ)))
       (λ v → refl)
     where
     open LargeOpenBox box renaming (cof to φ ; Tube to Tu ; match to mat)
@@ -216,7 +216,7 @@ opaque
       (λ u →
         cong
           (subst (Equiv (Tu .fst _)) ⦅–⦆
-            (coerceEquiv S (Tu ∘ᶠ ((ρ δ ,_) ,, λ _ → u)) (s (ρ δ)) (r (ρ δ))))
+            (coerceEquiv S (Tu ∘ᶠ ((ρ δ ,_) ,, cst u)) (s (ρ δ)) (r (ρ δ))))
           uip')
       (λ v → refl)
     where
@@ -247,7 +247,7 @@ opaque
     ∙ cong₂
       (curry (Glueᶠ ((box .cof ∨ᴵ ψ) ∘ ρ) (box .Cap ∘ᶠ ρ)) _)
       (reindexLargeBoxUnion box s ψ toEq ρ)
-      (reindexLargeBoxEquiv _ _ _ _ _)
+      (reindexLargeBoxEquiv box s ψ toEq ρ)
 
 opaque
   unfolding LargeBoxFillerψ
@@ -291,7 +291,7 @@ opaque
     cong₂
       (curry (Glueᶠ (box .cof ∨ᴵ ψ) (box .Cap)) _)
       (varyLargeBoxUnion σ box s ψ toEq)
-      (varyLargeBoxEquiv _ _ _ _ _)
+      (varyLargeBoxEquiv σ box s ψ toEq)
 
 varyLargeBoxFiller : ∀ {S T} (σ : ShapeHom S T) {r : Γ → ⟨ S ⟩}
   (box : LargeOpenBox T (⟪ σ ⟫ ∘ r) ℓ)

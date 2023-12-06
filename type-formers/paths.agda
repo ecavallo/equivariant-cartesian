@@ -27,7 +27,7 @@ record _~_ {A : Type ℓ} (a a' : A) : Type ℓ where
 open _~_ public
 
 eqToPath : {A : Type ℓ} {x y : A} → x ≡ y → x ~ y
-eqToPath {x = x} p = path (λ _ → x) refl p
+eqToPath {x = x} p = path (cst x) refl p
 
 refl~ : {A : Type ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
@@ -167,14 +167,14 @@ singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   → Γ ⊢ᶠ Pathᶠ (Σᶠ A (Pathᶠ (A ∘ᶠ fst) snd (a ∘ fst))) c (singlCenterᶠ A a)
 singlContrᶠ A a c γ = homotopy
   where
-  box : (i : 𝕀) → OpenBox 𝕚 1 (λ _ → A .fst γ)
+  box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A .fst γ))
   box i .cof = ∂ i
   box i .tube j = ∂-rec i (λ {refl → c γ .snd .at j}) (λ {refl → a γ})
   box i .cap .out = a γ
   box i .cap .out≡ = ∂-elim i (λ {refl → c γ .snd .at1}) (λ {refl → refl})
 
   square : (i : 𝕀) → Filler (box i)
-  square i = A .snd .lift 𝕚 1 (λ _ → _) (box i)
+  square i = A .snd .lift 𝕚 1 (cst _) (box i)
 
   homotopy : c γ ~ (a γ , refl~ (a γ))
   homotopy .at i .fst = square i .fill 0 .out
