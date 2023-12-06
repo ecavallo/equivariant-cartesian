@@ -27,7 +27,7 @@ private variable
 ------------------------------------------------------------------------------------------
 
 record WeakGlue (φ : Cof)
-  (B : Type ℓ) (A : [ φ ] → Type ℓ)
+  {B : Type ℓ} {A : [ φ ] → Type ℓ}
   (f : (u : [ φ ]) → A u → B) : Type ℓ
   where
   constructor wglue
@@ -39,18 +39,18 @@ record WeakGlue (φ : Cof)
 open WeakGlue public
 
 WeakGlueᴵ : (φ : Γ → Cof)
-  (B : Γ → Type ℓ)
-  (A : Γ ▷[ φ ] → Type ℓ)
+  {B : Γ → Type ℓ}
+  {A : Γ ▷[ φ ] → Type ℓ}
   (f : Γ ▷[ φ ] ⊢ A →ᴵ (B ∘ wk[ φ ]))
   → Γ → Type ℓ
-WeakGlueᴵ φ B A f γ = WeakGlue (φ γ) (B γ) (A ∘ (γ ,_)) (f ∘ (γ ,_))
+WeakGlueᴵ φ f γ = WeakGlue (φ γ) (f ∘ (γ ,_))
 
 opaque
   WeakGlueExt : {φ : Cof}
     {B : Type ℓ}
     {A : [ φ ] → Type ℓ}
     {f : (u : [ φ ]) → A u → B}
-    {g g' : WeakGlue φ B A f}
+    {g g' : WeakGlue φ f}
     (p : ∀ us → g .dom us ≡ g' .dom us)
     (q : g .cod ≡ g' .cod)
     → g ≡ g'
@@ -64,7 +64,7 @@ domToGlue : (φ : Cof)
   {B : Type ℓ}
   {A : [ φ ] → Type ℓ}
   (f : (u : [ φ ]) → A u → B)
-  (u : [ φ ]) → A u → WeakGlue φ B A f
+  (u : [ φ ]) → A u → WeakGlue φ f
 domToGlue φ f u b .cod = f u b
 domToGlue φ {A = A} f u a .dom v = subst A (cofIsProp' φ) a
 domToGlue φ f u a .match v = sym (congΣ f (cofIsProp' φ) refl)
@@ -73,26 +73,26 @@ domIsoGlue : (φ : Cof)
   {B : Type ℓ}
   {A : [ φ ] → Type ℓ}
   (w : (u : [ φ ]) → A u → B)
-  (u : [ φ ]) → A u ≅ WeakGlue φ B A w
+  (u : [ φ ]) → A u ≅ WeakGlue φ w
 domIsoGlue φ {B} {A} w u = iso
   where
   prfIr : (a : A u) → subst A (cofIsProp φ u u) a ≡ a
   prfIr a = cong (subst A ⦅–⦆ a) uip'
 
-  iso : A u ≅ WeakGlue φ B A w
+  iso : A u ≅ WeakGlue φ w
   iso .to a = domToGlue φ w u a
   iso .from (wglue _ a _) = a u
   iso .inv₁ = funExt prfIr
   iso .inv₂ = funExt fg≡id
     where
-    fg≡id : (gl : WeakGlue φ B A w) → (domToGlue φ w u (gl .dom u)) ≡ gl
+    fg≡id : (gl : WeakGlue φ w) → (domToGlue φ w u (gl .dom u)) ≡ gl
     fg≡id gl = WeakGlueExt (substCofEl φ (prfIr _)) (gl .match u)
 
 domIsoGlueᴵ : (φ : Γ → Cof)
   {B : Γ → Type ℓ'}
   {A : Γ ▷[ φ ] → Type ℓ'}
   (w : Γ ▷[ φ ] ⊢ A →ᴵ (B ∘ wk[ φ ]))
-  → Γ ▷[ φ ] ⊢ A ≅ᴵ (WeakGlueᴵ φ B A w ∘ wk[ φ ])
+  → Γ ▷[ φ ] ⊢ A ≅ᴵ (WeakGlueᴵ φ w ∘ wk[ φ ])
 domIsoGlueᴵ φ w (γ , u) = domIsoGlue (φ γ) (w ∘ (γ ,_)) u
 
 ------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ module WeakGlueLift {S r φ}
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ S ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
   (fe : ⟨ S ⟩ ▷[ φ ] ⊢ Equivᴵ A (B ∘ wk[ φ ]))
-  (box : OpenBox S r (WeakGlueᴵ φ B A (equivFun fe)))
+  (box : OpenBox S r (WeakGlueᴵ φ (equivFun fe)))
   where
 
   f = fst ∘ fe
@@ -200,7 +200,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ T ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
   (fe : ⟨ T ⟩ ▷[ φ ] ⊢ Equivᴵ A (B ∘ wk[ φ ]))
-  (box : OpenBox T (⟪ σ ⟫ r) (WeakGlueᴵ φ B A (equivFun fe)))
+  (box : OpenBox T (⟪ σ ⟫ r) (WeakGlueᴵ φ (equivFun fe)))
   where
 
   module T = WeakGlueLift β α fe box
@@ -263,7 +263,7 @@ opaque
     {B : Γ → Type ℓ} (β : FibStr B)
     {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
     (fe : Γ ▷[ φ ] ⊢ Equivᴵ A (B ∘ wk[ φ ]))
-    → FibStr (WeakGlueᴵ φ B A (equivFun fe))
+    → FibStr (WeakGlueᴵ φ (equivFun fe))
   WeakGlueFibStr φ β α fe .lift S r p =
     WeakGlueLift.filler (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
   WeakGlueFibStr φ β α fe .vary S T σ r p =
@@ -284,7 +284,7 @@ WeakGlueᶠ : (φ : Γ → Cof)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
   → Γ ⊢ᶠType ℓ
-WeakGlueᶠ φ (B , _) (A , _) fe .fst = WeakGlueᴵ φ B A (equivFun fe)
+WeakGlueᶠ φ (B , _) (A , _) fe .fst = WeakGlueᴵ φ (equivFun fe)
 WeakGlueᶠ φ (_ , β) (_ , α) fe .snd = WeakGlueFibStr φ β α fe
 
 reindexWeakGlueᶠ : {φ : Γ → Cof}
