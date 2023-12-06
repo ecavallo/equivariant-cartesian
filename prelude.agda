@@ -88,10 +88,10 @@ substCongAssoc : {A : Type ℓ} {B : Type ℓ'}
   → subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
 substCongAssoc _ _ refl _ = refl
 
-substConst : {A : Type ℓ} (B : A → Type ℓ')
-  {x : A} (p : x ≡ x) (b : B x)
-  → subst B p b ≡ b
-substConst _ refl b = refl
+substConst : {A : Type ℓ} {B : Type ℓ'}
+  {x y : A} (p : x ≡ y) (b : B)
+  → subst (λ _ → B) p b ≡ b
+substConst refl b = refl
 
 substTrans : {A : Type ℓ} (B : A → Type ℓ')
   {x y z : A} (q : y ≡ z) (p : x ≡ y) {b : B x}
@@ -208,6 +208,9 @@ data 𝟘 : Type where
 
 𝟘-rec : {A : Type ℓ} → 𝟘 → A
 𝟘-rec ()
+
+¬_ : Type ℓ → Type ℓ
+¬ A = A → 𝟘
 
 ------------------------------------------------------------------------------------------
 -- Disjoint union

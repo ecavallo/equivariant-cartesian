@@ -100,15 +100,16 @@ module UnionLift {S r} (φ₀ φ₁ : ⟨ S ⟩ → Cof)
                 (cong (_∘ᶠ ((id ,, u₀) ,, u₁)) eqFib)
                 (cong (λ u' → A ∘ (id ,, u')) (funExt' trunc'))))
 
-  capSys : (u : [ all S φ₀ ∨ all S φ₁ ]) → fillSys r u .out ≡ box .cap .out
-  capSys =
-    ∨-elimEq (all S φ₀) (all S φ₁)
-      (λ u₀ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
-          .lift S r id box .cap≡)
-      (λ u₁ →
-        subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
-          .lift S r id box .cap≡)
+  opaque
+    capSys : (u : [ all S φ₀ ∨ all S φ₁ ]) → fillSys r u .out ≡ box .cap .out
+    capSys =
+      ∨-elimEq (all S φ₀) (all S φ₁)
+        (λ u₀ →
+          subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₀ ∘ᶠˢ (id ,, u₀))
+            .lift S r id box .cap≡)
+        (λ u₁ →
+          subst (λ u' → FibStr (A ∘ (id ,, u'))) (funExt' trunc') (α₁ ∘ᶠˢ (id ,, u₁))
+            .lift S r id box .cap≡)
 
   filler : Filler box
   filler .fill s = fillSys s (shape→∨ S φ₀ φ₁ u)
