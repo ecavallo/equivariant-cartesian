@@ -7,8 +7,10 @@ module type-formers.equivs where
 
 open import prelude
 open import axioms
-open import fibration.fibration
 open import fibration.coercion
+open import fibration.fibration
+open import fibration.trivial
+open import type-formers.is-contr
 open import type-formers.paths
 open import type-formers.pi
 open import type-formers.sigma
@@ -16,31 +18,6 @@ open import type-formers.sigma
 private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
-
-------------------------------------------------------------------------------------------
--- Homotopy-contractibility
-------------------------------------------------------------------------------------------
-
-IsContr : Type ℓ → Type ℓ
-IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
-
-IsContrᴵ : (Γ → Type ℓ) → (Γ → Type ℓ)
-IsContrᴵ A x = IsContr (A x)
-
-opaque
-  IsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) → FibStr (IsContrᴵ A)
-  IsContrFibStr α  =
-    ΣFibStr α (ΠFibStr (α ∘ᶠˢ fst) (PathFibStr (α ∘ᶠˢ fst ∘ᶠˢ fst) snd (snd ∘ fst)))
-
-  reindexIsContrFibStr : {A : Γ → Type ℓ} {α : FibStr A} (ρ : Δ → Γ)
-    → IsContrFibStr α ∘ᶠˢ ρ ≡ IsContrFibStr (α ∘ᶠˢ ρ)
-  reindexIsContrFibStr ρ =
-    reindexΣFibStr _
-    ∙ cong (ΣFibStr _) (reindexΠFibStr _ ∙ cong (ΠFibStr _) (reindexPathFibStr _))
-
-IsContrᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
-IsContrᶠ A .fst = IsContrᴵ (A .fst)
-IsContrᶠ A .snd = IsContrFibStr (A .snd)
 
 ------------------------------------------------------------------------------------------
 -- Equivalences
@@ -80,10 +57,6 @@ Equiv A B = Σ (A → B) IsEquiv
 Equivᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
 Equivᴵ A B = Σᴵ (A →ᴵ B) (IsEquivᴵ snd)
 
--- TODO rename?
-equivFun : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} → Γ ⊢ Equivᴵ A B → Γ ⊢ A →ᴵ B
-equivFun = fst ∘_
-
 opaque
   EquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
     → FibStr (Equivᴵ A B)
@@ -103,6 +76,22 @@ Equivᶠ A B .snd = EquivFibStr (A .snd) (B .snd)
 reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
 reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
+
+------------------------------------------------------------------------------------------
+-- A map f : A → B between fibrant types is an equivalence if and only if its fiber family
+-- is a trivial fibration
+------------------------------------------------------------------------------------------
+
+equivToFiberTFib : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
+  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberᴵ (fstᴵ e ∘ fst) snd)
+equivToFiberTFib A B e =
+  isContrToTFibStr
+    (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fstᴵ e ∘ fst) snd)
+    (λ (γ , b) → e γ .snd b)
+
+fiberTFibToIsEquiv : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') {f : Γ ⊢ᶠ A →ᶠ B}
+  → TFibStr (Fiberᴵ (f ∘ fst) snd) → Γ ⊢ᶠ IsEquivᶠ A B f
+fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 
 ------------------------------------------------------------------------------------------
 -- Identity and coercion maps are equivalences

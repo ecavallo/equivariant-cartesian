@@ -19,6 +19,9 @@ private variable
 _×ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 (A ×ᴵ B) x = A x × B x
 
+fstᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'} → Γ ⊢ Σᴵ A B → Γ ⊢ A
+fstᴵ = fst ∘_
+
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ S ⟩ ▷ A → Type ℓ'} (β : FibStr B)

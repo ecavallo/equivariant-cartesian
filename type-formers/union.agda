@@ -145,7 +145,7 @@ module UnionVary {S T r} (σ : ShapeHom S T)
             .vary S T σ r id box s
           ∙
           cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
+            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫) _
              ∙
              substCongAssoc
                (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))
@@ -166,7 +166,7 @@ module UnionVary {S T r} (σ : ShapeHom S T)
             .vary S T σ r id box s
           ∙
           cong (λ α → α .lift S r id (reshapeBox σ box) .fill s .out)
-            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫)
+            (substNaturality (λ u' α → α ∘ᶠˢ ⟪ σ ⟫) _
              ∙
              substCongAssoc
                (λ u' → FibStr (A ∘ (⟪ σ ⟫ ,, u')))

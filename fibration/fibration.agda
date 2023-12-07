@@ -30,8 +30,7 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type �
 
 open OpenBox public
 
-reshapeBox : {S T : Shape} (σ : ShapeHom S T)
-  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Type ℓ}
+reshapeBox : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
   → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
 reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
@@ -46,7 +45,7 @@ mapBox f box .tube i u = f i (box .tube i u)
 mapBox f box .cap .out = f _ (box .cap .out)
 mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
-addToTube : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
+addToTube : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ}
   (box : OpenBox S r A)
   (φ : Cof)
   (t : (i : ⟨ S ⟩) → [ φ ] → A i [ box .cof ↦ box .tube i ])
@@ -58,6 +57,26 @@ addToTube box φ t matchCap .tube i =
 addToTube box φ t matchCap .cap .out = box .cap .out
 addToTube box φ t matchCap .cap .out≡ =
   ∨-elimEq (box .cof) φ (box .cap .out≡) matchCap
+
+boxToPartial : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A)
+  (s : ⟨ S ⟩) → [ box .cof ∨ S ∋ r ≈ s ] → A s
+boxToPartial {S = S} {r} box s =
+  ∨-rec (box .cof) (S ∋ r ≈ s)
+    (box .tube s)
+    (λ {refl → box .cap .out})
+    (λ {u refl → box .cap .out≡ u})
+
+opaque
+  varyBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
+    (box : OpenBox T (⟪ σ ⟫ r) A)
+    (s : ⟨ S ⟩)
+    (v : [ box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s ])
+    (u : [ box .cof ∨ S ∋ r ≈ s ])
+    → boxToPartial box (⟪ σ ⟫ s) v ≡ boxToPartial (reshapeBox σ box) s u
+  varyBoxToPartial {S = S} {T} σ {r} box s =
+    takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s)(S ∋ r ≈ s)
+      (λ u → refl)
+      (λ {refl refl → refl})
 
 opaque
   boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
@@ -117,6 +136,12 @@ opaque
     → co ≡ co'
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
   fillerCong p s = cong out (appCong (cong fill p))
+
+fitsPartialToFiller : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} {box : OpenBox S r A}
+  → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
+  → Filler box
+fitsPartialToFiller filler .fill s = narrow (filler s) ∨l
+fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
 
 ------------------------------------------------------------------------------------------
 -- Equivariant fibrations

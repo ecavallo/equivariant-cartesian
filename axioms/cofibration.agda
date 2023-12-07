@@ -149,6 +149,13 @@ restrictExt : {A : Type ℓ} {φ : Cof} {a : [ φ ] → A}
   → z ≡ z'
 restrictExt refl = cong (makeRestrict _) (funExt' uip')
 
+--↓ Forget part of a restriction
+
+narrow : {φ ψ : Cof} {A : Type ℓ} {a : [ φ ] → A}
+  → A [ φ ↦ a ] → (f : [ ψ ] → [ φ ]) → A [ ψ ↦ a ∘ f ]
+narrow b f .out = b .out
+narrow b f .out≡ u = b .out≡ (f u)
+
 ------------------------------------------------------------------------------------------
 -- Combining compatible partial functions
 ------------------------------------------------------------------------------------------

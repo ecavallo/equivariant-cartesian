@@ -103,9 +103,9 @@ substTrans B refl refl = refl
 
 substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
   (η : ∀ a → B a → C a)
-  {a a' : A} {p : a ≡ a'} {b : B a}
+  {a a' : A} (p : a ≡ a') {b : B a}
   → η a' (subst B p b) ≡ subst C p (η a b)
-substNaturality η {p = refl} = refl
+substNaturality η refl = refl
 
 appCong : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
   {x : A} (p : f ≡ g) → f x ≡ g x
