@@ -16,21 +16,20 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
-module SwanIdentity
-  (_∧_ : (φ : Cof) → ([ φ ] → Cof) → Cof)
-  ([∧] : ∀ φ ψ → [ φ ∧ ψ ] ≡ Σ [ φ ] ([_] ∘ ψ))
-  (cofExt : {φ ψ : Cof} → ([ φ ] → [ ψ ]) → ([ ψ ] → [ φ ]) → φ ≡ ψ)
+--↓ Definition of dominance with a limited form of cofibration extensionality
+
+record Dominance : Type where
+  field
+    _∧_ : (φ : Cof) → ([ φ ] → Cof) → Cof
+    ∧-pair : ∀ {φ ψ} → (u : [ φ ]) → [ ψ u ] → [ φ ∧ ψ ]
+    ∧-fst : ∀ {φ ψ} → [ φ ∧ ψ ] → [ φ ]
+    ∧-snd : ∀ {φ ψ} → (uv : [ φ ∧ ψ ]) → [ ψ (∧-fst uv) ]
+    ∧-ext : ∀ {φ ψ} → (u : [ φ ]) → φ ∧ ψ ≡ ψ u
+
+module SwanIdentity (Dom : Dominance)
   where
 
-  private
-    ∧-pair : ∀ {φ ψ} → (u : [ φ ]) → [ ψ u ] → [ φ ∧ ψ ]
-    ∧-pair u v = coe (sym ([∧] _ _)) (u , v)
-
-    ∧-fst : ∀ {φ ψ} → [ φ ∧ ψ ] → [ φ ]
-    ∧-fst uv = coe ([∧] _ _) uv .fst
-
-    ∧-snd : ∀ {φ ψ} → (uv : [ φ ∧ ψ ]) → [ ψ (∧-fst uv) ]
-    ∧-snd uv = coe ([∧] _ _) uv .snd
+  open Dominance Dom
 
   Constancy : {A : Type ℓ} {a₀ a₁ : A} (p : a₀ ~ a₁) → Type ℓ
   Constancy p = Σ φ ∈ Cof , ((i : 𝕀) → [ φ ] → p .at i ≡ p .at 0)
@@ -62,9 +61,7 @@ module SwanIdentity
     → TFibStr (Constancyᴵ p)
   ConstancyIsTFib p γ φ a .out .fst = φ ∧ λ u → a u .fst
   ConstancyIsTFib p γ φ a .out .snd i uv = a (∧-fst uv) .snd i (∧-snd uv)
-  ConstancyIsTFib p γ φ a .out≡ u =
-    ConstancyExt (p γ)
-      (cofExt (∧-pair u) (subst (λ u → [ a u .fst ]) (cofIsProp' φ) ∘ ∧-snd))
+  ConstancyIsTFib p γ φ a .out≡ u = ConstancyExt (p γ) (sym (∧-ext u))
 
   Idᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
   Idᶠ A a₀ a₁ = Σᶠ (Pathᶠ A a₀ a₁) (TFibToFib (_ , ConstancyIsTFib snd))
