@@ -17,22 +17,22 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
-record _~_ {A : Type ℓ} (a a' : A) : Type ℓ where
+record _~_ {A : Type ℓ} (a₀ a₁ : A) : Type ℓ where
   constructor path
   field
     at : 𝕀 → A
-    at0 : at 0 ≡ a
-    at1 : at 1 ≡ a'
+    at0 : at 0 ≡ a₀
+    at1 : at 1 ≡ a₁
 
 open _~_ public
 
-eqToPath : {A : Type ℓ} {x y : A} → x ≡ y → x ~ y
-eqToPath {x = x} p = path (cst x) refl p
+eqToPath : {A : Type ℓ} {a₀ a₁ : A} → a₀ ≡ a₁ → a₀ ~ a₁
+eqToPath {a₀ = a₀} eq = path (cst a₀) refl eq
 
 refl~ : {A : Type ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
 
-PathExt : {A : Type ℓ} {a a' : A} {p q : a ~ a'}
+PathExt : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ~ a₁}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
   congΣ (uncurry ∘ path) (funExt t) (×ext uip' uip')
