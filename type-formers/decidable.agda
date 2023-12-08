@@ -1,0 +1,39 @@
+{-
+
+Fibrancy of closed types with decidable equality.
+
+This construction depends on the tinyness of the interval, more precisely the consequence
+that dependent product over a shape commutes with coproducts.
+
+-}
+module type-formers.decidable where
+
+open import prelude
+open import axioms
+open import fibration.fibration
+open import remarks.shape-to-coproduct
+
+private variable
+  ℓ : Level
+
+--↓ Type of decision procedures for a type
+
+Decision : Type ℓ → Type ℓ
+Decision A = A ⊎ ¬ A
+
+--↓ Fibration structure from a decision procedure for equality.
+--↓ The filler for any open box is simply taken to be the box's cap.
+
+module _ {@♭ ℓ} (A : Type ℓ) (decEq : (a a' : A) → Decision (a ≡ a')) where
+
+  DecidableEqFibStr : FibStr (λ (_ : 𝟙) → A)
+  DecidableEqFibStr .lift S r p box .fill s .out = box .cap .out
+  DecidableEqFibStr .lift S r p box .fill s .out≡ u = lemma decision
+    where
+    decision = shape→⊎ S (λ i → decEq (box .tube i u) (box .cap .out))
+
+    lemma : _ ⊎ _ → box .tube s u ≡ box .cap .out
+    lemma (inl eq) = eq s
+    lemma (inr neq) = 𝟘-rec (neq r (box .cap .out≡ u))
+  DecidableEqFibStr .lift S r p box .cap≡ = refl
+  DecidableEqFibStr .vary _ _ _ _ _ _ _ = refl

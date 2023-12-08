@@ -6,6 +6,8 @@
   This argument relies on the fact that the universe of crisp types is closed under coproducts.
   TODO elaborate
 
+  TODO move out of "remarks"
+
 -}
 module remarks.shape-to-coproduct where
 
@@ -16,30 +18,30 @@ open import axioms.shape
 open import axioms.cofibration
 open import axioms.tiny
 
-open Tiny
-
 module _ (@♭ S : Shape) where
+
+  open Tiny S
 
   shape→⊎♭ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
     → ((⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) ≅ (⟨ S ⟩ → A ⊎ B)
   shape→⊎♭ {A = A} {B} =
     record
     { to = forward
-    ; from = L S back
+    ; from = L back
     ; inv₁ = funExt back∘forward
-    ; inv₂ = L√ S forward back ∙ cong♭ (L S) (funExt forward∘back)
+    ; inv₂ = L√ forward back ∙ cong♭ L (funExt forward∘back)
     }
     where
     forward = [ inl ∘_ ∣ inr ∘_ ]
-    back = [ R S inl ∣ R S inr ]
+    back = [ R inl ∣ R inr ]
 
-    forward∘back : (c : A ⊎ B) → √` S forward (back c) ≡ R S id c
-    forward∘back (inl a) = appCong (√R S forward inl ∙ R℘ S inl id)
-    forward∘back (inr b) = appCong (√R S forward inr ∙ R℘ S inr id)
+    forward∘back : (c : A ⊎ B) → √` forward (back c) ≡ R id c
+    forward∘back (inl a) = appCong (√R forward inl ∙ R℘ inl id)
+    forward∘back (inr b) = appCong (√R forward inr ∙ R℘ inr id)
 
-    back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L S back (forward d) ≡ d
-    back∘forward (inl f) = appCong (L℘ S back inl)
-    back∘forward (inr g) = appCong (L℘ S back inr)
+    back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L back (forward d) ≡ d
+    back∘forward (inl f) = appCong (L℘ back inl)
+    back∘forward (inr g) = appCong (L℘ back inr)
 
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
       {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
@@ -56,15 +58,19 @@ module _ (@♭ S : Shape) where
   shape→⊎♭∇ (inl _) = refl
   shape→⊎♭∇ (inr _) = refl
 
-  shape→⊎ : ∀ {@♭ ℓ ℓ'}
-    {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-    → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
-  shape→⊎ {ℓ} {ℓ'} {A} {B} h = main
+shape→⊎ : ∀ {@♭ ℓ ℓ'} (S : Shape)
+  {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
+  → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
+shape→⊎ {ℓ} {ℓ'} = ShapeIsDiscrete main
+  where
+  module _ (@♭ S : Shape) {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
+    (h : (s : ⟨ S ⟩) → A s ⊎ B s)
     where
+
     Typeₗ = Σ AB ∈ Type ℓ × Type ℓ' , AB .fst
     Typeᵣ = Σ AB ∈ Type ℓ × Type ℓ' , AB .snd
 
-    iso = shape→⊎♭
+    iso = shape→⊎♭ S
 
     AB : ⟨ S ⟩ → Type ℓ × Type ℓ'
     AB s = (A s , B s)
@@ -80,17 +86,17 @@ module _ (@♭ S : Shape) where
     fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
     fromNatural =
       sym (appCong (iso .inv₁))
-      ∙ cong (iso .from) (shape→⊎♭` fst fst (iso .from h'))
+      ∙ cong (iso .from) (shape→⊎♭` S fst fst (iso .from h'))
       ∙ cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂))
 
-    baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ .from h')) ≡ AB
+    baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ S .from h')) ≡ AB
     baseEq =
       cong ∇ fromNatural
-      ∙ sym (shape→⊎♭∇ (iso .from ((fst ⊎` fst) ∘ h')))
+      ∙ sym (shape→⊎♭∇ S (iso .from ((fst ⊎` fst) ∘ h')))
       ∙ cong (∇ ∘_) (appCong (iso .inv₂))
       ∙ funExt fsth'
 
     main : Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
-    main with shape→⊎♭ .from h' | baseEq
+    main with iso .from h' | baseEq
     main | inl f | eq = inl λ s → subst fst (appCong eq) (f s .snd)
     main | inr g | eq = inr λ s → subst snd (appCong eq) (g s .snd)
