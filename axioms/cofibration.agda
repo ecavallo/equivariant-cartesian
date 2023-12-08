@@ -141,6 +141,9 @@ record _[_↦_] (A : Type ℓ) (φ : Cof) (a : [ φ ] → A) : Type ℓ where
 
 open _[_↦_] public
 
+restrictSyntax = _[_↦_]
+syntax restrictSyntax A φ (λ u → a) = A [ u ∈ φ ↦ a ]
+
 --↓ Extensionality principle for restricted types.
 
 restrictExt : {A : Type ℓ} {φ : Cof} {a : [ φ ] → A}
