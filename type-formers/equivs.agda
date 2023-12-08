@@ -11,7 +11,7 @@ open import cofibration
 open import fibration.coercion
 open import fibration.fibration
 open import fibration.trivial
-open import type-formers.is-contr
+open import type-formers.hlevels
 open import type-formers.paths
 open import type-formers.pi
 open import type-formers.sigma
@@ -105,6 +105,18 @@ Equivᶠ A B .snd = EquivFibStr (A .snd) (B .snd)
 reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
 reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
+
+------------------------------------------------------------------------------------------
+-- Being an equivalence is an h-proposition
+------------------------------------------------------------------------------------------
+
+IsEquivIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
+  → Γ ⊢ᶠ IsHPropᶠ (IsEquivᶠ A B f)
+IsEquivIsHPropᶠ A B f =
+  ΠIsHPropᶠ
+    B
+    (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
+    (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
 
 ------------------------------------------------------------------------------------------
 -- A map f : A → B between fibrant types is an equivalence if and only if its fiber family

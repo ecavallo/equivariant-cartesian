@@ -75,28 +75,28 @@ domToGlue φ f u a .match v = sym (congΣ f (cofIsProp' φ) refl)
 domIsoGlue : (φ : Cof)
   {B : Type ℓ}
   {A : [ φ ] → Type ℓ}
-  (w : (u : [ φ ]) → A u → B)
-  (u : [ φ ]) → A u ≅ WeakGlue φ w
-domIsoGlue φ {B} {A} w u = iso
+  (f : (u : [ φ ]) → A u → B)
+  (u : [ φ ]) → A u ≅ WeakGlue φ f
+domIsoGlue φ {B} {A} f u = iso
   where
   prfIr : (a : A u) → subst A (cofIsProp φ u u) a ≡ a
   prfIr a = cong (subst A ⦅–⦆ a) uip'
 
-  iso : A u ≅ WeakGlue φ w
-  iso .to a = domToGlue φ w u a
+  iso : A u ≅ WeakGlue φ f
+  iso .to a = domToGlue φ f u a
   iso .from (wglue _ a _) = a u
   iso .inv₁ = funExt prfIr
   iso .inv₂ = funExt fg≡id
     where
-    fg≡id : (gl : WeakGlue φ w) → (domToGlue φ w u (gl .dom u)) ≡ gl
+    fg≡id : (gl : WeakGlue φ f) → (domToGlue φ f u (gl .dom u)) ≡ gl
     fg≡id gl = WeakGlueExt (substCofEl φ (prfIr _)) (gl .match u)
 
 domIsoGlueᴵ : (φ : Γ → Cof)
   {B : Γ → Type ℓ'}
   {A : Γ ▷[ φ ] → Type ℓ'}
-  (w : Γ ▷[ φ ] ⊢ A →ᴵ (B ∘ wk[ φ ]))
-  → Γ ▷[ φ ] ⊢ A ≅ᴵ (WeakGlueᴵ φ w ∘ wk[ φ ])
-domIsoGlueᴵ φ w (γ , u) = domIsoGlue (φ γ) (w ∘ (γ ,_)) u
+  (f : Γ ▷[ φ ] ⊢ A →ᴵ (B ∘ wk[ φ ]))
+  → Γ ▷[ φ ] ⊢ A ≅ᴵ (WeakGlueᴵ φ f ∘ wk[ φ ])
+domIsoGlueᴵ φ f (γ , u) = domIsoGlue (φ γ) (f ∘ (γ ,_)) u
 
 ------------------------------------------------------------------------------------------
 -- Fibrancy of weak Glue types
