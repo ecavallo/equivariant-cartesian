@@ -150,8 +150,8 @@ fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
-    lift : ∀ S r p → (box : OpenBox S r (A ∘ p)) → Filler box
-    vary : ∀ S T → (σ : ShapeHom S T) → ∀ r p box s
+    lift : ∀ S r p (box : OpenBox S r (A ∘ p)) → Filler box
+    vary : ∀ S T (σ : ShapeHom S T) r p box s
       → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .out
         ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .out
 
