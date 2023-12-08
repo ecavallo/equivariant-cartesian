@@ -7,6 +7,7 @@ module fibration.fibration where
 
 open import prelude
 open import axioms
+open import cofibration
 
 private variable
   ℓ ℓ' : Level

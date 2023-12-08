@@ -5,6 +5,7 @@ Univalence from Glue types
 -}
 open import prelude
 open import axioms
+open import cofibration
 open import fibration.coercion
 open import fibration.fibration
 open import type-formers.equivs

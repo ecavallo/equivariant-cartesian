@@ -7,7 +7,7 @@ universes of the ambient type theory.
 module axioms.realignment where
 
 open import prelude
-open import axioms.cofibration
+open import cofibration
 
 private variable ℓ : Level
 
@@ -15,6 +15,7 @@ private variable ℓ : Level
 -- We postulate realignment of isomorphisms along cofibrations for the universes of the
 -- ambient type theory.
 ------------------------------------------------------------------------------------------
+
 postulate
   ≅Realigns : (φ : Cof) (B : Type ℓ)
     (A : [ φ ] → Σ (Type ℓ) (_≅ B)) → Σ (Type ℓ) (_≅ B) [ φ ↦ A ]
@@ -23,6 +24,7 @@ postulate
 -- Convenience functions unpacking the components of the postulated realignment for
 -- isomorphisms
 ------------------------------------------------------------------------------------------
+
 ≅Realign : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
   → Type ℓ
 ≅Realign φ e = ≅Realigns φ _ (_ ,, e) .out .fst

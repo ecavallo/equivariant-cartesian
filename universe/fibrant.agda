@@ -9,6 +9,7 @@ module universe.fibrant where
 
 open import prelude
 open import axioms
+open import cofibration
 open import fibration.fibration
 open import type-formers.equivs
 open import type-formers.glue

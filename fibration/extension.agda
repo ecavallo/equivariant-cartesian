@@ -9,6 +9,7 @@ module fibration.extension where
 
 open import prelude
 open import axioms
+open import cofibration
 open import fibration.fibration
 open import type-formers.sigma
 open import type-formers.union

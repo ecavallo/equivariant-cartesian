@@ -7,6 +7,7 @@ module type-formers.union where
 
 open import prelude
 open import axioms
+open import cofibration
 open import fibration.fibration
 
 private variable
