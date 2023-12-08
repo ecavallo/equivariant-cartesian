@@ -133,6 +133,20 @@ opaque
     → Γ ⊢ ≅Realignᶠ φ B A iso .fst ≅ᴵ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _
 
+  ≅realignᶠMatch : (φ : Γ → Cof)
+    (B : Γ ⊢ᶠType ℓ)
+    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
+    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
+    → subst (λ C → Γ ▷[ φ ] ⊢ C .fst ≅ᴵ (B .fst ∘ fst)) (≅RealignᶠMatch φ B A iso) iso
+      ≡ ≅realignᶠ φ B A iso ∘ fst
+  ≅realignᶠMatch φ B A iso =
+    funExt λ (γ , u) →
+    substNaturality {B = λ C → _ ⊢ C .fst ≅ᴵ (B .fst ∘ fst)} (λ _ → _$ (γ , u))
+      (≅RealignᶠMatch φ B A iso)
+    ∙ substCongAssoc (λ C → C ≅ B .fst γ) ((_$ (γ , u)) ∘ fst) (≅RealignᶠMatch φ B A iso) _
+    ∙ cong (subst (_≅ B .fst γ) ⦅–⦆ (iso (γ , u))) uip'
+    ∙ ≅realignMatch (φ γ) (iso ∘ (γ ,_)) u
+
   reindexRealignᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}
     {A : Γ ▷[ φ ] ⊢ᶠType ℓ}

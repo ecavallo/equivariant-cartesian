@@ -33,6 +33,12 @@ eqToPath {a₀ = a₀} eq = path (cst a₀) refl eq
 refl~ : {A : Type ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
 
+congPath : {A : Type ℓ} {B : Type ℓ'} (f : A → B) {a₀ a₁ : A}
+  → a₀ ~ a₁ → f a₀ ~ f a₁
+congPath f p .at = f ∘ p .at
+congPath f p .at0 = cong f (p .at0)
+congPath f p .at1 = cong f (p .at1)
+
 PathExt : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ~ a₁}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =

@@ -313,24 +313,24 @@ reindexWeakGlueᶠ ρ = Σext refl (reindexWeakGlueFibStr ρ)
 -- Equivalence to the codomain for weak Glue types
 ------------------------------------------------------------------------------------------
 
-unglueᶠ : (φ : Γ → Cof)
+codᶠ : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
   → Γ ⊢ᶠ WeakGlueᶠ φ B A fe →ᶠ B
-unglueᶠ φ B A fe _ = cod
+codᶠ φ B A fe _ = cod
 
-unglueFiberTFibStr : (φ : Γ → Cof)
+codᶠFiberTFibStr : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-  → TFibStr (Fiberᴵ (unglueᶠ φ B A fe ∘ fst) snd)
-unglueFiberTFibStr φ B A fe (γ , b) ψ unglueFiber = ext
+  → TFibStr (Fiberᴵ (codᶠ φ B A fe ∘ fst) snd)
+codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
   where
   fFiber : (u : [ φ γ ]) → [ ψ ] → Fiber (fe (γ , u) .fst) b
-  fFiber u v .fst = unglueFiber v .fst .dom u
+  fFiber u v .fst = codFiber v .fst .dom u
   fFiber u v .snd =
-    subst (_~ b) (sym (unglueFiber v .fst .match u)) (unglueFiber v .snd)
+    subst (_~ b) (sym (codFiber v .fst .match u)) (codFiber v .snd)
 
   extFFiber : (u : [ φ γ ]) → Fiber (fe (γ , u) .fst) b [ ψ ↦ fFiber u ]
   extFFiber u = equivToFiberTFib A (B ∘ᶠ fst) fe _ _ (fFiber u)
@@ -340,21 +340,21 @@ unglueFiberTFibStr φ B A fe (γ , b) ψ unglueFiber = ext
   codBox .tube i =
     ∨-rec (φ γ) ψ
       (λ u → extFFiber u .out .snd .at i)
-      (λ v → unglueFiber v .snd .at i)
+      (λ v → codFiber v .snd .at i)
       (λ u v →
         sym (cong (at ⦅–⦆ i ∘ snd) (extFFiber u .out≡ v))
-        ∙ substNaturality (λ _ → at ⦅–⦆ i) (sym (unglueFiber v .fst .match u))
-        ∙ substConst (sym (unglueFiber v .fst .match u)) _)
+        ∙ substNaturality (λ _ → at ⦅–⦆ i) (sym (codFiber v .fst .match u))
+        ∙ substConst (sym (codFiber v .fst .match u)) _)
   codBox .cap .out = b
   codBox .cap .out≡ =
     ∨-elimEq (φ γ) ψ
       (λ u → extFFiber u .out .snd .at1)
-      (λ v → unglueFiber v .snd .at1)
+      (λ v → codFiber v .snd .at1)
 
   codFiller : Filler codBox
   codFiller = B .snd .lift _ _ _ codBox
 
-  ext : Fiber cod b [ ψ ↦ unglueFiber ]
+  ext : Fiber cod b [ ψ ↦ codFiber ]
   ext .out .fst .cod = codFiller .fill 0 .out
   ext .out .fst .dom u = extFFiber u .out .fst
   ext .out .fst .match u =
@@ -366,16 +366,17 @@ unglueFiberTFibStr φ B A fe (γ , b) ψ unglueFiber = ext
     FiberExt
       (WeakGlueExt
         (λ u → cong fst (extFFiber u .out≡ v))
-        (sym (unglueFiber v .snd .at0) ∙ codFiller .fill 0 .out≡ (∨r v)))
+        (sym (codFiber v .snd .at0) ∙ codFiller .fill 0 .out≡ (∨r v)))
       (λ i → codFiller .fill i .out≡ (∨r v))
 
-unglueIsEquiv : (φ : Γ → Cof)
+codᶠEquiv : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-  → Γ ⊢ᶠ IsEquivᶠ (WeakGlueᶠ φ B A fe) B (unglueᶠ φ B A fe)
-unglueIsEquiv φ B A fe =
-  fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (unglueFiberTFibStr φ B A fe)
+  → Γ ⊢ᶠ Equivᶠ (WeakGlueᶠ φ B A fe) B
+codᶠEquiv φ B A fe γ .fst = codᶠ φ B A fe γ
+codᶠEquiv φ B A fe γ .snd =
+  fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (codᶠFiberTFibStr φ B A fe) γ
 
 ------------------------------------------------------------------------------------------
 -- Strict Glue types
@@ -390,6 +391,14 @@ opaque
   Glueᶠ φ B A fe =
     ≅Realignᶠ φ (WeakGlueᶠ φ B A fe) A (domIsoGlueᴵ φ (fstᴵ fe))
 
+  unglueᶠ : (φ : Γ → Cof)
+    (B : Γ ⊢ᶠType ℓ)
+    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    → Γ ⊢ᶠ Glueᶠ φ B A fe →ᶠ B
+  unglueᶠ φ B A fe γ =
+    cod ∘ ≅realignᶠ φ _ _ _ γ .to
+
 opaque
   unfolding Glueᶠ
   GlueᶠMatch : (φ : Γ → Cof)
@@ -399,6 +408,24 @@ opaque
     → A ≡ Glueᶠ φ B A fe ∘ᶠ wk[ φ ]
   GlueᶠMatch φ B A fe =
     ≅RealignᶠMatch φ _ _ (domIsoGlueᴵ φ (fstᴵ fe))
+
+  unglueᶠMatch : (φ : Γ → Cof)
+    (B : Γ ⊢ᶠType ℓ)
+    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    → subst (λ C → Γ ▷[ φ ] ⊢ᶠ C →ᶠ (B ∘ᶠ fst)) (GlueᶠMatch φ B A fe) (fstᴵ fe)
+      ≡ unglueᶠ φ B A fe ∘ fst
+  unglueᶠMatch φ B A fe =
+    sym (substNaturality (λ _ → ((cod ∘_) ∘ to) ∘_) (GlueᶠMatch φ B A fe))
+    ∙ cong (((cod ∘_) ∘ to) ∘_) (≅realignᶠMatch φ _ _ (domIsoGlueᴵ φ (fstᴵ fe)))
+
+  unglueᶠEquiv : (φ : Γ → Cof)
+    (B : Γ ⊢ᶠType ℓ)
+    (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
+    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    → Γ ⊢ᶠ Equivᶠ (Glueᶠ φ B A fe) B
+  unglueᶠEquiv φ B A fe γ =
+    equiv∘iso (≅realignᶠ _ _ _ _ _) (codᶠEquiv φ B A fe _)
 
 opaque
   unfolding Glueᶠ

@@ -17,7 +17,7 @@ open import type-formers.pi
 open import type-formers.sigma
 
 private variable
-  ℓ ℓ' : Level
+  ℓ ℓ' ℓ'' : Level
   Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
@@ -27,9 +27,43 @@ private variable
 IsEquiv : {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type (ℓ ⊔ ℓ')
 IsEquiv f = ∀ b → IsContr (Fiber f b)
 
+Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
+Equiv A B = Σ (A → B) IsEquiv
+
 IsEquivᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ᴵ B)
   → Γ → Type (ℓ ⊔ ℓ')
 IsEquivᴵ f = Πᴵ _ (IsContrᴵ (Fiberᴵ (f ∘ fst) snd))
+
+Equivᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+Equivᴵ A B = Σᴵ (A →ᴵ B) (IsEquivᴵ snd)
+
+--↓ An isomorphism composed with an equivalence is an equivalence.
+
+equiv∘iso : {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
+  → A ≅ B → Equiv B C → Equiv A C
+equiv∘iso iso e .fst = e .fst ∘ iso .to
+equiv∘iso iso e .snd c = contractor
+  where
+  invertFiber : ∀ c → Fiber (e .fst) c → Fiber (e .fst ∘ iso .to) c
+  invertFiber c (b , p) .fst = iso .from b
+  invertFiber c (b , p) .snd .at = p .at
+  invertFiber c (b , p) .snd .at0 =
+    p .at0 ∙ cong (e .fst) (sym (appCong (iso .inv₂)))
+  invertFiber c (b , p) .snd .at1 = p .at1
+
+  contractor : IsContr (Fiber (e .fst ∘ iso .to) c)
+  contractor .fst = invertFiber c (e .snd c .fst)
+  contractor .snd (a , p) =
+    subst
+      (_~ _)
+      (FiberExt (appCong (iso .inv₁)) (λ _ → refl))
+      (congPath
+        (invertFiber c)
+        (e .snd c .snd (iso .to a , p)))
+
+------------------------------------------------------------------------------------------
+-- Fibrancy of the type of equivalences between two fibrant types
+------------------------------------------------------------------------------------------
 
 opaque
   IsEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
@@ -51,12 +85,6 @@ IsEquivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A �
   → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 IsEquivᶠ A B f .fst = IsEquivᴵ f
 IsEquivᶠ A B f .snd = IsEquivFibStr (A .snd) (B .snd) f
-
-Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
-Equiv A B = Σ (A → B) IsEquiv
-
-Equivᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-Equivᴵ A B = Σᴵ (A →ᴵ B) (IsEquivᴵ snd)
 
 opaque
   EquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
