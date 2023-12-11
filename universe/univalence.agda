@@ -38,31 +38,31 @@ UATFib ℓ B φ Part = filler
   partEquiv u =
     subst (Equiv ⦅–⦆ (El B) ∘ El) (GlueᵁMatch _ _ _ _ _) (Part u .snd)
 
-  extendedFun≡partFun : ∀ u → extendedEquiv .fst ≡ partEquiv u .fst
-  extendedFun≡partFun u =
-    sym (unglueᵁMatch u)
-    ∙ sym (substNaturality (λ _ → fst) (GlueᵁMatch _ _ _ _ _))
+  partFun≡extendedFun : ∀ u → partEquiv u .fst ≡ extendedEquiv .fst
+  partFun≡extendedFun u =
+    substNaturality (λ _ → fst) (GlueᵁMatch _ _ _ _ _) ∙
+    unglueᵁMatch u
 
-  fixPath : (u : [ φ ]) → extendedEquiv ~ partEquiv u
+  fixPath : (u : [ φ ]) → partEquiv u ~ extendedEquiv
   fixPath u =
     equivPathᶠ (Elᶠ (cst ExtendedTy)) (Elᶠ (cst B)) _ _
-      (cst $ eqToPath $ extendedFun≡partFun u)
+      (cst $ eqToPath $ partFun≡extendedFun u)
       tt
 
-  box : OpenBox 𝕚 0 (cst (Σ A ∈ 𝑼 ℓ , Equiv (El A) (El B)))
+  box : OpenBox 𝕚 1 (cst (Σ A ∈ 𝑼 ℓ , Equiv (El A) (El B)))
   box .cof = φ
   box .tube i u .fst = ExtendedTy
   box .tube i u .snd = fixPath u .at i
   box .cap .out .fst = ExtendedTy
   box .cap .out .snd = extendedEquiv
-  box .cap .out≡ u = Σext refl (fixPath u .at0)
+  box .cap .out≡ u = Σext refl (fixPath u .at1)
 
   filler : Σᴵ (𝑼ᴵ ℓ) (Equivᴵ (Elᴵ (λ r → snd r)) (Elᴵ (λ r → fst r))) B [ φ ↦ Part ]
   filler .out =
-    Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 0 (λ _ → B) box .fill 1 .out
+    Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out
   filler .out≡ u =
-    Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at1))
-    ∙ Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 0 (λ _ → B) box .fill 1 .out≡ u
+    Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))
+    ∙ Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out≡ u
 
 UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ (snd ∘ fst)))))
 UA ℓ = λᴵ $ TFibToIsContr (_ , UATFib ℓ) ∘ snd
