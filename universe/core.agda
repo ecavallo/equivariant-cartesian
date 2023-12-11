@@ -198,6 +198,9 @@ opaque
     ShapeHomIsDiscrete λ (@♭ σ) →
     λ r C → getVaries S T σ C .rel r
 
+Elᴵ : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ᴵ ℓ) → (Γ → Type ℓ)
+Elᴵ = El ∘_
+
 Elᶠ : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ᴵ ℓ) → Γ ⊢ᶠType ℓ
 Elᶠ = (El , ElFibStr) ∘ᶠ_
 

@@ -47,6 +47,12 @@ PathExt t =
 Pathᴵ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → Γ → Type ℓ
 Pathᴵ A a₀ a₁ γ = a₀ γ ~ a₁ γ
 
+congPathᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
+  (f : Γ ⊢ A →ᴵ B)
+  {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathᴵ A a₀ a₁)
+  → Γ ⊢ Pathᴵ B (appᴵ f a₀) (appᴵ f a₁)
+congPathᴵ f p γ = congPath (f γ) (p γ)
+
 opaque
   private
     partialEl : {A : Γ → Type ℓ} (a₀ a₁ : Γ ⊢ A)
@@ -196,7 +202,8 @@ singlContrᶠ A a c γ = homotopy
       (λ j → sym (square 1 .fill j .out≡ (∨r refl)))
 
 ------------------------------------------------------------------------------------------
--- Weak Paulin-Mohring-style J eliminator, stated in terms of singletons
+-- Weak Paulin-Mohring-style J eliminator, stated in a somewhat unorthodox form using
+-- singletons for ease of proof.
 ------------------------------------------------------------------------------------------
 
 Jᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)

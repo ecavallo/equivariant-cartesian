@@ -21,6 +21,16 @@ private variable
 _→ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 A →ᴵ B = Πᴵ A (B ∘ fst)
 
+λᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  → Γ ▷ A ⊢ B
+  → Γ ⊢ Πᴵ A B
+λᴵ f γ a = f (γ , a)
+
+appᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  → (f : Γ ⊢ Πᴵ A B) (a : Γ ⊢ A)
+  → Γ ⊢ B ∘ (id ,, a)
+appᴵ f a γ = f γ (a γ)
+
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ S ⟩ ▷ A → Type ℓ'} (β : FibStr B)

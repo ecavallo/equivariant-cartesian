@@ -173,11 +173,10 @@ id× : {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''}
   → (x , y) ≡ (x' , y')
 ×ext refl refl = refl
 
-Σext : {A : Type ℓ} {B : A → Type ℓ'}
-  {ab ab' : Σ A B}
-  (p : ab .fst ≡ ab' .fst)
-  (q : subst B p (ab .snd) ≡ ab' .snd)
-  → ab ≡ ab'
+Σext : {A : Type ℓ} {B : A → Type ℓ'} {ab₀ ab₁ : Σ A B}
+  (eq : ab₀ .fst ≡ ab₁ .fst)
+  → subst B eq (ab₀ .snd) ≡ ab₁ .snd
+  → ab₀ ≡ ab₁
 Σext refl refl = refl
 
 Σeq₂ : {A  : Type ℓ} {B : A → Type ℓ'} {x y : Σ A B}

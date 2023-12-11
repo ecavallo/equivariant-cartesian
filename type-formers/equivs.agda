@@ -110,13 +110,35 @@ reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 -- Being an equivalence is an h-proposition
 ------------------------------------------------------------------------------------------
 
-IsEquivIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
-  → Γ ⊢ᶠ IsHPropᶠ (IsEquivᶠ A B f)
-IsEquivIsHPropᶠ A B f =
-  ΠIsHPropᶠ
-    B
-    (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
-    (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
+opaque
+  IsEquivIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
+    → Γ ⊢ᶠ IsHPropᶠ (IsEquivᶠ A B f)
+  IsEquivIsHPropᶠ A B f =
+    ΠIsHPropᶠ
+      B
+      (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
+      (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
+
+--↓ To construct a path between equivalences, it suffices to build a path between the
+--↓ underlying functions.
+
+opaque
+  equivPathᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (e₀ e₁ : Γ ⊢ᶠ Equivᶠ A B)
+    → Γ ⊢ᶠ Pathᶠ (A →ᶠ B) (fstᴵ e₀) (fstᴵ e₁)
+    → Γ ⊢ᶠ Pathᶠ (Equivᶠ A B) e₀ e₁
+  equivPathᶠ A B e₀ e₁ p =
+    appᴵ
+      (Jᶠ (A →ᶠ B) (fstᴵ e₁)
+        (Πᶠ (IsEquivᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fst ∘ snd))
+          (Pathᶠ (Equivᶠ A B ∘ᶠ (fst ∘ fst))
+            (fst ∘ snd ∘ fst ,ᴵ snd)
+            (e₁ ∘ fst ∘ fst)))
+        (λᴵ $
+          congPathᴵ
+            (λᴵ (fstᴵ e₁ ∘ fst ∘ fst ,ᴵ snd))
+            (appᴵ (appᴵ (IsEquivIsHPropᶠ A B (fstᴵ e₁) ∘ fst) snd) (sndᴵ e₁ ∘ fst)))
+        (fstᴵ e₀ ,ᴵ p))
+      (sndᴵ e₀)
 
 ------------------------------------------------------------------------------------------
 -- A map f : A → B between fibrant types is an equivalence if and only if its fiber family
