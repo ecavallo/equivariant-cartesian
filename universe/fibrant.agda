@@ -3,6 +3,7 @@
 Fibrancy of the universe
 
 TODO discuss non-use of fibration.extension
+TODO move glue to its own module
 
 -}
 module universe.fibrant where
@@ -43,31 +44,70 @@ module _ {@♭ ℓ} where
       (Elᶠ λ (_ , _ , A , _ , u) → A u)
       (λ (_ , _ , _ , fe , u) → fe u)
 
-  glue : (φ : Cof) (b : 𝑼 ℓ) (a : [ φ ] → 𝑼 ℓ)
-    (fe : (u : [ φ ]) → Equiv (El (a u)) (El b))
+  Glueᵁ : (φ : Cof) (B : 𝑼 ℓ) (A : [ φ ] → 𝑼 ℓ)
+    (fe : (u : [ φ ]) → Equiv (El (A u)) (El B))
     → 𝑼 ℓ
-  glue φ b a fe = encode universalGlueᶠ (φ , b , a , fe)
+  Glueᵁ φ B A fe = encode universalGlueᶠ (φ , B , A , fe)
 
-  glueMatch : (φ : Cof) (b : 𝑼 ℓ) (a : [ φ ] → 𝑼 ℓ)
-    (fe : (u : [ φ ]) → Equiv (El (a u)) (El b))
-    (u : [ φ ]) → a u ≡ glue φ b a fe
-  glueMatch φ b a fe u =
+  GlueᵁMatch : (φ : Cof) (B : 𝑼 ℓ) (A : [ φ ] → 𝑼 ℓ)
+    (fe : (u : [ φ ]) → Equiv (El (A u)) (El B))
+    (u : [ φ ]) → A u ≡ Glueᵁ φ B A fe
+  GlueᵁMatch φ b a fe u =
     appCong (sym (encodeDecode (λ (_ , _ , A , _ , u) → A u)))
     ∙ appCong (cong♭ encode (GlueᶠMatch _ _ _ _))
     ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
 
-  Glueᵁ : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
+  Glueᵁᶠ : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
     → Γ ⊢ 𝑼ᴵ ℓ
-  Glueᵁ φ b a fe γ =
-    glue (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
+  Glueᵁᶠ φ b a fe γ =
+    Glueᵁ (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
 
   decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ᴵ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ᴵ ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
-    → decode (Glueᵁ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
+    → decode (Glueᵁᶠ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
   decodeGlue φ b a fe =
     cong (_∘ᶠ (φ ,, b ,, curry a ,, curry fe)) (decodeEncode universalGlueᶠ)
     ∙ reindexGlueᶠ (φ ,, b ,, curry a ,, curry fe)
+
+  unglueᵁ : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
+    {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
+    → El (Glueᵁ φ B A fe) → El B
+  unglueᵁ {B = B} =
+    subst
+      (λ C → C → El B)
+      (appCong $ cong fst $ sym $ decodeGlue _ _ _ _)
+      (unglueᶠ _ _ _ _ tt)
+
+  unglueᵁEquiv : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
+    {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
+    → Equiv (El (Glueᵁ φ B A fe)) (El B)
+  unglueᵁEquiv .fst = unglueᵁ
+  unglueᵁEquiv .snd =
+    subst
+      (λ (C , f) → IsEquiv {A = C} f)
+      (Σext (appCong $ cong fst $ sym $ decodeGlue _ _ _ _) refl)
+      (unglueᶠIsEquiv _ _ _ _ tt)
+
+  opaque
+    unglueᵁMatch : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
+      {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
+      (u : [ φ ])
+      → subst (λ C → El C → El B) (GlueᵁMatch φ B A fe u) (fe u .fst) ≡ unglueᵁ
+    unglueᵁMatch {B = B} u =
+      substCongAssoc (λ C → C → El B) El (GlueᵁMatch _ _ _ _ u) _
+      ∙ adjustSubstEq (λ C → C → El B)
+          (cong (λ C → C .fst (tt , u)) $ GlueᶠMatch _ _ _ _)
+          refl
+          (cong El (GlueᵁMatch _ _ _ _ u))
+          (appCong $ cong fst $ sym $ decodeGlue _ _ _ _)
+          (sym $ substCongAssoc
+            (λ C → C → El B)
+            (λ C → C .fst (tt , u))
+            (GlueᶠMatch _ _ _ _) _)
+      ∙ cong (subst (λ C → C → El B) (appCong $ cong fst $ sym $ decodeGlue _ _ _ _))
+          (congdep₂ (λ _ → _$ (tt , u)) (GlueᶠMatch _ _ _ _) (unglueᶠMatch _ _ _ _))
+
 
   ----------------------------------------------------------------------------------------
   -- Fibrancy of the universe
@@ -77,7 +117,7 @@ module _ {@♭ ℓ} where
 
     partialEquiv : ∀ s
       → [ box .cof ∨ S ∋ r ≈ s ]
-      → Σ a ∈ 𝑼 ℓ , Equiv (El a) (El (box .cap .out))
+      → Σ A ∈ 𝑼 ℓ , Equiv (El A) (El (box .cap .out))
     partialEquiv s =
       ∨-rec (box .cof) (S ∋ r ≈ s)
         (λ u →
@@ -96,11 +136,11 @@ module _ {@♭ ℓ} where
 
     filler : Filler box
     filler .fill s .out =
-      glue (box .cof ∨ S ∋ r ≈ s) (box .cap .out)
+      Glueᵁ (box .cof ∨ S ∋ r ≈ s) (box .cap .out)
         (λ u → partialEquiv s u .fst)
         (λ u → partialEquiv s u .snd)
-    filler .fill s .out≡ u = glueMatch _ _ _ _ (∨l u)
-    filler .cap≡ = sym (glueMatch _ _ _ _ (∨r refl))
+    filler .fill s .out≡ u = GlueᵁMatch _ _ _ _ (∨l u)
+    filler .cap≡ = sym (GlueᵁMatch _ _ _ _ (∨r refl))
 
   opaque
     𝑼FibStr : FibStr {Γ = 𝟙} (𝑼ᴵ ℓ)
@@ -112,7 +152,7 @@ module _ {@♭ ℓ} where
       unpack : (φ : Cof)
         → ([ φ ] → Σ a ∈ 𝑼 ℓ , Equiv (El a) (El (box .cap .out)))
         → universalGlueCtx
-      unpack φ afe = φ , box .cap .out , fst ∘ afe , snd ∘ afe
+      unpack φ Afe = φ , box .cap .out , fst ∘ Afe , snd ∘ Afe
 
       cofEq : (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (box .cof ∨ S ∋ r ≈ s)
       cofEq = cong (box .cof ∨_) (≈Equivariant σ r s)

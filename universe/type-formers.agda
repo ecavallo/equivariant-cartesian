@@ -28,64 +28,87 @@ module _ {@♭ ℓ : Level} where
   -- The universe of fibrations contains an empty type
   ----------------------------------------------------------------------------------------
 
-  𝟘ᵁ : Γ ⊢ᶠ 𝑼ᶠ lzero
-  𝟘ᵁ = encode 𝟘ᶠ ∘ cst tt
+  𝟘ᵁ : 𝑼 lzero
+  𝟘ᵁ = encode 𝟘ᶠ tt
 
-  El-𝟘ᵁ : Elᶠ (𝟘ᵁ {Γ = Γ}) ≡ 𝟘ᶠ
-  El-𝟘ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟘ᶠ)
+  𝟘ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
+  𝟘ᵁᶠ _ = 𝟘ᵁ
+
+  opaque
+    Elᶠ-𝟘ᵁ : Elᶠ (𝟘ᵁᶠ {Γ = Γ}) ≡ 𝟘ᶠ
+    Elᶠ-𝟘ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟘ᶠ)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Σ-types
   ----------------------------------------------------------------------------------------
 
-  universalΣᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
-  universalΣᶠ = Σᶠ (Elᶠ fst) (Elᶠ λ (A , B , a) → B a)
+  private
+    universalΣᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
+    universalΣᶠ = Σᶠ (Elᶠ fst) (Elᶠ λ (A , B , a) → B a)
 
-  Σᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ) → Γ ⊢ᶠ 𝑼ᶠ ℓ
-  Σᵁ A B = encode universalΣᶠ ∘ (A ,, curry B)
+  Σᵁ : (A : 𝑼 ℓ) (B : El A → 𝑼 ℓ) → 𝑼 ℓ
+  Σᵁ A B = encode universalΣᶠ (A , B)
 
-  El-Σ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
-    → Elᶠ (Σᵁ A B) ≡ Σᶠ (Elᶠ A) (Elᶠ B)
-  El-Σ A B =
-    cong (_∘ᶠ (A ,, curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,, curry B)
+  Σᵁᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ) → (Γ ⊢ᶠ 𝑼ᶠ ℓ)
+  Σᵁᶠ A B γ = Σᵁ (A γ) (curry B γ)
+
+  opaque
+    Elᶠ-Σᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
+      → Elᶠ (Σᵁᶠ A B) ≡ Σᶠ (Elᶠ A) (Elᶠ B)
+    Elᶠ-Σᵁ A B =
+      cong (_∘ᶠ (A ,, curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,, curry B)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Path types
   ----------------------------------------------------------------------------------------
 
-  universalPathᶠ : (Σ A ∈ 𝑼 ℓ , El A × El A) ⊢ᶠType ℓ
-  universalPathᶠ = Pathᶠ (Elᶠ fst) (fst ∘ snd) (snd ∘ snd)
+  private
+    universalPathᶠ : (Σ A ∈ 𝑼 ℓ , El A × El A) ⊢ᶠType ℓ
+    universalPathᶠ = Pathᶠ (Elᶠ fst) (fst ∘ snd) (snd ∘ snd)
 
-  Pathᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A) → Γ ⊢ᶠ 𝑼ᶠ ℓ
-  Pathᵁ A a₀ a₁ = encode universalPathᶠ ∘ (A ,, (a₀ ,, a₁))
+  Pathᵁ : (A : 𝑼 ℓ) (a₀ a₁ : El A) → 𝑼 ℓ
+  Pathᵁ A a₀ a₁ = encode universalPathᶠ (A , (a₀ , a₁))
 
-  El-Path : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
-    → Elᶠ (Pathᵁ A a₀ a₁) ≡ Pathᶠ (Elᶠ A) a₀ a₁
-  El-Path A a₀ a₁ =
-    cong (_∘ᶠ (A ,, (a₀ ,, a₁))) (decodeEncode universalPathᶠ)
-    ∙ reindexPathᶠ (A ,, (a₀ ,, a₁))
+  Pathᵁᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+  Pathᵁᶠ A a₀ a₁ γ = Pathᵁ (A γ) (a₀ γ) (a₁ γ)
+
+  opaque
+    El-Path : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
+      → Elᶠ (Pathᵁᶠ A a₀ a₁) ≡ Pathᶠ (Elᶠ A) a₀ a₁
+    El-Path A a₀ a₁ =
+      cong (_∘ᶠ (A ,, (a₀ ,, a₁))) (decodeEncode universalPathᶠ)
+      ∙ reindexPathᶠ (A ,, (a₀ ,, a₁))
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Π-types
   ----------------------------------------------------------------------------------------
 
-  universalΠᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
-  universalΠᶠ = Πᶠ (Elᶠ fst) (Elᶠ λ (A , B , a) → B a)
+  private
+    universalΠᶠ : (Σ A ∈ 𝑼 ℓ , (El A → 𝑼 ℓ)) ⊢ᶠType ℓ
+    universalΠᶠ = Πᶠ (Elᶠ fst) (Elᶠ λ (A , B , a) → B a)
 
-  Πᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ) → Γ ⊢ᶠ 𝑼ᶠ ℓ
-  Πᵁ A B = encode universalΠᶠ ∘ (A ,, curry B)
+  Πᵁ : (A : 𝑼 ℓ) (B : El A → 𝑼 ℓ) → 𝑼 ℓ
+  Πᵁ A B = encode universalΠᶠ (A , B)
 
-  El-Π : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
-    → Elᶠ (Πᵁ A B) ≡ Πᶠ (Elᶠ A) (Elᶠ B)
-  El-Π A B =
-    cong (_∘ᶠ (A ,, curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,, curry B)
+  Πᵁᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+  Πᵁᶠ A B γ = Πᵁ (A γ) (curry B γ)
+
+  opaque
+    El-Πᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
+      → Elᶠ (Πᵁᶠ A B) ≡ Πᶠ (Elᶠ A) (Elᶠ B)
+    El-Πᵁ A B =
+      cong (_∘ᶠ (A ,, curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,, curry B)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations contains a unit type
   ----------------------------------------------------------------------------------------
 
-  𝟙ᵁ : Γ ⊢ᶠ 𝑼ᶠ lzero
-  𝟙ᵁ = encode 𝟙ᶠ ∘ cst tt
+  𝟙ᵁ : 𝑼 lzero
+  𝟙ᵁ = encode 𝟙ᶠ tt
 
-  El-𝟙ᵁ : Elᶠ (𝟙ᵁ {Γ = Γ}) ≡ 𝟙ᶠ
-  El-𝟙ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟙ᶠ)
+  𝟙ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
+  𝟙ᵁᶠ _ = 𝟙ᵁ
+
+  opaque
+    El-𝟙ᵁ : Elᶠ (𝟙ᵁᶠ {Γ = Γ}) ≡ 𝟙ᶠ
+    El-𝟙ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟙ᶠ)

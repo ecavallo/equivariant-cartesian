@@ -419,13 +419,21 @@ opaque
     sym (substNaturality (λ _ → ((cod ∘_) ∘ to) ∘_) (GlueᶠMatch φ B A fe))
     ∙ cong (((cod ∘_) ∘ to) ∘_) (≅realignᶠMatch φ _ _ (domIsoGlueᴵ φ (fstᴵ fe)))
 
-  unglueᶠEquiv : (φ : Γ → Cof)
+  unglueᶠIsEquiv : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-    → Γ ⊢ᶠ Equivᶠ (Glueᶠ φ B A fe) B
-  unglueᶠEquiv φ B A fe γ =
-    equiv∘iso (≅realignᶠ _ _ _ _ _) (codᶠEquiv φ B A fe _)
+    → Γ ⊢ᶠ IsEquivᶠ (Glueᶠ φ B A fe) B (unglueᶠ φ B A fe)
+  unglueᶠIsEquiv φ B A fe γ =
+    equiv∘iso (≅realignᶠ _ _ _ _ _) (codᶠEquiv φ B A fe _) .snd
+
+unglueᶠEquiv : (φ : Γ → Cof)
+  (B : Γ ⊢ᶠType ℓ)
+  (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
+  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+  → Γ ⊢ᶠ Equivᶠ (Glueᶠ φ B A fe) B
+unglueᶠEquiv φ B A fe γ .fst = unglueᶠ φ B A fe γ
+unglueᶠEquiv φ B A fe γ .snd = unglueᶠIsEquiv φ B A fe γ
 
 opaque
   unfolding Glueᶠ
