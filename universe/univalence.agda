@@ -21,6 +21,7 @@ open import type-formers.pi
 open import type-formers.sigma
 open import universe.core
 open import universe.fibrant
+open import universe.glue
 
 module universe.univalence where
 
