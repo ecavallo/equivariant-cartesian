@@ -3,7 +3,7 @@
 Function extensionality axiom and basic consequences
 
 -}
-module axioms.funext where
+module axiom.funext where
 
 open import prelude
 

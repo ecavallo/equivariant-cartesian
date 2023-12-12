@@ -10,15 +10,15 @@ The addition of an equivariance condition on fibrations has no effect on this pr
 
 -}
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 open import fibration.trivial
-open import type-formers.equivs
-open import type-formers.hlevels
-open import type-formers.paths
-open import type-formers.pi
-open import type-formers.sigma
+open import type-former.equiv
+open import type-former.hlevels
+open import type-former.path
+open import type-former.pi
+open import type-former.sigma
 open import universe.core
 open import universe.fibrant
 open import universe.glue

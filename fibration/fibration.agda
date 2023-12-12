@@ -6,7 +6,7 @@ Defines fibration structures and fibrations.
 module fibration.fibration where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 
 private variable

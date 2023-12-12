@@ -6,7 +6,7 @@ Definition of trivial fibration structure.
 module fibration.trivial where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

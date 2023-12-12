@@ -4,7 +4,7 @@ Postulates realignment of isomorphisms-up-to-strict-equality along cofibrations 
 universes of the ambient type theory.
 
 -}
-module axioms.realignment where
+module axiom.realignment where
 
 open import prelude
 open import cofibration

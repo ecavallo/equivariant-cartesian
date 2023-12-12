@@ -3,15 +3,15 @@
 Fibration structure on Swan identity types, assuming a dominance and cofibration extensionality.
 
 -}
-module type-formers.swan-identity where
+module type-former.swan-identity where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 open import fibration.trivial
-open import type-formers.paths
-open import type-formers.sigma
+open import type-former.path
+open import type-former.sigma
 
 private variable
   ℓ ℓ' : Level

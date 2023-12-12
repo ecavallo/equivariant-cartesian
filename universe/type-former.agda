@@ -3,17 +3,17 @@
 Showing the universe is closed under type formers
 
 -}
-module universe.type-formers where
+module universe.type-former where
 
 open import prelude
-open import axioms
+open import axiom
 open import fibration.fibration
 
-open import type-formers.empty
-open import type-formers.paths
-open import type-formers.pi
-open import type-formers.sigma
-open import type-formers.unit
+open import type-former.empty
+open import type-former.path
+open import type-former.pi
+open import type-former.sigma
+open import type-former.unit
 
 open import universe.core
 open import universe.fibrant

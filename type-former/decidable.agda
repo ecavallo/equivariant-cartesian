@@ -6,13 +6,13 @@ This construction depends on the tinyness of the interval, more precisely the co
 that dependent product over a shape commutes with coproducts.
 
 -}
-module type-formers.decidable where
+module type-former.decidable where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
-open import remarks.shape-to-coproduct
+open import shape-to-coproduct
 
 private variable
   ℓ : Level

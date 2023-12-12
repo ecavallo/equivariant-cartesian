@@ -6,11 +6,11 @@ Basic properties of cofibrations
 module cofibration where
 
 open import prelude
-open import axioms.funext
-open import axioms.truncation
-open import axioms.shape
+open import axiom.funext
+open import axiom.truncation
+open import axiom.shape
 
-open import axioms.cofibration public
+open import axiom.cofibration public
 
 infixr 4 _∨ᴵ_
 

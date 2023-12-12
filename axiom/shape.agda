@@ -4,10 +4,10 @@ Postulates a type of shapes, types of homomorphisms between shapes,
 and the interval shape
 
 -}
-module axioms.shape where
+module axiom.shape where
 
 open import prelude
-open import axioms.funext
+open import axiom.funext
 
 private variable ℓ : Level
 

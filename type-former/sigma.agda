@@ -3,10 +3,10 @@
 Fibration structure on Σ-types.
 
 -}
-module type-formers.sigma where
+module type-former.sigma where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

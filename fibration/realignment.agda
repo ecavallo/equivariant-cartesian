@@ -6,7 +6,7 @@ Realign a fibration structure to agree with another on some cofibration
 module fibration.realignment where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

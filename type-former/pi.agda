@@ -3,10 +3,10 @@
 Fibration structure on Π-types.
 
 -}
-module type-formers.pi where
+module type-former.pi where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 open import fibration.coercion

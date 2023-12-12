@@ -3,10 +3,10 @@
 Fibrancy of the empty type.
 
 -}
-module type-formers.empty where
+module type-former.empty where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

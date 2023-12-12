@@ -3,12 +3,12 @@
 Axiomatization of the type of cofibrations.
 
 -}
-module axioms.cofibration where
+module axiom.cofibration where
 
 open import prelude
-open import axioms.funext
-open import axioms.truncation
-open import axioms.shape
+open import axiom.funext
+open import axiom.truncation
+open import axiom.shape
 
 infixr 4 _∨_
 
@@ -51,7 +51,7 @@ postulate
 
   --↓ Universal quantification over shapes commutes with union of cofibrations.
   --↓ Externally, this is a consequence of the internal tinyness of shapes, but it is not
-  --↓ clear whether this is provable from the assumption in axioms.tiny.
+  --↓ clear whether this is provable from the assumption in axiom.tiny.
 
   shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → Cof)
     → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]

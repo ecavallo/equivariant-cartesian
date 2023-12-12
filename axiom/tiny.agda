@@ -3,13 +3,13 @@
 Tinyness of shapes. These axioms are only used for the universe.
 
 -}
-module axioms.tiny where
+module axiom.tiny where
 
 open import prelude
-open import axioms.funext
-open import axioms.truncation
-open import axioms.shape
-open import axioms.cofibration
+open import axiom.funext
+open import axiom.truncation
+open import axiom.shape
+open import axiom.cofibration
 
 ------------------------------------------------------------------------------------------
 -- Each shape is tiny (exponentiation by it has a right adjoint)

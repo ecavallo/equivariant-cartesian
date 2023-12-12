@@ -8,18 +8,18 @@ true ("strict") glue types.
 
 -}
 {-# OPTIONS --rewriting #-}
-module type-formers.glue where
+module type-former.glue where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 open import fibration.realignment
 open import fibration.trivial
-open import type-formers.equivs
-open import type-formers.paths
-open import type-formers.pi
-open import type-formers.sigma
+open import type-former.equiv
+open import type-former.path
+open import type-former.pi
+open import type-former.sigma
 
 private variable
   ℓ ℓ' ℓ'' : Level

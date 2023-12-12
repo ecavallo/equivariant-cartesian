@@ -3,10 +3,10 @@
 Composition structures on the union of partially defined types (i.e., a system of types)
 
 -}
-module type-formers.union where
+module type-former.union where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

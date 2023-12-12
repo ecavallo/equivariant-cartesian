@@ -6,17 +6,15 @@
   This argument relies on the fact that the universe of crisp types is closed under coproducts.
   TODO elaborate
 
-  TODO move out of "remarks"
-
 -}
-module remarks.shape-to-coproduct where
+module shape-to-coproduct where
 
 open import prelude
-open import axioms.funext
-open import axioms.truncation
-open import axioms.shape
-open import axioms.cofibration
-open import axioms.tiny
+open import axiom.funext
+open import axiom.truncation
+open import axiom.shape
+open import axiom.cofibration
+open import axiom.tiny
 
 module _ (@♭ S : Shape) where
 

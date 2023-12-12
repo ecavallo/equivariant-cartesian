@@ -6,7 +6,7 @@ Coercion
 module fibration.coercion where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

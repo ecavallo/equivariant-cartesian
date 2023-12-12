@@ -3,10 +3,10 @@
 Fibrancy of extension types.
 
 -}
-module type-formers.extension where
+module type-former.extension where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

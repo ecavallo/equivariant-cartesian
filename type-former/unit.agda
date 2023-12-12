@@ -3,10 +3,10 @@
 Fibrancy of the unit type.
 
 -}
-module type-formers.unit where
+module type-former.unit where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 

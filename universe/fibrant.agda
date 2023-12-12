@@ -8,14 +8,14 @@ TODO discuss non-use of fibration.extension
 module universe.fibrant where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
-open import type-formers.equivs
-open import type-formers.glue
-open import type-formers.paths
-open import type-formers.pi
-open import type-formers.sigma
+open import type-former.equiv
+open import type-former.glue
+open import type-former.path
+open import type-former.pi
+open import type-former.sigma
 open import universe.core
 open import universe.glue
 

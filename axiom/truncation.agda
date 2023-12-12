@@ -3,7 +3,7 @@
 Propositional truncation (for the extensional type theory)
 
 -}
-module axioms.truncation where
+module axiom.truncation where
 
 open import prelude
 

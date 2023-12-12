@@ -3,12 +3,12 @@
 Fibrancy of the extensional type of natural numbers ℕ.
 
 -}
-module type-formers.natural-numbers where
+module type-former.natural-number where
 
 open import prelude
-open import axioms
+open import axiom
 open import fibration.fibration
-open import type-formers.decidable
+open import type-former.decidable
 
 open import Agda.Builtin.Nat renaming (Nat to ℕ)
 

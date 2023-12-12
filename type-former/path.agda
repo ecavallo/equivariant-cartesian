@@ -3,16 +3,16 @@
 Fibrancy of path and homotopy fiber types.
 
 -}
-module type-formers.paths where
+module type-former.path where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
 open import fibration.coercion
-open import type-formers.extension
-open import type-formers.pi
-open import type-formers.sigma
+open import type-former.extension
+open import type-former.pi
+open import type-former.sigma
 
 private variable
   ℓ ℓ' : Level

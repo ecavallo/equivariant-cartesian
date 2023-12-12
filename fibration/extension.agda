@@ -8,13 +8,13 @@ TODO add comments
 module fibration.extension where
 
 open import prelude
-open import axioms
+open import axiom
 open import cofibration
 open import fibration.fibration
-open import type-formers.sigma
-open import type-formers.union
-open import type-formers.equivs
-open import type-formers.glue
+open import type-former.sigma
+open import type-former.union
+open import type-former.equiv
+open import type-former.glue
 
 private variable
   ℓ ℓ' : Level
