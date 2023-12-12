@@ -138,7 +138,7 @@ uip' {p = refl} {q = refl} = refl
 ------------------------------------------------------------------------------------------
 
 record 𝟙 : Type where
-  constructor tt
+  instance constructor tt
 
 ------------------------------------------------------------------------------------------
 -- Σ-types
@@ -235,6 +235,18 @@ _⊎`_ : {A : Type ℓ} {A' : Type ℓ'} {B : Type ℓ''} {B' : Type ℓ'''}
 
 ∇ : {A : Type ℓ} → A ⊎ A → A
 ∇ = [ id ∣ id ]
+
+------------------------------------------------------------------------------------------
+-- Natural numbers
+------------------------------------------------------------------------------------------
+
+open import Agda.Builtin.Nat public renaming (Nat to ℕ)
+open import Agda.Builtin.FromNat public using (Number ; fromNat)
+
+instance
+  Numℕ : Number ℕ
+  Numℕ .Number.Constraint _ = 𝟙
+  Numℕ .Number.fromNat n = n
 
 ------------------------------------------------------------------------------------------
 -- Retracts

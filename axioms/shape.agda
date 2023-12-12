@@ -43,13 +43,20 @@ _▷𝕀 : ∀ {ℓ} → Type ℓ → Type ℓ
 -- Notation for interval endpoints
 ------------------------------------------------------------------------------------------
 
-open import Agda.Builtin.Nat
+private
+  isEndpoint : (m : ℕ) → Type
+  isEndpoint 0 = 𝟙
+  isEndpoint 1 = 𝟙
+  isEndpoint (suc (suc _)) = 𝟘
 
-fromNat : Nat → 𝕀
-fromNat 0 = 𝕚0
-fromNat (suc _) = 𝕚1
+  𝕀fromℕ : (n : ℕ) → {{_ : isEndpoint n}} → 𝕀
+  𝕀fromℕ 0 = 𝕚0
+  𝕀fromℕ 1 = 𝕚1
 
-{-# BUILTIN FROMNAT fromNat #-}
+instance
+  Num𝕀 : Number 𝕀
+  Num𝕀 .Number.Constraint = isEndpoint
+  Num𝕀 .Number.fromNat = 𝕀fromℕ
 
 ------------------------------------------------------------------------------------------
 -- The objects of shapes and shape morphisms are discrete (i.e., crisp)
