@@ -10,6 +10,7 @@ module type-formers.decidable where
 
 open import prelude
 open import axioms
+open import cofibration
 open import fibration.fibration
 open import remarks.shape-to-coproduct
 
