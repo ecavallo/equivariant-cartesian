@@ -32,22 +32,11 @@ funExtDepCod refl = funExt
 -- Function extensionality for flat-modal functions
 ------------------------------------------------------------------------------------------
 
-funExt♭ : {@♭ ℓ : Level} {ℓ' : Level}
-   {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
-   {f g : (@♭ a : A) → B a}
-   → ((@♭ a : A) → f a ≡ g a) → f ≡ g
-funExt♭ {ℓ} {ℓ'} {A} {B} {f} {g} h =
-  cong (λ k (@♭ a) → k (in♭ a)) (funExt h')
-  where
-  B' : ♭ A → Type ℓ'
-  B' (in♭ a) = B a
-
-  f' g' : (a : ♭ A) → B' a
-  f' (in♭ a) = f a
-  g' (in♭ a) = g a
-
-  h' : (a : ♭ A) → f' a ≡ g' a
-  h' (in♭ a) = h a
+postulate
+  funExt♭ : {@♭ ℓ : Level} {ℓ' : Level}
+     {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
+     {f g : (@♭ a : A) → B a}
+     → ((@♭ a : A) → f a ≡ g a) → f ≡ g
 
 funExt♭' : {@♭ ℓ : Level} {ℓ' : Level}
    {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}

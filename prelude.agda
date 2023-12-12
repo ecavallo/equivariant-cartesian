@@ -318,9 +318,6 @@ _▷_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 -- Flat modality
 ------------------------------------------------------------------------------------------
 
-data ♭ {@♭ ℓ} (@♭ A : Type ℓ) : Type ℓ where
-  in♭ : @♭ A → ♭ A
-
 cong♭ : {@♭ ℓ ℓ' : Level} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
   (f : @♭ A → B) {@♭ x y : A} (@♭ p : x ≡ y) → f x ≡ f y
 cong♭ _ refl = refl
