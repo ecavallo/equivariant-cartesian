@@ -92,9 +92,8 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
 
   module _ (i : 𝕀) (a : A .fst γ) where
 
-    total : (j : 𝕀) → A .fst γ [ ∂ i ∨ ∂ j ↦ _ ]
-    total j =
-      tfib tt (∂ i ∨ ∂ j) $
+    boundary : (j : 𝕀) → [ ∂ i ∨ ∂ j ] → A .fst γ
+    boundary j =
       ∨-rec (∂ i) (∂ j)
         (∂-rec i (λ _ → c₀ a .at j) (λ _ → c₁ a .at j))
         (∂-rec j (λ _ → a) (λ _ → c₁ a₀ .at i))
@@ -105,6 +104,10 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
           (λ {refl → ∂-elim j
             (λ {refl → c₁ a .at0})
             (λ {refl → c₁ a .at1 ∙ sym (c₁ a₀ .at1)})}))
+
+    opaque
+      total : (j : 𝕀) → A .fst γ [ ∂ i ∨ ∂ j ↦ boundary j ]
+      total j = tfib tt (∂ i ∨ ∂ j) (boundary j)
 
     line : a ~ c₁ a₀ .at i
     line .at j = total j .out

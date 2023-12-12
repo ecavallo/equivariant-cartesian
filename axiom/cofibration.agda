@@ -49,13 +49,6 @@ postulate
 
   cofIsProp : (φ : Cof) → isProp [ φ ]
 
-  --↓ Universal quantification over shapes commutes with union of cofibrations.
-  --↓ Externally, this is a consequence of the internal tinyness of shapes, but it is not
-  --↓ clear whether this is provable from the assumption in axiom.tiny.
-
-  shape→∨ : (S : Shape) (φ ψ : ⟨ S ⟩ → Cof)
-    → [ all S (λ s → φ s ∨ ψ s) ] → [ all S φ ∨ all S ψ ]
-
   --↓ The shape equality and univeral quantification cofibrations are invariant under
   --↓ shape morphisms in an appropriate sense.
 

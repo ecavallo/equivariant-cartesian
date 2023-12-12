@@ -98,9 +98,10 @@ Pathᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType �
 Pathᶠ A a₀ a₁ .fst = Pathᴵ (A .fst) a₀ a₁
 Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
 
-reindexPathᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ A .fst}
-  (ρ : Δ → Γ) → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
-reindexPathᶠ ρ = Σext refl (reindexPathFibStr ρ)
+opaque
+  reindexPathᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ A .fst}
+    (ρ : Δ → Γ) → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
+  reindexPathᶠ ρ = Σext refl (reindexPathFibStr ρ)
 
 reflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ A .fst) → Γ ⊢ᶠ Pathᶠ A a a
 reflᶠ A = refl~ ∘_
@@ -137,31 +138,37 @@ Fiberᶠ A B f b .snd = FiberFibStr (A .snd) (B .snd) f b
 
 module _ {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
 
-  FiberExt : {b : B} {x y : Fiber f b}
-    → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
-  FiberExt refl p = Σext refl (PathExt p)
+  opaque
+    FiberExt : {b : B} {x y : Fiber f b}
+      → x .fst ≡ y .fst → (∀ i → x .snd .at i ≡ y .snd .at i) → x ≡ y
+    FiberExt refl p = Σext refl (PathExt p)
 
-  FiberExtDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
-    → x .fst ≡ y .fst
-    → (∀ i → x .snd .at i ≡ y .snd .at i)
-    → subst (Fiber f) p x ≡ y
-  FiberExtDep refl = FiberExt
+  opaque
+    FiberExtDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
+      → x .fst ≡ y .fst
+      → (∀ i → x .snd .at i ≡ y .snd .at i)
+      → subst (Fiber f) p x ≡ y
+    FiberExtDep refl = FiberExt
 
   eqToFiber : {b : B} (a : A) → f a ≡ b → Fiber f b
-  eqToFiber a eq = (a , eqToPath eq)
+  eqToFiber a eq .fst = a
+  eqToFiber a eq .snd = eqToPath eq
 
-  fiberPathEq : {b : B} {x y : Fiber f b}
-    → x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
-  fiberPathEq refl _ = refl
+  opaque
+    fiberPathEq : {b : B} {x y : Fiber f b}
+      → x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
+    fiberPathEq refl _ = refl
 
-  fiberPathEqDep : {b b' : B} (p : b ≡ b')
-    {x : Fiber f b} {y : Fiber f b'}
-    → subst (Fiber f) p x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
-  fiberPathEqDep refl refl _ = refl
+  opaque
+    fiberPathEqDep : {b b' : B} (p : b ≡ b')
+      {x : Fiber f b} {y : Fiber f b'}
+      → subst (Fiber f) p x ≡ y → ∀ k → x .snd .at k ≡ y .snd .at k
+    fiberPathEqDep refl refl _ = refl
 
-  fiberDomEqDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
-    → subst (Fiber f) p x ≡ y → x .fst ≡ y .fst
-  fiberDomEqDep refl refl = refl
+  opaque
+    fiberDomEqDep : {b b' : B} (p : b ≡ b') {x : Fiber f b} {y : Fiber f b'}
+      → subst (Fiber f) p x ≡ y → x .fst ≡ y .fst
+    fiberDomEqDep refl refl = refl
 
 ------------------------------------------------------------------------------------------
 -- Singleton contractibility
@@ -202,6 +209,30 @@ singlContrᶠ A a c γ = homotopy
       (λ j → sym (square 1 .fill j .out≡ (∨r refl)))
 
 ------------------------------------------------------------------------------------------
+-- Transport along paths.
+------------------------------------------------------------------------------------------
+
+substᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ : Γ ⊢ᶠ A}
+  (p : Γ ⊢ᶠ Pathᶠ A a₀ a₁)
+  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₀)
+  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
+substᶠ A B p b₀ γ =
+  subst (B .fst ∘ (γ ,_)) (p γ .at1)
+    (Coerce.coerce 𝕚 0 (B ∘ᶠ (cst γ ,, p γ .at))
+      (subst (B .fst ∘ (γ ,_)) (sym (p γ .at0)) (b₀ γ))
+      1)
+
+substInvᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ : Γ ⊢ᶠ A}
+  (p : Γ ⊢ᶠ Pathᶠ A a₀ a₁)
+  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
+  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₀)
+substInvᶠ A B p b₀ γ =
+  subst (B .fst ∘ (γ ,_)) (p γ .at0)
+    (Coerce.coerce 𝕚 1 (B ∘ᶠ (cst γ ,, p γ .at))
+      (subst (B .fst ∘ (γ ,_)) (sym (p γ .at1)) (b₀ γ))
+      0)
+
+------------------------------------------------------------------------------------------
 -- Weak Paulin-Mohring-style J eliminator, stated in a somewhat unorthodox form using
 -- singletons for ease of proof.
 ------------------------------------------------------------------------------------------
@@ -211,9 +242,5 @@ Jᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   (d : Γ ⊢ᶠ P ∘ᶠ (id ,, singlCenterᶠ A a))
   (c : Γ ⊢ᶠ Singlᶠ A a)
   → Γ ⊢ᶠ P ∘ᶠ (id ,, c)
-Jᶠ A a P d c γ =
-  subst (P .fst ∘ (γ ,_)) (singlContrᶠ A a c γ .at0)
-    (Coerce.coerce 𝕚 1
-      (P ∘ᶠ λ i → γ , singlContrᶠ A a c γ .at i)
-      (subst (P .fst ∘ (γ ,_)) (sym (singlContrᶠ A a c γ .at1)) (d γ))
-      0)
+Jᶠ A a P d c =
+  substInvᶠ (Singlᶠ A a) P (singlContrᶠ A a c) d

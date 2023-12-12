@@ -216,5 +216,5 @@ opaque
       s
     ∙
     cong
-      (λ β → Coerce.coerce S r (_ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
-      (Σeq₂ (reindexEquivᶠ _) refl)
+      (λ β → Coerce.coerce S r (Equivᴵ _ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
+      (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)

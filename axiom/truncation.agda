@@ -22,7 +22,7 @@ module _ {A : Type ℓ} where
 
     trunc : isProp ∥ A ∥
 
-    ∥∥-rec : (P : Type ℓ') (f : A → P) .(p : ∀ a b → f a ≡ f b)
+    ∥∥-rec : (P : Type ℓ') (f : A → P) (p : ∀ a b → f a ≡ f b)
       → ∥ A ∥ → P
 
     ∥∥-rec-β : ∀ (P : Type ℓ') f p a → ∥∥-rec P f p ∣ a ∣ ≡ f a

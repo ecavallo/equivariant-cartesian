@@ -91,6 +91,7 @@ opaque
       (funExt' $ funExt' $ q _ _ _)
       (funExt' uip')
 
+opaque
   boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
     {b₀ b₁ : B} (b : b₀ ≡ b₁)
     {r : ⟨ S ⟩}
@@ -131,6 +132,7 @@ opaque
   fillerExt p =
     congΣ makeFiller (funExt $ restrictExt ∘ p) uip'
 
+opaque
   fillerCong : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
     {box : OpenBox S r A}
     {co co' : Filler box}
@@ -179,20 +181,24 @@ _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
 (A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 
-reindexSubst : {A A' : Γ → Type ℓ}
-  (α : FibStr A) (P : A ≡ A') (ρ : Δ → Γ) (Q : A ∘ ρ ≡ A' ∘ ρ)
-  → subst FibStr P α ∘ᶠˢ ρ ≡ subst FibStr Q (α ∘ᶠˢ ρ)
-reindexSubst α refl ρ refl = refl
+opaque
+  reindexSubst : {A A' : Γ → Type ℓ}
+    (α : FibStr A) (P : A ≡ A') (ρ : Δ → Γ) (Q : A ∘ ρ ≡ A' ∘ ρ)
+    → subst FibStr P α ∘ᶠˢ ρ ≡ subst FibStr Q (α ∘ᶠˢ ρ)
+  reindexSubst α refl ρ refl = refl
 
 ------------------------------------------------------------------------------------------
--- An extensionality principle for fibration structures
+-- Extensionality principles for fibrations
 ------------------------------------------------------------------------------------------
+
+FibStrEq : {Γ : Type ℓ} {A : Γ → Type ℓ'} (α₀ α₁ : FibStr A) → Type (ℓ ⊔ ℓ')
+FibStrEq {Γ = Γ} {A = A} α₀ α₁ =
+  ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ)
+  (box : OpenBox S r (A ∘ p))
+  (s : ⟨ S ⟩) → α₀ .lift S r p box .fill s .out ≡ α₁ .lift S r p box .fill s .out)
 
 opaque
-  FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A}
-    → ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ) (box : OpenBox S r (A ∘ p))
-         → (s : ⟨ S ⟩) → α .lift S r p box .fill s .out ≡ α' .lift S r p box .fill s .out)
-    → α ≡ α'
+  FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A} → FibStrEq α α' → α ≡ α'
   FibStrExt q =
     congΣ makeFib
       (funExt' $ funExt' $ funExt' $ funExt' $ fillerExt $ q _ _ _ _)
@@ -225,6 +231,8 @@ opaque
   retractFibStr retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
 
+opaque
+  unfolding retractFibStr
   reindexRetractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
     (retract : Γ ⊢ Retractᴵ A B) {β : FibStr B} (ρ : Δ → Γ)
     → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
@@ -237,11 +245,14 @@ opaque
 _≅ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
 _≅ᴵ_ A B γ = A γ ≅ B γ
 
-isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-  → Γ ⊢ A ≅ᴵ B → FibStr B → FibStr A
-isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
+opaque
+  isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
+    → Γ ⊢ A ≅ᴵ B → FibStr B → FibStr A
+  isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
-reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-  (iso : Γ ⊢ A ≅ᴵ B) {β : FibStr B} (ρ : Δ → Γ)
-  → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
-reindexIsomorphFibStr _ = reindexRetractFibStr _
+opaque
+  unfolding isomorphFibStr
+  reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
+    (iso : Γ ⊢ A ≅ᴵ B) {β : FibStr B} (ρ : Δ → Γ)
+    → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
+  reindexIsomorphFibStr _ = reindexRetractFibStr _

@@ -84,44 +84,50 @@ congdep₂ : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
   → subst C p (f x z) ≡ f y w
 congdep₂ _ refl refl = refl
 
-substCongAssoc : {A : Type ℓ} {B : Type ℓ'}
-  (C : B → Type ℓ'') (f : A → B)
-  {x y : A} (p : x ≡ y)
-  (b : C (f x))
-  → subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
-substCongAssoc _ _ refl _ = refl
+opaque
+  substCongAssoc : {A : Type ℓ} {B : Type ℓ'}
+    (C : B → Type ℓ'') (f : A → B)
+    {x y : A} (p : x ≡ y)
+    (b : C (f x))
+    → subst (λ x → C (f x)) p b ≡ subst C (cong f p) b
+  substCongAssoc _ _ refl _ = refl
 
-substConst : {A : Type ℓ} {B : Type ℓ'}
-  {x y : A} (p : x ≡ y) (b : B)
-  → subst (cst B) p b ≡ b
-substConst refl b = refl
+opaque
+  substConst : {A : Type ℓ} {B : Type ℓ'}
+    {x y : A} (p : x ≡ y) (b : B)
+    → subst (cst B) p b ≡ b
+  substConst refl b = refl
 
-substTrans : {A : Type ℓ} (B : A → Type ℓ')
-  {x y z : A} (q : y ≡ z) (p : x ≡ y) {b : B x}
-  → subst B (p ∙ q) b ≡ subst B q (subst B p b)
-substTrans B refl refl = refl
+opaque
+  substTrans : {A : Type ℓ} (B : A → Type ℓ')
+    {x y z : A} (q : y ≡ z) (p : x ≡ y) {b : B x}
+    → subst B (p ∙ q) b ≡ subst B q (subst B p b)
+  substTrans B refl refl = refl
 
-substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
-  (η : ∀ a → B a → C a)
-  {a a' : A} (p : a ≡ a') {b : B a}
-  → η a' (subst B p b) ≡ subst C p (η a b)
-substNaturality η refl = refl
+opaque
+  substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
+    (η : ∀ a → B a → C a)
+    {a a' : A} (p : a ≡ a') {b : B a}
+    → η a' (subst B p b) ≡ subst C p (η a b)
+  substNaturality η refl = refl
 
 appCong : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
   {x : A} (p : f ≡ g) → f x ≡ g x
 appCong p = cong (λ h → h _) p
 
-substDom : {A : Type ℓ} (B : A → Type ℓ') {C : Type ℓ''}
-  {x y : A} (p : x ≡ y) (f : B x → C)
-  → subst (λ x → B x → C) p f ≡ f ∘ subst B (sym p)
-substDom _ refl f = refl
+opaque
+  substDom : {A : Type ℓ} (B : A → Type ℓ') {C : Type ℓ''}
+    {x y : A} (p : x ≡ y) (f : B x → C)
+    → subst (λ x → B x → C) p f ≡ f ∘ subst B (sym p)
+  substDom _ refl f = refl
 
-adjustSubstEq : {A : Type ℓ} (B : A → Type ℓ')
-  {x y z w : A} (p : x ≡ z) (p' : y ≡ z) (q : x ≡ w) (q' : y ≡ w)
-  {b : B x} {b' : B y}
-  → subst B p b ≡ subst B p' b'
-  → subst B q b ≡ subst B q' b'
-adjustSubstEq B refl refl refl refl = id
+opaque
+  adjustSubstEq : {A : Type ℓ} (B : A → Type ℓ')
+    {x y z w : A} (p : x ≡ z) (p' : y ≡ z) (q : x ≡ w) (q' : y ≡ w)
+    {b : B x} {b' : B y}
+    → subst B p b ≡ subst B p' b'
+    → subst B q b ≡ subst B q' b'
+  adjustSubstEq B refl refl refl refl = id
 
 ------------------------------------------------------------------------------------------
 -- Uniqueness of identity proofs
@@ -167,22 +173,25 @@ id× : {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''}
 (id× f) ab .fst = ab .fst
 (id× f) ab .snd = f (ab .snd)
 
-×ext : {A : Type ℓ} {B : Type ℓ'}
-  {x x' : A} (p : x ≡ x')
-  {y y' : B} (q : y ≡ y')
-  → (x , y) ≡ (x' , y')
-×ext refl refl = refl
+opaque
+  ×ext : {A : Type ℓ} {B : Type ℓ'} {ab₀ ab₁ : A × B}
+    → ab₀ .fst ≡ ab₁ .fst
+    → ab₀ .snd ≡ ab₁ .snd
+    → ab₀ ≡ ab₁
+  ×ext refl refl = refl
 
-Σext : {A : Type ℓ} {B : A → Type ℓ'} {ab₀ ab₁ : Σ A B}
-  (eq : ab₀ .fst ≡ ab₁ .fst)
-  → subst B eq (ab₀ .snd) ≡ ab₁ .snd
-  → ab₀ ≡ ab₁
-Σext refl refl = refl
+opaque
+  Σext : {A : Type ℓ} {B : A → Type ℓ'} {ab₀ ab₁ : Σ A B}
+    (eq : ab₀ .fst ≡ ab₁ .fst)
+    → subst B eq (ab₀ .snd) ≡ ab₁ .snd
+    → ab₀ ≡ ab₁
+  Σext refl refl = refl
 
-Σeq₂ : {A  : Type ℓ} {B : A → Type ℓ'} {x y : Σ A B}
-  (p : x ≡ y) (q : x .fst ≡ y .fst)
-  → subst B q (x .snd) ≡ y .snd
-Σeq₂ refl refl = refl
+opaque
+  Σeq₂ : {A  : Type ℓ} {B : A → Type ℓ'} {x y : Σ A B}
+    (p : x ≡ y) (q : x .fst ≡ y .fst)
+    → subst B q (x .snd) ≡ y .snd
+  Σeq₂ refl refl = refl
 
 _,,_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
   (f : (a : A) → B a) → ((a : A) → C a (f a)) → ((a : A) → Σ (B a) (C a))

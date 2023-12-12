@@ -20,8 +20,9 @@ module Coerce (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : A 
   box .cap .out = a
   box .cap .out≡ ()
 
-  filler : Filler box
-  filler = A .snd .lift S r id box
+  opaque
+    filler : Filler box
+    filler = A .snd .lift S r id box
 
   coerce : (s : ⟨ S ⟩) → A .fst s
   coerce s = filler .fill s .out
@@ -36,7 +37,9 @@ module _ {S T : Shape} (σ : ShapeHom S T)
     module S = Coerce S r (A ∘ᶠ ⟪ σ ⟫) a
     module T = Coerce T (⟪ σ ⟫ r) A a
 
-  coerceVary : (s : ⟨ S ⟩) → T.coerce (⟪ σ ⟫ s) ≡ S.coerce s
-  coerceVary s =
-    A .snd .vary S T σ r id T.box s
-    ∙ cong (λ box → A .snd .lift S r ⟪ σ ⟫ box .fill s .out) (boxExt refl (λ _ ()) refl)
+  opaque
+    unfolding Coerce.filler
+    coerceVary : (s : ⟨ S ⟩) → T.coerce (⟪ σ ⟫ s) ≡ S.coerce s
+    coerceVary s =
+      A .snd .vary S T σ r id T.box s
+      ∙ cong (λ box → A .snd .lift S r ⟪ σ ⟫ box .fill s .out) (boxExt refl (λ _ ()) refl)

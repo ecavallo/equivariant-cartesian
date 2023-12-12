@@ -51,10 +51,6 @@ Ordered roughly by conceptual priority.
   * `fibration.realignment`:
   
     Proves that a fibration structure can be realigned along a cofibration.
-    
-  * `fibration.extension`:
-  
-    Proves that fibration structures can be extended along generating trivial cofibrations.
 
 * `type-formers`: Defines the interpretation of various type formers in the fibration model.
 
