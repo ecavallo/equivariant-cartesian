@@ -7,7 +7,6 @@ module axiom.cofibration where
 
 open import prelude
 open import axiom.funext
-open import axiom.truncation
 open import axiom.shape
 
 infixr 4 _∨_
