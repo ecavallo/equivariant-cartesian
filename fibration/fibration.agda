@@ -209,12 +209,12 @@ opaque
 -- A retract of a fibration is a fibration
 ------------------------------------------------------------------------------------------
 
-Retractᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-Retractᴵ A B γ = Retract (A γ) (B γ)
+Retractˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+Retractˣ A B γ = Retract (A γ) (B γ)
 
 opaque
   retractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    → Γ ⊢ Retractᴵ A B → FibStr B → FibStr A
+    → Γ ⊢ Retractˣ A B → FibStr B → FibStr A
   retractFibStr retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
@@ -235,7 +235,7 @@ opaque
 opaque
   unfolding retractFibStr
   reindexRetractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    (retract : Γ ⊢ Retractᴵ A B) {β : FibStr B} (ρ : Δ → Γ)
+    (retract : Γ ⊢ Retractˣ A B) {β : FibStr B} (ρ : Δ → Γ)
     → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
   reindexRetractFibStr retract ρ = FibStrExt λ _ _ _ _ _ → refl
 
@@ -243,17 +243,17 @@ opaque
 -- Corollary: fibration structures can be transferred across isomorphisms
 ------------------------------------------------------------------------------------------
 
-_≅ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-_≅ᴵ_ A B γ = A γ ≅ B γ
+_≅ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+_≅ˣ_ A B γ = A γ ≅ B γ
 
 opaque
   isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    → Γ ⊢ A ≅ᴵ B → FibStr B → FibStr A
+    → Γ ⊢ A ≅ˣ B → FibStr B → FibStr A
   isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
 opaque
   unfolding isomorphFibStr
   reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    (iso : Γ ⊢ A ≅ᴵ B) {β : FibStr B} (ρ : Δ → Γ)
+    (iso : Γ ⊢ A ≅ˣ B) {β : FibStr B} (ρ : Δ → Γ)
     → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
   reindexIsomorphFibStr _ = reindexRetractFibStr _

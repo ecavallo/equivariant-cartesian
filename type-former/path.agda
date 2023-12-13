@@ -45,14 +45,14 @@ PathExt : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ~ a₁}
 PathExt t =
   congΣ (uncurry ∘ path) (funExt t) (×ext uip' uip')
 
-Pathᴵ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → Γ → Type ℓ
-Pathᴵ A a₀ a₁ γ = a₀ γ ~ a₁ γ
+Pathˣ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → Γ → Type ℓ
+Pathˣ A a₀ a₁ γ = a₀ γ ~ a₁ γ
 
-congPathᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-  (f : Γ ⊢ A →ᴵ B)
-  {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathᴵ A a₀ a₁)
-  → Γ ⊢ Pathᴵ B (appᴵ f a₀) (appᴵ f a₁)
-congPathᴵ f p γ = congPath (f γ) (p γ)
+congPathˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
+  (f : Γ ⊢ A →ˣ B)
+  {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathˣ A a₀ a₁)
+  → Γ ⊢ Pathˣ B (appˣ f a₀) (appˣ f a₁)
+congPathˣ f p γ = congPath (f γ) (p γ)
 
 opaque
   private
@@ -62,7 +62,7 @@ opaque
       uncurry λ (γ , i) → ∂-rec i (λ _ → a₀ γ) (λ _ → a₁ γ)
 
     retract : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A}
-      → Γ ⊢ Retractᴵ (Pathᴵ A a₀ a₁) (Extensionᴵ 𝕚 (A ∘ fst) ∂ (partialEl a₀ a₁))
+      → Γ ⊢ Retractˣ (Pathˣ A a₀ a₁) (Extensionˣ 𝕚 (A ∘ fst) ∂ (partialEl a₀ a₁))
     retract γ .sec p i .out = p .at i
     retract γ .sec p i .out≡ =
       ∂-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
@@ -72,7 +72,7 @@ opaque
     retract γ .inv = funExt' $ PathExt λ _ → refl
 
   PathFibStr : {A : Γ → Type ℓ} (α : FibStr A) (a₀ a₁ : Γ ⊢ A)
-    → FibStr (Pathᴵ A a₀ a₁)
+    → FibStr (Pathˣ A a₀ a₁)
   PathFibStr α a₀ a₁ =
     retractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ fst) ∂ _)
 
@@ -96,7 +96,7 @@ opaque
 ------------------------------------------------------------------------------------------
 
 Pathᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
-Pathᶠ A a₀ a₁ .fst = Pathᴵ (A .fst) a₀ a₁
+Pathᶠ A a₀ a₁ .fst = Pathˣ (A .fst) a₀ a₁
 Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
 
 opaque
@@ -114,19 +114,19 @@ reflᶠ A = refl~ ∘_
 Fiber : {A : Type ℓ} {B : Type ℓ'} (f : A → B) (b : B) → Type (ℓ ⊔ ℓ')
 Fiber f b = Σ a ∈ _ , f a ~ b
 
-Fiberᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ᴵ B) (b : Γ ⊢ B)
+Fiberˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ˣ B) (b : Γ ⊢ B)
   → (Γ → Type (ℓ ⊔ ℓ'))
-Fiberᴵ f b γ = Fiber (f γ) (b γ)
+Fiberˣ f b γ = Fiber (f γ) (b γ)
 
 opaque
   FiberFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    (f : Γ ⊢ A →ᴵ B) (b : Γ ⊢ B)
-    → FibStr (Fiberᴵ f b)
+    (f : Γ ⊢ A →ˣ B) (b : Γ ⊢ B)
+    → FibStr (Fiberˣ f b)
   FiberFibStr α β f b =
     ΣFibStr α (PathFibStr (β ∘ᶠˢ fst) (uncurry f) (b ∘ fst))
 
   reindexFiberFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
-    {f : Γ ⊢ A →ᴵ B} {b : Γ ⊢ B}
+    {f : Γ ⊢ A →ˣ B} {b : Γ ⊢ B}
     (ρ : Δ → Γ)
     → FiberFibStr α β f b ∘ᶠˢ ρ ≡ FiberFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ) (b ∘ ρ)
   reindexFiberFibStr ρ =
@@ -134,7 +134,7 @@ opaque
 
 Fiberᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B) (b : Γ ⊢ᶠ B)
   → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Fiberᶠ A B f b .fst = Fiberᴵ f b
+Fiberᶠ A B f b .fst = Fiberˣ f b
 Fiberᶠ A B f b .snd = FiberFibStr (A .snd) (B .snd) f b
 
 module _ {A : Type ℓ} {B : Type ℓ'} {f : A → B} where

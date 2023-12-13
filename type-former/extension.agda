@@ -21,18 +21,18 @@ Partial : (Z : Shape) (φ : ⟨ Z ⟩ → Cof)
   → Γ → Type ℓ
 Partial Z φ A γ = ∀ z → [ φ z ] → A (γ , z)
 
-Extensionᴵ : (Z : Shape)
+Extensionˣ : (Z : Shape)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
   (φ : ⟨ Z ⟩ → Cof)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ])
   → Γ → Type ℓ
-Extensionᴵ Z A φ a γ =
+Extensionˣ Z A φ a γ =
   (z : ⟨ Z ⟩) → A (γ , z) [ φ z ↦ curry a (γ , z) ]
 
 module ExtensionLift {Z φ S r}
   {A : ⟨ S ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : ⟨ S ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ]}
-  (box : OpenBox S r (Extensionᴵ Z A φ a))
+  (box : OpenBox S r (Extensionˣ Z A φ a))
   where
 
   module _ (z : ⟨ Z ⟩) where
@@ -59,7 +59,7 @@ module ExtensionLift {Z φ S r}
 module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : ⟨ T ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ]}
-  (box : OpenBox T (⟪ σ ⟫ r) (Extensionᴵ Z A φ a))
+  (box : OpenBox T (⟪ σ ⟫ r) (Extensionˣ Z A φ a))
   where
 
   module T = ExtensionLift α box
@@ -82,7 +82,7 @@ opaque
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
     (φ : ⟨ Z ⟩ → Cof)
     (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ A ∘ wk[ φ ∘ snd ])
-    → FibStr (Extensionᴵ Z A φ a)
+    → FibStr (Extensionˣ Z A φ a)
   ExtensionFibStr Z α φ a .lift S r p = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
   ExtensionFibStr Z α φ a .vary S T σ r p = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
 
@@ -101,5 +101,5 @@ opaque
 Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → Cof)
   (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ snd ] ⊢ᶠ A ∘ᶠ wk[ φ ∘ snd ])
   → Γ ⊢ᶠType ℓ
-Extensionᶠ Z A φ a .fst = Extensionᴵ Z (A .fst) φ a
+Extensionᶠ Z A φ a .fst = Extensionˣ Z (A .fst) φ a
 Extensionᶠ Z A φ a .snd = ExtensionFibStr Z (A .snd) φ a

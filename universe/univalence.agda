@@ -25,7 +25,7 @@ open import universe.glue
 
 module universe.univalence where
 
-UATFib : ∀ (@♭ ℓ) → TFibStr (Σᴵ (𝑼ᴵ ℓ) (Equivᴵ (Elᴵ snd) (Elᴵ fst)))
+UATFib : ∀ (@♭ ℓ) → TFibStr (Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ snd) (Elˣ fst)))
 UATFib ℓ B φ Part = filler
   where
   ExtendedTy : 𝑼 ℓ
@@ -57,7 +57,7 @@ UATFib ℓ B φ Part = filler
   box .cap .out .snd = extendedEquiv
   box .cap .out≡ u = Σext refl (fixPath u .at1)
 
-  filler : Σᴵ (𝑼ᴵ ℓ) (Equivᴵ (Elᴵ (λ r → snd r)) (Elᴵ (λ r → fst r))) B [ φ ↦ Part ]
+  filler : Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ (λ r → snd r)) (Elˣ (λ r → fst r))) B [ φ ↦ Part ]
   filler .out =
     Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out
   filler .out≡ u =
@@ -65,4 +65,4 @@ UATFib ℓ B φ Part = filler
     ∙ Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out≡ u
 
 UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ (snd ∘ fst)))))
-UA ℓ = λᴵ $ TFibToIsContr (_ , UATFib ℓ) ∘ snd
+UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ) ∘ snd

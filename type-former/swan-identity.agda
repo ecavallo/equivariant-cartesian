@@ -53,14 +53,14 @@ module SwanIdentity (Dom : Dominance)
     lemma : q₀ .fst ≡ q₁ .fst → q₀ ≡ q₁
     lemma refl = Σext refl (ConstancyExt (q₀ .fst) eq₁)
 
-  Constancyᴵ : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathᴵ A a₀ a₁) → (Γ → Type ℓ)
-  Constancyᴵ p γ = Constancy (p γ)
+  Constancyˣ : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathˣ A a₀ a₁) → (Γ → Type ℓ)
+  Constancyˣ p γ = Constancy (p γ)
 
-  Idᴵ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → (Γ → Type ℓ)
-  Idᴵ A a₀ a₁ γ = Id (a₀ γ) (a₁ γ)
+  Idˣ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ A) → (Γ → Type ℓ)
+  Idˣ A a₀ a₁ γ = Id (a₀ γ) (a₁ γ)
 
-  ConstancyIsTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathᴵ A a₀ a₁)
-    → TFibStr (Constancyᴵ p)
+  ConstancyIsTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ A} (p : Γ ⊢ Pathˣ A a₀ a₁)
+    → TFibStr (Constancyˣ p)
   ConstancyIsTFib p γ φ a .out .fst = φ ∧ λ u → a u .fst
   ConstancyIsTFib p γ φ a .out .snd i uv = a (∧-fst uv) .snd i (∧-snd uv)
   ConstancyIsTFib p γ φ a .out≡ u = ConstancyExt (p γ) (sym (∧-ext u))

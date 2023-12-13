@@ -11,36 +11,36 @@ open import axiom
 open import cofibration
 open import fibration.fibration
 
-infixl 3 _,ᴵ_
-infixr 3 _×ᴵ_
+infixl 3 _,ˣ_
+infixr 3 _×ˣ_
 
 private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
-Σᴵ : (A : Γ → Type ℓ) (B : Γ ▷ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
-Σᴵ A B x = Σ a ∈ A x , B (x , a)
+Σˣ : (A : Γ → Type ℓ) (B : Γ ▷ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
+Σˣ A B x = Σ a ∈ A x , B (x , a)
 
-_×ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
-(A ×ᴵ B) x = A x × B x
+_×ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
+(A ×ˣ B) x = A x × B x
 
-_,ᴵ_ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  (a : Γ ⊢ A) → Γ ⊢ B ∘ (id ,, a) → Γ ⊢ Σᴵ A B
-(a ,ᴵ b) γ .fst = a γ
-(a ,ᴵ b) γ .snd = b γ
+_,ˣ_ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  (a : Γ ⊢ A) → Γ ⊢ B ∘ (id ,, a) → Γ ⊢ Σˣ A B
+(a ,ˣ b) γ .fst = a γ
+(a ,ˣ b) γ .snd = b γ
 
-fstᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  → Γ ⊢ Σᴵ A B → Γ ⊢ A
-fstᴵ = fst ∘_
+fstˣ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  → Γ ⊢ Σˣ A B → Γ ⊢ A
+fstˣ = fst ∘_
 
-sndᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  (t : Γ ⊢ Σᴵ A B) → Γ ⊢ B ∘ (id ,, fstᴵ t)
-sndᴵ = snd ∘_
+sndˣ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  (t : Γ ⊢ Σˣ A B) → Γ ⊢ B ∘ (id ,, fstˣ t)
+sndˣ = snd ∘_
 
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ S ⟩ ▷ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox S r (Σᴵ A B))
+  (box : OpenBox S r (Σˣ A B))
   where
 
   boxFst : OpenBox S r A
@@ -78,7 +78,7 @@ module ΣLift {S r}
 module ΣVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ T ⟩ ▷ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox T (⟪ σ ⟫ r) (Σᴵ A B))
+  (box : OpenBox T (⟪ σ ⟫ r) (Σˣ A B))
   where
 
   module T = ΣLift α β box
@@ -102,7 +102,7 @@ module ΣVary {S T} (σ : ShapeHom S T) {r}
 
 opaque
   ΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
-    → FibStr (Σᴵ A B)
+    → FibStr (Σˣ A B)
   ΣFibStr α β .lift S r p = ΣLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
   ΣFibStr α β .vary S T σ r p = ΣVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
 
@@ -115,7 +115,7 @@ opaque
   reindexΣFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Σᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Σᶠ A B .fst = Σᴵ (A .fst) (B .fst)
+Σᶠ A B .fst = Σˣ (A .fst) (B .fst)
 Σᶠ A B .snd = ΣFibStr (A .snd) (B .snd)
 
 reindexΣᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ▷ᶠ A ⊢ᶠType ℓ'}
@@ -126,4 +126,4 @@ pairᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
   (a : Γ ⊢ᶠ A)
   (b : Γ ⊢ᶠ B ∘ᶠ (id ,, a))
   → Γ ⊢ᶠ Σᶠ A B
-pairᶠ A B = _,ᴵ_
+pairᶠ A B = _,ˣ_

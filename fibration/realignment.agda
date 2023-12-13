@@ -111,7 +111,7 @@ opaque
   ≅Realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
+    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ˣ (B .fst ∘ fst))
     → Γ ⊢ᶠType ℓ
   ≅Realignᶠ φ _ _ iso .fst γ = ≅Realign (φ γ) (iso ∘ (γ ,_))
   ≅Realignᶠ φ (_ , β) (_ , α) iso .snd =
@@ -122,7 +122,7 @@ opaque
   ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
+    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ˣ (B .fst ∘ fst))
     → A ≡ ≅Realignᶠ φ B A iso ∘ᶠ fst
   ≅RealignᶠMatch _ _ _ _ =
     Σext _ (isRealigned _ _ _)
@@ -130,19 +130,19 @@ opaque
   ≅realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
-    → Γ ⊢ ≅Realignᶠ φ B A iso .fst ≅ᴵ B .fst
+    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ˣ (B .fst ∘ fst))
+    → Γ ⊢ ≅Realignᶠ φ B A iso .fst ≅ˣ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _
 
   ≅realignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst))
-    → subst (λ C → Γ ▷[ φ ] ⊢ C .fst ≅ᴵ (B .fst ∘ fst)) (≅RealignᶠMatch φ B A iso) iso
+    (iso : Γ ▷[ φ ] ⊢ A .fst ≅ˣ (B .fst ∘ fst))
+    → subst (λ C → Γ ▷[ φ ] ⊢ C .fst ≅ˣ (B .fst ∘ fst)) (≅RealignᶠMatch φ B A iso) iso
       ≡ ≅realignᶠ φ B A iso ∘ fst
   ≅realignᶠMatch φ B A iso =
     funExt λ (γ , u) →
-    substNaturality {B = λ C → _ ⊢ C .fst ≅ᴵ (B .fst ∘ fst)} (λ _ → _$ (γ , u))
+    substNaturality {B = λ C → _ ⊢ C .fst ≅ˣ (B .fst ∘ fst)} (λ _ → _$ (γ , u))
       (≅RealignᶠMatch φ B A iso)
     ∙ substCongAssoc (λ C → C ≅ B .fst γ) ((_$ (γ , u)) ∘ fst) (≅RealignᶠMatch φ B A iso) _
     ∙ cong (subst (_≅ B .fst γ) ⦅–⦆ (iso (γ , u))) uip'
@@ -151,7 +151,7 @@ opaque
   reindexRealignᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}
     {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
-    {iso : Γ ▷[ φ ] ⊢ A .fst ≅ᴵ (B .fst ∘ fst)}
+    {iso : Γ ▷[ φ ] ⊢ A .fst ≅ˣ (B .fst ∘ fst)}
     (ρ : Δ → Γ)
     → ≅Realignᶠ φ B A iso ∘ᶠ ρ ≡ ≅Realignᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (iso ∘ ρ ×id)
   reindexRealignᶠ {A = _ , α} ρ =

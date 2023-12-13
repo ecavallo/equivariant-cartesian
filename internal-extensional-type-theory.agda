@@ -12,7 +12,7 @@ _fibration structures_, it is convenient to have some suggestive notation for th
 extensional type theory.
 
 To disambiguate from definitions pertaining to the interpretation of _homotopy_ type
-theory when necessary, we use the superscript ᴵ to indicate extensional.
+theory when necessary, we use the superscript ˣ to indicate extensional.
 
 -}
 

@@ -12,7 +12,7 @@ open import axiom.shape
 
 open import axiom.cofibration public
 
-infixr 4 _∨ᴵ_
+infixr 4 _∨ˣ_
 
 private variable
   ℓ ℓ' : Level
@@ -51,14 +51,14 @@ wk[ φ ] = fst
 
 --↓ Operations on cofibrations in context.
 
-_∋_≈ᴵ_ : (S : Shape) → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → Cof)
-(S ∋ r ≈ᴵ s) γ = S ∋ r γ ≈ s γ
+_∋_≈ˣ_ : (S : Shape) → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → Cof)
+(S ∋ r ≈ˣ s) γ = S ∋ r γ ≈ s γ
 
-_∨ᴵ_ : (φ ψ : Γ → Cof) → (Γ → Cof)
-(φ ∨ᴵ ψ) γ = φ γ ∨ ψ γ
+_∨ˣ_ : (φ ψ : Γ → Cof) → (Γ → Cof)
+(φ ∨ˣ ψ) γ = φ γ ∨ ψ γ
 
-_⇒ᴵ_ : (Γ → Cof) → (Γ → Cof) → (Γ → Type)
-(φ ⇒ᴵ ψ) γ = φ γ ⇒ ψ γ
+_⇒ˣ_ : (Γ → Cof) → (Γ → Cof) → (Γ → Type)
+(φ ⇒ˣ ψ) γ = φ γ ⇒ ψ γ
 
 --↓ Version of cofIsProp with implicit arguments.
 

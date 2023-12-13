@@ -29,7 +29,7 @@ private variable
 
 module _ {@♭ ℓ} where
 
-  module 𝑼Lift {S r} (box : OpenBox S r (𝑼ᴵ ℓ)) where
+  module 𝑼Lift {S r} (box : OpenBox S r (𝑼ˣ ℓ)) where
 
     partialEquiv : ∀ s
       → [ box .cof ∨ S ∋ r ≈ s ]
@@ -61,7 +61,7 @@ module _ {@♭ ℓ} where
     filler .cap≡ = sym (GlueᵁMatch _ _ _ _ (∨r refl))
 
   opaque
-    𝑼FibStr : FibStr {Γ = 𝟙} (𝑼ᴵ ℓ)
+    𝑼FibStr : FibStr {Γ = 𝟙} (𝑼ˣ ℓ)
     𝑼FibStr .lift S r p box = 𝑼Lift.filler box
     𝑼FibStr .vary S T σ r p box s =
       congΣ
@@ -85,5 +85,5 @@ module _ {@♭ ℓ} where
           (λ {refl → cong (𝑼Lift.partialEquiv box (⟪ σ ⟫ s)) (trunc uv (∨r refl))})
 
 𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ )
-𝑼ᶠ ℓ .fst = 𝑼ᴵ ℓ
+𝑼ᶠ ℓ .fst = 𝑼ˣ ℓ
 𝑼ᶠ ℓ .snd = 𝑼FibStr ∘ᶠˢ cst tt

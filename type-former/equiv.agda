@@ -31,12 +31,12 @@ IsEquiv f = ∀ b → IsContr (Fiber f b)
 Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
 Equiv A B = Σ (A → B) IsEquiv
 
-IsEquivᴵ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ᴵ B)
+IsEquivˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ˣ B)
   → Γ → Type (ℓ ⊔ ℓ')
-IsEquivᴵ f = Πᴵ _ (IsContrᴵ (Fiberᴵ (f ∘ fst) snd))
+IsEquivˣ f = Πˣ _ (IsContrˣ (Fiberˣ (f ∘ fst) snd))
 
-Equivᴵ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-Equivᴵ A B = Σᴵ (A →ᴵ B) (IsEquivᴵ snd)
+Equivˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+Equivˣ A B = Σˣ (A →ˣ B) (IsEquivˣ snd)
 
 --↓ An isomorphism composed with an equivalence is an equivalence.
 
@@ -68,12 +68,12 @@ equiv∘iso iso e .snd c = contractor
 
 opaque
   IsEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    (f : Γ ⊢ A →ᴵ B) → FibStr (IsEquivᴵ f)
+    (f : Γ ⊢ A →ˣ B) → FibStr (IsEquivˣ f)
   IsEquivFibStr α β f =
     ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) (f ∘ fst) snd))
 
   reindexIsEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
-    {f : Γ ⊢ A →ᴵ B}
+    {f : Γ ⊢ A →ˣ B}
     (ρ : Δ → Γ)
     → IsEquivFibStr α β f ∘ᶠˢ ρ ≡ IsEquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ)
   reindexIsEquivFibStr ρ =
@@ -84,12 +84,12 @@ opaque
 
 IsEquivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
   → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-IsEquivᶠ A B f .fst = IsEquivᴵ f
+IsEquivᶠ A B f .fst = IsEquivˣ f
 IsEquivᶠ A B f .snd = IsEquivFibStr (A .snd) (B .snd) f
 
 opaque
   EquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    → FibStr (Equivᴵ A B)
+    → FibStr (Equivˣ A B)
   EquivFibStr α β =
     ΣFibStr (ΠFibStr α (β ∘ᶠˢ fst)) (IsEquivFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) snd)
 
@@ -100,7 +100,7 @@ opaque
     ∙ cong₂ (λ α β → ΣFibStr α β) (reindexΠFibStr _) (reindexIsEquivFibStr _)
 
 Equivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Equivᶠ A B .fst = Equivᴵ (A .fst) (B .fst)
+Equivᶠ A B .fst = Equivˣ (A .fst) (B .fst)
 Equivᶠ A B .snd = EquivFibStr (A .snd) (B .snd)
 
 reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
@@ -125,21 +125,21 @@ opaque
 
 opaque
   equivPathᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (e₀ e₁ : Γ ⊢ᶠ Equivᶠ A B)
-    → Γ ⊢ᶠ Pathᶠ (A →ᶠ B) (fstᴵ e₀) (fstᴵ e₁)
+    → Γ ⊢ᶠ Pathᶠ (A →ᶠ B) (fstˣ e₀) (fstˣ e₁)
     → Γ ⊢ᶠ Pathᶠ (Equivᶠ A B) e₀ e₁
   equivPathᶠ A B e₀ e₁ p =
-    appᴵ
-      (Jᶠ (A →ᶠ B) (fstᴵ e₁)
+    appˣ
+      (Jᶠ (A →ᶠ B) (fstˣ e₁)
         (Πᶠ (IsEquivᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fst ∘ snd))
           (Pathᶠ (Equivᶠ A B ∘ᶠ (fst ∘ fst))
-            (fst ∘ snd ∘ fst ,ᴵ snd)
+            (fst ∘ snd ∘ fst ,ˣ snd)
             (e₁ ∘ fst ∘ fst)))
-        (λᴵ $
-          congPathᴵ
-            (λᴵ (fstᴵ e₁ ∘ fst ∘ fst ,ᴵ snd))
-            (appᴵ (appᴵ (IsEquivIsHPropᶠ A B (fstᴵ e₁) ∘ fst) snd) (sndᴵ e₁ ∘ fst)))
-        (fstᴵ e₀ ,ᴵ p))
-      (sndᴵ e₀)
+        (λˣ $
+          congPathˣ
+            (λˣ (fstˣ e₁ ∘ fst ∘ fst ,ˣ snd))
+            (appˣ (appˣ (IsEquivIsHPropᶠ A B (fstˣ e₁) ∘ fst) snd) (sndˣ e₁ ∘ fst)))
+        (fstˣ e₀ ,ˣ p))
+      (sndˣ e₀)
 
 ------------------------------------------------------------------------------------------
 -- A map f : A → B between fibrant types is an equivalence if and only if its fiber family
@@ -147,14 +147,14 @@ opaque
 ------------------------------------------------------------------------------------------
 
 equivToFiberTFib : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
-  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberᴵ (fstᴵ e ∘ fst) snd)
+  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberˣ (fstˣ e ∘ fst) snd)
 equivToFiberTFib A B e =
   isContrToTFibStr
-    (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fstᴵ e ∘ fst) snd)
+    (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fstˣ e ∘ fst) snd)
     (λ (γ , b) → e γ .snd b)
 
 fiberTFibToIsEquiv : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') {f : Γ ⊢ᶠ A →ᶠ B}
-  → TFibStr (Fiberᴵ (f ∘ fst) snd) → Γ ⊢ᶠ IsEquivᶠ A B f
+  → TFibStr (Fiberˣ (f ∘ fst) snd) → Γ ⊢ᶠ IsEquivᶠ A B f
 fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 
 ------------------------------------------------------------------------------------------
@@ -217,5 +217,5 @@ opaque
       s
     ∙
     cong
-      (λ β → Coerce.coerce S r (Equivᴵ _ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
+      (λ β → Coerce.coerce S r (Equivˣ _ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
       (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)

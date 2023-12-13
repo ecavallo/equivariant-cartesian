@@ -56,7 +56,7 @@ module _ {@♭ ℓ : Level} where
     Elᶠ-Σᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
       → Elᶠ (Σᵁᶠ A B) ≡ Σᶠ (Elᶠ A) (Elᶠ B)
     Elᶠ-Σᵁ A B =
-      cong (_∘ᶠ (A ,ᴵ curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,ᴵ curry B)
+      cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Path types
@@ -76,8 +76,8 @@ module _ {@♭ ℓ : Level} where
     El-Path : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
       → Elᶠ (Pathᵁᶠ A a₀ a₁) ≡ Pathᶠ (Elᶠ A) a₀ a₁
     El-Path A a₀ a₁ =
-      cong (_∘ᶠ (A ,ᴵ (a₀ ,ᴵ a₁))) (decodeEncode universalPathᶠ)
-      ∙ reindexPathᶠ (A ,ᴵ (a₀ ,ᴵ a₁))
+      cong (_∘ᶠ (A ,ˣ (a₀ ,ˣ a₁))) (decodeEncode universalPathᶠ)
+      ∙ reindexPathᶠ (A ,ˣ (a₀ ,ˣ a₁))
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Π-types
@@ -97,7 +97,7 @@ module _ {@♭ ℓ : Level} where
     El-Πᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
       → Elᶠ (Πᵁᶠ A B) ≡ Πᶠ (Elᶠ A) (Elᶠ B)
     El-Πᵁ A B =
-      cong (_∘ᶠ (A ,ᴵ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ᴵ curry B)
+      cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations contains a unit type

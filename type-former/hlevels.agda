@@ -27,11 +27,11 @@ private variable
 IsContr : Type ℓ → Type ℓ
 IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 
-IsContrᴵ : (Γ → Type ℓ) → (Γ → Type ℓ)
-IsContrᴵ A γ = IsContr (A γ)
+IsContrˣ : (Γ → Type ℓ) → (Γ → Type ℓ)
+IsContrˣ A γ = IsContr (A γ)
 
 opaque
-  IsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) → FibStr (IsContrᴵ A)
+  IsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) → FibStr (IsContrˣ A)
   IsContrFibStr α  =
     ΣFibStr α (ΠFibStr (α ∘ᶠˢ fst) (PathFibStr (α ∘ᶠˢ fst ∘ᶠˢ fst) snd (snd ∘ fst)))
 
@@ -42,7 +42,7 @@ opaque
     ∙ cong (ΣFibStr _) (reindexΠFibStr _ ∙ cong (ΠFibStr _) (reindexPathFibStr _))
 
 IsContrᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
-IsContrᶠ A .fst = IsContrᴵ (A .fst)
+IsContrᶠ A .fst = IsContrˣ (A .fst)
 IsContrᶠ A .snd = IsContrFibStr (A .snd)
 
 isContrToTFibStr : (A : Γ ⊢ᶠType ℓ) (c : Γ ⊢ᶠ IsContrᶠ A) → TFibStr (A .fst)
@@ -76,8 +76,8 @@ TFibToIsContr A γ = (center , contract)
 IsHProp : Type ℓ → Type ℓ
 IsHProp A = (a₀ a₁ : A) → a₀ ~ a₁
 
-IsHPropᴵ : (Γ → Type ℓ) → (Γ → Type ℓ)
-IsHPropᴵ A γ = IsHProp (A γ)
+IsHPropˣ : (Γ → Type ℓ) → (Γ → Type ℓ)
+IsHPropˣ A γ = IsHProp (A γ)
 
 IsHPropᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
 IsHPropᶠ A =
