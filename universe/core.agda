@@ -199,10 +199,10 @@ opaque
     ShapeHomIsDiscrete λ (@♭ σ) →
     λ r C → getVaries S T σ C .rel r
 
-Elˣ : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ˣ ℓ) → (Γ → Type ℓ)
+Elˣ : ∀ {@♭ ℓ} → (Γ ⊢ˣ 𝑼ˣ ℓ) → (Γ → Type ℓ)
 Elˣ = El ∘_
 
-Elᶠ : ∀ {@♭ ℓ} → (Γ ⊢ 𝑼ˣ ℓ) → Γ ⊢ᶠType ℓ
+Elᶠ : ∀ {@♭ ℓ} → (Γ ⊢ˣ 𝑼ˣ ℓ) → Γ ⊢ᶠType ℓ
 Elᶠ = (El , ElFibStr) ∘ᶠ_
 
 decode = Elᶠ
@@ -223,7 +223,7 @@ FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
 FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
 
 opaque
-  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ ⊢ 𝑼ˣ ℓ')
+  encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ ⊢ˣ 𝑼ˣ ℓ')
   encode {ℓ' = ℓ'} {Γ} A = encoding
     where
     Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
@@ -232,7 +232,7 @@ opaque
     Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
     Rv S T σ = R T (FibVaries A S T σ)
 
-    encoding : Γ ⊢ 𝑼ˣ ℓ'
+    encoding : Γ ⊢ˣ 𝑼ˣ ℓ'
     encoding γ .El = A .fst γ
     encoding γ .lifts S = Rl S γ
     encoding γ .liftsBase S =
@@ -247,7 +247,7 @@ opaque
         (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
 ------------------------------------------------------------------------------------------
--- Inverse conditions for the correspondence between Fib Γ and Γ ⊢ 𝑼ˣ
+-- Inverse conditions for the correspondence between Fib Γ and Γ ⊢ˣ 𝑼ˣ
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -307,5 +307,5 @@ opaque
                   (funExt' $ funExt' $ funExt' $ uip')))))
 
 opaque
-  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ 𝑼ˣ ℓ') → encode (decode C) ≡ C
+  encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ˣ 𝑼ˣ ℓ') → encode (decode C) ≡ C
   encodeDecode C = funExt λ γ → encodeReindexFib (Elᶠ id) C γ ∙ encodeEl (C γ)

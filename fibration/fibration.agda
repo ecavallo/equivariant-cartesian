@@ -165,10 +165,10 @@ _⊢ᶠType_ : (Γ : Type ℓ) (ℓ' : Level) → Type (ℓ ⊔ lsuc ℓ')
 Γ ⊢ᶠType ℓ' = Σ (Γ → Type ℓ') FibStr
 
 _⊢ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
-Γ ⊢ᶠ A = Γ ⊢ A .fst
+Γ ⊢ᶠ A = Γ ⊢ˣ A .fst
 
 _▷ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
-Γ ▷ᶠ A = Γ ▷ A .fst
+Γ ▷ᶠ A = Γ ▷ˣ A .fst
 
 ------------------------------------------------------------------------------------------
 -- Reindexing fibration structures and fibrations
@@ -214,7 +214,7 @@ Retractˣ A B γ = Retract (A γ) (B γ)
 
 opaque
   retractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    → Γ ⊢ Retractˣ A B → FibStr B → FibStr A
+    → Γ ⊢ˣ Retractˣ A B → FibStr B → FibStr A
   retractFibStr retract β .lift S r p box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
@@ -235,7 +235,7 @@ opaque
 opaque
   unfolding retractFibStr
   reindexRetractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    (retract : Γ ⊢ Retractˣ A B) {β : FibStr B} (ρ : Δ → Γ)
+    (retract : Γ ⊢ˣ Retractˣ A B) {β : FibStr B} (ρ : Δ → Γ)
     → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
   reindexRetractFibStr retract ρ = FibStrExt λ _ _ _ _ _ → refl
 
@@ -248,12 +248,12 @@ _≅ˣ_ A B γ = A γ ≅ B γ
 
 opaque
   isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    → Γ ⊢ A ≅ˣ B → FibStr B → FibStr A
+    → Γ ⊢ˣ A ≅ˣ B → FibStr B → FibStr A
   isomorphFibStr iso β = retractFibStr (isoToRetract ∘ iso) β
 
 opaque
   unfolding isomorphFibStr
   reindexIsomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
-    (iso : Γ ⊢ A ≅ˣ B) {β : FibStr B} (ρ : Δ → Γ)
+    (iso : Γ ⊢ˣ A ≅ˣ B) {β : FibStr B} (ρ : Δ → Γ)
     → isomorphFibStr iso β ∘ᶠˢ ρ ≡ isomorphFibStr (iso ∘ ρ) (β ∘ᶠˢ ρ)
   reindexIsomorphFibStr _ = reindexRetractFibStr _

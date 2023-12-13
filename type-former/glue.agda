@@ -45,7 +45,7 @@ open WeakGlue public
 WeakGlueˣ : (φ : Γ → Cof)
   {B : Γ → Type ℓ}
   {A : Γ ▷[ φ ] → Type ℓ}
-  (f : Γ ▷[ φ ] ⊢ A →ˣ (B ∘ wk[ φ ]))
+  (f : Γ ▷[ φ ] ⊢ˣ A →ˣ (B ∘ wk[ φ ]))
   → Γ → Type ℓ
 WeakGlueˣ φ f γ = WeakGlue (φ γ) (f ∘ (γ ,_))
 
@@ -95,8 +95,8 @@ domIsoGlue φ {B} {A} f u = iso
 domIsoGlueˣ : (φ : Γ → Cof)
   {B : Γ → Type ℓ'}
   {A : Γ ▷[ φ ] → Type ℓ'}
-  (f : Γ ▷[ φ ] ⊢ A →ˣ (B ∘ wk[ φ ]))
-  → Γ ▷[ φ ] ⊢ A ≅ˣ (WeakGlueˣ φ f ∘ wk[ φ ])
+  (f : Γ ▷[ φ ] ⊢ˣ A →ˣ (B ∘ wk[ φ ]))
+  → Γ ▷[ φ ] ⊢ˣ A ≅ˣ (WeakGlueˣ φ f ∘ wk[ φ ])
 domIsoGlueˣ φ f (γ , u) = domIsoGlue (φ γ) (f ∘ (γ ,_)) u
 
 ------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ domIsoGlueˣ φ f (γ , u) = domIsoGlue (φ γ) (f ∘ (γ ,_)) u
 module WeakGlueLift {S r φ}
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ S ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
-  (fe : ⟨ S ⟩ ▷[ φ ] ⊢ Equivˣ A (B ∘ wk[ φ ]))
+  (fe : ⟨ S ⟩ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
   (box : OpenBox S r (WeakGlueˣ φ (fstˣ fe)))
   where
 
@@ -209,7 +209,7 @@ module WeakGlueLift {S r φ}
 module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ T ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
-  (fe : ⟨ T ⟩ ▷[ φ ] ⊢ Equivˣ A (B ∘ wk[ φ ]))
+  (fe : ⟨ T ⟩ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
   (box : OpenBox T (⟪ σ ⟫ r) (WeakGlueˣ φ (fstˣ fe)))
   where
 
@@ -277,7 +277,7 @@ opaque
   WeakGlueFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
     {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
-    (fe : Γ ▷[ φ ] ⊢ Equivˣ A (B ∘ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
     → FibStr (WeakGlueˣ φ (fstˣ fe))
   WeakGlueFibStr φ β α fe .lift S r p =
     WeakGlueLift.filler (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
@@ -287,7 +287,7 @@ opaque
   reindexWeakGlueFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}
     {A : Γ ▷[ φ ] → Type ℓ} {α : FibStr A}
-    {fe : Γ ▷[ φ ] ⊢ Equivˣ A (B ∘ wk[ φ ])}
+    {fe : Γ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ])}
     (ρ : Δ → Γ)
     → WeakGlueFibStr φ β α fe ∘ᶠˢ ρ
       ≡ WeakGlueFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id) (fe ∘ ρ ×id)

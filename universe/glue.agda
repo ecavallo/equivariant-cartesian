@@ -32,9 +32,9 @@ module _ {@♭ ℓ} where
     universalGlueCtx : Type (lsuc ℓ)
     universalGlueCtx =
       Cof
-      ▷ 𝑼ˣ ℓ
-      ▷ (λ (φ , _) → [ φ ] → 𝑼 ℓ)
-      ▷ (λ (φ , B , A) → (u : [ φ ]) → Equiv (El (A u)) (El B))
+      ▷ˣ 𝑼ˣ ℓ
+      ▷ˣ (λ (φ , _) → [ φ ] → 𝑼 ℓ)
+      ▷ˣ (λ (φ , B , A) → (u : [ φ ]) → Equiv (El (A u)) (El B))
 
     universalGlueᶠ : universalGlueCtx ⊢ᶠType ℓ
     universalGlueᶠ =
@@ -58,14 +58,14 @@ module _ {@♭ ℓ} where
       ∙ appCong (cong♭ encode (GlueᶠMatch _ _ _ _))
       ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
 
-  Glueᵁᶠ : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ˣ ℓ)
+  Glueᵁᶠ : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
-    → Γ ⊢ 𝑼ˣ ℓ
+    → Γ ⊢ˣ 𝑼ˣ ℓ
   Glueᵁᶠ φ b a fe γ =
     Glueᵁ (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
 
   opaque
-    decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ 𝑼ˣ ℓ)
+    decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
       (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
       → decode (Glueᵁᶠ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
     decodeGlue φ b a fe =

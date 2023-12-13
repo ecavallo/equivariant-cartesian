@@ -31,7 +31,7 @@ IsEquiv f = ∀ b → IsContr (Fiber f b)
 Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
 Equiv A B = Σ (A → B) IsEquiv
 
-IsEquivˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ A →ˣ B)
+IsEquivˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ˣ A →ˣ B)
   → Γ → Type (ℓ ⊔ ℓ')
 IsEquivˣ f = Πˣ _ (IsContrˣ (Fiberˣ (f ∘ fst) snd))
 
@@ -68,12 +68,12 @@ equiv∘iso iso e .snd c = contractor
 
 opaque
   IsEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    (f : Γ ⊢ A →ˣ B) → FibStr (IsEquivˣ f)
+    (f : Γ ⊢ˣ A →ˣ B) → FibStr (IsEquivˣ f)
   IsEquivFibStr α β f =
     ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) (f ∘ fst) snd))
 
   reindexIsEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
-    {f : Γ ⊢ A →ˣ B}
+    {f : Γ ⊢ˣ A →ˣ B}
     (ρ : Δ → Γ)
     → IsEquivFibStr α β f ∘ᶠˢ ρ ≡ IsEquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ) (f ∘ ρ)
   reindexIsEquivFibStr ρ =

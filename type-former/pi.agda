@@ -16,25 +16,25 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
-Πˣ : (A : Γ → Type ℓ) (B : Γ ▷ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
+Πˣ : (A : Γ → Type ℓ) (B : Γ ▷ˣ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 Πˣ A B x = (a : A x) → B (x , a)
 
 _→ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 A →ˣ B = Πˣ A (B ∘ fst)
 
-λˣ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  → Γ ▷ A ⊢ B
-  → Γ ⊢ Πˣ A B
+λˣ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
+  → Γ ▷ˣ A ⊢ˣ B
+  → Γ ⊢ˣ Πˣ A B
 λˣ f γ a = f (γ , a)
 
-appˣ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  → (f : Γ ⊢ Πˣ A B) (a : Γ ⊢ A)
-  → Γ ⊢ B ∘ (id ,, a)
+appˣ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
+  → (f : Γ ⊢ˣ Πˣ A B) (a : Γ ⊢ˣ A)
+  → Γ ⊢ˣ B ∘ (id ,, a)
 appˣ f a γ = f γ (a γ)
 
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
-  {B : ⟨ S ⟩ ▷ A → Type ℓ'} (β : FibStr B)
+  {B : ⟨ S ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox S r (Πˣ A B))
   where
 
@@ -67,7 +67,7 @@ module ΠLift {S r}
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
-  {B : ⟨ T ⟩ ▷ A → Type ℓ'} (β : FibStr B)
+  {B : ⟨ T ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox T (⟪ σ ⟫ r) (Πˣ A B))
   where
 
@@ -91,7 +91,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
         ∙ congdep (λ cA → S.fillCod s a cA .fill s .out) (funExt (varyDom s a)))
 
 opaque
-  ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ A → Type ℓ'} (β : FibStr B)
+  ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ˣ A → Type ℓ'} (β : FibStr B)
     → FibStr (Πˣ A B)
   ΠFibStr α β .lift S r p = ΠLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
   ΠFibStr α β .vary S T σ r p = ΠVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
@@ -100,7 +100,7 @@ opaque
   -- Forming Π-types is stable under reindexing
   ----------------------------------------------------------------------------------------
 
-  reindexΠFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ A → Type ℓ'} {β : FibStr B}
+  reindexΠFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ˣ A → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → ΠFibStr α β ∘ᶠˢ ρ ≡ ΠFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΠFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 

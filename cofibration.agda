@@ -57,9 +57,6 @@ _∋_≈ˣ_ : (S : Shape) → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ 
 _∨ˣ_ : (φ ψ : Γ → Cof) → (Γ → Cof)
 (φ ∨ˣ ψ) γ = φ γ ∨ ψ γ
 
-_⇒ˣ_ : (Γ → Cof) → (Γ → Cof) → (Γ → Type)
-(φ ⇒ˣ ψ) γ = φ γ ⇒ ψ γ
-
 --↓ Version of cofIsProp with implicit arguments.
 
 cofIsProp' : (φ : Cof) {u v : [ φ ]} → u ≡ v

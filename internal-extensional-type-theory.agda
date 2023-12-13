@@ -12,7 +12,7 @@ _fibration structures_, it is convenient to have some suggestive notation for th
 extensional type theory.
 
 To disambiguate from definitions pertaining to the interpretation of _homotopy_ type
-theory when necessary, we use the superscript ˣ to indicate extensional.
+theory when necessary, we use the superscript ˣ to indicate eXtensional.
 
 -}
 
@@ -24,28 +24,28 @@ private variable
   ℓ ℓ' ℓ'' : Level
   Γ Δ : Type ℓ
 
-infix  1 _⊢_
-infixl 3 _▷_ _,,_
+infix  1 _⊢ˣ_
+infixl 3 _▷ˣ_ _,,_
 
 --↓ Term judgment.
 
-_⊢_ : (Γ : Type ℓ) (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-(Γ ⊢ A) = Π Γ A
+_⊢ˣ_ : (Γ : Type ℓ) (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
+(Γ ⊢ˣ A) = Π Γ A
 
 --↓ Context and substitution extension.
 
-_▷_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-Γ ▷ A = Σ Γ A
+_▷ˣ_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
+Γ ▷ˣ A = Σ Γ A
 
-_,,_ : {A : Γ → Type ℓ''} (ρ : Δ → Γ) (a : Δ ⊢ A ∘ ρ) → (Δ → Γ ▷ A)
+_,,_ : {A : Γ → Type ℓ''} (ρ : Δ → Γ) (a : Δ ⊢ˣ A ∘ ρ) → (Δ → Γ ▷ˣ A)
 (ρ ,, a) δ .fst = ρ δ
 (ρ ,, a) δ .snd = a δ
 
 --↓ Suggestive notation for projections where used as substitutions.
 --↓ In Agda's input mode, these are \MIp and \MIq respectively.
 
-𝒑 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ A → Γ
+𝒑 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ˣ A → Γ
 𝒑 = fst
 
-𝒒 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ A ⊢ A ∘ 𝒑
+𝒒 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ˣ A ⊢ˣ A ∘ 𝒑
 𝒒 = snd
