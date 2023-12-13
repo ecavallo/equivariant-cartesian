@@ -55,15 +55,15 @@ addToTube : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ}
   → OpenBox S r A
 addToTube box φ t matchCap .cof = box .cof ∨ φ
 addToTube box φ t matchCap .tube i =
-  ∨-rec (box .cof) φ (box .tube i) (out ∘ t i) (λ u v → t i v .out≡ u)
+  ∨-rec (box .tube i) (out ∘ t i) (λ u v → t i v .out≡ u)
 addToTube box φ t matchCap .cap .out = box .cap .out
 addToTube box φ t matchCap .cap .out≡ =
-  ∨-elimEq (box .cof) φ (box .cap .out≡) matchCap
+  ∨-elimEq (box .cap .out≡) matchCap
 
 boxToPartial : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A)
   (s : ⟨ S ⟩) → [ box .cof ∨ S ∋ r ≈ s ] → A s
 boxToPartial {S = S} {r} box s =
-  ∨-rec (box .cof) (S ∋ r ≈ s)
+  ∨-rec
     (box .tube s)
     (λ {refl → box .cap .out})
     (λ {u refl → box .cap .out≡ u})

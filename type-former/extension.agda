@@ -74,7 +74,7 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
         (boxExt refl
           (λ _ →
             diagonalCofElim (box .cof ∨ φ z) $
-            ∨-elimEq (box .cof) (φ z) (λ _ → refl) (λ _ → refl))
+            ∨-elimEq (λ _ → refl) (λ _ → refl))
           refl)
 
 opaque

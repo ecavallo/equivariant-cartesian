@@ -94,7 +94,7 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
 
     boundary : (j : 𝕀) → [ ∂ i ∨ ∂ j ] → A .fst γ
     boundary j =
-      ∨-rec (∂ i) (∂ j)
+      ∨-rec
         (∂-rec i (λ _ → c₀ a .at j) (λ _ → c₁ a .at j))
         (∂-rec j (λ _ → a) (λ _ → c₁ a₀ .at i))
         (∂-elim i

@@ -35,7 +35,7 @@ module _ {@♭ ℓ} where
       → [ box .cof ∨ S ∋ r ≈ s ]
       → Σ A ∈ 𝑼 ℓ , Equiv (El A) (El (box .cap .out))
     partialEquiv s =
-      ∨-rec (box .cof) (S ∋ r ≈ s)
+      ∨-rec
         (λ u →
           box .tube s u ,
           subst (Equiv _ ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r))
@@ -76,13 +76,19 @@ module _ {@♭ ℓ} where
       partialEquivEq : ∀ uv uv'
         → 𝑼Lift.partialEquiv box (⟪ σ ⟫ s) uv ≡ 𝑼Lift.partialEquiv (reshapeBox σ box) s uv'
       partialEquivEq uv =
-        ∨-elimEq (box .cof) (S ∋ r ≈ s)
+        ∨-elimEq
           (λ u →
-            cong (𝑼Lift.partialEquiv box (⟪ σ ⟫ s)) (trunc uv (∨l u))
+            cong
+              (𝑼Lift.partialEquiv box (⟪ σ ⟫ s))
+              (cofIsProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨l u))
             ∙ Σext refl
-              (cong (subst (Equiv _ ∘ El) (box .cap .out≡ u))
+              (cong
+                (subst (Equiv _ ∘ El) (box .cap .out≡ u))
                 (coerceEquivVary σ (Elᶠ (box .tube ⦅–⦆ u)) s r)))
-          (λ {refl → cong (𝑼Lift.partialEquiv box (⟪ σ ⟫ s)) (trunc uv (∨r refl))})
+          (λ {refl →
+            cong
+              (𝑼Lift.partialEquiv box (⟪ σ ⟫ s))
+              (cofIsProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨r refl))})
 
 𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ )
 𝑼ᶠ ℓ .fst = 𝑼ˣ ℓ

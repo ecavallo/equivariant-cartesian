@@ -31,13 +31,13 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   box' : OpenBox S r B
   box' .cof = box .cof ∨ all S φ
   box' .tube i =
-    ∨-rec (box .cof) (all S φ)
+    ∨-rec
       (box .tube i)
       (λ u → fillA u .fill i .out)
       (λ v u → fillA u .fill i .out≡ v)
   box' .cap .out = box .cap .out
   box' .cap .out≡ =
-    ∨-elimEq (box .cof) (all S φ)
+    ∨-elimEq
       (box .cap .out≡)
       (λ u → fillA u .cap≡)
 

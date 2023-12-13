@@ -23,6 +23,10 @@ postulate
   Cof : Type
   [_] : Cof → Type
 
+  --↓ Any cofibration is a proposition (up to strict equality).
+
+  cofIsProp : (φ : Cof) → isProp [ φ ]
+
   --↓ The type of equalities between two elements of a shape is coded by a cofibration.
 
   _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → Cof
@@ -35,19 +39,28 @@ postulate
   ⊥ : Cof
   [⊥] : [ ⊥ ] ≡ 𝟘
 
-  --↓ The union of two cofibrations is again cofibration.
+  --↓ The union of two cofibrations is again a cofibration. Rather than introducing an
+  --↓ equality for decoding the union of cofibrations, we axiomatize its introduction
+  --↓ and elimination principles directly.
 
   _∨_ : Cof → Cof → Cof
-  [∨] : ∀ φ ψ → [ φ ∨ ψ ] ≡ ∥ [ φ ] ⊎ [ ψ ] ∥
+
+  ∨l : {φ ψ : Cof} → [ φ ] → [ φ ∨ ψ ]
+  ∨r : {φ ψ : Cof} → [ ψ ] → [ φ ∨ ψ ]
+
+  ∨-elim : ∀ {ℓ} {φ ψ : Cof} {P : [ φ ∨ ψ ] → Type ℓ}
+    (f : (u : [ φ ]) → P (∨l u))
+    (g : (v : [ ψ ]) → P (∨r v))
+    (p : (u : [ φ ]) (v : [ ψ ]) → subst P (cofIsProp (φ ∨ ψ) _ _) (f u) ≡ g v)
+    (w : [ φ ∨ ψ ]) → P w
+
+  ∨-elim-βl : ∀ ℓ φ ψ P f g p u → ∨-elim {ℓ} {φ} {ψ} {P} f g p (∨l u) ≡ f u
+  ∨-elim-βr : ∀ ℓ φ ψ P f g p v → ∨-elim {ℓ} {φ} {ψ} {P} f g p (∨r v) ≡ g v
 
   --↓ Cofibrations are closed under universal quantification over a shape.
 
   all : (S : Shape) → (⟨ S ⟩ → Cof) → Cof
   [all] : ∀ S φ → [ all S φ ] ≡ ((s : ⟨ S ⟩) → [ φ s ])
-
-  --↓ Any cofibration is a proposition (up to strict equality).
-
-  cofIsProp : (φ : Cof) → isProp [ φ ]
 
   --↓ The shape equality and univeral quantification cofibrations are invariant under
   --↓ shape morphisms in an appropriate sense.
@@ -66,4 +79,4 @@ postulate
 --↓ For convenience, we make the equations decoding cofibrations into definitional
 --↓ equalities using a REWRITE pragma.
 
-{-# REWRITE [≈] [⊥] [∨] [all] #-}
+{-# REWRITE [≈] [⊥] ∨-elim-βl ∨-elim-βr [all] #-}
