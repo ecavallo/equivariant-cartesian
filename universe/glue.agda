@@ -7,6 +7,7 @@ This is later used to prove that the universe is fibrant.
 module universe.glue where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.fibration

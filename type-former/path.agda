@@ -6,6 +6,7 @@ Fibrancy of path and homotopy fiber types.
 module type-former.path where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.fibration

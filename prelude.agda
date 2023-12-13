@@ -9,12 +9,12 @@ open import Agda.Primitive public renaming (Set to Type)
 
 private variable ℓ ℓ' ℓ'' ℓ''' : Level
 
-infix  1 Σ _⊢_
-infixl 3 _▷_ _,_ _,,_
+infix  1 Σ
+infixl 3 _,_
 infixr 3 _×_ _⊎_
 infixr 5 _∘_ _∙_ _$_
 
-------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------
 -- Functions
 ------------------------------------------------------------------------------------------
 
@@ -193,10 +193,10 @@ opaque
     → subst B q (x .snd) ≡ y .snd
   Σeq₂ refl refl = refl
 
-_,,_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
-  (f : (a : A) → B a) → ((a : A) → C a (f a)) → ((a : A) → Σ (B a) (C a))
-(f ,, g) a .fst = f a
-(f ,, g) a .snd = g a
+-- _,,_ : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
+--   (f : (a : A) → B a) → ((a : A) → C a (f a)) → ((a : A) → Σ (B a) (C a))
+-- (f ,, g) a .fst = f a
+-- (f ,, g) a .snd = g a
 
 uncurry : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''}
   → (∀ a b → C a b)
@@ -308,20 +308,6 @@ isProp A = (a b : A) → a ≡ b
 
 Type* : ∀ ℓ → Type (lsuc ℓ)
 Type* ℓ = Σ A ∈ Type ℓ , A
-
-------------------------------------------------------------------------------------------
--- Extensional internal model
-------------------------------------------------------------------------------------------
-
---↓ Term judgment
-
-_⊢_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-(Γ ⊢ A) = Π Γ A
-
---↓ Context extension
-
-_▷_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-Γ ▷ A = Σ Γ A
 
 ------------------------------------------------------------------------------------------
 -- Flat modality

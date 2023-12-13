@@ -6,6 +6,7 @@ Fibration structure on Σ-types.
 module type-former.sigma where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.fibration
@@ -23,6 +24,11 @@ private variable
 _×ᴵ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
 (A ×ᴵ B) x = A x × B x
 
+_,ᴵ_ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
+  (a : Γ ⊢ A) → Γ ⊢ B ∘ (id ,, a) → Γ ⊢ Σᴵ A B
+(a ,ᴵ b) γ .fst = a γ
+(a ,ᴵ b) γ .snd = b γ
+
 fstᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
   → Γ ⊢ Σᴵ A B → Γ ⊢ A
 fstᴵ = fst ∘_
@@ -30,10 +36,6 @@ fstᴵ = fst ∘_
 sndᴵ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
   (t : Γ ⊢ Σᴵ A B) → Γ ⊢ B ∘ (id ,, fstᴵ t)
 sndᴵ = snd ∘_
-
-_,ᴵ_ : {A : Γ → Type ℓ} {B : Γ ▷ A → Type ℓ'}
-  (t : Γ ⊢ A) → Γ ⊢ B ∘ (id ,, t) → Γ ⊢ Σᴵ A B
-t ,ᴵ u = t ,, u
 
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
@@ -124,4 +126,4 @@ pairᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
   (a : Γ ⊢ᶠ A)
   (b : Γ ⊢ᶠ B ∘ᶠ (id ,, a))
   → Γ ⊢ᶠ Σᶠ A B
-pairᶠ A B a b = a ,, b
+pairᶠ A B = _,ᴵ_

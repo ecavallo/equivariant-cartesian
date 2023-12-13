@@ -6,6 +6,7 @@ Definitions of contractibility and equivalences.
 module type-former.equiv where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.coercion
