@@ -6,6 +6,7 @@ Basic properties of cofibrations
 module cofibration where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape
 
@@ -31,11 +32,13 @@ private variable
 _▷[_] : (Γ : Type ℓ) (φ : Γ → Cof) → Type ℓ
 Γ ▷[ φ ] = Σ γ ∈ Γ , [ φ γ ]
 
-wk[_] : (φ : Γ → Cof)
-  → Γ ▷[ φ ] → Γ
-wk[ φ ] = fst
+wk[_] : (φ : Γ → Cof) → Γ ▷[ φ ] → Γ
+wk[ φ ] = 𝒑
 
 --↓ Operations on cofibrations in context.
+
+[_]ˣ : (Γ → Cof) → (Γ → Type)
+[ φ ]ˣ γ = [ φ γ ]
 
 _∋_≈ˣ_ : (S : Shape) → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ → Cof)
 (S ∋ r ≈ˣ s) γ = S ∋ r γ ≈ s γ

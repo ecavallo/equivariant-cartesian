@@ -111,8 +111,8 @@ module WeakGlueLift {S r φ}
   where
 
   private
-    f = fst ∘ fe
-    e = snd ∘ fe
+    f = fstˣ fe
+    e = sndˣ fe
 
   codBox : OpenBox S r B
   codBox = mapBox (λ _ → cod) box
@@ -218,8 +218,8 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
     WeakGlueLift (β ∘ᶠˢ ⟪ σ ⟫) (α ∘ᶠˢ ⟪ σ ⟫ ×id) (fe ∘ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   private
-    f = fst ∘ fe
-    e = snd ∘ fe
+    f = fstˣ fe
+    e = sndˣ fe
 
   module _ (s : ⟨ S ⟩) where
 
@@ -325,7 +325,7 @@ codᶠFiberTFibStr : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-  → TFibStr (Fiberˣ (codᶠ φ B A fe ∘ fst) snd)
+  → TFibStr (Fiberˣ (codᶠ φ B A fe ∘ 𝒑) 𝒒)
 codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
   where
   fFiber : (u : [ φ γ ]) → [ ψ ] → Fiber (fe (γ , u) .fst) b
@@ -334,7 +334,7 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
     subst (_~ b) (sym (codFiber v .fst .match u)) (codFiber v .snd)
 
   extFFiber : (u : [ φ γ ]) → Fiber (fe (γ , u) .fst) b [ ψ ↦ fFiber u ]
-  extFFiber u = equivToFiberTFib A (B ∘ᶠ fst) fe _ _ (fFiber u)
+  extFFiber u = equivToFiberTFib A (B ∘ᶠ 𝒑) fe _ _ (fFiber u)
 
   codBox : OpenBox 𝕚 1 (cst (B .fst γ))
   codBox .cof = φ γ ∨ ψ
@@ -375,9 +375,9 @@ codᶠEquiv : (φ : Γ → Cof)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
   → Γ ⊢ᶠ Equivᶠ (WeakGlueᶠ φ B A fe) B
-codᶠEquiv φ B A fe γ .fst = codᶠ φ B A fe γ
-codᶠEquiv φ B A fe γ .snd =
-  fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (codᶠFiberTFibStr φ B A fe) γ
+codᶠEquiv φ B A fe =
+  codᶠ φ B A fe ,ˣ
+  fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (codᶠFiberTFibStr φ B A fe)
 
 ------------------------------------------------------------------------------------------
 -- Strict Glue types
@@ -414,8 +414,8 @@ opaque
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-    → subst (λ C → Γ ▷[ φ ] ⊢ᶠ C →ᶠ (B ∘ᶠ fst)) (GlueᶠMatch φ B A fe) (fstˣ fe)
-      ≡ unglueᶠ φ B A fe ∘ fst
+    → subst (λ C → Γ ▷[ φ ] ⊢ᶠ C →ᶠ (B ∘ᶠ wk[ φ ])) (GlueᶠMatch φ B A fe) (fstˣ fe)
+      ≡ unglueᶠ φ B A fe ∘ wk[ φ ]
   unglueᶠMatch φ B A fe =
     sym (substNaturality (λ _ → ((cod ∘_) ∘ to) ∘_) (GlueᶠMatch φ B A fe))
     ∙ cong (((cod ∘_) ∘ to) ∘_) (≅realignᶠMatch φ _ _ (domIsoGlueˣ φ (fstˣ fe)))

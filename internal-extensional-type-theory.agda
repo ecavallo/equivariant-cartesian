@@ -44,8 +44,8 @@ _,,_ : {A : Γ → Type ℓ''} (ρ : Δ → Γ) (a : Δ ⊢ˣ A ∘ ρ) → (Δ 
 --↓ Suggestive notation for projections where used as substitutions.
 --↓ In Agda's input mode, these are \MIp and \MIq respectively.
 
-𝒑 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ˣ A → Γ
+𝒑 : {Γ : Type ℓ} {A : Γ → Type ℓ'} → Γ ▷ˣ A → Γ
 𝒑 = fst
 
-𝒒 : {Γ : Type ℓ} {A : Γ → Type ℓ} → Γ ▷ˣ A ⊢ˣ A ∘ 𝒑
+𝒒 : {Γ : Type ℓ} {A : Γ → Type ℓ'} → Γ ▷ˣ A ⊢ˣ A ∘ 𝒑
 𝒒 = snd

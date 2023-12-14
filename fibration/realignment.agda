@@ -90,11 +90,11 @@ opaque
   isRealigned : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
-    → α ≡ realignFibStr φ β α ∘ᶠˢ fst
+    → α ≡ realignFibStr φ β α ∘ᶠˢ 𝒑
   isRealigned φ β α =
     FibStrExt λ S r p box s →
       RealignLift.fillB _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
-      .fill s .out≡ (∨r (snd ∘ p))
+      .fill s .out≡ (∨r (𝒒 ∘ p))
 
   reindexRealignFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}
@@ -111,7 +111,7 @@ opaque
   ≅Realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ fst))
+    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ wk[ φ ]))
     → Γ ⊢ᶠType ℓ
   ≅Realignᶠ φ _ _ iso .fst γ = ≅Realign (φ γ) (iso ∘ (γ ,_))
   ≅Realignᶠ φ (_ , β) (_ , α) iso .snd =
@@ -122,27 +122,30 @@ opaque
   ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ fst))
-    → A ≡ ≅Realignᶠ φ B A iso ∘ᶠ fst
+    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ wk[ φ ]))
+    → A ≡ ≅Realignᶠ φ B A iso ∘ᶠ wk[ φ ]
   ≅RealignᶠMatch _ _ _ _ =
     Σext _ (isRealigned _ _ _)
 
   ≅realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ fst))
+    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ wk[ φ ]))
     → Γ ⊢ˣ ≅Realignᶠ φ B A iso .fst ≅ˣ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _
 
   ≅realignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ fst))
-    → subst (λ C → Γ ▷[ φ ] ⊢ˣ C .fst ≅ˣ (B .fst ∘ fst)) (≅RealignᶠMatch φ B A iso) iso
-      ≡ ≅realignᶠ φ B A iso ∘ fst
+    (iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ wk[ φ ]))
+    → subst
+        (λ C → Γ ▷[ φ ] ⊢ˣ C .fst ≅ˣ (B .fst ∘ wk[ φ ]))
+        (≅RealignᶠMatch φ B A iso)
+        iso
+      ≡ ≅realignᶠ φ B A iso ∘ wk[ φ ]
   ≅realignᶠMatch φ B A iso =
     funExt λ (γ , u) →
-    substNaturality {B = λ C → _ ⊢ˣ C .fst ≅ˣ (B .fst ∘ fst)} (λ _ → _$ (γ , u))
+    substNaturality {B = λ C → _ ⊢ˣ C .fst ≅ˣ (B .fst ∘ wk[ φ ])} (λ _ → _$ (γ , u))
       (≅RealignᶠMatch φ B A iso)
     ∙ substCongAssoc (λ C → C ≅ B .fst γ) ((_$ (γ , u)) ∘ fst) (≅RealignᶠMatch φ B A iso) _
     ∙ cong (subst (_≅ B .fst γ) ⦅–⦆ (iso (γ , u))) uip'
@@ -151,7 +154,7 @@ opaque
   reindexRealignᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}
     {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
-    {iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ fst)}
+    {iso : Γ ▷[ φ ] ⊢ˣ A .fst ≅ˣ (B .fst ∘ wk[ φ ])}
     (ρ : Δ → Γ)
     → ≅Realignᶠ φ B A iso ∘ᶠ ρ ≡ ≅Realignᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (iso ∘ ρ ×id)
   reindexRealignᶠ {A = _ , α} ρ =

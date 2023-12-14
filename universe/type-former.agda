@@ -13,6 +13,7 @@ open import type-former.empty
 open import type-former.path
 open import type-former.pi
 open import type-former.sigma
+open import type-former.swan-identity
 open import type-former.unit
 
 open import universe.core
@@ -25,7 +26,7 @@ private variable
 module _ {@♭ ℓ : Level} where
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations contains an empty type
+  -- The universe of fibrations contains an empty type.
   ----------------------------------------------------------------------------------------
 
   𝟘ᵁ : 𝑼 lzero
@@ -39,7 +40,7 @@ module _ {@♭ ℓ : Level} where
     Elᶠ-𝟘ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟘ᶠ)
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations is closed under Σ-types
+  -- The universe of fibrations is closed under Σ-types.
   ----------------------------------------------------------------------------------------
 
   private
@@ -59,7 +60,7 @@ module _ {@♭ ℓ : Level} where
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations is closed under Path types
+  -- The universe of fibrations is closed under Path types.
   ----------------------------------------------------------------------------------------
 
   private
@@ -80,7 +81,7 @@ module _ {@♭ ℓ : Level} where
       ∙ reindexPathᶠ (A ,ˣ (a₀ ,ˣ a₁))
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations is closed under Π-types
+  -- The universe of fibrations is closed under Π-types.
   ----------------------------------------------------------------------------------------
 
   private
@@ -100,7 +101,32 @@ module _ {@♭ ℓ : Level} where
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations contains a unit type
+  -- The universe of fibrations is closed under Swan identity types,
+  -- assuming a dominance for the cofibration classifier.
+  ----------------------------------------------------------------------------------------
+
+  module _ (@♭ Dom : Dominance) where
+    open SwanIdentity Dom
+
+    private
+      universalIdᶠ : (Σ A ∈ 𝑼 ℓ , El A × El A) ⊢ᶠType ℓ
+      universalIdᶠ = Idᶠ (Elᶠ fst) (fst ∘ snd) (snd ∘ snd)
+
+    Idᵁ : (A : 𝑼 ℓ) (a₀ a₁ : El A) → 𝑼 ℓ
+    Idᵁ A a₀ a₁ = encode universalIdᶠ (A , (a₀ , a₁))
+
+    Idᵁᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+    Idᵁᶠ A a₀ a₁ γ = Idᵁ (A γ) (a₀ γ) (a₁ γ)
+
+    opaque
+      El-Id : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
+        → Elᶠ (Idᵁᶠ A a₀ a₁) ≡ Idᶠ (Elᶠ A) a₀ a₁
+      El-Id A a₀ a₁ =
+        cong (_∘ᶠ (A ,ˣ (a₀ ,ˣ a₁))) (decodeEncode universalIdᶠ)
+        ∙ reindexIdᶠ (A ,ˣ (a₀ ,ˣ a₁))
+
+  ----------------------------------------------------------------------------------------
+  -- The universe of fibrations contains a unit type.
   ----------------------------------------------------------------------------------------
 
   𝟙ᵁ : 𝑼 lzero

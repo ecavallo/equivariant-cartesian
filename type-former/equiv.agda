@@ -33,7 +33,7 @@ Equiv A B = Σ (A → B) IsEquiv
 
 IsEquivˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ˣ A →ˣ B)
   → Γ → Type (ℓ ⊔ ℓ')
-IsEquivˣ f = Πˣ _ (IsContrˣ (Fiberˣ (f ∘ fst) snd))
+IsEquivˣ f = Πˣ _ (IsContrˣ (Fiberˣ (f ∘ 𝒑) 𝒒))
 
 Equivˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
 Equivˣ A B = Σˣ (A →ˣ B) (IsEquivˣ snd)
@@ -70,7 +70,7 @@ opaque
   IsEquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
     (f : Γ ⊢ˣ A →ˣ B) → FibStr (IsEquivˣ f)
   IsEquivFibStr α β f =
-    ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) (f ∘ fst) snd))
+    ΠFibStr β (IsContrFibStr (FiberFibStr (α ∘ᶠˢ 𝒑) (β ∘ᶠˢ 𝒑) (f ∘ 𝒑) 𝒒))
 
   reindexIsEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     {f : Γ ⊢ˣ A →ˣ B}
@@ -91,7 +91,7 @@ opaque
   EquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
     → FibStr (Equivˣ A B)
   EquivFibStr α β =
-    ΣFibStr (ΠFibStr α (β ∘ᶠˢ fst)) (IsEquivFibStr (α ∘ᶠˢ fst) (β ∘ᶠˢ fst) snd)
+    ΣFibStr (ΠFibStr α (β ∘ᶠˢ 𝒑)) (IsEquivFibStr (α ∘ᶠˢ 𝒑) (β ∘ᶠˢ 𝒑) 𝒒)
 
   reindexEquivFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → EquivFibStr α β ∘ᶠˢ ρ ≡ EquivFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ ρ)
@@ -117,8 +117,8 @@ opaque
   IsEquivIsHPropᶠ A B f =
     ΠIsHPropᶠ
       B
-      (IsContrᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
-      (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (f ∘ fst) snd))
+      (IsContrᶠ (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (f ∘ 𝒑) 𝒒))
+      (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (f ∘ 𝒑) 𝒒))
 
 --↓ To construct a path between equivalences, it suffices to build a path between the
 --↓ underlying functions.
@@ -130,14 +130,14 @@ opaque
   equivPathᶠ A B e₀ e₁ p =
     appˣ
       (Jᶠ (A →ᶠ B) (fstˣ e₁)
-        (Πᶠ (IsEquivᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fst ∘ snd))
-          (Pathᶠ (Equivᶠ A B ∘ᶠ (fst ∘ fst))
-            (fst ∘ snd ∘ fst ,ˣ snd)
-            (e₁ ∘ fst ∘ fst)))
+        (Πᶠ (IsEquivᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (fstˣ 𝒒))
+          (Pathᶠ (Equivᶠ A B ∘ᶠ 𝒑 ∘ᶠ 𝒑)
+            (fstˣ (𝒒 ∘ 𝒑) ,ˣ 𝒒)
+            (e₁ ∘ 𝒑 ∘ 𝒑)))
         (λˣ $
           congPathˣ
-            (λˣ (fstˣ e₁ ∘ fst ∘ fst ,ˣ snd))
-            (appˣ (appˣ (IsEquivIsHPropᶠ A B (fstˣ e₁) ∘ fst) snd) (sndˣ e₁ ∘ fst)))
+            (λˣ (fstˣ e₁ ∘ 𝒑 ∘ 𝒑 ,ˣ 𝒒))
+            (appˣ (appˣ (IsEquivIsHPropᶠ A B (fstˣ e₁) ∘ 𝒑) 𝒒) (sndˣ e₁ ∘ 𝒑)))
         (fstˣ e₀ ,ˣ p))
       (sndˣ e₀)
 
@@ -147,14 +147,14 @@ opaque
 ------------------------------------------------------------------------------------------
 
 equivToFiberTFib : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
-  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberˣ (fstˣ e ∘ fst) snd)
+  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberˣ (fstˣ e ∘ 𝒑) 𝒒)
 equivToFiberTFib A B e =
   isContrToTFibStr
-    (Fiberᶠ (A ∘ᶠ fst) (B ∘ᶠ fst) (fstˣ e ∘ fst) snd)
-    (λ (γ , b) → e γ .snd b)
+    (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (fstˣ e ∘ 𝒑) 𝒒)
+    (appˣ (sndˣ (e ∘ 𝒑)) 𝒒)
 
 fiberTFibToIsEquiv : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') {f : Γ ⊢ᶠ A →ᶠ B}
-  → TFibStr (Fiberˣ (f ∘ fst) snd) → Γ ⊢ᶠ IsEquivᶠ A B f
+  → TFibStr (Fiberˣ (f ∘ 𝒑) 𝒒) → Γ ⊢ᶠ IsEquivᶠ A B f
 fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 
 ------------------------------------------------------------------------------------------

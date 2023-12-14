@@ -57,12 +57,12 @@ congPathˣ f p γ = congPath (f γ) (p γ)
 opaque
   private
     partialEl : {A : Γ → Type ℓ} (a₀ a₁ : Γ ⊢ˣ A)
-      → Γ ▷𝕀 ▷[ ∂ ∘ snd ] ⊢ˣ A ∘ fst ∘ wk[ ∂ ∘ snd ]
+      → Γ ▷𝕀 ▷[ ∂ ∘ 𝒒 ] ⊢ˣ A ∘ 𝒑 ∘ wk[ ∂ ∘ 𝒒 ]
     partialEl a₀ a₁ =
       uncurry λ (γ , i) → ∂-rec i (λ _ → a₀ γ) (λ _ → a₁ γ)
 
     retract : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ˣ A}
-      → Γ ⊢ˣ Retractˣ (Pathˣ A a₀ a₁) (Extensionˣ 𝕚 (A ∘ fst) ∂ (partialEl a₀ a₁))
+      → Γ ⊢ˣ Retractˣ (Pathˣ A a₀ a₁) (Extensionˣ 𝕚 (A ∘ 𝒑) ∂ (partialEl a₀ a₁))
     retract γ .sec p i .out = p .at i
     retract γ .sec p i .out≡ =
       ∂-elim i (λ {refl → sym (p .at0)}) (λ {refl → sym (p .at1)})
@@ -74,7 +74,7 @@ opaque
   PathFibStr : {A : Γ → Type ℓ} (α : FibStr A) (a₀ a₁ : Γ ⊢ˣ A)
     → FibStr (Pathˣ A a₀ a₁)
   PathFibStr α a₀ a₁ =
-    retractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ fst) ∂ _)
+    retractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ 𝒑) ∂ _)
 
   ----------------------------------------------------------------------------------------
   -- Forming Path types is stable under reindexing
@@ -123,7 +123,7 @@ opaque
     (f : Γ ⊢ˣ A →ˣ B) (b : Γ ⊢ˣ B)
     → FibStr (Fiberˣ f b)
   FiberFibStr α β f b =
-    ΣFibStr α (PathFibStr (β ∘ᶠˢ fst) (uncurry f) (b ∘ fst))
+    ΣFibStr α (PathFibStr (β ∘ᶠˢ 𝒑) (uncurry f) (b ∘ 𝒑))
 
   reindexFiberFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ → Type ℓ'} {β : FibStr B}
     {f : Γ ⊢ˣ A →ˣ B} {b : Γ ⊢ˣ B}
@@ -181,11 +181,11 @@ Singlᶠ A a = Fiberᶠ A A (λ _ → id) a
 singlCenterᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   → Γ ⊢ᶠ Singlᶠ A a
 singlCenterᶠ A a =
-  pairᶠ A (Pathᶠ (A ∘ᶠ fst) snd (a ∘ fst)) a (reflᶠ A a)
+  pairᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)) a (reflᶠ A a)
 
 singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
-  (c : Γ ⊢ᶠ Σᶠ A (Pathᶠ (A ∘ᶠ fst) snd (a ∘ fst)))
-  → Γ ⊢ᶠ Pathᶠ (Σᶠ A (Pathᶠ (A ∘ᶠ fst) snd (a ∘ fst))) c (singlCenterᶠ A a)
+  (c : Γ ⊢ᶠ Σᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)))
+  → Γ ⊢ᶠ Pathᶠ (Σᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑))) c (singlCenterᶠ A a)
 singlContrᶠ A a c γ = homotopy
   where
   box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A .fst γ))

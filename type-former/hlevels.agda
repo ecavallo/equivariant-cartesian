@@ -7,6 +7,7 @@ type theory.
 module type-former.hlevels where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.coercion
@@ -33,7 +34,7 @@ IsContrˣ A γ = IsContr (A γ)
 opaque
   IsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) → FibStr (IsContrˣ A)
   IsContrFibStr α  =
-    ΣFibStr α (ΠFibStr (α ∘ᶠˢ fst) (PathFibStr (α ∘ᶠˢ fst ∘ᶠˢ fst) snd (snd ∘ fst)))
+    ΣFibStr α (ΠFibStr (α ∘ᶠˢ 𝒑) (PathFibStr (α ∘ᶠˢ 𝒑 ∘ᶠˢ 𝒑) 𝒒 (𝒒 ∘ 𝒑)))
 
   reindexIsContrFibStr : {A : Γ → Type ℓ} {α : FibStr A} (ρ : Δ → Γ)
     → IsContrFibStr α ∘ᶠˢ ρ ≡ IsContrFibStr (α ∘ᶠˢ ρ)
@@ -81,7 +82,7 @@ IsHPropˣ A γ = IsHProp (A γ)
 
 IsHPropᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
 IsHPropᶠ A =
-  Πᶠ A (Πᶠ (A ∘ᶠ fst) (Pathᶠ (A ∘ᶠ fst ∘ᶠ fst) (snd ∘ fst) snd))
+  Πᶠ A (Πᶠ (A ∘ᶠ 𝒑) (Pathᶠ (A ∘ᶠ 𝒑 ∘ᶠ 𝒑) (𝒒 ∘ 𝒑) 𝒒))
 
 --↓ Being contractible is an h-proposition.
 

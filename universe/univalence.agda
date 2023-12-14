@@ -11,6 +11,7 @@ The addition of an equivariance condition on fibrations has no effect on this pr
 -}
 open import prelude
 open import axiom
+open import internal-extensional-type-theory
 open import cofibration
 open import fibration.fibration
 open import fibration.trivial
@@ -25,8 +26,8 @@ open import universe.glue
 
 module universe.univalence where
 
-UATFib : ∀ (@♭ ℓ) → TFibStr (Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ snd) (Elˣ fst)))
-UATFib ℓ B φ Part = filler
+UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ 𝒒) (Elˣ (𝒒 ∘ 𝒑))))
+UATFib ℓ (tt , B) φ Part = filler
   where
   ExtendedTy : 𝑼 ℓ
   ExtendedTy = Glueᵁ φ B (fst ∘ Part) (snd ∘ Part)
@@ -65,4 +66,4 @@ UATFib ℓ B φ Part = filler
     ∙ Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out≡ u
 
 UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ (snd ∘ fst)))))
-UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ) ∘ snd
+UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ)

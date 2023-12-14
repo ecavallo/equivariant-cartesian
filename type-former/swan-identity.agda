@@ -28,8 +28,7 @@ record Dominance : Type where
     ∧-snd : ∀ {φ ψ} → (uv : [ φ ∧ ψ ]) → [ ψ (∧-fst uv) ]
     ∧-ext : ∀ {φ ψ} → (u : [ φ ]) → φ ∧ ψ ≡ ψ u
 
-module SwanIdentity (Dom : Dominance)
-  where
+module SwanIdentity (Dom : Dominance) where
 
   open Dominance Dom
 
@@ -66,7 +65,18 @@ module SwanIdentity (Dom : Dominance)
   ConstancyIsTFib p γ φ a .out≡ u = ConstancyExt (p γ) (sym (∧-ext u))
 
   Idᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
-  Idᶠ A a₀ a₁ = Σᶠ (Pathᶠ A a₀ a₁) (TFibToFib (_ , ConstancyIsTFib snd))
+  Idᶠ A a₀ a₁ = Σᶠ (Pathᶠ A a₀ a₁) (TFibToFib (_ , ConstancyIsTFib 𝒒))
+
+  opaque
+    unfolding TFibStrToFibStr
+    reindexIdᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ˣ A .fst}
+      (ρ : Δ → Γ) → Idᶠ A a₀ a₁ ∘ᶠ ρ ≡ Idᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
+    reindexIdᶠ ρ =
+      reindexΣᶠ ρ ∙
+      congΣ Σᶠ
+        (reindexPathᶠ ρ)
+        (substCongAssoc (λ A → _ ▷ˣ A ⊢ᶠType _) fst (reindexPathᶠ ρ) _
+          ∙ cong (subst (λ A → _ ▷ˣ A ⊢ᶠType _) ⦅–⦆ _) (uip _ refl))
 
   idreflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) → Γ ⊢ᶠ Idᶠ A a a
   idreflᶠ A a γ .fst = refl~ (a γ)
