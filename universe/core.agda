@@ -110,7 +110,7 @@ fstLlifts S =
   ∙ cong♭ (L S) (funExt (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
 
 getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ) → hasLifts S (El ∘ C)
-getLifts S C = coe (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
+getLifts S C = subst id (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
 
 Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ)
   → L S (λ A → A .lifts S) C ≡ (hasLifts S (El ∘ C) , getLifts S C)
@@ -258,15 +258,14 @@ opaque
     Σext refl
       (FibStrExt
         (ShapeIsDiscrete λ (@♭ S) r p box s →
-          cong
-            {A = Σ C ∈ Type* _ , C .fst ≡ hasLifts S (∣ A ∣ ∘ p)}
-            (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
-            {x = _ , appCong (fstLlifts S)}
-            {y = _ , refl}
-            (Σext (lemma S p) uip')))
+          congΣ
+            (λ (C : Type* _) (eq : C .fst ≡ hasLifts S (∣ A ∣ ∘ p))
+              → subst id eq (C .snd) r box .fill s .out)
+            (lemma S p)
+            (uip _ refl)))
     where
     lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → _)
-      → L S (λ C → C .lifts S) (encode A ∘ p)
+      → L S (λ (C : 𝑼 _) → C .lifts S) (encode A ∘ p)
         ≡ (hasLifts S (∣ A ∣ ∘ p) , λ r → A .snd .lift S r p)
     lemma S p =
       appCong (sym (L℘ S id (λ C → C .lifts S)))
@@ -280,8 +279,8 @@ opaque
   encodeReindexFib A ρ γ =
     𝑼Ext
       refl
-      (funExt♭ λ S → appCong (R℘ S ρ (FibLifts A S)))
-      (funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ → appCong (R℘ T ρ (FibVaries A S T σ)))
+      (funExt♭' $ appCong $ R℘ _ ρ (FibLifts A _))
+      (funExt♭' $ funExt♭' $ funExt♭' $ appCong $ R℘ _ ρ (FibVaries A _ _ _))
 
 opaque
   unfolding encode ElFibStr
@@ -289,22 +288,13 @@ opaque
   encodeEl C =
     𝑼Ext
       refl
-      (funExt♭ λ S →
-        appCong
-          (cong♭ (R S)
-            {y = L S (λ D → D .lifts S)}
-            (sym (funExt (Llifts S)))))
-      (funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
-        appCong
-          (cong♭ (R T)
-            (sym (funExt λ C →
-              Lvaries S T σ C
-              ∙ cong
-                  (λ w →
-                    ( hasVaries S T σ (El ∘ C)
-                    , witness (getLifts T C) (getLifts S (C ∘ ⟪ σ ⟫)) w
-                    ))
-                  (funExt' $ funExt' $ funExt' $ uip')))))
+      (funExt♭' $ appCong $ cong♭ (R _) $♭ sym $ funExt $ Llifts _)
+      (funExt♭' $ funExt♭' $ funExt♭ λ σ →
+        appCong $ cong♭ (R _) $♭ sym $ funExt λ C →
+        Lvaries _ _ σ C
+        ∙ cong
+          (λ w → _ , witness (getLifts _ C) (getLifts _ (C ∘ ⟪ σ ⟫)) w)
+          (funExt' $ funExt' $ funExt' $ uip'))
 
 opaque
   encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ˣ 𝑼ˣ ℓ') → encode (decode C) ≡ C

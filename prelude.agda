@@ -7,13 +7,14 @@ module prelude where
 
 open import Agda.Primitive public renaming (Set to Type)
 
-private variable ℓ ℓ' ℓ'' ℓ''' : Level
+private variable
+  ℓ ℓ' ℓ'' ℓ''' ℓ'''' ℓ''''' : Level
 
 infix  1 Σ
 infixl 3 _,_
 infixr 3 _×_ _⊎_
 infix 4 _≅_
-infixr 5 _∘_ _∙_ _$_
+infixr 5 _∘_ _∙_ _$_ _$♭_
 
 -----------------------------------------------------------------------------------------
 -- Functions
@@ -100,12 +101,6 @@ opaque
   substConst refl b = refl
 
 opaque
-  substTrans : {A : Type ℓ} (B : A → Type ℓ')
-    {x y z : A} (q : y ≡ z) (p : x ≡ y) {b : B x}
-    → subst B (p ∙ q) b ≡ subst B q (subst B p b)
-  substTrans B refl refl = refl
-
-opaque
   substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
     (η : ∀ a → B a → C a)
     {a a' : A} (p : a ≡ a') {b : B a}
@@ -138,7 +133,7 @@ uip : {A : Type ℓ} {x y : A} (p q : x ≡ y) → p ≡ q
 uip refl refl = refl
 
 uip' : {A : Type ℓ} {x y : A} {p q : x ≡ y} → p ≡ q
-uip' {p = refl} {q = refl} = refl
+uip' = uip _ _
 
 ------------------------------------------------------------------------------------------
 -- Unit type
@@ -168,11 +163,6 @@ _×id : {A : Type ℓ} {A' : Type ℓ'} {B : A' → Type ℓ''}
   (f : A → A') → Σ A (B ∘ f) → Σ A' B
 (f ×id) ab .fst = f (ab .fst)
 (f ×id) ab .snd = ab .snd
-
-id× : {A : Type ℓ} {B : A → Type ℓ'} {B' : A → Type ℓ''}
-  (f : ∀ {a} → B a → B' a) → Σ A B → Σ A B'
-(id× f) ab .fst = ab .fst
-(id× f) ab .snd = f (ab .snd)
 
 opaque
   ×ext : {A : Type ℓ} {B : Type ℓ'} {ab₀ ab₁ : A × B}
@@ -227,12 +217,14 @@ data _⊎_ (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
   inl : A → A ⊎ B
   inr : B → A ⊎ B
 
-[_∣_] : {A : Type ℓ} {B : Type ℓ'} {C : A ⊎ B → Type ℓ''}
+⊎-elim : {A : Type ℓ} {B : Type ℓ'} {C : A ⊎ B → Type ℓ''}
   → ((a : A) → C (inl a))
   → ((b : B) → C (inr b))
   → (z : A ⊎ B) → C z
-[ f ∣ g ] (inl a) = f a
-[ f ∣ g ] (inr b) = g b
+⊎-elim f g (inl a) = f a
+⊎-elim f g (inr b) = g b
+
+[_∣_] = ⊎-elim
 
 _⊎`_ : {A : Type ℓ} {A' : Type ℓ'} {B : Type ℓ''} {B' : Type ℓ'''}
   → (A → A') → (B → B') → (A ⊎ B) → (A' ⊎ B')
@@ -309,11 +301,14 @@ Type* ℓ = Σ A ∈ Type ℓ , A
 -- Flat modality
 ------------------------------------------------------------------------------------------
 
-cong♭ : {@♭ ℓ ℓ' : Level} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
+_$♭_ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : A → Type ℓ'} → ((@♭ a : A) → B a) → (@♭ a : A) → B a
+f $♭ a = f a
+
+cong♭ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : Type ℓ'}
   (f : @♭ A → B) {@♭ x y : A} (@♭ p : x ≡ y) → f x ≡ f y
 cong♭ _ refl = refl
 
-appCong♭ : {@♭ ℓ ℓ' : Level} {@♭ A : Type ℓ} {@♭ B : A → Type ℓ'}
+appCong♭ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : A → Type ℓ'}
   {f g : (@♭ a : A) → B a}
   {@♭ x : A} (p : f ≡ g) → f x ≡ g x
 appCong♭ p = cong (λ h → h _) p
