@@ -21,6 +21,8 @@ private variable
   ℓ ℓ' ℓ'' : Level
   Γ Δ : Type ℓ
 
+infix 4 _≃_
+
 ------------------------------------------------------------------------------------------
 -- Equivalences
 ------------------------------------------------------------------------------------------
@@ -28,20 +30,20 @@ private variable
 IsEquiv : {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type (ℓ ⊔ ℓ')
 IsEquiv f = ∀ b → IsContr (Fiber f b)
 
-Equiv : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
-Equiv A B = Σ (A → B) IsEquiv
+_≃_ : (A : Type ℓ) (B : Type ℓ') → Type (ℓ ⊔ ℓ')
+A ≃ B = Σ (A → B) IsEquiv
 
 IsEquivˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'} (f : Γ ⊢ˣ A →ˣ B)
   → Γ → Type (ℓ ⊔ ℓ')
 IsEquivˣ f = Πˣ _ (IsContrˣ (Fiberˣ (f ∘ 𝒑) 𝒒))
 
-Equivˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-Equivˣ A B = Σˣ (A →ˣ B) (IsEquivˣ snd)
+_≃ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+A ≃ˣ B = Σˣ (A →ˣ B) (IsEquivˣ snd)
 
 --↓ An isomorphism composed with an equivalence is an equivalence.
 
 equiv∘iso : {A : Type ℓ} {B : Type ℓ'} {C : Type ℓ''}
-  → A ≅ B → Equiv B C → Equiv A C
+  → A ≅ B → B ≃ C → A ≃ C
 equiv∘iso iso e .fst = e .fst ∘ iso .to
 equiv∘iso iso e .snd c = contractor
   where
@@ -89,7 +91,7 @@ IsEquivᶠ A B f .snd = IsEquivFibStr (A .snd) (B .snd) f
 
 opaque
   EquivFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ → Type ℓ'} (β : FibStr B)
-    → FibStr (Equivˣ A B)
+    → FibStr (A ≃ˣ B)
   EquivFibStr α β =
     ΣFibStr (ΠFibStr α (β ∘ᶠˢ 𝒑)) (IsEquivFibStr (α ∘ᶠˢ 𝒑) (β ∘ᶠˢ 𝒑) 𝒒)
 
@@ -99,12 +101,12 @@ opaque
     reindexΣFibStr _
     ∙ cong₂ (λ α β → ΣFibStr α β) (reindexΠFibStr _) (reindexIsEquivFibStr _)
 
-Equivᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Equivᶠ A B .fst = Equivˣ (A .fst) (B .fst)
-Equivᶠ A B .snd = EquivFibStr (A .snd) (B .snd)
+_≃ᶠ_ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
+(A ≃ᶠ B) .fst = (A .fst) ≃ˣ (B .fst)
+(A ≃ᶠ B) .snd = EquivFibStr (A .snd) (B .snd)
 
 reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
-  (ρ : Δ → Γ) → Equivᶠ A B ∘ᶠ ρ ≡ Equivᶠ (A ∘ᶠ ρ) (B ∘ᶠ ρ)
+  (ρ : Δ → Γ) → (A ≃ᶠ B) ∘ᶠ ρ ≡ (A ∘ᶠ ρ) ≃ᶠ (B ∘ᶠ ρ)
 reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 
 ------------------------------------------------------------------------------------------
@@ -124,14 +126,14 @@ opaque
 --↓ underlying functions.
 
 opaque
-  equivPathᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (e₀ e₁ : Γ ⊢ᶠ Equivᶠ A B)
+  equivPathᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (e₀ e₁ : Γ ⊢ᶠ A ≃ᶠ B)
     → Γ ⊢ᶠ Pathᶠ (A →ᶠ B) (fstˣ e₀) (fstˣ e₁)
-    → Γ ⊢ᶠ Pathᶠ (Equivᶠ A B) e₀ e₁
+    → Γ ⊢ᶠ Pathᶠ (A ≃ᶠ B) e₀ e₁
   equivPathᶠ A B e₀ e₁ p =
     appˣ
       (Jᶠ (A →ᶠ B) (fstˣ e₁)
         (Πᶠ (IsEquivᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (fstˣ 𝒒))
-          (Pathᶠ (Equivᶠ A B ∘ᶠ 𝒑 ∘ᶠ 𝒑)
+          (Pathᶠ (A ≃ᶠ B ∘ᶠ 𝒑 ∘ᶠ 𝒑)
             (fstˣ (𝒒 ∘ 𝒑) ,ˣ 𝒒)
             (e₁ ∘ 𝒑 ∘ 𝒑)))
         (λˣ $
@@ -147,7 +149,7 @@ opaque
 ------------------------------------------------------------------------------------------
 
 equivToFiberTFib : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
-  (e : Γ ⊢ᶠ Equivᶠ A B) → TFibStr (Fiberˣ (fstˣ e ∘ 𝒑) 𝒒)
+  (e : Γ ⊢ᶠ A ≃ᶠ B) → TFibStr (Fiberˣ (fstˣ e ∘ 𝒑) 𝒒)
 equivToFiberTFib A B e =
   isContrToTFibStr
     (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (fstˣ e ∘ 𝒑) 𝒒)
@@ -162,7 +164,7 @@ fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 ------------------------------------------------------------------------------------------
 
 --- TODO use existing proof of singleton contractibility
-idEquiv : {A : Type ℓ} → FibStr (λ (_ : 𝟙) → A) → Equiv A A
+idEquiv : {A : Type ℓ} → FibStr (λ (_ : 𝟙) → A) → A ≃ A
 idEquiv α .fst a = a
 idEquiv α .snd a .fst = (a , refl~ a)
 idEquiv {A = A} α .snd a .snd (a' , p) = h
@@ -188,22 +190,22 @@ idEquiv {A = A} α .snd a .snd (a' , p) = h
       (sym (q 1 .fill 0 .out≡ (∨r refl)))
       (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
 
-idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ Equivᶠ A A
+idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ A ≃ᶠ A
 idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ cst γ)
 
 opaque
   coerceEquiv : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ )
-    (r s : ⟨ S ⟩) → Equiv (A $ᶠ r) (A $ᶠ s)
+    (r s : ⟨ S ⟩) → (A $ᶠ r) ≃ (A $ᶠ s)
   coerceEquiv S A r s =
-    Coerce.coerce S r (Equivᶠ (A ∘ᶠ cst r) A) (idEquivᶠ A r) s
+    Coerce.coerce S r ((A ∘ᶠ cst r) ≃ᶠ A) (idEquivᶠ A r) s
 
   coerceEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ A r
   coerceEquivCap S A r =
     Coerce.cap≡ S r
-      (Equivᶠ (A ∘ᶠ cst r) A)
+      ((A ∘ᶠ cst r) ≃ᶠ A)
       (idEquivᶠ A r)
 
   coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
@@ -212,10 +214,10 @@ opaque
     → coerceEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
   coerceEquivVary {S = S} σ A r s =
     coerceVary σ r
-      (Equivᶠ (A ∘ᶠ cst (⟪ σ ⟫ r)) A)
+      ((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A)
       (idEquivᶠ A (⟪ σ ⟫ r))
       s
     ∙
     cong
-      (λ β → Coerce.coerce S r (Equivˣ _ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
+      (λ β → Coerce.coerce S r (_ ≃ˣ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
       (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)

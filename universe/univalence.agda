@@ -26,18 +26,18 @@ open import universe.glue
 
 module universe.univalence where
 
-UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ 𝒒) (Elˣ (𝒒 ∘ 𝒑))))
+UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Elˣ 𝒒 ≃ˣ Elˣ (𝒒 ∘ 𝒑)))
 UATFib ℓ (tt , B) φ Part = filler
   where
   ExtendedTy : 𝑼 ℓ
   ExtendedTy = Glueᵁ φ B (fst ∘ Part) (snd ∘ Part)
 
-  extendedEquiv : Equiv (El ExtendedTy) (El B)
+  extendedEquiv : El ExtendedTy ≃ El B
   extendedEquiv = unglueᵁEquiv
 
-  partEquiv : [ φ ] → Equiv (El ExtendedTy) (El B)
+  partEquiv : [ φ ] → El ExtendedTy ≃ El B
   partEquiv u =
-    subst (Equiv ⦅–⦆ (El B) ∘ El) (GlueᵁMatch _ _ _ _ _) (Part u .snd)
+    subst ((_≃ El B) ∘ El) (GlueᵁMatch _ _ _ _ _) (Part u .snd)
 
   partFun≡extendedFun : ∀ u → partEquiv u .fst ≡ extendedEquiv .fst
   partFun≡extendedFun u =
@@ -50,7 +50,7 @@ UATFib ℓ (tt , B) φ Part = filler
       (cst $ eqToPath $ partFun≡extendedFun u)
       tt
 
-  box : OpenBox 𝕚 1 (cst (Σ A ∈ 𝑼 ℓ , Equiv (El A) (El B)))
+  box : OpenBox 𝕚 1 (cst (Σ A ∈ 𝑼 ℓ , El A ≃ El B))
   box .cof = φ
   box .tube i u .fst = ExtendedTy
   box .tube i u .snd = fixPath u .at i
@@ -58,12 +58,12 @@ UATFib ℓ (tt , B) φ Part = filler
   box .cap .out .snd = extendedEquiv
   box .cap .out≡ u = Σext refl (fixPath u .at1)
 
-  filler : (Σ A ∈ 𝑼 ℓ , Equiv (El A) (El B)) [ φ ↦ Part ]
+  filler : (Σ A ∈ 𝑼 ℓ , El A ≃ El B) [ φ ↦ Part ]
   filler =
     subst
       (_ [ φ ↦_])
       (funExt λ u → sym (Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))))
-      (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0)
+      (Σᶠ (𝑼ᶠ ℓ) (Elᶠ snd ≃ᶠ Elᶠ fst) .snd .lift 𝕚 1 (λ _ → B) box .fill 0)
 
-UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ 𝒒) (Elᶠ (𝒒 ∘ 𝒑)))))
+UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Elᶠ 𝒒 ≃ᶠ Elᶠ (𝒒 ∘ 𝒑))))
 UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ)

@@ -33,21 +33,21 @@ module _ {@♭ ℓ} where
 
     partialEquiv : ∀ s
       → [ box .cof ∨ S ∋ r ≈ s ]
-      → Σ A ∈ 𝑼 ℓ , Equiv (El A) (El (box .cap .out))
+      → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out)
     partialEquiv s =
       ∨-rec
         (λ u →
           box .tube s u ,
-          subst (Equiv _ ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r))
+          subst ((_ ≃_) ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r))
         (λ _ → box .cap .out , idEquivᶠ (Elᶠ id) (box .cap .out))
         (λ {u refl →
           Σext
             (box .cap .out≡ u)
             (eqLemma (box .cap .out≡ u) (coerceEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r))})
       where
-      eqLemma : {A B : 𝑼 ℓ} (eq : A ≡ B) {e : Equiv (El A) (El A)}
+      eqLemma : {A B : 𝑼 ℓ} (eq : A ≡ B) {e : El A ≃ El A}
         → e ≡ idEquivᶠ (Elᶠ id) A
-        → subst ((Equiv ⦅–⦆ _) ∘ El) eq (subst (Equiv _ ∘ El) eq e) ≡ idEquivᶠ (Elᶠ id) B
+        → subst ((_≃ _) ∘ El) eq (subst ((_ ≃_) ∘ El) eq e) ≡ idEquivᶠ (Elᶠ id) B
       eqLemma refl eq = eq
 
     filler : Filler box
@@ -83,7 +83,7 @@ module _ {@♭ ℓ} where
               (cofIsProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨l u))
             ∙ Σext refl
               (cong
-                (subst (Equiv _ ∘ El) (box .cap .out≡ u))
+                (subst ((_ ≃_) ∘ El) (box .cap .out≡ u))
                 (coerceEquivVary σ (Elᶠ (box .tube ⦅–⦆ u)) s r)))
           (λ {refl →
             cong

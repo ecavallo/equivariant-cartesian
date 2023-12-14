@@ -106,7 +106,7 @@ domIsoGlueˣ φ f (γ , u) = domIsoGlue (φ γ) (f ∘ (γ ,_)) u
 module WeakGlueLift {S r φ}
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ S ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
-  (fe : ⟨ S ⟩ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
+  (fe : ⟨ S ⟩ ▷[ φ ] ⊢ˣ A ≃ˣ (B ∘ wk[ φ ]))
   (box : OpenBox S r (WeakGlueˣ φ (fstˣ fe)))
   where
 
@@ -209,7 +209,7 @@ module WeakGlueLift {S r φ}
 module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ T ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
-  (fe : ⟨ T ⟩ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
+  (fe : ⟨ T ⟩ ▷[ φ ] ⊢ˣ A ≃ˣ (B ∘ wk[ φ ]))
   (box : OpenBox T (⟪ σ ⟫ r) (WeakGlueˣ φ (fstˣ fe)))
   where
 
@@ -277,7 +277,7 @@ opaque
   WeakGlueFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
     {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
-    (fe : Γ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ˣ A ≃ˣ (B ∘ wk[ φ ]))
     → FibStr (WeakGlueˣ φ (fstˣ fe))
   WeakGlueFibStr φ β α fe .lift S r p =
     WeakGlueLift.filler (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
@@ -287,7 +287,7 @@ opaque
   reindexWeakGlueFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}
     {A : Γ ▷[ φ ] → Type ℓ} {α : FibStr A}
-    {fe : Γ ▷[ φ ] ⊢ˣ Equivˣ A (B ∘ wk[ φ ])}
+    {fe : Γ ▷[ φ ] ⊢ˣ A ≃ˣ (B ∘ wk[ φ ])}
     (ρ : Δ → Γ)
     → WeakGlueFibStr φ β α fe ∘ᶠˢ ρ
       ≡ WeakGlueFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id) (fe ∘ ρ ×id)
@@ -297,7 +297,7 @@ opaque
 WeakGlueᶠ : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+  (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
   → Γ ⊢ᶠType ℓ
 WeakGlueᶠ φ (B , _) (A , _) fe .fst = WeakGlueˣ φ (fstˣ fe)
 WeakGlueᶠ φ (_ , β) (_ , α) fe .snd = WeakGlueFibStr φ β α fe
@@ -305,7 +305,7 @@ WeakGlueᶠ φ (_ , β) (_ , α) fe .snd = WeakGlueFibStr φ β α fe
 reindexWeakGlueᶠ : {φ : Γ → Cof}
   {B : Γ ⊢ᶠType ℓ}
   {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
-  {fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ])}
+  {fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ])}
   (ρ : Δ → Γ)
   → WeakGlueᶠ φ B A fe ∘ᶠ ρ ≡ WeakGlueᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (fe ∘ ρ ×id)
 reindexWeakGlueᶠ ρ = Σext refl (reindexWeakGlueFibStr ρ)
@@ -317,14 +317,14 @@ reindexWeakGlueᶠ ρ = Σext refl (reindexWeakGlueFibStr ρ)
 codᶠ : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+  (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
   → Γ ⊢ᶠ WeakGlueᶠ φ B A fe →ᶠ B
 codᶠ φ B A fe _ = cod
 
 codᶠFiberTFibStr : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+  (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
   → TFibStr (Fiberˣ (codᶠ φ B A fe ∘ 𝒑) 𝒒)
 codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
   where
@@ -373,8 +373,8 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
 codᶠEquiv : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-  → Γ ⊢ᶠ Equivᶠ (WeakGlueᶠ φ B A fe) B
+  (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
+  → Γ ⊢ᶠ WeakGlueᶠ φ B A fe ≃ᶠ B
 codᶠEquiv φ B A fe =
   codᶠ φ B A fe ,ˣ
   fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (codᶠFiberTFibStr φ B A fe)
@@ -387,7 +387,7 @@ opaque
   Glueᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
     → Γ ⊢ᶠType ℓ
   Glueᶠ φ B A fe =
     ≅Realignᶠ φ (WeakGlueᶠ φ B A fe) A (domIsoGlueˣ φ (fstˣ fe))
@@ -395,7 +395,7 @@ opaque
   unglueᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
     → Γ ⊢ᶠ Glueᶠ φ B A fe →ᶠ B
   unglueᶠ φ B A fe γ =
     cod ∘ ≅realignᶠ φ _ _ _ γ .to
@@ -405,7 +405,7 @@ opaque
   GlueᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
     → A ≡ Glueᶠ φ B A fe ∘ᶠ wk[ φ ]
   GlueᶠMatch φ B A fe =
     ≅RealignᶠMatch φ _ _ (domIsoGlueˣ φ (fstˣ fe))
@@ -413,7 +413,7 @@ opaque
   unglueᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
     → subst (λ C → Γ ▷[ φ ] ⊢ᶠ C →ᶠ (B ∘ᶠ wk[ φ ])) (GlueᶠMatch φ B A fe) (fstˣ fe)
       ≡ unglueᶠ φ B A fe ∘ wk[ φ ]
   unglueᶠMatch φ B A fe =
@@ -423,7 +423,7 @@ opaque
   unglueᶠIsEquiv : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
+    (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
     → Γ ⊢ᶠ IsEquivᶠ (Glueᶠ φ B A fe) B (unglueᶠ φ B A fe)
   unglueᶠIsEquiv φ B A fe γ =
     equiv∘iso (≅realignᶠ _ _ _ _ _) (codᶠEquiv φ B A fe _) .snd
@@ -431,8 +431,8 @@ opaque
 unglueᶠEquiv : (φ : Γ → Cof)
   (B : Γ ⊢ᶠType ℓ)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-  (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ]))
-  → Γ ⊢ᶠ Equivᶠ (Glueᶠ φ B A fe) B
+  (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ]))
+  → Γ ⊢ᶠ Glueᶠ φ B A fe ≃ᶠ B
 unglueᶠEquiv φ B A fe γ .fst = unglueᶠ φ B A fe γ
 unglueᶠEquiv φ B A fe γ .snd = unglueᶠIsEquiv φ B A fe γ
 
@@ -441,7 +441,7 @@ opaque
   reindexGlueᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}
     {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
-    {fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ A (B ∘ᶠ wk[ φ ])}
+    {fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ∘ᶠ wk[ φ ])}
     (ρ : Δ → Γ)
     → Glueᶠ φ B A fe ∘ᶠ ρ ≡ Glueᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (fe ∘ ρ ×id)
   reindexGlueᶠ {φ = φ} ρ =

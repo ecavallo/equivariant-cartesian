@@ -34,7 +34,7 @@ module _ {@♭ ℓ} where
       Cof
       ▷ˣ 𝑼ˣ ℓ
       ▷ˣ (λ (φ , _) → [ φ ] → 𝑼 ℓ)
-      ▷ˣ (λ (φ , B , A) → (u : [ φ ]) → Equiv (El (A u)) (El B))
+      ▷ˣ (λ (φ , B , A) → (u : [ φ ]) → El (A u) ≃ El B)
 
     universalGlueᶠ : universalGlueCtx ⊢ᶠType ℓ
     universalGlueᶠ =
@@ -45,13 +45,13 @@ module _ {@♭ ℓ} where
         (λ (_ , _ , _ , fe , u) → fe u)
 
   Glueᵁ : (φ : Cof) (B : 𝑼 ℓ) (A : [ φ ] → 𝑼 ℓ)
-    (fe : (u : [ φ ]) → Equiv (El (A u)) (El B))
+    (fe : (u : [ φ ]) → El (A u) ≃ El B)
     → 𝑼 ℓ
   Glueᵁ φ B A fe = encode universalGlueᶠ (φ , B , A , fe)
 
   opaque
     GlueᵁMatch : (φ : Cof) (B : 𝑼 ℓ) (A : [ φ ] → 𝑼 ℓ)
-      (fe : (u : [ φ ]) → Equiv (El (A u)) (El B))
+      (fe : (u : [ φ ]) → El (A u) ≃ El B)
       (u : [ φ ]) → A u ≡ Glueᵁ φ B A fe
     GlueᵁMatch φ b a fe u =
       appCong (sym (encodeDecode (λ (_ , _ , A , _ , u) → A u)))
@@ -59,21 +59,21 @@ module _ {@♭ ℓ} where
       ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
 
   Glueᵁᶠ : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
+    (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ a ≃ᶠ Elᶠ (b ∘ fst))
     → Γ ⊢ˣ 𝑼ˣ ℓ
   Glueᵁᶠ φ b a fe γ =
     Glueᵁ (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
 
   opaque
     decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
-      (fe : Γ ▷[ φ ] ⊢ᶠ Equivᶠ (Elᶠ a) (Elᶠ (b ∘ fst)))
+      (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ a ≃ᶠ Elᶠ (b ∘ fst))
       → decode (Glueᵁᶠ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
     decodeGlue φ b a fe =
       cong (_∘ᶠ (φ ,, b ,, curry a ,, curry fe)) (decodeEncode universalGlueᶠ)
       ∙ reindexGlueᶠ (φ ,, b ,, curry a ,, curry fe)
 
   unglueᵁ : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
-    {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
+    {fe : (u : [ φ ]) → El (A u) ≃ El B}
     → El (Glueᵁ φ B A fe) → El B
   unglueᵁ {B = B} =
     subst
@@ -82,8 +82,8 @@ module _ {@♭ ℓ} where
       (unglueᶠ _ _ _ _ tt)
 
   unglueᵁEquiv : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
-    {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
-    → Equiv (El (Glueᵁ φ B A fe)) (El B)
+    {fe : (u : [ φ ]) → El (A u) ≃ El B}
+    → El (Glueᵁ φ B A fe) ≃ El B
   unglueᵁEquiv .fst = unglueᵁ
   unglueᵁEquiv .snd =
     subst
@@ -93,7 +93,7 @@ module _ {@♭ ℓ} where
 
   opaque
     unglueᵁMatch : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
-      {fe : (u : [ φ ]) → Equiv (El (A u)) (El B)}
+      {fe : (u : [ φ ]) → El (A u) ≃ El B}
       (u : [ φ ])
       → subst (λ C → El C → El B) (GlueᵁMatch φ B A fe u) (fe u .fst) ≡ unglueᵁ
     unglueᵁMatch {B = B} u =
