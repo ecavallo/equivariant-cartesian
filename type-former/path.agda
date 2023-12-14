@@ -100,11 +100,11 @@ Pathᶠ A a₀ a₁ .fst = Pathˣ (A .fst) a₀ a₁
 Pathᶠ A a₀ a₁ .snd = PathFibStr (A .snd) a₀ a₁
 
 opaque
-  reindexPathᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ˣ A .fst}
+  reindexPathᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ᶠ A}
     (ρ : Δ → Γ) → Pathᶠ A a₀ a₁ ∘ᶠ ρ ≡ Pathᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
   reindexPathᶠ ρ = Σext refl (reindexPathFibStr ρ)
 
-reflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ˣ A .fst) → Γ ⊢ᶠ Pathᶠ A a a
+reflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) → Γ ⊢ᶠ Pathᶠ A a a
 reflᶠ A = refl~ ∘_
 
 ------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   → Γ ⊢ᶠ Pathᶠ (Σᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑))) c (singlCenterᶠ A a)
 singlContrᶠ A a c γ = homotopy
   where
-  box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A .fst γ))
+  box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A $ᶠ γ))
   box i .cof = ∂ i
   box i .tube j = ∂-rec i (λ {refl → c γ .snd .at j}) (λ {refl → a γ})
   box i .cap .out = a γ
@@ -218,9 +218,9 @@ substᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ 
   → Γ ⊢ᶠ B ∘ᶠ (id ,, a₀)
   → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
 substᶠ A B p b₀ γ =
-  subst (B .fst ∘ (γ ,_)) (p γ .at1)
+  subst (∣ B ∣ ∘ (γ ,_)) (p γ .at1)
     (Coerce.coerce 𝕚 0 (B ∘ᶠ (cst γ ,, p γ .at))
-      (subst (B .fst ∘ (γ ,_)) (sym (p γ .at0)) (b₀ γ))
+      (subst (∣ B ∣ ∘ (γ ,_)) (sym (p γ .at0)) (b₀ γ))
       1)
 
 substInvᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ : Γ ⊢ᶠ A}
@@ -228,9 +228,9 @@ substInvᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a�
   → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
   → Γ ⊢ᶠ B ∘ᶠ (id ,, a₀)
 substInvᶠ A B p b₀ γ =
-  subst (B .fst ∘ (γ ,_)) (p γ .at0)
+  subst (∣ B ∣ ∘ (γ ,_)) (p γ .at0)
     (Coerce.coerce 𝕚 1 (B ∘ᶠ (cst γ ,, p γ .at))
-      (subst (B .fst ∘ (γ ,_)) (sym (p γ .at1)) (b₀ γ))
+      (subst (∣ B ∣ ∘ (γ ,_)) (sym (p γ .at1)) (b₀ γ))
       0)
 
 ------------------------------------------------------------------------------------------

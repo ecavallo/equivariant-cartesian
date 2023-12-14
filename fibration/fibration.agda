@@ -16,7 +16,7 @@ private variable
 
 infix  1 _⊢ᶠType_ _⊢ᶠ_
 infixl 3 _▷ᶠ_
-infixl 5 _∘ᶠˢ_ _∘ᶠ_
+infixl 5 _∘ᶠˢ_ _∘ᶠ_ _$ᶠ_
 
 ------------------------------------------------------------------------------------------
 -- Open boxes
@@ -151,6 +151,8 @@ fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
 -- Equivariant fibrations
 ------------------------------------------------------------------------------------------
 
+--↓ Equivariant fibration structure.
+
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
@@ -161,14 +163,31 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
 
 open FibStr public
 
+--↓ Fibrant type judgment.
+
 _⊢ᶠType_ : (Γ : Type ℓ) (ℓ' : Level) → Type (ℓ ⊔ lsuc ℓ')
 Γ ⊢ᶠType ℓ' = Σ (Γ → Type ℓ') FibStr
 
+--↓ Convenient and/or suggestive notation for accessing the underlying family of a fibrant
+--↓ type and evaluating it at some instantiation of the context.
+
+∣_∣ : (Γ ⊢ᶠType ℓ) → (Γ → Type ℓ)
+∣ A ∣ = A .fst
+
+_$ᶠ_ : (Γ ⊢ᶠType ℓ) → Γ → Type ℓ
+A $ᶠ γ = ∣ A ∣ γ
+
+--↓ Term of a fibrant type.
+--↓ This is just a term of the underlying extensional type.
+
 _⊢ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
-Γ ⊢ᶠ A = Γ ⊢ˣ A .fst
+Γ ⊢ᶠ A = Γ ⊢ˣ ∣ A ∣
+
+--↓ Context extension by a fibrant type.
+--↓ This is just extension by the underlying extensional type.
 
 _▷ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
-Γ ▷ᶠ A = Γ ▷ˣ A .fst
+Γ ▷ᶠ A = Γ ▷ˣ ∣ A ∣
 
 ------------------------------------------------------------------------------------------
 -- Reindexing fibration structures and fibrations

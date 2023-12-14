@@ -69,13 +69,13 @@ module SwanIdentity (Dom : Dominance) where
 
   opaque
     unfolding TFibStrToFibStr
-    reindexIdᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ˣ A .fst}
+    reindexIdᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ᶠ A}
       (ρ : Δ → Γ) → Idᶠ A a₀ a₁ ∘ᶠ ρ ≡ Idᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
     reindexIdᶠ ρ =
       reindexΣᶠ ρ ∙
       congΣ Σᶠ
         (reindexPathᶠ ρ)
-        (substCongAssoc (λ A → _ ▷ˣ A ⊢ᶠType _) fst (reindexPathᶠ ρ) _
+        (substCongAssoc (λ A → _ ▷ˣ A ⊢ᶠType _) ∣_∣ (reindexPathᶠ ρ) _
           ∙ cong (subst (λ A → _ ▷ˣ A ⊢ᶠType _) ⦅–⦆ _) (uip _ refl))
 
   idreflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) → Γ ⊢ᶠ Idᶠ A a a

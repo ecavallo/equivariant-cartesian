@@ -99,13 +99,13 @@ module _ {@♭ ℓ} where
     unglueᵁMatch {B = B} u =
       substCongAssoc (λ C → C → El B) El (GlueᵁMatch _ _ _ _ u) _
       ∙ adjustSubstEq (λ C → C → El B)
-          (cong (λ C → C .fst (tt , u)) $ GlueᶠMatch _ _ _ _)
+          (cong (_$ᶠ (tt , u)) $ GlueᶠMatch _ _ _ _)
           refl
           (cong El (GlueᵁMatch _ _ _ _ u))
           (appCong $ cong fst $ sym $ decodeGlue _ _ _ _)
           (sym $ substCongAssoc
             (λ C → C → El B)
-            (λ C → C .fst (tt , u))
+            (λ C → C $ᶠ (tt , u))
             (GlueᶠMatch _ _ _ _) _)
       ∙ cong (subst (λ C → C → El B) (appCong $ cong fst $ sym $ decodeGlue _ _ _ _))
           (congdep₂ (λ _ → _$ (tt , u)) (GlueᶠMatch _ _ _ _) (unglueᶠMatch _ _ _ _))

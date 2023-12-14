@@ -29,7 +29,7 @@ IsContr : Type ℓ → Type ℓ
 IsContr A = Σ a₀ ∈ A , ((a : A) → a ~ a₀)
 
 IsContrˣ : (Γ → Type ℓ) → (Γ → Type ℓ)
-IsContrˣ A γ = IsContr (A γ)
+IsContrˣ A = Σˣ A (Πˣ (A ∘ 𝒑) (Pathˣ (A ∘ 𝒑 ∘ 𝒑) 𝒒 (𝒒 ∘ 𝒑)))
 
 opaque
   IsContrFibStr : {A : Γ → Type ℓ} (α : FibStr A) → FibStr (IsContrˣ A)
@@ -46,12 +46,12 @@ IsContrᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
 IsContrᶠ A .fst = IsContrˣ (A .fst)
 IsContrᶠ A .snd = IsContrFibStr (A .snd)
 
-isContrToTFibStr : (A : Γ ⊢ᶠType ℓ) (c : Γ ⊢ᶠ IsContrᶠ A) → TFibStr (A .fst)
+isContrToTFibStr : (A : Γ ⊢ᶠType ℓ) (c : Γ ⊢ᶠ IsContrᶠ A) → TFibStr ∣ A ∣
 isContrToTFibStr A c γ φ a =
-  subst (A .fst γ [ φ ↦_]) (funExt λ u → c γ .snd (a u) .at0) $
+  subst (A $ᶠ γ [ φ ↦_]) (funExt λ u → c γ .snd (a u) .at0) $
   A .snd .lift 𝕚 1 (cst γ) box .fill 0
   where
-  box : OpenBox 𝕚 1 (cst (A .fst γ))
+  box : OpenBox 𝕚 1 (cst (A $ᶠ γ))
   box .cof = φ
   box .tube i u = c γ .snd (a u) .at i
   box .cap .out = c γ .fst
@@ -91,9 +91,9 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
   where
   tfib = isContrToTFibStr (A ∘ᶠ (λ (_ : 𝟙) → γ)) (λ _ → a₀ , c₀)
 
-  module _ (i : 𝕀) (a : A .fst γ) where
+  module _ (i : 𝕀) (a : A $ᶠ γ) where
 
-    boundary : (j : 𝕀) → [ ∂ i ∨ ∂ j ] → A .fst γ
+    boundary : (j : 𝕀) → [ ∂ i ∨ ∂ j ] → A $ᶠ γ
     boundary j =
       ∨-rec
         (∂-rec i (λ _ → c₀ a .at j) (λ _ → c₁ a .at j))
@@ -107,7 +107,7 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
             (λ {refl → c₁ a .at1 ∙ sym (c₁ a₀ .at1)})}))
 
     opaque
-      total : (j : 𝕀) → A .fst γ [ ∂ i ∨ ∂ j ↦ boundary j ]
+      total : (j : 𝕀) → A $ᶠ γ [ ∂ i ∨ ∂ j ↦ boundary j ]
       total j = tfib tt (∂ i ∨ ∂ j) (boundary j)
 
     line : a ~ c₁ a₀ .at i
@@ -120,16 +120,16 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
   singlPath .at i .snd = line i
   singlPath .at0 =
     Σext (c₁ a₀ .at0) $ funExt $ λ a → PathExt $ λ j →
-    substNaturality {B = λ b → (b' : A .fst γ) → b' ~ b} (λ _ q → q a .at j) (c₁ a₀ .at0)
+    substNaturality {B = λ b → (b' : A $ᶠ γ) → b' ~ b} (λ _ q → q a .at j) (c₁ a₀ .at0)
     ∙ substConst (c₁ a₀ .at0) _
     ∙ sym (total 0 a j .out≡ (∨l (∨l refl)))
   singlPath .at1 =
     Σext (c₁ a₀ .at1) $ funExt $ λ a → PathExt $ λ j →
-    substNaturality {B = λ b → (b' : A .fst γ) → b' ~ b} (λ _ q → q a .at j) (c₁ a₀ .at1)
+    substNaturality {B = λ b → (b' : A $ᶠ γ) → b' ~ b} (λ _ q → q a .at j) (c₁ a₀ .at1)
     ∙ substConst (c₁ a₀ .at1) _
     ∙ sym (total 1 a j .out≡ (∨l (∨r refl)))
 
---↓ h-propositions are closed under universal quantification.
+--↓ h-Propositions are closed under universal quantification.
 
 ΠIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
   → Γ ▷ᶠ A ⊢ᶠ IsHPropᶠ B

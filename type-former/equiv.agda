@@ -194,7 +194,7 @@ idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ cst γ)
 opaque
   coerceEquiv : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ )
-    (r s : ⟨ S ⟩) → Equiv (A .fst r) (A .fst s)
+    (r s : ⟨ S ⟩) → Equiv (A $ᶠ r) (A $ᶠ s)
   coerceEquiv S A r s =
     Coerce.coerce S r (Equivᶠ (A ∘ᶠ cst r) A) (idEquivᶠ A r) s
 

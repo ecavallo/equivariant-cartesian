@@ -233,13 +233,13 @@ opaque
     Rv S T σ = R T (FibVaries A S T σ)
 
     encoding : Γ ⊢ˣ 𝑼ˣ ℓ'
-    encoding γ .El = A .fst γ
+    encoding γ .El = A $ᶠ γ
     encoding γ .lifts S = Rl S γ
     encoding γ .liftsBase S =
-      appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S (A .fst) (hasLifts S))
+      appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S ∣ A ∣ (hasLifts S))
     encoding γ .varies S T σ = Rv S T σ γ
     encoding γ .variesBase S T σ =
-      appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T (A .fst) (hasVaries S T σ))
+      appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T ∣ A ∣ (hasVaries S T σ))
     encoding γ .variesSrc S T σ =
       appCong (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
     encoding γ .variesDst S T σ =
@@ -259,7 +259,7 @@ opaque
       (FibStrExt
         (ShapeIsDiscrete λ (@♭ S) r p box s →
           cong
-            {A = Σ C ∈ Type* _ , C .fst ≡ hasLifts S (A .fst ∘ p)}
+            {A = Σ C ∈ Type* _ , C .fst ≡ hasLifts S (∣ A ∣ ∘ p)}
             (λ {(C , eq) → coe eq (C .snd) r box .fill s .out})
             {x = _ , appCong (fstLlifts S)}
             {y = _ , refl}
@@ -267,7 +267,7 @@ opaque
     where
     lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → _)
       → L S (λ C → C .lifts S) (encode A ∘ p)
-        ≡ (hasLifts S (A .fst ∘ p) , λ r → A .snd .lift S r p)
+        ≡ (hasLifts S (∣ A ∣ ∘ p) , λ r → A .snd .lift S r p)
     lemma S p =
       appCong (sym (L℘ S id (λ C → C .lifts S)))
       ∙ appCong (L℘ S id (R S {B = Type* _} (FibLifts A S)))

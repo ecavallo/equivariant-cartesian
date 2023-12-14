@@ -12,9 +12,9 @@ open import fibration.fibration
 
 private variable ℓ : Level
 
-module Coerce (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : A .fst r) where
+module Coerce (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : ∣ A ∣ r) where
 
-  box : OpenBox S r (A .fst)
+  box : OpenBox S r ∣ A ∣
   box .cof = ⊥
   box .tube _ = 𝟘-rec
   box .cap .out = a
@@ -24,13 +24,13 @@ module Coerce (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : A 
     filler : Filler box
     filler = A .snd .lift S r id box
 
-  coerce : (s : ⟨ S ⟩) → A .fst s
+  coerce : (s : ⟨ S ⟩) → A $ᶠ s
   coerce s = filler .fill s .out
 
   open Filler filler public using (cap≡)
 
 module _ {S T : Shape} (σ : ShapeHom S T)
-  (r : ⟨ S ⟩) (A : ⟨ T ⟩ ⊢ᶠType ℓ) (a : A .fst (⟪ σ ⟫ r))
+  (r : ⟨ S ⟩) (A : ⟨ T ⟩ ⊢ᶠType ℓ) (a : A $ᶠ ⟪ σ ⟫ r)
   where
 
   private

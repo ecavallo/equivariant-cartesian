@@ -58,12 +58,12 @@ UATFib ℓ (tt , B) φ Part = filler
   box .cap .out .snd = extendedEquiv
   box .cap .out≡ u = Σext refl (fixPath u .at1)
 
-  filler : Σˣ (𝑼ˣ ℓ) (Equivˣ (Elˣ (λ r → snd r)) (Elˣ (λ r → fst r))) B [ φ ↦ Part ]
-  filler .out =
-    Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out
-  filler .out≡ u =
-    Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))
-    ∙ Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0 .out≡ u
+  filler : (Σ A ∈ 𝑼 ℓ , Equiv (El A) (El B)) [ φ ↦ Part ]
+  filler =
+    subst
+      (_ [ φ ↦_])
+      (funExt λ u → sym (Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))))
+      (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ fst)) .snd .lift 𝕚 1 (λ _ → B) box .fill 0)
 
-UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ snd) (Elᶠ (snd ∘ fst)))))
+UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Equivᶠ (Elᶠ 𝒒) (Elᶠ (𝒒 ∘ 𝒑)))))
 UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ)

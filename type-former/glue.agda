@@ -336,7 +336,7 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
   extFFiber : (u : [ φ γ ]) → Fiber (fe (γ , u) .fst) b [ ψ ↦ fFiber u ]
   extFFiber u = equivToFiberTFib A (B ∘ᶠ 𝒑) fe _ _ (fFiber u)
 
-  codBox : OpenBox 𝕚 1 (cst (B .fst γ))
+  codBox : OpenBox 𝕚 1 (cst (B $ᶠ γ))
   codBox .cof = φ γ ∨ ψ
   codBox .tube i =
     ∨-rec
