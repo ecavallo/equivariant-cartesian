@@ -10,6 +10,7 @@
 module shape-to-coproduct where
 
 open import prelude
+open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape
 open import axiom.cofibration
@@ -64,36 +65,42 @@ shape→⊎ {ℓ} {ℓ'} = ShapeIsDiscrete main
     (h : (s : ⟨ S ⟩) → A s ⊎ B s)
     where
 
-    Typeₗ = Σ AB ∈ Type ℓ × Type ℓ' , AB .fst
-    Typeᵣ = Σ AB ∈ Type ℓ × Type ℓ' , AB .snd
+    Ctx = Type ℓ × Type ℓ'
+    Typeₗ = Σ AB ∈ Ctx , AB .fst
+    Typeᵣ = Σ AB ∈ Ctx , AB .snd
 
-    iso = shape→⊎♭ S
+    addCtx : (s : ⟨ S ⟩) → A s ⊎ B s → Typeₗ ⊎ Typeᵣ
+    addCtx s = (A s , B s ,_) ⊎` (A s , B s ,_)
 
-    AB : ⟨ S ⟩ → Type ℓ × Type ℓ'
-    AB s = (A s , B s)
+    getCtx : Typeₗ ⊎ Typeᵣ → Ctx
+    getCtx = ∇ ∘ fst ⊎` fst
+
+    iso♭ = shape→⊎♭ S
 
     h' : ⟨ S ⟩ → Typeₗ ⊎ Typeᵣ
-    h' s = ((_,_ (AB s)) ⊎` (_,_ (AB s))) (h s)
+    h' s = addCtx s (h s)
 
-    fsth' : ∀ s → ∇ ((fst ⊎` fst) (h' s)) ≡ AB s
-    fsth' s with h s
-    fsth' s | inl _ = refl
-    fsth' s | inr _ = refl
+    getAddTypes : ∀ s c → getCtx (addCtx s c) ≡ (A s , B s)
+    getAddTypes s = ⊎-elim (λ _ → refl) (λ _ → refl)
 
-    fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso .from h') ≡ iso .from ((fst ⊎` fst) ∘ h')
+    fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h') ≡ iso♭ .from ((fst ⊎` fst) ∘ h')
     fromNatural =
-      sym (appCong (iso .inv₁))
-      ∙ cong (iso .from) (shape→⊎♭` S fst fst (iso .from h'))
-      ∙ cong (iso .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso .inv₂))
+      sym (appCong (iso♭ .inv₁))
+      ∙ cong (iso♭ .from) (shape→⊎♭` S fst fst (iso♭ .from h'))
+      ∙ cong (iso♭ .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso♭ .inv₂))
 
-    baseEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (shape→⊎♭ S .from h')) ≡ AB
-    baseEq =
+    typesEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h')) ≡ (A ,, B)
+    typesEq =
       cong ∇ fromNatural
-      ∙ sym (shape→⊎♭∇ S (iso .from ((fst ⊎` fst) ∘ h')))
-      ∙ cong (∇ ∘_) (appCong (iso .inv₂))
-      ∙ funExt fsth'
+      ∙ sym (shape→⊎♭∇ S (iso♭ .from ((fst ⊎` fst) ∘ h')))
+      ∙ cong (∇ ∘_) (appCong (iso♭ .inv₂))
+      ∙ funExt (λ s → getAddTypes s (h s))
 
     main : Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
-    main with iso .from h' | baseEq
-    main | inl f | eq = inl λ s → subst fst (appCong eq) (f s .snd)
-    main | inr g | eq = inr λ s → subst snd (appCong eq) (g s .snd)
+    main =
+      ⊎-elim
+        {C = λ c → ∇ (((fst ∘_) ⊎` (fst ∘_)) c) ≡ (A ,, B) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B}
+        (λ f eq → inl λ s → subst fst (appCong eq) (f s .snd))
+        (λ g eq → inr λ s → subst snd (appCong eq) (g s .snd))
+        (iso♭ .from h')
+        typesEq
