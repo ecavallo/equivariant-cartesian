@@ -86,7 +86,7 @@ narrow b f .out≡ u = b .out≡ (f u)
 -- Combining compatible partial functions
 ------------------------------------------------------------------------------------------
 
---↓ Non-dependent elimination principle for a union of cofibrations.
+--↓ Dervied non-dependent elimination principle for a union of cofibrations.
 
 ∨-rec : {φ ψ : Cof} {A : Type ℓ}
   (f : [ φ ] → A)
@@ -97,18 +97,6 @@ narrow b f .out≡ u = b .out≡ (f u)
   ∨-elim f g (λ u v → substConst _ _ ∙ p u v)
 
 --↓ Derived dependent elimination principle for a union of cofibrations into a family of
---↓ propositions.
-
-opaque
-  ∨-elimProp : {φ ψ : Cof} {P : [ φ ∨ ψ ] → Type ℓ}
-    (propP : ∀ uv → isProp (P uv))
-    (f : (u : [ φ ]) → P (∨l u))
-    (g : (v : [ ψ ]) → P (∨r v))
-    (w : [ φ ∨ ψ ]) → P w
-  ∨-elimProp propP f g =
-    ∨-elim f g (λ _ _ → propP _ _ _)
-
---↓ Derived dependent elimination principle for a union of cofibrations into a family of
 --↓ equalities
 
 opaque
@@ -117,8 +105,8 @@ opaque
     → ((u : [ φ ]) → f (∨l u) ≡ g (∨l u))
     → ((v : [ ψ ]) → f (∨r v) ≡ g (∨r v))
     → (w : [ φ ∨ ψ ]) → f w ≡ g w
-  ∨-elimEq =
-    ∨-elimProp (λ _ → uip)
+  ∨-elimEq f g =
+    ∨-elim f g (λ _ _ → uip')
 
 --↓ Non-dependent and dependent elimination principles for the interval boundary
 --↓ cofibration.

@@ -24,7 +24,7 @@ postulate
 
   --↓ Any cofibration is a proposition (up to strict equality).
 
-  cofIsProp : (φ : Cof) → isProp [ φ ]
+  cofIsProp : (φ : Cof) → (u v : [ φ ]) → u ≡ v
 
   --↓ The type of equalities between two elements of a shape is coded by a cofibration.
 

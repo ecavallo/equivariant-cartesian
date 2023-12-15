@@ -34,6 +34,9 @@ record Witness {ℓ} (D : Span ℓ) : Type ℓ where
 
 open Witness public
 
+Type* : ∀ ℓ → Type (lsuc ℓ)
+Type* ℓ = Σ A ∈ Type ℓ , A
+
 Span* : ∀ ℓ → Type (lsuc ℓ)
 Span* ℓ = Σ D ∈ Span ℓ , Witness D
 
