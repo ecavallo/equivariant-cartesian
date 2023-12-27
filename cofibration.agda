@@ -17,7 +17,7 @@ infixr 4 _∨ˣ_
 
 private variable
   ℓ ℓ' : Level
-  Γ : Type ℓ
+  Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
 -- Abbreviations
@@ -33,8 +33,10 @@ private variable
 _▷[_] : (Γ : Type ℓ) (φ : Γ → Cof) → Type ℓ
 Γ ▷[ φ ] = Σ γ ∈ Γ , [ φ γ ]
 
-wk[_] : (φ : Γ → Cof) → Γ ▷[ φ ] → Γ
-wk[ φ ] = 𝒑
+--↓ Restriction along a cofibration.
+
+_↾_ : {A : Γ → Type ℓ} (a : Γ ⊢ˣ A) (φ : Γ → Cof) → Γ ▷[ φ ] ⊢ˣ A ∘ 𝒑
+(a ↾ φ) = a ∘ 𝒑
 
 --↓ Operations on cofibrations in context.
 

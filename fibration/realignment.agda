@@ -1,4 +1,4 @@
-[{-
+{-
 
 Realignment for fibrations along cofibrations.
 
@@ -35,7 +35,7 @@ private variable
 
 module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
-  (α : FibStr (B ∘ wk[ φ ]))
+  (α : FibStr (B ↾ φ))
   (box : OpenBox S r B)
   where
 
@@ -72,7 +72,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (φ : ⟨ T ⟩ → Cof)
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
-  (α : FibStr (B ∘ wk[ φ ]))
+  (α : FibStr (B ↾ φ))
   (box : OpenBox T (⟪ σ ⟫ r) B)
   where
 
@@ -100,7 +100,7 @@ opaque
 
   realignFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
-    (α : FibStr (B ∘ wk[ φ ]))
+    (α : FibStr (B ↾ φ))
     → FibStr B
   realignFibStr φ β α .lift S r p =
     RealignLift.filler (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
@@ -112,18 +112,18 @@ opaque
 
   realignFibStrMatch : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
-    (α : FibStr (B ∘ wk[ φ ]))
+    (α : FibStr (B ↾ φ))
     → α ≡ realignFibStr φ β α ∘ᶠˢ 𝒑
   realignFibStrMatch φ β α =
     FibStrExt λ S r p box s →
-      RealignLift.fillTotal _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
+      RealignLift.fillTotal _ ((β ↾ᶠˢ φ) ∘ᶠˢ p) (α ∘ᶠˢ ((𝒑 ∘ p) ×id)) _
       .fill s .out≡ (∨r (𝒒 ∘ p))
 
   --↓ Realignment commutes with reindexing of fibrations.
 
   reindexRealignFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}
-    {α : FibStr (B ∘ wk[ φ ])}
+    {α : FibStr (B ↾ φ)}
     (ρ : Δ → Γ)
     → realignFibStr φ β α ∘ᶠˢ ρ ≡ realignFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id)
   reindexRealignFibStr ρ = FibStrExt λ S r p box s → refl
@@ -148,7 +148,7 @@ opaque
   ≅Realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
+    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ↾ᶠ φ ∣)
     → Γ ⊢ᶠType ℓ
   ≅Realignᶠ φ _ _ iso .fst γ = ≅Realign (φ γ) (iso ∘ (γ ,_))
   ≅Realignᶠ φ (_ , β) (_ , α) iso .snd =
@@ -161,8 +161,8 @@ opaque
   ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
-    → A ≡ ≅Realignᶠ φ B A iso ∘ᶠ wk[ φ ]
+    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ↾ᶠ φ ∣)
+    → A ≡ ≅Realignᶠ φ B A iso ↾ᶠ φ
   ≅RealignᶠMatch _ _ _ _ =
     Σext _ (realignFibStrMatch _ _ _)
 
@@ -171,7 +171,7 @@ opaque
   ≅realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
+    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ↾ᶠ φ ∣)
     → Γ ⊢ˣ ≅Realignᶠ φ B A iso .fst ≅ˣ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _
 
@@ -180,15 +180,12 @@ opaque
   ≅realignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
-    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
-    → subst
-        (λ C → Γ ▷[ φ ] ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
-        (≅RealignᶠMatch φ B A iso)
-        iso
-      ≡ ≅realignᶠ φ B A iso ∘ wk[ φ ]
+    (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ↾ᶠ φ ∣)
+    → subst (λ C → Γ ▷[ φ ] ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ↾ᶠ φ ∣) (≅RealignᶠMatch φ B A iso) iso
+      ≡ ≅realignᶠ φ B A iso ↾ φ
   ≅realignᶠMatch φ B A iso =
     funExt λ (γ , u) →
-    substNaturality {B = λ C → _ ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣} (λ _ → _$ (γ , u))
+    substNaturality {B = λ C → _ ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ↾ᶠ φ ∣} (λ _ → _$ (γ , u))
       (≅RealignᶠMatch φ B A iso)
     ∙ substCongAssoc (λ C → C ≅ B $ᶠ γ) (_$ᶠ (γ , u)) (≅RealignᶠMatch φ B A iso) _
     ∙ cong (subst (_≅ B $ᶠ γ) ⦅–⦆ (iso (γ , u))) uip'
@@ -199,7 +196,7 @@ opaque
   reindexRealignᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}
     {A : Γ ▷[ φ ] ⊢ᶠType ℓ}
-    {iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣}
+    {iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ↾ᶠ φ ∣}
     (ρ : Δ → Γ)
     → ≅Realignᶠ φ B A iso ∘ᶠ ρ ≡ ≅Realignᶠ (φ ∘ ρ) (B ∘ᶠ ρ) (A ∘ᶠ ρ ×id) (iso ∘ ρ ×id)
   reindexRealignᶠ {A = _ , α} ρ =

@@ -211,6 +211,14 @@ _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
 (A ∘ᶠ ρ) .snd = (A .snd) ∘ᶠˢ ρ
 
+--↓ Restriction of a fibration structure or fibration along a cofibration.
+
+_↾ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (φ : Γ → Cof) → FibStr (A ↾ φ)
+(α ↾ᶠˢ φ) = α ∘ᶠˢ 𝒑
+
+_↾ᶠ_ : (A : Γ ⊢ᶠType ℓ) (φ : Γ → Cof) → Γ ▷[ φ ] ⊢ᶠType ℓ
+(A ↾ᶠ φ) = A ∘ᶠ 𝒑
+
 opaque
   reindexSubst : {A A' : Γ → Type ℓ}
     (α : FibStr A) (P : A ≡ A') (ρ : Δ → Γ) (Q : A ∘ ρ ≡ A' ∘ ρ)

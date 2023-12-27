@@ -24,14 +24,14 @@ Partial Z φ A γ = ∀ z → [ φ z ] → A (γ , z)
 Extensionˣ : (Z : Shape)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
   (φ : ⟨ Z ⟩ → Cof)
-  (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ∘ wk[ φ ∘ 𝒒 ])
+  (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒))
   → Γ → Type ℓ
 Extensionˣ Z A φ a γ =
   (z : ⟨ Z ⟩) → A (γ , z) [ φ z ↦ curry a (γ , z) ]
 
 module ExtensionLift {Z φ S r}
   {A : ⟨ S ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
-  {a : ⟨ S ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ∘ wk[ φ ∘ 𝒒 ]}
+  {a : ⟨ S ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
   (box : OpenBox S r (Extensionˣ Z A φ a))
   where
 
@@ -40,7 +40,7 @@ module ExtensionLift {Z φ S r}
     pointwiseBox : OpenBox S r (λ s → A (s , z))
     pointwiseBox =
       addToTube
-        (mapBox (λ _ → out ∘ (_$ z)) box)
+        (mapBox (λ _ q → q z .out) box)
         (φ z)
         (λ i v → λ where
           .out → a (i , z , v)
@@ -58,7 +58,7 @@ module ExtensionLift {Z φ S r}
 
 module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
-  {a : ⟨ T ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ∘ wk[ φ ∘ 𝒒 ]}
+  {a : ⟨ T ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
   (box : OpenBox T (⟪ σ ⟫ r) (Extensionˣ Z A φ a))
   where
 
@@ -81,7 +81,7 @@ opaque
   ExtensionFibStr : (Z : Shape)
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
     (φ : ⟨ Z ⟩ → Cof)
-    (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ∘ wk[ φ ∘ 𝒒 ])
+    (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒))
     → FibStr (Extensionˣ Z A φ a)
   ExtensionFibStr Z α φ a .lift S r p = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
   ExtensionFibStr Z α φ a .vary S T σ r p = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
@@ -92,14 +92,14 @@ opaque
   reindexExtensionFibStr : {Z : Shape}
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} {α : FibStr A}
     {φ : ⟨ Z ⟩ → Cof}
-    {a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ∘ wk[ φ ∘ 𝒒 ]}
+    {a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
     (ρ : Δ → Γ)
     → ExtensionFibStr Z α φ a ∘ᶠˢ ρ
       ≡ ExtensionFibStr Z (α ∘ᶠˢ ρ ×id) φ (a ∘ ρ ×id ×id)
   reindexExtensionFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
 Extensionᶠ : (Z : Shape) (A : Γ ▷⟨ Z ⟩ ⊢ᶠType ℓ) (φ : ⟨ Z ⟩ → Cof)
-  (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ᶠ A ∘ᶠ wk[ φ ∘ 𝒒 ])
+  (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ᶠ A ↾ᶠ (φ ∘ 𝒒))
   → Γ ⊢ᶠType ℓ
 Extensionᶠ Z A φ a .fst = Extensionˣ Z (A .fst) φ a
 Extensionᶠ Z A φ a .snd = ExtensionFibStr Z (A .snd) φ a
