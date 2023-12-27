@@ -11,6 +11,7 @@ true ("strict") glue types.
 module type-former.glue where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
@@ -86,8 +87,8 @@ domIsoGlue φ {B} {A} f u = iso
   iso : A u ≅ WeakGlue φ f
   iso .to a = domToGlue φ f u a
   iso .from (wglue _ a _) = a u
-  iso .inv₁ = funExt prfIr
-  iso .inv₂ = funExt fg≡id
+  iso .inv₁ = prfIr
+  iso .inv₂ = fg≡id
     where
     fg≡id : (gl : WeakGlue φ f) → (domToGlue φ f u (gl .dom u)) ≡ gl
     fg≡id gl = WeakGlueExt (substCofEl φ (prfIr _)) (gl .match u)

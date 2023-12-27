@@ -10,6 +10,7 @@ axiom.realignment) to prove realignment for fibrations.
 module fibration.realignment where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration

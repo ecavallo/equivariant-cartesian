@@ -6,6 +6,7 @@ Defines fibration structures and fibrations.
 module fibration.fibration where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
@@ -260,11 +261,11 @@ opaque
     filler : Filler box
     filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
     filler .fill s .out≡ u =
-      sym (cong$ (retract (p s) .inv))
+      sym (retract (p s) .inv _)
       ∙ cong (retract (p s) .ret) (fillerB .fill s .out≡ u)
     filler .cap≡ =
       cong (retract (p r) .ret) (fillerB .cap≡)
-      ∙ cong$ (retract (p r) .inv)
+      ∙ retract (p r) .inv _
 
   retractFibStr retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)

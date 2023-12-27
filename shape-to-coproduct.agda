@@ -10,6 +10,7 @@
 module shape-to-coproduct where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape
@@ -26,8 +27,8 @@ module _ (@♭ S : Shape) where
     record
     { to = forward
     ; from = L back
-    ; inv₁ = funExt back∘forward
-    ; inv₂ = L√ forward back ∙ cong♭ L (funExt forward∘back)
+    ; inv₁ = back∘forward
+    ; inv₂ = λ _ → cong$ (L√ forward back ∙ cong♭ L (funExt forward∘back))
     }
     where
     forward = [ inl ∘_ ∣ inr ∘_ ]
@@ -85,15 +86,15 @@ shape→⊎ {ℓ} {ℓ'} = ShapeIsDiscrete main
 
     fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h') ≡ iso♭ .from ((fst ⊎` fst) ∘ h')
     fromNatural =
-      sym (cong$ (iso♭ .inv₁))
+      sym (iso♭ .inv₁ _)
       ∙ cong (iso♭ .from) (shape→⊎♭` S fst fst (iso♭ .from h'))
-      ∙ cong (iso♭ .from ∘ ((fst ⊎` fst) ∘_)) (cong$ (iso♭ .inv₂))
+      ∙ cong (iso♭ .from ∘ ((fst ⊎` fst) ∘_)) (iso♭ .inv₂ _)
 
     typesEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h')) ≡ (A ,, B)
     typesEq =
       cong ∇ fromNatural
       ∙ sym (shape→⊎♭∇ S (iso♭ .from ((fst ⊎` fst) ∘ h')))
-      ∙ cong (∇ ∘_) (cong$ (iso♭ .inv₂))
+      ∙ cong (∇ ∘_) (iso♭ .inv₂ _)
       ∙ funExt (λ s → getAddTypes s (h s))
 
     main : Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B

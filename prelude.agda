@@ -13,9 +13,7 @@ private variable
 infix  1 Σ
 infixl 3 _,_
 infixr 3 _×_ _⊎_
-infix 4 _≡_ _≅_
-
-
+infix 4 _≡_
 infixr 5 _∘_ _∙_ _$_ _$♭_
 
 -----------------------------------------------------------------------------------------
@@ -304,44 +302,6 @@ instance
   Numℕ : Number ℕ
   Numℕ .Number.Constraint _ = 𝟙
   Numℕ .Number.fromNat n = n
-
-------------------------------------------------------------------------------------------
--- Retracts.
-------------------------------------------------------------------------------------------
-
-record Retract (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
- constructor makeRetract
- field
-  sec : A → B
-  ret : B → A
-  inv : ret ∘ sec ≡ id
-
-open Retract public
-
-retractExt : {A : Type ℓ} {B : Type ℓ'}
-  {retract₀ retract₁ : Retract A B}
-  → retract₀ .sec ≡ retract₁ .sec
-  → retract₀ .ret ≡ retract₁ .ret
-  → retract₀ ≡ retract₁
-retractExt refl refl = cong (makeRetract _ _) uip'
-
-------------------------------------------------------------------------------------------
--- Isomorphisms.
-------------------------------------------------------------------------------------------
-record _≅_ (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
- field
-  to   : A → B
-  from : B → A
-  inv₁ : from ∘ to ≡ id
-  inv₂ : to ∘ from ≡ id
-
-open _≅_ public
-
-isoToRetract : {A : Type ℓ} {B : Type ℓ'}
-  → A ≅ B → Retract A B
-isoToRetract iso .sec = iso .to
-isoToRetract iso .ret = iso .from
-isoToRetract iso .inv = iso .inv₁
 
 ------------------------------------------------------------------------------------------
 -- Flat modality.

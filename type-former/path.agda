@@ -6,6 +6,7 @@ Fibrancy of path and homotopy fiber types.
 module type-former.path where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
@@ -69,7 +70,7 @@ opaque
     retract γ .ret ex .at i = ex i .out
     retract γ .ret ex .at0 = sym (ex 0 .out≡ (∨l refl))
     retract γ .ret ex .at1 = sym (ex 1 .out≡ (∨r refl))
-    retract γ .inv = funExt' $ PathExt λ _ → refl
+    retract γ .inv _ = PathExt λ _ → refl
 
   PathFibStr : {A : Γ → Type ℓ} (α : FibStr A) (a₀ a₁ : Γ ⊢ˣ A)
     → FibStr (Pathˣ A a₀ a₁)

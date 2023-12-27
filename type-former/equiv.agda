@@ -6,6 +6,7 @@ Definitions of contractibility and equivalences.
 module type-former.equiv where
 
 open import prelude
+open import isomorphism
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
@@ -51,7 +52,7 @@ equiv∘iso iso e .snd c = contractor
   invertFiber c (b , p) .fst = iso .from b
   invertFiber c (b , p) .snd .at = p .at
   invertFiber c (b , p) .snd .at0 =
-    p .at0 ∙ cong (e .fst) (sym (cong$ (iso .inv₂)))
+    p .at0 ∙ cong (e .fst) (sym (iso .inv₂ _))
   invertFiber c (b , p) .snd .at1 = p .at1
 
   contractor : IsContr (Fiber (e .fst ∘ iso .to) c)
@@ -59,7 +60,7 @@ equiv∘iso iso e .snd c = contractor
   contractor .snd (a , p) =
     subst
       (_~ _)
-      (FiberExt (cong$ (iso .inv₁)) (λ _ → refl))
+      (FiberExt (iso .inv₁ _) (λ _ → refl))
       (congPath
         (invertFiber c)
         (e .snd c .snd (iso .to a , p)))
