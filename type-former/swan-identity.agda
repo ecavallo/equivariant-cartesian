@@ -5,7 +5,7 @@ Fibration structure on Swan identity types, assuming a dominance and cofibration
 -}
 module type-former.swan-identity where
 
-open import prelude
+open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration

@@ -5,7 +5,7 @@ Axiomatization of the type of cofibrations.
 -}
 module axiom.cofibration where
 
-open import prelude
+open import basic
 open import axiom.funext
 open import axiom.shape
 

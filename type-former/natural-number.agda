@@ -5,7 +5,7 @@ Fibrancy of the extensional type of natural numbers ℕ.
 -}
 module type-former.natural-number where
 
-open import prelude
+open import basic
 open import axiom
 open import fibration.fibration
 open import type-former.decidable

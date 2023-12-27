@@ -5,7 +5,7 @@ Showing the universe is closed under type formers
 -}
 module universe.type-former where
 
-open import prelude
+open import basic
 open import axiom
 open import fibration.fibration
 

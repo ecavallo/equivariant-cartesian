@@ -6,7 +6,7 @@ This is later used to prove that the universe is fibrant.
 -}
 module universe.glue where
 
-open import prelude
+open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
@@ -53,24 +53,24 @@ module _ {@♭ ℓ} where
     GlueᵁMatch : (φ : Cof) (B : 𝑼 ℓ) (A : [ φ ] → 𝑼 ℓ)
       (fe : (u : [ φ ]) → El (A u) ≃ El B)
       (u : [ φ ]) → A u ≡ Glueᵁ φ B A fe
-    GlueᵁMatch φ b a fe u =
+    GlueᵁMatch φ B A fe u =
       cong$ (sym (encodeDecode (λ (_ , _ , A , _ , u) → A u)))
       ∙ cong$ (cong♭ encode (GlueᶠMatch _ _ _ _))
       ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
 
-  Glueᵁᶠ : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
-    (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ a ≃ᶠ Elᶠ (b ∘ fst))
+  Glueᵁᶠ : (φ : Γ → Cof) (B : Γ ⊢ˣ 𝑼ˣ ℓ) (A : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
+    (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ A ≃ᶠ Elᶠ (B ↾ φ))
     → Γ ⊢ˣ 𝑼ˣ ℓ
-  Glueᵁᶠ φ b a fe γ =
-    Glueᵁ (φ γ) (b γ) (a ∘ (γ ,_)) (fe ∘ (γ ,_))
+  Glueᵁᶠ φ B A fe γ =
+    Glueᵁ (φ γ) (B γ) (A ∘ (γ ,_)) (fe ∘ (γ ,_))
 
   opaque
-    decodeGlue : (φ : Γ → Cof) (b : Γ ⊢ˣ 𝑼ˣ ℓ) (a : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
-      (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ a ≃ᶠ Elᶠ (b ∘ fst))
-      → decode (Glueᵁᶠ φ b a fe) ≡ Glueᶠ φ (decode b) (decode a) fe
-    decodeGlue φ b a fe =
-      cong (_∘ᶠ (φ ,, b ,, curry a ,, curry fe)) (decodeEncode universalGlueᶠ)
-      ∙ reindexGlueᶠ (φ ,, b ,, curry a ,, curry fe)
+    decodeGlue : (φ : Γ → Cof) (B : Γ ⊢ˣ 𝑼ˣ ℓ) (A : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
+      (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ A ≃ᶠ Elᶠ (B ↾ φ))
+      → decode (Glueᵁᶠ φ B A fe) ≡ Glueᶠ φ (decode B) (decode A) fe
+    decodeGlue φ B A fe =
+      cong (_∘ᶠ (φ ,, B ,, curry A ,, curry fe)) (decodeEncode universalGlueᶠ)
+      ∙ reindexGlueᶠ (φ ,, B ,, curry A ,, curry fe)
 
   unglueᵁ : {φ : Cof} {B : 𝑼 ℓ} {A : [ φ ] → 𝑼 ℓ}
     {fe : (u : [ φ ]) → El (A u) ≃ El B}

@@ -5,7 +5,7 @@ Fibration structure on Π-types.
 -}
 module type-former.pi where
 
-open import prelude
+open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration

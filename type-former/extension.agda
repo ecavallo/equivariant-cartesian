@@ -5,7 +5,7 @@ Fibrancy of extension types.
 -}
 module type-former.extension where
 
-open import prelude
+open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration

@@ -5,7 +5,7 @@ Tinyness of shapes. These axioms are only used for the universe.
 -}
 module axiom.tiny where
 
-open import prelude
+open import basic
 open import axiom.funext
 open import axiom.shape
 open import axiom.cofibration

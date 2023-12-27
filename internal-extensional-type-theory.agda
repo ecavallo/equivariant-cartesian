@@ -18,7 +18,7 @@ theory when necessary, we use the superscript ˣ to indicate eXtensional.
 
 module internal-extensional-type-theory where
 
-open import prelude
+open import basic
 
 private variable
   ℓ ℓ' ℓ'' : Level

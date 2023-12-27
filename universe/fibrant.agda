@@ -7,7 +7,7 @@ TODO discuss non-use of fibration.extension
 -}
 module universe.fibrant where
 
-open import prelude
+open import basic
 open import axiom
 open import cofibration
 open import fibration.fibration

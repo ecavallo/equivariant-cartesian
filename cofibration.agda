@@ -5,7 +5,7 @@ Basic properties of cofibrations
 -}
 module cofibration where
 
-open import prelude
+open import basic
 open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape

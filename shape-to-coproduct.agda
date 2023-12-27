@@ -9,8 +9,7 @@
 -}
 module shape-to-coproduct where
 
-open import prelude
-open import isomorphism
+open import basic
 open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape

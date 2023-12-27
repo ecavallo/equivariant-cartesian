@@ -9,7 +9,9 @@ form
 The addition of an equivariance condition on fibrations has no effect on this proof.
 
 -}
-open import prelude
+module universe.univalence where
+
+open import basic
 open import axiom
 open import internal-extensional-type-theory
 open import cofibration
@@ -23,8 +25,6 @@ open import type-former.sigma
 open import universe.core
 open import universe.fibrant
 open import universe.glue
-
-module universe.univalence where
 
 UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Elˣ 𝒒 ≃ˣ Elˣ (𝒒 ∘ 𝒑)))
 UATFib ℓ (tt , B) φ Part = filler

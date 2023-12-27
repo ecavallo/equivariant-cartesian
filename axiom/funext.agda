@@ -5,7 +5,8 @@ Function extensionality axiom and basic consequences
 -}
 module axiom.funext where
 
-open import prelude
+open import basic.prelude
+open import basic.equality
 
 private variable ℓ ℓ' ℓ'' : Level
 
