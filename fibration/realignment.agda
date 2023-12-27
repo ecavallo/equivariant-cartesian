@@ -1,6 +1,10 @@
-{-
+[{-
 
-Realign a fibration structure to agree with another on some cofibration
+Realignment for fibrations along cofibrations.
+
+First we prove that the notion of fibration is /relatively acyclic/. We use this in
+combination with realignment for the internal extensional type theory (see
+axiom.realignment) to prove realignment for fibrations.
 
 -}
 module fibration.realignment where
@@ -16,8 +20,18 @@ private variable
   Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
--- Realigning a fibration structure on a given family
+-- Relative acyclicity, i.e. realigning fibration structures.
+--
+-- Given
+--
+-- ∘ a fibration B over Γ,
+-- ∘ a cofibration φ over Γ,
+-- ∘ a "partial" fibration structure α on the restricted family B ↾ φ over Γ ▷[ φ ] ,
+--
+-- there exists a fibration structure on B that restricts on φ to α.
 ------------------------------------------------------------------------------------------
+
+--↓ Construction of lifts on for the realigned fibration structure.
 
 module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
@@ -25,28 +39,35 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   (box : OpenBox S r B)
   where
 
-  fillA : [ all S φ ] → _
-  fillA u = α .lift S r (id ,, u) box
+  --↓ First, use the partial fibration structure to construct a lift when the cofibration
+  --↓ ∀φ holds.
 
-  box' : OpenBox S r B
-  box' .cof = box .cof ∨ all S φ
-  box' .tube i =
-    ∨-rec
-      (box .tube i)
-      (λ u → fillA u .fill i .out)
-      (λ v u → fillA u .fill i .out≡ v)
-  box' .cap .out = box .cap .out
-  box' .cap .out≡ =
-    ∨-elimEq
-      (box .cap .out≡)
-      (λ u → fillA u .cap≡)
+  fillPartial : [ all S φ ] → Filler box
+  fillPartial u = α .lift S r (id ,, u) box
 
-  fillB = β .lift S r id box'
+  --↓ Use the total fibration structure to construct a lift for the original box that
+  --↓ also agrees on ∀φ with the partial lift just construction.
+
+  boxTotal : OpenBox S r B
+  boxTotal =
+    addToTube
+      box
+      (all S φ)
+      (λ i u → fillPartial u .fill i)
+      (λ v → fillPartial v .cap≡)
+
+  fillTotal = β .lift S r id boxTotal
+
+  --↓ Extract a filler for the original lifting problem
 
   filler : Filler box
-  filler .fill s .out = fillB .fill s .out
-  filler .fill s .out≡ v = fillB .fill s .out≡ (∨l v)
-  filler .cap≡ = fillB .cap≡
+  filler .fill s .out = fillTotal .fill s .out
+  filler .fill s .out≡ v = fillTotal .fill s .out≡ (∨l v)
+  filler .cap≡ = fillTotal .cap≡
+
+--↓ Proof that the lifts satisfy the equivariance condition.
+--↓ This proof relies on the invariance of ∀ under shape homomorphisms, i.e., that for
+--↓ any shape homorphism σ : S → T the cofibrations ∀t:T.φ(t) and ∀s:S.φ(σ(s)) are equal.
 
 module RealignVary {S T} (σ : ShapeHom S T) {r}
   (φ : ⟨ T ⟩ → Cof)
@@ -56,13 +77,11 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
   where
 
   module T = RealignLift φ β α box
-  module S =
-    RealignLift (φ ∘ ⟪ σ ⟫)
-      (β ∘ᶠˢ ⟪ σ ⟫) (α ∘ᶠˢ ⟪ σ ⟫ ×id) (reshapeBox σ box)
+  module S = RealignLift (φ ∘ ⟪ σ ⟫) (β ∘ᶠˢ ⟪ σ ⟫) (α ∘ᶠˢ ⟪ σ ⟫ ×id) (reshapeBox σ box)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
-    β .vary S T σ r id T.box' s
+    β .vary S T σ r id T.boxTotal s
     ∙
     cong
       (λ box' → β .lift S r ⟪ σ ⟫ box' .fill s .out)
@@ -77,6 +96,8 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
         refl)
 
 opaque
+  --↓ Definition of the realigned fibration structure.
+
   realignFibStr : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
@@ -86,15 +107,19 @@ opaque
   realignFibStr φ β α .vary S T σ r p =
     RealignVary.eq σ (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
 
-  -- TODO prove this in RealignLift?
-  isRealigned : (φ : Γ → Cof)
+  --↓ Proof that the realigned fibration structure indeed restricts to the given partial
+  --↓ fibration structure.
+
+  realignFibStrMatch : (φ : Γ → Cof)
     {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ∘ wk[ φ ]))
     → α ≡ realignFibStr φ β α ∘ᶠˢ 𝒑
-  isRealigned φ β α =
+  realignFibStrMatch φ β α =
     FibStrExt λ S r p box s →
-      RealignLift.fillB _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
+      RealignLift.fillTotal _ (β ∘ᶠˢ (wk[ φ ] ∘ p)) (α ∘ᶠˢ (wk[ φ ] ∘ p) ×id) _
       .fill s .out≡ (∨r (𝒒 ∘ p))
+
+  --↓ Realignment commutes with reindexing of fibrations.
 
   reindexRealignFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}
@@ -104,10 +129,22 @@ opaque
   reindexRealignFibStr ρ = FibStrExt λ S r p box s → refl
 
 ------------------------------------------------------------------------------------------
--- Realigning a fibration
+-- Realignment for fibrations along cofibrations.
+--
+-- Given
+--
+-- ∘ a "total" fibration B over Γ,
+-- ∘ a cofibration φ over Γ,
+-- ∘ a "partial" fibration A over the restricted context Γ ▷[ φ ] such that A is
+--   (strictly) isomorphic to B ↾ φ,
+--
+-- there exists a fibration over Γ that is (strictly) isomorphic to B and restricts on φ
+-- to A (up to strict equality).
 ------------------------------------------------------------------------------------------
 
 opaque
+  --↓ Construction of the realigned fibration.
+
   ≅Realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
@@ -119,13 +156,17 @@ opaque
       (isomorphFibStr (λ γ → ≅realign (φ γ) (iso ∘ (γ ,_))) β)
       (subst FibStr (funExt (uncurry λ γ → ≅RealignMatch (φ γ) (iso ∘ (γ ,_)))) α)
 
+  --↓ Proof that the realigned fibration restricts to the input partial fibration.
+
   ≅RealignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
     (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
     (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
     → A ≡ ≅Realignᶠ φ B A iso ∘ᶠ wk[ φ ]
   ≅RealignᶠMatch _ _ _ _ =
-    Σext _ (isRealigned _ _ _)
+    Σext _ (realignFibStrMatch _ _ _)
+
+  --↓ Isomorphism from the input total fibration to the realigned fibration.
 
   ≅realignᶠ : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
@@ -133,6 +174,8 @@ opaque
     (iso : Γ ▷[ φ ] ⊢ˣ ∣ A ∣ ≅ˣ ∣ B ∘ᶠ wk[ φ ] ∣)
     → Γ ⊢ˣ ≅Realignᶠ φ B A iso .fst ≅ˣ B .fst
   ≅realignᶠ φ B A iso γ = ≅realign _ _
+
+  --↓ Proof that the isomorphism above restricts to the input isomorphism.
 
   ≅realignᶠMatch : (φ : Γ → Cof)
     (B : Γ ⊢ᶠType ℓ)
@@ -150,6 +193,8 @@ opaque
     ∙ substCongAssoc (λ C → C ≅ B $ᶠ γ) (_$ᶠ (γ , u)) (≅RealignᶠMatch φ B A iso) _
     ∙ cong (subst (_≅ B $ᶠ γ) ⦅–⦆ (iso (γ , u))) uip'
     ∙ ≅realignMatch (φ γ) (iso ∘ (γ ,_)) u
+
+  --↓ Realignment commmutes with reindexing.
 
   reindexRealignᶠ : {φ : Γ → Cof}
     {B : Γ ⊢ᶠType ℓ}

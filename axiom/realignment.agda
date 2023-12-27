@@ -13,8 +13,8 @@ open import cofibration
 private variable ℓ : Level
 
 ------------------------------------------------------------------------------------------
--- We postulate realignment of isomorphisms along cofibrations for the universes of the
--- ambient type theory.
+-- We postulate realignment along cofibrations for the universes of the ambient type
+-- theory.
 ------------------------------------------------------------------------------------------
 
 postulate
