@@ -139,7 +139,7 @@ opaque
     {co co' : Filler box}
     → co ≡ co'
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
-  fillerCong p s = cong out (appCong (cong fill p))
+  fillerCong p s = cong out (cong$ (cong fill p))
 
 fitsPartialToFiller : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} {box : OpenBox S r A}
   → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
@@ -260,11 +260,11 @@ opaque
     filler : Filler box
     filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
     filler .fill s .out≡ u =
-      sym (appCong (retract (p s) .inv))
+      sym (cong$ (retract (p s) .inv))
       ∙ cong (retract (p s) .ret) (fillerB .fill s .out≡ u)
     filler .cap≡ =
       cong (retract (p r) .ret) (fillerB .cap≡)
-      ∙ appCong (retract (p r) .inv)
+      ∙ cong$ (retract (p r) .inv)
 
   retractFibStr retract β .vary S T σ r p box s =
     cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)

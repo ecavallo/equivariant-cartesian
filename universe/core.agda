@@ -113,11 +113,11 @@ fstLlifts S =
   ∙ cong♭ (L S) (funExt (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
 
 getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ) → hasLifts S (El ∘ C)
-getLifts S C = subst id (appCong (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
+getLifts S C = subst id (cong$ (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
 
 Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ)
   → L S (λ A → A .lifts S) C ≡ (hasLifts S (El ∘ C) , getLifts S C)
-Llifts S C = Σext (appCong (fstLlifts S)) refl
+Llifts S C = Σext (cong$ (fstLlifts S)) refl
 
 ------------------------------------------------------------------------------------------
 -- Extracting equivariance from a map into 𝑼
@@ -132,7 +132,7 @@ fstLvaries S T σ =
 srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
   → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
 srcLvaries S T σ C =
-  appCong
+  cong$
     (L√ T src* (λ A → A .varies S T σ)
       ∙ cong♭ (L T) (funExt (λ A → A .variesSrc S T σ))
       ∙ funExt (Llifts T))
@@ -141,7 +141,7 @@ dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨
   → dst* (L T (λ A → A .varies S T σ) C)
     ≡ (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))
 dstLvaries S T σ C =
-  appCong
+  cong$
     (L√ T dst* (λ A → A .varies S T σ)
       ∙ cong♭ (L T) (funExt (λ A → A .variesDst S T σ))
       ∙ LShapeHom σ (λ A → A .lifts S)
@@ -172,9 +172,9 @@ Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T 
   → L T (λ A → A .varies S T σ) C ≡ (hasVaries S T σ (El ∘ C) , getVaries S T σ C)
 Lvaries S T σ C =
   Σext
-    (appCong (fstLvaries S T σ))
+    (cong$ (fstLvaries S T σ))
     (witnessExtLemma
-      (appCong (fstLvaries S T σ))
+      (cong$ (fstLvaries S T σ))
       (srcLvaries S T σ C)
       (dstLvaries S T σ C)
       (λ _ _ → funExt' $ funExt' $ funExt' $ uip'))
@@ -239,14 +239,14 @@ opaque
     encoding γ .El = A $ᶠ γ
     encoding γ .lifts S = Rl S γ
     encoding γ .liftsBase S =
-      appCong (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S ∣ A ∣ (hasLifts S))
+      cong$ (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S ∣ A ∣ (hasLifts S))
     encoding γ .varies S T σ = Rv S T σ γ
     encoding γ .variesBase S T σ =
-      appCong (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T ∣ A ∣ (hasVaries S T σ))
+      cong$ (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T ∣ A ∣ (hasVaries S T σ))
     encoding γ .variesSrc S T σ =
-      appCong (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
+      cong$ (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
     encoding γ .variesDst S T σ =
-      appCong
+      cong$
         (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
 
 ------------------------------------------------------------------------------------------
@@ -271,8 +271,8 @@ opaque
       → L S (λ (C : 𝑼 _) → C .lifts S) (encode A ∘ p)
         ≡ (hasLifts S (∣ A ∣ ∘ p) , λ r → A .snd .lift S r p)
     lemma S p =
-      appCong (sym (L℘ S id (λ C → C .lifts S)))
-      ∙ appCong (L℘ S id (R S {B = Type* _} (FibLifts A S)))
+      cong$ (sym (L℘ S id (λ C → C .lifts S)))
+      ∙ cong$ (L℘ S id (R S {B = Type* _} (FibLifts A S)))
 
 opaque
   unfolding encode
@@ -282,8 +282,8 @@ opaque
   encodeReindexFib A ρ γ =
     𝑼Ext
       refl
-      (funExt♭' $ appCong $ R℘ _ ρ (FibLifts A _))
-      (funExt♭' $ funExt♭' $ funExt♭' $ appCong $ R℘ _ ρ (FibVaries A _ _ _))
+      (funExt♭' $ cong$ $ R℘ _ ρ (FibLifts A _))
+      (funExt♭' $ funExt♭' $ funExt♭' $ cong$ $ R℘ _ ρ (FibVaries A _ _ _))
 
 opaque
   unfolding encode ElFibStr
@@ -291,9 +291,9 @@ opaque
   encodeEl C =
     𝑼Ext
       refl
-      (funExt♭' $ appCong $ cong♭ (R _) $♭ sym $ funExt $ Llifts _)
+      (funExt♭' $ cong$ $ cong♭ (R _) $♭ sym $ funExt $ Llifts _)
       (funExt♭' $ funExt♭' $ funExt♭ λ σ →
-        appCong $ cong♭ (R _) $♭ sym $ funExt λ C →
+        cong$ $ cong♭ (R _) $♭ sym $ funExt λ C →
         Lvaries _ _ σ C
         ∙ cong
           (λ w → _ , witness (getLifts _ C) (getLifts _ (C ∘ ⟪ σ ⟫)) w)

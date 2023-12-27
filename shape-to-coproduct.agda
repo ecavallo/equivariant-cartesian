@@ -34,12 +34,12 @@ module _ (@♭ S : Shape) where
     back = [ R inl ∣ R inr ]
 
     forward∘back : (c : A ⊎ B) → √` forward (back c) ≡ R id c
-    forward∘back (inl a) = appCong (√R forward inl ∙ R℘ inl id)
-    forward∘back (inr b) = appCong (√R forward inr ∙ R℘ inr id)
+    forward∘back (inl a) = cong$ (√R forward inl ∙ R℘ inl id)
+    forward∘back (inr b) = cong$ (√R forward inr ∙ R℘ inr id)
 
     back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L back (forward d) ≡ d
-    back∘forward (inl f) = appCong (L℘ back inl)
-    back∘forward (inr g) = appCong (L℘ back inr)
+    back∘forward (inl f) = cong$ (L℘ back inl)
+    back∘forward (inr g) = cong$ (L℘ back inr)
 
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
       {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
@@ -85,22 +85,22 @@ shape→⊎ {ℓ} {ℓ'} = ShapeIsDiscrete main
 
     fromNatural : ((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h') ≡ iso♭ .from ((fst ⊎` fst) ∘ h')
     fromNatural =
-      sym (appCong (iso♭ .inv₁))
+      sym (cong$ (iso♭ .inv₁))
       ∙ cong (iso♭ .from) (shape→⊎♭` S fst fst (iso♭ .from h'))
-      ∙ cong (iso♭ .from ∘ ((fst ⊎` fst) ∘_)) (appCong (iso♭ .inv₂))
+      ∙ cong (iso♭ .from ∘ ((fst ⊎` fst) ∘_)) (cong$ (iso♭ .inv₂))
 
     typesEq : ∇ (((fst ∘_) ⊎` (fst ∘_)) (iso♭ .from h')) ≡ (A ,, B)
     typesEq =
       cong ∇ fromNatural
       ∙ sym (shape→⊎♭∇ S (iso♭ .from ((fst ⊎` fst) ∘ h')))
-      ∙ cong (∇ ∘_) (appCong (iso♭ .inv₂))
+      ∙ cong (∇ ∘_) (cong$ (iso♭ .inv₂))
       ∙ funExt (λ s → getAddTypes s (h s))
 
     main : Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
     main =
       ⊎-elim
         {C = λ c → ∇ (((fst ∘_) ⊎` (fst ∘_)) c) ≡ (A ,, B) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B}
-        (λ f eq → inl λ s → subst fst (appCong eq) (f s .snd))
-        (λ g eq → inr λ s → subst snd (appCong eq) (g s .snd))
+        (λ f eq → inl λ s → subst fst (cong$ eq) (f s .snd))
+        (λ g eq → inr λ s → subst snd (cong$ eq) (g s .snd))
         (iso♭ .from h')
         typesEq

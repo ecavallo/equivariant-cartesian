@@ -51,7 +51,7 @@ equiv∘iso iso e .snd c = contractor
   invertFiber c (b , p) .fst = iso .from b
   invertFiber c (b , p) .snd .at = p .at
   invertFiber c (b , p) .snd .at0 =
-    p .at0 ∙ cong (e .fst) (sym (appCong (iso .inv₂)))
+    p .at0 ∙ cong (e .fst) (sym (cong$ (iso .inv₂)))
   invertFiber c (b , p) .snd .at1 = p .at1
 
   contractor : IsContr (Fiber (e .fst ∘ iso .to) c)
@@ -59,7 +59,7 @@ equiv∘iso iso e .snd c = contractor
   contractor .snd (a , p) =
     subst
       (_~ _)
-      (FiberExt (appCong (iso .inv₁)) (λ _ → refl))
+      (FiberExt (cong$ (iso .inv₁)) (λ _ → refl))
       (congPath
         (invertFiber c)
         (e .snd c .snd (iso .to a , p)))

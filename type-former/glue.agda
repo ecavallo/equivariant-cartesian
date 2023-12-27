@@ -138,7 +138,7 @@ module WeakGlueLift {S r φ}
               (box .cap .out .dom us)
               (box .cap .out .match us ∙ sym (codFill .cap≡))})
           (λ {v refl →
-            congΣ eqToFiber (appCong (cong dom (box .cap .out≡ v))) uip'})
+            congΣ eqToFiber (cong$ (cong dom (box .cap .out≡ v))) uip'})
 
       fiberBox : OpenBox 𝕚 1 (cst (Fiber (f (s , us)) (codFill .fill s .out)))
       fiberBox .cof = box .cof ∨ S ∋ r ≈ s

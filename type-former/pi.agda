@@ -85,7 +85,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
       (β .vary S T σ r (id ,, T.Dom.coerce _ a) (T.boxCod _ a (T.Dom.coerce _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
-      (appCong (funExt (varyDom s a))) refl
+      (cong$ (funExt (varyDom s a))) refl
       (T.Dom.cap≡ (⟪ σ ⟫ s) a) (S.Dom.cap≡ s a)
       (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyDom s a)) _)
         ∙ congdep (λ cA → S.fillCod s a cA .fill s .out) (funExt (varyDom s a)))
