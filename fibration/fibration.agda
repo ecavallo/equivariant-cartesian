@@ -151,13 +151,22 @@ fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
 -- Equivariant fibrations
 ------------------------------------------------------------------------------------------
 
---↓ Equivariant fibration structure.
+--↓ Definition of an equivariant fibration structure.
 
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
-    lift : ∀ S r p (box : OpenBox S r (A ∘ p)) → Filler box
-    vary : ∀ S T (σ : ShapeHom S T) r p box s
+    --↓ For every shape S, map p : ⟨ S ⟩ → Γ, and open box over p, we have a chosen lift.
+
+    lift : (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ)
+      (box : OpenBox S r (A ∘ p)) → Filler box
+
+    --↓ The equivariance condition on lifts: for every shape homomorphism and open box,
+    --↓ reshaping the open box and then lifting has the same effect as lifting and then
+    --↓ reshaping the filler.
+
+    vary : ∀ S T (σ : ShapeHom S T) (r : ⟨ S ⟩) (p : ⟨ T ⟩ → Γ)
+      (box : OpenBox T (⟪ σ ⟫ r) (A ∘ p)) (s : ⟨ S ⟩)
       → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .out
         ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .out
 
@@ -169,7 +178,8 @@ _⊢ᶠType_ : (Γ : Type ℓ) (ℓ' : Level) → Type (ℓ ⊔ lsuc ℓ')
 Γ ⊢ᶠType ℓ' = Σ (Γ → Type ℓ') FibStr
 
 --↓ Convenient and/or suggestive notation for accessing the underlying family of a fibrant
---↓ type and evaluating it at some instantiation of the context.
+--↓ type and evaluating the family at some instantiation of the context (i.e., taking some
+--↓ fiber).
 
 ∣_∣ : (Γ ⊢ᶠType ℓ) → (Γ → Type ℓ)
 ∣ A ∣ = A .fst
