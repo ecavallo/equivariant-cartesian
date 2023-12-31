@@ -183,9 +183,8 @@ singlCenterᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
 singlCenterᶠ A a =
   pairᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)) a (reflᶠ A a)
 
-singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
-  (c : Γ ⊢ᶠ Σᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)))
-  → Γ ⊢ᶠ Pathᶠ (Σᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑))) c (singlCenterᶠ A a)
+singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) (c : Γ ⊢ᶠ Singlᶠ A a)
+  → Γ ⊢ᶠ Pathᶠ (Singlᶠ A a) c (singlCenterᶠ A a)
 singlContrᶠ A a c γ = homotopy
   where
   box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A $ᶠ γ))

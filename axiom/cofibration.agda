@@ -31,12 +31,16 @@ postulate
   _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → Cof
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
-  --↓ The empty type is coded by a cofibration.
+  --↓ The empty and unit types are coded by cofibrations.
   --↓ It is not strictly necessary to assume this separately: we have already assumed an
-  --↓ interval shape with two disequal elements, so we could define ⊥ to be 𝕚 ∋ 0 ≈ 1.
+  --↓ interval shape with two disequal elements, so we could define ⊥ to be 𝕚 ∋ 0 ≈ 1 and
+  --↓ ⊤ to be 𝕚 ∋ 0 ≈ 0.
 
   ⊥ : Cof
   [⊥] : [ ⊥ ] ≡ 𝟘
+
+  ⊤ : Cof
+  [⊤] : [ ⊤ ] ≡ 𝟙
 
   --↓ The union of two cofibrations is again a cofibration. Rather than introducing an
   --↓ equality for decoding the union of cofibrations, we axiomatize its introduction
@@ -78,4 +82,4 @@ postulate
 --↓ For convenience, we make the equations decoding cofibrations into definitional
 --↓ equalities using a REWRITE pragma.
 
-{-# REWRITE [≈] [⊥] ∨-elim-βl ∨-elim-βr [all] #-}
+{-# REWRITE [≈] [⊥] [⊤] ∨-elim-βl ∨-elim-βr [all] #-}
