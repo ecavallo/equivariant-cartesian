@@ -32,12 +32,12 @@ private variable
 infix  1 _⊢ˣ_
 infixl 3 _▷ˣ_ _,,_
 
---↓ Term judgment.
+--↓ Term judgment of the extensional type theory.
 
 _⊢ˣ_ : (Γ : Type ℓ) (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 (Γ ⊢ˣ A) = Π Γ A
 
---↓ Context and substitution extension.
+--↓ Context and substitution extension for the extensional type theory.
 
 _▷ˣ_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 Γ ▷ˣ A = Σ Γ A
@@ -46,11 +46,14 @@ _,,_ : {A : Γ → Type ℓ''} (ρ : Δ → Γ) (a : Δ ⊢ˣ A ∘ ρ) → (Δ 
 (ρ ,, a) δ .fst = ρ δ
 (ρ ,, a) δ .snd = a δ
 
---↓ Suggestive notation for projections where used as substitutions.
---↓ In Agda's input mode, these are \MIp and \MIq respectively.
+--↓ Projection substitution from an extended context.
+--↓ In Agda's input mode, this is \MIp.
 
 𝒑 : {Γ : Type ℓ} {A : Γ → Type ℓ'} → Γ ▷ˣ A → Γ
 𝒑 = fst
+
+--↓ Variable term in an extended context.
+--↓ In Agda's input mode, this is \MIq.
 
 𝒒 : {Γ : Type ℓ} {A : Γ → Type ℓ'} → Γ ▷ˣ A ⊢ˣ A ∘ 𝒑
 𝒒 = snd

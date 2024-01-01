@@ -10,6 +10,7 @@ open import axiom
 open import fibration.fibration
 
 open import type-former.empty
+open import type-former.natural-number
 open import type-former.path
 open import type-former.pi
 open import type-former.sigma
@@ -23,21 +24,50 @@ private variable
   ℓ : Level
   Γ : Type ℓ
 
+----------------------------------------------------------------------------------------
+-- The universe of fibrations contains an empty type.
+----------------------------------------------------------------------------------------
+
+𝟘ᵁ : 𝑼 lzero
+𝟘ᵁ = encode 𝟘ᶠ tt
+
+𝟘ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
+𝟘ᵁᶠ _ = 𝟘ᵁ
+
+opaque
+  El-𝟘ᶠ : Elᶠ (𝟘ᵁᶠ {Γ = Γ}) ≡ 𝟘ᶠ
+  El-𝟘ᶠ = cong (_∘ᶠ cst tt) (decodeEncode 𝟘ᶠ)
+
+----------------------------------------------------------------------------------------
+-- The universe of fibrations contains a unit type.
+----------------------------------------------------------------------------------------
+
+𝟙ᵁ : 𝑼 lzero
+𝟙ᵁ = encode 𝟙ᶠ tt
+
+𝟙ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
+𝟙ᵁᶠ _ = 𝟙ᵁ
+
+opaque
+  El-𝟙ᶠ : Elᶠ (𝟙ᵁᶠ {Γ = Γ}) ≡ 𝟙ᶠ
+  El-𝟙ᶠ = cong (_∘ᶠ cst tt) (decodeEncode 𝟙ᶠ)
+
+----------------------------------------------------------------------------------------
+-- The universe of fibrations contains a natural number type.
+----------------------------------------------------------------------------------------
+
+ℕᵁ : 𝑼 lzero
+ℕᵁ = encode ℕᶠ tt
+
+ℕᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
+ℕᵁᶠ _ = ℕᵁ
+
+opaque
+  El-ℕᶠ : Elᶠ (ℕᵁᶠ {Γ = Γ}) ≡ ℕᶠ
+  El-ℕᶠ = cong (_∘ᶠ cst tt) (decodeEncode ℕᶠ)
+
+
 module _ {@♭ ℓ : Level} where
-
-  ----------------------------------------------------------------------------------------
-  -- The universe of fibrations contains an empty type.
-  ----------------------------------------------------------------------------------------
-
-  𝟘ᵁ : 𝑼 lzero
-  𝟘ᵁ = encode 𝟘ᶠ tt
-
-  𝟘ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
-  𝟘ᵁᶠ _ = 𝟘ᵁ
-
-  opaque
-    Elᶠ-𝟘ᵁ : Elᶠ (𝟘ᵁᶠ {Γ = Γ}) ≡ 𝟘ᶠ
-    Elᶠ-𝟘ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟘ᶠ)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Σ-types.
@@ -54,9 +84,9 @@ module _ {@♭ ℓ : Level} where
   Σᵁᶠ A B γ = Σᵁ (A γ) (curry B γ)
 
   opaque
-    Elᶠ-Σᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
+    El-Σᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
       → Elᶠ (Σᵁᶠ A B) ≡ Σᶠ (Elᶠ A) (Elᶠ B)
-    Elᶠ-Σᵁ A B =
+    El-Σᶠ A B =
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΣᶠ) ∙ reindexΣᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
@@ -74,9 +104,9 @@ module _ {@♭ ℓ : Level} where
   Pathᵁᶠ A a₀ a₁ γ = Pathᵁ (A γ) (a₀ γ) (a₁ γ)
 
   opaque
-    El-Path : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
+    El-Pathᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
       → Elᶠ (Pathᵁᶠ A a₀ a₁) ≡ Pathᶠ (Elᶠ A) a₀ a₁
-    El-Path A a₀ a₁ =
+    El-Pathᶠ A a₀ a₁ =
       cong (_∘ᶠ (A ,ˣ (a₀ ,ˣ a₁))) (decodeEncode universalPathᶠ)
       ∙ reindexPathᶠ (A ,ˣ (a₀ ,ˣ a₁))
 
@@ -95,18 +125,18 @@ module _ {@♭ ℓ : Level} where
   Πᵁᶠ A B γ = Πᵁ (A γ) (curry B γ)
 
   opaque
-    El-Πᵁ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
+    El-Πᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
       → Elᶠ (Πᵁᶠ A B) ≡ Πᶠ (Elᶠ A) (Elᶠ B)
-    El-Πᵁ A B =
+    El-Πᶠ A B =
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
   -- The universe of fibrations is closed under Swan identity types,
-  -- assuming a dominance for the cofibration classifier.
+  -- assuming a dominance for the cofibration classifier and cofibration extensionality.
   ----------------------------------------------------------------------------------------
 
-  module _ (@♭ Dom : Dominance) where
-    open SwanIdentity Dom
+  module _ (@♭ dom : Dominance) (@♭ ext : CofExt) where
+    open SwanIdentity dom ext
 
     private
       universalIdᶠ : (Σ A ∈ 𝑼 ℓ , El A × El A) ⊢ᶠType ℓ
@@ -119,22 +149,8 @@ module _ {@♭ ℓ : Level} where
     Idᵁᶠ A a₀ a₁ γ = Idᵁ (A γ) (a₀ γ) (a₁ γ)
 
     opaque
-      El-Id : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
+      El-Idᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
         → Elᶠ (Idᵁᶠ A a₀ a₁) ≡ Idᶠ (Elᶠ A) a₀ a₁
-      El-Id A a₀ a₁ =
+      El-Idᶠ A a₀ a₁ =
         cong (_∘ᶠ (A ,ˣ (a₀ ,ˣ a₁))) (decodeEncode universalIdᶠ)
         ∙ reindexIdᶠ (A ,ˣ (a₀ ,ˣ a₁))
-
-  ----------------------------------------------------------------------------------------
-  -- The universe of fibrations contains a unit type.
-  ----------------------------------------------------------------------------------------
-
-  𝟙ᵁ : 𝑼 lzero
-  𝟙ᵁ = encode 𝟙ᶠ tt
-
-  𝟙ᵁᶠ : Γ ⊢ᶠ 𝑼ᶠ lzero
-  𝟙ᵁᶠ _ = 𝟙ᵁ
-
-  opaque
-    El-𝟙ᵁ : Elᶠ (𝟙ᵁᶠ {Γ = Γ}) ≡ 𝟙ᶠ
-    El-𝟙ᵁ = cong (_∘ᶠ cst tt) (decodeEncode 𝟙ᶠ)

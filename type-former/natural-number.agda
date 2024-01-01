@@ -12,6 +12,10 @@ open import type-former.decidable
 
 open import Agda.Builtin.Nat renaming (Nat to ℕ)
 
+private variable
+  ℓ : Level
+  Γ : Type ℓ
+
 --↓ Standard decision procedure for equality in ℕ.
 
 pred : ℕ → ℕ
@@ -36,9 +40,9 @@ decideEqualityℕ (suc m) (suc n) = (cong suc ⊎` (_∘ cong pred)) (decideEqua
 
 --↓ Decidable equality suffices to construct a fibration structure.
 
-ℕFibStr : FibStr (λ (_ : 𝟙) → ℕ)
-ℕFibStr = DecidableEqFibStr ℕ decideEqualityℕ
+ℕFibStr : FibStr (λ (_ : Γ) → ℕ)
+ℕFibStr = DecidableEqFibStr ℕ decideEqualityℕ ∘ᶠˢ cst tt
 
-ℕᶠ : 𝟙 ⊢ᶠType lzero
+ℕᶠ : Γ ⊢ᶠType lzero
 ℕᶠ .fst _ = ℕ
 ℕᶠ .snd = ℕFibStr
