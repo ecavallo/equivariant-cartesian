@@ -13,6 +13,7 @@ import type-former.natural-number
 import type-former.path
 import type-former.pi
 import type-former.sigma
+import type-former.swan-identity
 import type-former.unit
 import universe
 
@@ -98,12 +99,12 @@ a ∘ᵗᵐ ρ = a ∘ ρ
 --↓ Introduction.
 
 zeroᶠ : Γ ⊢ᶠ ℕᶠ
-zeroᶠ _ = zero
+zeroᶠ = type-former.natural-number.zeroᶠ
 
 sucᶠ :
   (n : Γ ⊢ᶠ ℕᶠ)
   → Γ ⊢ᶠ ℕᶠ
-sucᶠ n γ = suc (n γ)
+sucᶠ = type-former.natural-number.sucᶠ
 
 --↓ Elimination.
 
@@ -113,11 +114,7 @@ sucᶠ n γ = suc (n γ)
   (s : Γ ▷ᶠ ℕᶠ ▷ᶠ P ⊢ᶠ P ∘ᶠ (𝒑 ∘ 𝒑 ,, sucᶠ (𝒒 ∘ 𝒑)))
   (n : Γ ⊢ᶠ ℕᶠ)
   → Γ ⊢ᶠ P ∘ᶠ (id ,, n)
-ℕ-elimᶠ P z s n γ = elim (n γ)
-  where
-  elim : ∀ m → P $ᶠ (γ , m)
-  elim zero = z γ
-  elim (suc m) = s ((γ , m) , elim m)
+ℕ-elimᶠ = type-former.natural-number.ℕ-elimᶠ
 
 ℕ-elim-zeroᶠ :
   (P : Γ ▷ᶠ ℕᶠ ⊢ᶠType ℓ)
@@ -336,7 +333,7 @@ module _ {@♭ ℓ : Level} where
   El-Σᶠ = universe.El-Σᶠ
 
   --↓ Π-type.
-Σ B : 𝑼. EΣ B : 𝑼. El B ≃ El Al B ≃ El A
+
   Πᵁᶠ :
     (A : Γ ⊢ᶠ 𝑼ᶠ ℓ)
     (B : Γ ▷ᶠ Elᶠ A ⊢ᶠ 𝑼ᶠ ℓ)
@@ -362,16 +359,94 @@ module _ {@♭ ℓ : Level} where
   El-Pathᶠ = universe.El-Pathᶠ
 
 ------------------------------------------------------------------------------------------
--- The univalence axiom.
+-- Univalence axiom.
 ------------------------------------------------------------------------------------------
 
 module _ (@♭ ℓ : Level) where
 
-  --↓ The univalence axiom, stated as the contractibility of (Σ B:𝑼. B ≃ A)
-  --↓ for every A : 𝑼.
+  --↓ The univalence axiom, stated as contractibility of (Σ B:𝑼. B ≃ A) for all A : 𝑼.
+  --↓ See the referenced modules below for definitions of the derived type formers ≃ᶠ (the
+  --↓ type of equivalences) and IsContrᶠ (the type of proofs of contractibility). Both are
+  --↓ defined using the weak identity type Pathᶠ introduced above.
 
   open import type-former.equiv using (_≃ᶠ_)
   open import type-former.hlevels using (IsContrᶠ)
 
   UA : ⋄ ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Elᶠ 𝒒 ≃ᶠ Elᶠ (𝒒 ∘ 𝒑))))
   UA = universe.UA ℓ
+
+------------------------------------------------------------------------------------------
+-- Strict identity type à la Swan.
+--
+-- This construction uses two additional axioms not postulated in the axiom modules,
+-- namely cofibration extensionality and closure of the universe of cofibrations under
+-- Σ-types.
+------------------------------------------------------------------------------------------
+
+module _
+  (@♭ ext : type-former.swan-identity.CofExtensionality)
+  (@♭ dom : type-former.swan-identity.CofHasΣ)
+  where
+
+  module swan = type-former.swan-identity.SwanIdentity ext dom
+
+  --↓ Formation.
+
+  Idᶠ :
+    (A : Γ ⊢ᶠType ℓ)
+    (a₀ a₁ : Γ ⊢ᶠ A)
+    → Γ ⊢ᶠType ℓ
+  Idᶠ = swan.Idᶠ
+
+  --↓ Introduction.
+
+  idreflᶠ :
+    (A : Γ ⊢ᶠType ℓ)
+    (a : Γ ⊢ᶠ A)
+    → Γ ⊢ᶠ Idᶠ A a a
+  idreflᶠ = swan.idreflᶠ
+
+  --↓ Elimination in terms of the singleton type.
+
+  IdSinglᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
+  IdSinglᶠ A a =
+    Σᶠ A (Idᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑))
+
+  idSinglCenterᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
+    → Γ ⊢ᶠ IdSinglᶠ A a
+  idSinglCenterᶠ A a =
+    pairᶠ A (Idᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)) a (idreflᶠ A a)
+
+  idJᶠ :
+    (A : Γ ⊢ᶠType ℓ)
+    (a : Γ ⊢ᶠ A)
+    (P : Γ ▷ᶠ IdSinglᶠ A a ⊢ᶠType ℓ')
+    (d : Γ ⊢ᶠ P ∘ᶠ (id ,, idSinglCenterᶠ A a))
+    (c : Γ ⊢ᶠ IdSinglᶠ A a)
+    → Γ ⊢ᶠ P ∘ᶠ (id ,, c)
+  idJᶠ = swan.idJᶠ
+
+  --↓ Strict computation rule for identity elimination applied at reflexivity.
+
+  idJreflᶠ :
+    (A : Γ ⊢ᶠType ℓ)
+    (a : Γ ⊢ᶠ A)
+    (P : Γ ▷ᶠ IdSinglᶠ A a ⊢ᶠType ℓ')
+    (d : Γ ⊢ᶠ P ∘ᶠ (id ,, idSinglCenterᶠ A a))
+    → Γ ⊢ᶠ idJᶠ A a P d (idSinglCenterᶠ A a) ≡ d ⦂ P ∘ᶠ (id ,, idSinglCenterᶠ A a)
+  idJreflᶠ A a P d _ = cong$ (swan.idJreflᶠ A a P d)
+
+  --↓ Closure of the universe under strict identity types.
+
+  module _ {@♭ ℓ : Level} where
+
+    module swanᵁ = universe.SwanIdentityᵁ {ℓ} ext dom
+
+    Idᵁᶠ : (A : Γ ⊢ᶠ 𝑼ᶠ ℓ) (a₀ a₁ : Γ ⊢ᶠ Elᶠ A) → Γ ⊢ᶠ 𝑼ᶠ ℓ
+    Idᵁᶠ = swanᵁ.Idᵁᶠ
+
+    El-Idᶠ :
+      (A : Γ ⊢ᶠ 𝑼ᶠ ℓ)
+      (a₀ a₁ : Γ ⊢ᶠ Elᶠ A)
+      → Elᶠ (Idᵁᶠ A a₀ a₁) ≡ Idᶠ (Elᶠ A) a₀ a₁
+    El-Idᶠ = swanᵁ.El-Idᶠ

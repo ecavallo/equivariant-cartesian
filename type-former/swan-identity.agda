@@ -1,6 +1,7 @@
 {-
 
-Fibration structure on Swan identity types, assuming a dominance and cofibration extensionality.
+Fibration structure on Swan identity types, assuming cofibration extensionality and that
+the universe of cofibrations is closed under Σ-types (i.e., is a /dominance/).
 
 -}
 module type-former.swan-identity where
@@ -18,23 +19,23 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
---↓ Definition of dominance
+--↓ Definition of cofibration extensionality.
 
-record Dominance : Type where
+CofExtensionality : Type
+CofExtensionality = ∀ {φ ψ} → ([ φ ] → [ ψ ]) → ([ ψ ] → [ φ ]) → φ ≡ ψ
+
+--↓ Definition of closure of Cof under Σ-types.
+
+record CofHasΣ : Type where
   field
     _∧_ : (φ : Cof) → ([ φ ] → Cof) → Cof
     ∧-pair : ∀ {φ ψ} → (u : [ φ ]) → [ ψ u ] → [ φ ∧ ψ ]
     ∧-fst : ∀ {φ ψ} → [ φ ∧ ψ ] → [ φ ]
     ∧-snd : ∀ {φ ψ} → (uv : [ φ ∧ ψ ]) → [ ψ (∧-fst uv) ]
 
---↓ Definition of cofibration extensionality
+module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
 
-CofExt : Type
-CofExt = ∀ {φ ψ} → ([ φ ] → [ ψ ]) → ([ ψ ] → [ φ ]) → φ ≡ ψ
-
-module SwanIdentity (dom : Dominance) (ext : CofExt) where
-
-  open Dominance dom
+  open CofHasΣ dom
 
   private
     opaque
@@ -256,10 +257,10 @@ module SwanIdentity (dom : Dominance) (ext : CofExt) where
   idJᶠ A a P d c =
     idSubstᶠ (IdSinglᶠ A a) P d (idSinglContrᶠ A a c)
 
-  idJRefl : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
+  idJreflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
     (P : Γ ▷ᶠ IdSinglᶠ A a ⊢ᶠType ℓ')
     (d : Γ ⊢ᶠ P ∘ᶠ (id ,, idSinglCenterᶠ A a))
     → idJᶠ A a P d (idSinglCenterᶠ A a) ≡ d
-  idJRefl A a P d =
+  idJreflᶠ A a P d =
     cong (idSubstᶠ (IdSinglᶠ A a) P d) (idSinglContrRefl A a)
     ∙ idSubstRefl (IdSinglᶠ A a) P d

@@ -131,12 +131,12 @@ module _ {@♭ ℓ : Level} where
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations is closed under Swan identity types,
-  -- assuming a dominance for the cofibration classifier and cofibration extensionality.
+  -- The universe of fibrations is closed under Swan identity types, assuming a dominance
+  -- for the cofibration classifier and cofibration extensionality.
   ----------------------------------------------------------------------------------------
 
-  module _ (@♭ dom : Dominance) (@♭ ext : CofExt) where
-    open SwanIdentity dom ext
+  module SwanIdentityᵁ (@♭ ext : CofExtensionality) (@♭ dom : CofHasΣ) where
+    open SwanIdentity ext dom
 
     private
       universalIdᶠ : (Σ A ∈ 𝑼 ℓ , El A × El A) ⊢ᶠType ℓ

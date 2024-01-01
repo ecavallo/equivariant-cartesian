@@ -6,6 +6,7 @@ Fibrancy of the extensional type of natural numbers ℕ.
 module type-former.natural-number where
 
 open import basic
+open import internal-extensional-type-theory
 open import axiom
 open import fibration.fibration
 open import type-former.decidable
@@ -46,3 +47,27 @@ decideEqualityℕ (suc m) (suc n) = (cong suc ⊎` (_∘ cong pred)) (decideEqua
 ℕᶠ : Γ ⊢ᶠType lzero
 ℕᶠ .fst _ = ℕ
 ℕᶠ .snd = ℕFibStr
+
+--↓ Introduction.
+
+zeroᶠ : Γ ⊢ᶠ ℕᶠ
+zeroᶠ _ = zero
+
+sucᶠ :
+  (n : Γ ⊢ᶠ ℕᶠ)
+  → Γ ⊢ᶠ ℕᶠ
+sucᶠ n γ = suc (n γ)
+
+--↓ Elimination.
+
+ℕ-elimᶠ :
+  (P : Γ ▷ᶠ ℕᶠ ⊢ᶠType ℓ)
+  (z : Γ ⊢ᶠ P ∘ᶠ (id ,, zeroᶠ))
+  (s : Γ ▷ᶠ ℕᶠ ▷ᶠ P ⊢ᶠ P ∘ᶠ (𝒑 ∘ 𝒑 ,, sucᶠ (𝒒 ∘ 𝒑)))
+  (n : Γ ⊢ᶠ ℕᶠ)
+  → Γ ⊢ᶠ P ∘ᶠ (id ,, n)
+ℕ-elimᶠ P z s n γ = elim (n γ)
+  where
+  elim : ∀ m → P $ᶠ (γ , m)
+  elim zero = z γ
+  elim (suc m) = s ((γ , m) , elim m)
