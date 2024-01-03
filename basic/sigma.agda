@@ -70,3 +70,8 @@ curry : {A : Type ℓ} {B : A → Type ℓ'} {C : (a : A) → B a → Type ℓ''
   → (∀ t → C (t .fst) (t .snd))
   → (∀ a b → C a b)
 curry f a b = f (a , b)
+
+--↓ Pointed types.
+
+Type* : ∀ ℓ → Type (lsuc ℓ)
+Type* ℓ = Σ A ∈ Type ℓ , A
