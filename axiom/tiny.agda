@@ -15,6 +15,13 @@ open import axiom.cofibration
 -- Each shape is tiny (exponentiation by it has a right adjoint).
 ------------------------------------------------------------------------------------------
 
+_^_ : ∀ {ℓ} (Γ : Type ℓ) (S : Shape) → Type ℓ
+Γ ^ S = ⟨ S ⟩ → Γ
+
+_`^_ : ∀ {ℓ ℓ'} {Γ : Type ℓ} {Γ' : Type ℓ'}
+  (ρ : Γ → Γ') (S : Shape) → (Γ ^ S → Γ' ^ S)
+(ρ `^ S) = ρ ∘_
+
 module Tiny (@♭ S : Shape) where
 
   postulate
@@ -27,15 +34,15 @@ module Tiny (@♭ S : Shape) where
     postulate
       --↓ Right transposition across the adjunction.
 
-      R : @♭ ((⟨ S ⟩ → A) → B) → (A → √ B)
+      R : @♭ (A ^ S → B) → (A → √ B)
 
       --↓ Left transposition across the adjunction.
 
-      L : @♭ (A → √ B) → ((⟨ S ⟩ → A) → B)
+      L : @♭ (A → √ B) → (A ^ S → B)
 
       --↓ Right and left transposition are mutually inverse.
 
-      LR : (@♭ f : (⟨ S ⟩ → A) → B) → L (R f) ≡ f
+      LR : (@♭ f : (A ^ S) → B) → L (R f) ≡ f
       RL : (@♭ g : A → √ B) → R (L g) ≡ g
 
     {-# REWRITE LR RL #-}
@@ -45,15 +52,15 @@ module Tiny (@♭ S : Shape) where
 
     R℘ : ∀ {@♭ ℓ ℓ' ℓ''}
       {@♭ A : Type ℓ} {@♭ A' : Type ℓ'} {@♭ B : Type ℓ''}
-      (@♭ h : A → A') (@♭ f : (⟨ S ⟩ → A') → B)
-      → R (f ∘ (h ∘_)) ≡ R f ∘ h
+      (@♭ h : A → A') (@♭ f : A' ^ S → B)
+      → R (f ∘ h `^ S) ≡ R f ∘ h
 
   --↓ One-sided naturality of left transposition is derivable.
 
   L℘ : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ A' : Type ℓ'} {@♭ B : Type ℓ''}
     (@♭ g : A' → √ B) (@♭ h : A → A')
-    → L g ∘ (h ∘_) ≡ L (g ∘ h)
+    → L g ∘ (h `^ S) ≡ L (g ∘ h)
   L℘ g h = cong♭ L (R℘ h (L g))
 
   --↓ Functoriality of √ in the type argument.
@@ -86,34 +93,33 @@ module Tiny (@♭ S : Shape) where
   --↓ TODO elaborate (including about universe level)
 
   opaque
-    √ᴰ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ}
-      (@♭ B : (⟨ S ⟩ → A) → Type ℓ')
-      → (A → Type (lsuc ℓ'))
-    √ᴰ {ℓ} {ℓ'} B a = Σ C ∈ √ (Type* ℓ') , √` fst C ≡ R B a
+    √ᴰ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
+      (@♭ B : Γ ^ S → Type ℓ')
+      → (Γ → Type (lsuc ℓ'))
+    √ᴰ {ℓ} {ℓ'} B γ = Σ C ∈ √ (Type* ℓ') , √` fst C ≡ R B γ
 
-  module _ {@♭ ℓ ℓ'} {@♭ A : Type ℓ} (@♭ B : (⟨ S ⟩ → A) → Type ℓ') where
+  module _ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ B : Γ ^ S → Type ℓ') where
 
     opaque
       unfolding √ᴰ
 
-      Rᴰ : @♭ ((p : ⟨ S ⟩ → A) → B p) → ((a : A) → √ᴰ B a)
-      Rᴰ f a .fst = R (B ,, f) a
-      Rᴰ f a .snd = cong$ (√R fst (B ,, f))
+      Rᴰ : @♭ (Γ ^ S ⊢ˣ B) → (Γ ⊢ˣ √ᴰ B)
+      Rᴰ f γ .fst = R (B ,, f) γ
+      Rᴰ f _ .snd = cong$ (√R fst (B ,, f))
 
-      Lᴰ : @♭ ((a : A) → √ᴰ B a) → ((p : ⟨ S ⟩ → A) → B p)
+      Lᴰ : @♭ (Γ ⊢ˣ √ᴰ B) → (Γ ^ S ⊢ˣ B)
       Lᴰ g p =
         coe
           (cong$ (L√ fst (fst ∘ g) ∙ cong♭ L (funExt (snd ∘ g))))
           (L (fst ∘ g) p .snd)
 
-      LRᴰ : (@♭ f : (p : ⟨ S ⟩ → A) → B p) → Lᴰ (Rᴰ f) ≡ f
+      LRᴰ : (@♭ f : Γ ^ S ⊢ˣ B) → Lᴰ (Rᴰ f) ≡ f
       LRᴰ f =
         funExt' $ adjustSubstEq id refl refl _ refl refl
 
-      RLᴰ : (@♭ g : (a : A) → √ᴰ B a) → Rᴰ (Lᴰ g) ≡ g
+      RLᴰ : (@♭ g : Γ ⊢ˣ √ᴰ B) → Rᴰ (Lᴰ g) ≡ g
       RLᴰ g =
-        funExt λ a →
-        Σext (cong$ (cong♭ R (sym lemma))) uip'
+        funExt' $ Σext (cong$ (cong♭ R (sym lemma))) uip'
         where
         lemma : L (fst ∘ g) ≡ (B ,, Lᴰ g)
         lemma = funExt' $ Σext _ refl
@@ -121,96 +127,94 @@ module Tiny (@♭ S : Shape) where
   opaque
     unfolding Rᴰ Lᴰ
 
-    √ᴰ-reindex : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
-      (@♭ h : A → A')
-      (@♭ B : (⟨ S ⟩ → A') → Type ℓ'')
-      → ∀ a → √ᴰ (B ∘ (h ∘_)) a ≡ √ᴰ B (h a)
-    √ᴰ-reindex h B a =
-      cong (λ T → Σ C ∈ √ (Type* _) , √` fst C ≡ T) (cong$ (R℘ h B))
+    √ᴰ-reindex : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
+      (@♭ ρ : Γ → Γ')
+      (@♭ B : Γ' ^ S → Type ℓ'')
+      → ∀ γ → √ᴰ (B ∘ (ρ `^ S)) γ ≡ √ᴰ B (ρ γ)
+    √ᴰ-reindex ρ B a =
+      cong (λ T → Σ C ∈ √ (Type* _) , √` fst C ≡ T) (cong$ (R℘ ρ B))
 
-    counitᴰ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ}
-      (@♭ B : (⟨ S ⟩ → A) → Type ℓ') {p : ⟨ S ⟩ → A}
+    counitᴰ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
+      (@♭ B : Γ ^ S → Type ℓ') {p : Γ ^ S}
       → ((s : ⟨ S ⟩) → √ᴰ B (p s)) → B p
     counitᴰ B q =
-      Lᴰ (B ∘ (fst ∘_)) (coe (sym (√ᴰ-reindex fst B _)) ∘ snd) (_ ,, q)
+      Lᴰ (B ∘ (fst `^ S)) (coe (sym (√ᴰ-reindex fst B _)) ∘ snd) (_ ,, q)
 
-    √ᴰ` : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ A : Type ℓ}
-      {@♭ B : (⟨ S ⟩ → A) → Type ℓ'}
-      {@♭ B' : (⟨ S ⟩ → A) → Type ℓ''}
-      (@♭ h : ∀ p → B p → B' p)
-      → ∀ a → √ᴰ B a → √ᴰ B' a
-    √ᴰ` {B = B} {B' = B'} h a √b =
-      coe (√ᴰ-reindex fst B' (a , √b)) $
+    √ᴰ` : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ}
+      {@♭ B : Γ ^ S → Type ℓ'} {@♭ B' : Γ ^ S → Type ℓ''}
+      (@♭ h : Γ ^ S ⊢ˣ B →ˣ B')
+      → Γ ⊢ˣ √ᴰ B →ˣ √ᴰ B'
+    √ᴰ` {B = B} {B' = B'} h γ √b =
+      coe (√ᴰ-reindex fst B' (γ , √b)) $
       Rᴰ
         (λ p → B' (fst ∘ p))
         (λ p → h (fst ∘ p) (counitᴰ B (snd ∘ p)))
-        (a , √b)
+        (γ , √b)
 
     R℘ᴰ : ∀ {@♭ ℓ ℓ' ℓ''}
-      {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
-      {@♭ B : (⟨ S ⟩ → A') → Type ℓ''}
-      (@♭ h : A → A')
-      (@♭ f : (p : (⟨ S ⟩ → A')) → B p)
-      (a : A)
-      → coe (√ᴰ-reindex h B a) (Rᴰ (B ∘ (h ∘_)) (f ∘ (h ∘_)) a) ≡ Rᴰ B f (h a)
-    R℘ᴰ {A' = A'} {B = B} h f a =
-      sym (substCongAssoc id (λ T → Σ C ∈ √ (Type* _) , √` fst C ≡ T) (cong$ (R℘ h B)) _)
+      {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
+      {@♭ B : Γ' ^ S → Type ℓ''}
+      (@♭ ρ : Γ → Γ')
+      (@♭ f : Γ' ^ S ⊢ˣ B)
+      (γ : Γ)
+      → coe (√ᴰ-reindex ρ B γ) (Rᴰ (B ∘ (ρ `^ S)) (f ∘ (ρ `^ S)) γ) ≡ Rᴰ B f (ρ γ)
+    R℘ᴰ {B = B} ρ f a =
+      sym (substCongAssoc id (λ T → Σ C ∈ √ (Type* _) , √` fst C ≡ T) (cong$ (R℘ ρ B)) _)
       ∙ Σext
-        (substNaturality (λ _ → fst) (cong$ (R℘ h B))
-          ∙ substConst (cong$ (R℘ h B)) _
-          ∙ cong$ (R℘ h (B ,, f)))
+        (substNaturality (λ _ → fst) (cong$ (R℘ ρ B))
+          ∙ substConst (cong$ (R℘ ρ B)) _
+          ∙ cong$ (R℘ ρ (B ,, f)))
         uip'
 
     L℘ᴰ : ∀ {@♭ ℓ ℓ' ℓ''}
-      {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
-      {@♭ B : (⟨ S ⟩ → A') → Type ℓ''}
-      (@♭ g : (a : A') → √ᴰ B a)
-      (@♭ h : A → A')
-      (p : ⟨ S ⟩ → A)
-      → Lᴰ B g (h ∘ p) ≡ Lᴰ (B ∘ (h ∘_)) (λ a → coe (sym (√ᴰ-reindex h B a)) (g (h a))) p
-    L℘ᴰ {B = B} g h p =
+      {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
+      {@♭ B : Γ' ^ S → Type ℓ''}
+      (@♭ g : Γ' ⊢ˣ √ᴰ B)
+      (@♭ ρ : Γ → Γ')
+      (p : Γ ^ S)
+      → Lᴰ B g (ρ ∘ p) ≡ Lᴰ (B ∘ (ρ `^ S)) (coe (sym (√ᴰ-reindex ρ B _)) ∘ g ∘ ρ) p
+    L℘ᴰ {B = B} g ρ p =
       cong$ $
-      sym (LRᴰ (B ∘ (h ∘_)) (Lᴰ B g ∘ (h ∘_)))
-      ∙ cong♭ (Lᴰ (B ∘ (h ∘_)))
-        (funExt $ λ a →
-          adjustSubstEq id (√ᴰ-reindex h B a) refl refl (sym (√ᴰ-reindex h B a)) refl
-          ∙ cong (coe (sym (√ᴰ-reindex h B a))) (R℘ᴰ h (Lᴰ B g) a ∙ cong$ (RLᴰ B g)))
+      sym (LRᴰ (B ∘ (ρ `^ S)) (Lᴰ B g ∘ (ρ `^ S)))
+      ∙ cong♭ (Lᴰ (B ∘ (ρ `^ S)))
+        (funExt $ λ γ →
+          adjustSubstEq id (√ᴰ-reindex ρ B γ) refl refl (sym (√ᴰ-reindex ρ B γ)) refl
+          ∙ cong (coe (sym (√ᴰ-reindex ρ B γ))) (R℘ᴰ ρ (Lᴰ B g) γ ∙ cong$ (RLᴰ B g)))
 
     √Rᴰ : ∀ {@♭ ℓ ℓ' ℓ''}
-      {@♭ A : Type ℓ}
-      {@♭ B : (⟨ S ⟩ → A) → Type ℓ'}
-      {@♭ B' : (⟨ S ⟩ → A) → Type ℓ''}
-      (@♭ h : ∀ p → B p → B' p)
-      (@♭ f : (p : (⟨ S ⟩ → A)) → B p)
-      → √ᴰ` h _ ∘ Rᴰ B f ≡ Rᴰ B' (h _ ∘ f)
-    √Rᴰ {A = A} {B} {B'} h f =
-      funExt λ a →
+      {@♭ Γ : Type ℓ}
+      {@♭ B : Γ ^ S → Type ℓ'}
+      {@♭ B' : Γ ^ S → Type ℓ''}
+      (@♭ h : Γ ^ S ⊢ˣ B →ˣ B')
+      (@♭ f : Γ ^ S ⊢ˣ B)
+      → appˣ (√ᴰ` h) (Rᴰ B f) ≡ Rᴰ B' (appˣ h f)
+    √Rᴰ {B = B} {B'} h f =
+      funExt λ γ →
       adjustSubstEq id refl _ _ refl
-        (sym (R℘ᴰ (id ,, Rᴰ B f) (λ p → h (fst ∘ p) (counitᴰ B (snd ∘ p))) a))
+        (sym (R℘ᴰ (id ,, Rᴰ B f) (λ p → h (fst ∘ p) (counitᴰ B (snd ∘ p))) γ))
       ∙ cong♭
-          (λ f' → Rᴰ B' (h _ ∘ f') a)
+          (λ f' → Rᴰ B' (appˣ h f') γ)
           (funExt (L℘ᴰ (coe (sym (√ᴰ-reindex fst B _)) ∘ snd) (id ,, Rᴰ B f))
             ∙ cong♭ (Lᴰ B)
-              (funExt λ a →
+              (funExt λ γ →
                 adjustSubstEq
                 id
                 refl
-                (sym (√ᴰ-reindex fst B (a , Rᴰ B f a)))
-                (sym (√ᴰ-reindex (id ,, Rᴰ B f) (B ∘ (fst ∘_)) a))
+                (sym (√ᴰ-reindex fst B (γ , Rᴰ B f γ)))
+                (sym (√ᴰ-reindex (id ,, Rᴰ B f) (B ∘ (fst `^ S)) γ))
                 refl
                 refl)
             ∙ LRᴰ B f)
 
-    L√ᴰ : ∀ {@♭ ℓ ℓ' ℓ''}
-      {@♭ A : Type ℓ}
-      {@♭ B : (⟨ S ⟩ → A) → Type ℓ'}
-      {@♭ B' : (⟨ S ⟩ → A) → Type ℓ''}
-      (@♭ h : ∀ p → B p → B' p)
-      (@♭ g : (a : A) → √ᴰ B a)
-      → h _ ∘ Lᴰ B g  ≡ Lᴰ B' (√ᴰ` h _ ∘ g)
+    L√ᴰ : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ}
+      {@♭ B : Γ ^ S → Type ℓ'}
+      {@♭ B' : Γ ^ S → Type ℓ''}
+      (@♭ h : Γ ^ S ⊢ˣ B →ˣ B')
+      (@♭ g : Γ ⊢ˣ √ᴰ B)
+      → appˣ h (Lᴰ B g)  ≡ Lᴰ B' (appˣ (√ᴰ` h) g)
     L√ᴰ {B = B} {B' = B'} h g =
-      sym (LRᴰ B' (h _ ∘ Lᴰ B g)) ∙
-      cong♭ (Lᴰ B') (sym (√Rᴰ h (Lᴰ B g)) ∙ cong (√ᴰ` h _ ∘_) (RLᴰ B g))
+      sym (LRᴰ B' (appˣ h (Lᴰ B g))) ∙
+      cong♭ (Lᴰ B') (sym (√Rᴰ h (Lᴰ B g)) ∙ cong (appˣ (√ᴰ` h)) (RLᴰ B g))
 
 open Tiny
 
