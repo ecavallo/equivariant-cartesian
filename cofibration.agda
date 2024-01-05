@@ -13,6 +13,7 @@ open import axiom.shape
 open import axiom.cofibration public
 
 infix 1 _[_↦_]
+infixl 3 _▷[_]
 infixr 4 _∨ˣ_
 
 private variable

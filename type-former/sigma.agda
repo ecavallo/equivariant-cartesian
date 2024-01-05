@@ -11,31 +11,9 @@ open import axiom
 open import cofibration
 open import fibration.fibration
 
-infixl 3 _,ˣ_
-infixr 3 _×ˣ_
-
 private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
-
-Σˣ : (A : Γ → Type ℓ) (B : Γ ▷ˣ A → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
-Σˣ A B γ = Σ a ∈ A γ , B (γ , a)
-
-_×ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → Γ → Type (ℓ ⊔ ℓ')
-A ×ˣ B = Σˣ A (B ∘ 𝒑)
-
-_,ˣ_ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
-  (a : Γ ⊢ˣ A) → Γ ⊢ˣ B ∘ (id ,, a) → Γ ⊢ˣ Σˣ A B
-(a ,ˣ b) γ .fst = a γ
-(a ,ˣ b) γ .snd = b γ
-
-fstˣ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
-  → Γ ⊢ˣ Σˣ A B → Γ ⊢ˣ A
-fstˣ = fst ∘_
-
-sndˣ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
-  (t : Γ ⊢ˣ Σˣ A B) → Γ ⊢ˣ B ∘ (id ,, fstˣ t)
-sndˣ = snd ∘_
 
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)

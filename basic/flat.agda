@@ -18,11 +18,17 @@ f $♭ a = f a
 
 infixr 5 _$♭_
 
+--↓ Substitution for flat-modal families.
+
 --↓ Congruence for flat-modal functions.
 
 cong♭ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : Type ℓ'}
   (f : @♭ A → B) {@♭ a₀ a₁ : A} (@♭ p : a₀ ≡ a₁) → f a₀ ≡ f a₁
 cong♭ _ refl = refl
+
+congdep♭ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : A → Type ℓ'}
+  (f : (@♭ a : A) → B a) {@♭ a₀ a₁ : A} (@♭ p : a₀ ≡ a₁) → subst B p (f a₀) ≡ f a₁
+congdep♭ _ refl = refl
 
 --↓ Congruence of function application for flat-model functions.
 

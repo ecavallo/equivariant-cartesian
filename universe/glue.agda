@@ -56,7 +56,7 @@ module _ {@♭ ℓ} where
     GlueᵁMatch φ B A fe u =
       cong$ (sym (encodeDecode (λ (_ , _ , A , _ , u) → A u)))
       ∙ cong$ (cong♭ encode (GlueᶠMatch _ _ _ _))
-      ∙ encodeReindexFib universalGlueᶠ fst (_ , u)
+      ∙ cong$ (sym (reindexEncode universalGlueᶠ fst))
 
   Glueᵁᶠ : (φ : Γ → Cof) (B : Γ ⊢ˣ 𝑼ˣ ℓ) (A : Γ ▷[ φ ] ⊢ˣ 𝑼ˣ ℓ)
     (fe : Γ ▷[ φ ] ⊢ᶠ Elᶠ A ≃ᶠ Elᶠ (B ↾ φ))

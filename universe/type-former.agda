@@ -6,6 +6,7 @@ Showing the universe is closed under type formers
 module universe.type-former where
 
 open import basic
+open import internal-extensional-type-theory
 open import axiom
 open import fibration.fibration
 
@@ -131,8 +132,8 @@ module _ {@♭ ℓ : Level} where
       cong (_∘ᶠ (A ,ˣ curry B)) (decodeEncode universalΠᶠ) ∙ reindexΠᶠ (A ,ˣ curry B)
 
   ----------------------------------------------------------------------------------------
-  -- The universe of fibrations is closed under Swan identity types, assuming a dominance
-  -- for the cofibration classifier and cofibration extensionality.
+  -- The universe of fibrations is closed under Swan identity types, assuming
+  -- cofibration extensionality and closure of Cof under Σ-types.
   ----------------------------------------------------------------------------------------
 
   module SwanIdentityᵁ (@♭ ext : CofExtensionality) (@♭ dom : CofHasΣ) where

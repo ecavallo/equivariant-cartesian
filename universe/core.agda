@@ -10,6 +10,7 @@ open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.fibration
+open import type-former.sigma
 
 private variable
   ℓ ℓ' : Level
@@ -17,188 +18,96 @@ private variable
 
 open Tiny
 
-record Span ℓ : Type (lsuc ℓ) where
-  field
-    Src : Type ℓ
-    Dst : Type ℓ
-    Rel : Src → Dst → Type ℓ
+opaque
+  hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
+  hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
 
-open Span public
+hasLiftsˣ : (S : Shape)
+  (A : Γ ▷⟨ S ⟩ → Type ℓ)
+  → (Γ → Type ℓ)
+hasLiftsˣ S A γ = hasLifts S (A ∘ (γ ,_))
 
-record Witness {ℓ} (D : Span ℓ) : Type ℓ where
-  constructor witness
-  field
-    src : D .Src
-    dst : D .Dst
-    rel : D .Rel src dst
+𝑼Lifts : ∀ (@♭ ℓ) → Type (lsuc ℓ)
+𝑼Lifts ℓ = Σ A ∈ Type ℓ , ((@♭ S : Shape) → √ᴰ S (hasLifts S) A)
 
-open Witness public
+𝑼Liftsˣ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
+𝑼Liftsˣ ℓ _ = 𝑼Lifts ℓ
 
+opaque
+  unfolding hasLifts
+  decodeLifts : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ S : Shape)
+    (@♭ A : Γ ▷⟨ S ⟩ ⊢ˣ 𝑼Liftsˣ ℓ')
+    → Γ ⊢ˣ hasLiftsˣ S (fstˣ A)
+  decodeLifts S A =
+    outᴰ S $♭
+    appˣ (√ᴰ-reindex-compute S (fst ∘ A)) $
+    λ γs → A γs .snd S
 
-Span* : ∀ ℓ → Type (lsuc ℓ)
-Span* ℓ = Σ D ∈ Span ℓ , Witness D
+opaque
+  unfolding decodeLifts
+  reindexDecodeLifts : ∀ {@♭ ℓ ℓ' ℓ''}
+    {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' → Γ) (@♭ S : Shape)
+    (@♭ A : Γ ▷⟨ S ⟩ ⊢ˣ 𝑼Liftsˣ ℓ'')
+    → decodeLifts S A ∘ ρ ≡ decodeLifts S (A ∘ (ρ ×id))
+  reindexDecodeLifts ρ S A =
+    outᴰ-reindex S _ _ ∙
+    cong♭ (outᴰ S) (√ᴰ-reindex-compute-∘ S (fst ∘ A) (ρ ×id) _)
 
-src* : Span* ℓ → Type* ℓ
-src* (D , W) = (D .Src , W .src)
+opaque
+  unfolding hasLifts
+  hasVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+    (A : ⟨ T ⟩ → 𝑼Lifts ℓ) → Type ℓ
+  hasVaries S T σ A =
+    ∀ r box s →
+    decodeLifts T (^-ε T) A (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out
+    ≡ decodeLifts S (^-ε S) (A ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out
 
-dst* : Span* ℓ → Type* ℓ
-dst* (D , W) = (D .Dst , W .dst)
+opaque
+  unfolding hasVaries
+  hasVariesIsProp : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+    (A : ⟨ T ⟩ → 𝑼Lifts ℓ)
+    (v v' : hasVaries S T σ A) → v ≡ v'
+  hasVariesIsProp S T σ A v v' =
+    funExt' $ funExt' $ funExt' uip'
 
-hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
-hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
+hasVariesˣ : ∀ {@♭ ℓ ℓ'} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) {Γ : Type ℓ}
+  (A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼Liftsˣ ℓ')
+  → (Γ → Type ℓ')
+hasVariesˣ S T σ A γ = hasVaries S T σ (A ∘ (γ ,_))
 
-hasVaries : (S T : Shape) (σ : ShapeHom S T) (A : ⟨ T ⟩ → Type ℓ) → Span ℓ
-hasVaries S T σ A .Src = hasLifts T A
-hasVaries S T σ A .Dst = hasLifts S (A ∘ ⟪ σ ⟫)
-hasVaries S T σ A .Rel cT cS =
-  ∀ r box s →
-  cT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out ≡ cS r (reshapeBox σ box) .fill s .out
+𝑼 : ∀ (@♭ ℓ) → Type (lsuc ℓ)
+𝑼 ℓ = Σ A ∈ 𝑼Lifts ℓ , ((@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ᴰ T (hasVaries S T σ) A)
 
-------------------------------------------------------------------------------------------
--- Definition of the universe
-------------------------------------------------------------------------------------------
-
-record 𝑼 (@♭ ℓ) : Type (lsuc ℓ) where
-  field
-    El : Type ℓ
-    lifts : (@♭ S : Shape) → √ S (Type* ℓ)
-    liftsBase : (@♭ S : Shape) → √` S fst (lifts S) ≡ R S (hasLifts S) El
-
-    varies : (@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ T (Span* ℓ)
-    variesBase : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-      → √` T fst (varies S T σ) ≡ R T (hasVaries S T σ) El
-    variesSrc : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-      → √` T src* (varies S T σ) ≡ lifts T
-    variesDst : (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-      → √` T dst* (varies S T σ) ≡ √ShapeHom σ (lifts S)
+El : ∀ {@♭ ℓ} → 𝑼 ℓ → Type ℓ
+El = fst ∘ fst
 
 𝑼ˣ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
 𝑼ˣ ℓ _ = 𝑼 ℓ
 
-open 𝑼 public
-
-opaque
-  𝑼Ext : ∀ {@♭ ℓ} {A B : 𝑼 ℓ}
-    → A .El ≡ B .El → A .lifts ≡ B .lifts → A .varies ≡ B .varies
-    → A ≡ B
-  𝑼Ext {A = A} refl refl refl =
-    cong
-      (λ {(cBase , vBase , vSrc , vDst) → record
-        { El = A .El
-        ; lifts = A .lifts
-        ; liftsBase = cBase
-        ; varies = A .varies
-        ; variesBase = vBase
-        ; variesSrc = vSrc
-        ; variesDst = vDst
-        }})
-      (×ext
-        (×ext
-          (×ext
-            (funExt♭' uip')
-            (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
-          (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
-        (funExt♭' $ funExt♭' $ funExt♭' $ uip'))
-
-------------------------------------------------------------------------------------------
--- Extracting lifts from a map into 𝑼
-------------------------------------------------------------------------------------------
-
-fstLlifts : ∀ {@♭ ℓ} (@♭ S : Shape) →
-  fst ∘ L S {A = 𝑼 ℓ} (λ A → A .lifts S) ≡ hasLifts S ∘ (El ∘_)
-fstLlifts S =
-  L√ S fst (λ A → A .lifts S)
-  ∙ cong♭ (L S) (funExt (λ A → A .liftsBase S) ∙ sym (R℘ S El (hasLifts S)))
-
-getLifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ) → hasLifts S (El ∘ C)
-getLifts S C = subst id (cong$ (fstLlifts S)) (L S (λ A → A .lifts S) C .snd)
-
-Llifts : ∀ {@♭ ℓ} (@♭ S : Shape) (C : ⟨ S ⟩ → 𝑼 ℓ)
-  → L S (λ A → A .lifts S) C ≡ (hasLifts S (El ∘ C) , getLifts S C)
-Llifts S C = Σext (cong$ (fstLlifts S)) refl
-
-------------------------------------------------------------------------------------------
--- Extracting equivariance from a map into 𝑼
-------------------------------------------------------------------------------------------
-
-fstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
-  → fst ∘ L T {A = 𝑼 ℓ} (λ A → A .varies S T σ) ≡ hasVaries S T σ ∘ (El ∘_)
-fstLvaries S T σ =
-  L√ T fst (λ A → A .varies S T σ)
-  ∙ cong♭ (L T) (funExt (λ A → A .variesBase S T σ) ∙ sym (R℘ T El (hasVaries S T σ)))
-
-srcLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
-  → src* (L T (λ A → A .varies S T σ) C) ≡ (hasLifts T (El ∘ C) , getLifts T C)
-srcLvaries S T σ C =
-  cong$
-    (L√ T src* (λ A → A .varies S T σ)
-      ∙ cong♭ (L T) (funExt (λ A → A .variesSrc S T σ))
-      ∙ funExt (Llifts T))
-
-dstLvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
-  → dst* (L T (λ A → A .varies S T σ) C)
-    ≡ (hasLifts S (El ∘ C ∘ ⟪ σ ⟫) , getLifts S (C ∘ ⟪ σ ⟫))
-dstLvaries S T σ C =
-  cong$
-    (L√ T dst* (λ A → A .varies S T σ)
-      ∙ cong♭ (L T) (funExt (λ A → A .variesDst S T σ))
-      ∙ LShapeHom σ (λ A → A .lifts S)
-      ∙ cong (_∘ (_∘ ⟪ σ ⟫)) (funExt (Llifts S)))
-
-substSpan : {A : Type ℓ} (D : A → Span ℓ')
-  {x y : A} (p : x ≡ y)
-  → Witness (D x) → Witness (D y)
-substSpan D p w .src = subst (Src ∘ D) p (w .src)
-substSpan D p w .dst = subst (Dst ∘ D) p (w .dst)
-substSpan D refl w .rel = w .rel
-
-getVaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
-  → Witness (hasVaries S T σ (El ∘ C))
-getVaries S T σ C .src = getLifts T C
-getVaries S T σ C .dst = getLifts S (C ∘ ⟪ σ ⟫)
-getVaries S T σ C .rel =
-  subst
-    (uncurry (hasVaries S T σ (El ∘ C) .Rel))
-    (×ext
-       (substCongAssoc id (λ D → D C .Src) (fstLvaries S T σ) _
-         ∙ Σeq₂ (srcLvaries S T σ C) (cong (λ D → D C .Src) (fstLvaries S T σ)))
-       (substCongAssoc id (λ D → D C .Dst) (fstLvaries S T σ) _
-         ∙ Σeq₂ (dstLvaries S T σ C) (cong (λ D → D C .Dst) (fstLvaries S T σ))))
-    (substSpan (λ F → F C) (fstLvaries S T σ) (L T (λ A → A .varies S T σ) C .snd) .rel)
-
-Lvaries : ∀ {@♭ ℓ} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) (C : ⟨ T ⟩ → 𝑼 ℓ)
-  → L T (λ A → A .varies S T σ) C ≡ (hasVaries S T σ (El ∘ C) , getVaries S T σ C)
-Lvaries S T σ C =
-  Σext
-    (cong$ (fstLvaries S T σ))
-    (witnessExtLemma
-      (cong$ (fstLvaries S T σ))
-      (srcLvaries S T σ C)
-      (dstLvaries S T σ C)
-      (λ _ _ → funExt' $ funExt' $ funExt' $ uip'))
-  where
-  witnessExtLemma : {D D' : Span _} (p : D ≡ D')
-    {w : Witness D} {w' : Witness D'}
-    (q : src* (D , w) ≡ src* (D' , w'))
-    (q' : dst* (D , w) ≡ dst* (D' , w'))
-    → (∀ {a b} → (r r' : D' .Rel a b) → r ≡ r')
-    → subst Witness p w ≡ w'
-  witnessExtLemma refl refl refl prop =
-    cong (witness _ _) (prop _ _)
+decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
+  (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+  (@♭ A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼ˣ ℓ')
+  → Γ ⊢ˣ hasVariesˣ S T σ (fstˣ A)
+decodeVaries S T σ A =
+  outᴰ T $♭
+  appˣ (√ᴰ-reindex-compute T (fst ∘ A)) $
+  λ γt → A γt .snd S T σ
 
 ------------------------------------------------------------------------------------------
 -- El : 𝑼 → Type is a fibration
 ------------------------------------------------------------------------------------------
 
 opaque
+  unfolding hasLifts hasVaries
   ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
   ElFibStr .lift =
-    ShapeIsDiscrete λ (@♭ S) → λ r C → getLifts S C r
+    ShapeIsDiscrete λ (@♭ S) →
+    λ r A → decodeLifts S (^-ε S) (fst ∘ A) r
   ElFibStr .vary =
     ShapeIsDiscrete λ (@♭ S) →
     ShapeIsDiscrete λ (@♭ T) →
     ShapeHomIsDiscrete λ (@♭ σ) →
-    λ r C → getVaries S T σ C .rel r
+    λ r A → decodeVaries S T σ (^-ε T) A r
 
 Elˣ : ∀ {@♭ ℓ} → (Γ ⊢ˣ 𝑼ˣ ℓ) → (Γ → Type ℓ)
 Elˣ = El ∘_
@@ -212,91 +121,150 @@ decode = Elᶠ
 -- Any fibration induces a map into 𝑼
 ------------------------------------------------------------------------------------------
 
-FibLifts : Γ ⊢ᶠType ℓ → (@♭ S : Shape) → (⟨ S ⟩ → Γ) → Type* ℓ
-FibLifts (A , α) S p .fst = hasLifts S (A ∘ p)
-FibLifts (A , α) S p .snd r = α .lift S r p
+opaque
+  unfolding hasLifts
+  getFibLifts : (S : Shape)
+    (A : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ)
+    → Γ ⊢ˣ hasLiftsˣ S ∣ A ∣
+  getFibLifts S A γ r box = A .snd .lift S r (γ ,_) box
 
-FibVaries : Γ ⊢ᶠType ℓ → ∀ (@♭ S T) (σ : ShapeHom S T) → (⟨ T ⟩ → Γ) → Span* ℓ
-FibVaries (A , α) S T σ p .fst =
-  hasVaries S T σ (A ∘ p)
-FibVaries (A , α) S T σ p .snd .src r = α .lift T r p
-FibVaries (A , α) S T σ p .snd .dst r = α .lift S r (p ∘ ⟪ σ ⟫)
-FibVaries (A , α) S T σ p .snd .rel r = α .vary S T σ r p
+opaque
+  unfolding hasLifts
+  encodeHasLifts : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
+    → Γ ⊢ˣ √ᴰ S (hasLifts S) ∘ ∣ A ∣
+  encodeHasLifts S A =
+    appˣ (√ᴰ-reindex-expand S ∣ A ∣) $
+    inᴰ S $♭
+    λ p r box → A .snd .lift S r p box
+
+  reindexEncodeHasLifts : ∀ {@♭ ℓ ℓ' ℓ''} (@♭ S : Shape)
+    {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' → Γ)
+    (@♭ A : Γ ⊢ᶠType ℓ'')
+    → encodeHasLifts S A ∘ ρ ≡ encodeHasLifts S (A ∘ᶠ ρ)
+  reindexEncodeHasLifts S ρ A =
+    cong (appˣ (√ᴰ-reindex-expand S ∣ A ∣ ∘ ρ))
+      (sym (√ᴰ-reindex-expand-compute S ρ _)
+        ∙ cong (appˣ (√ᴰ-reindex-expand S ρ)) (inᴰ-reindex S ρ _))
+    ∙ √ᴰ-reindex-expand-∘ S ∣ A ∣ ρ _
+
+encodeLifts : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → Γ ⊢ˣ 𝑼Liftsˣ ℓ'
+encodeLifts A γ .fst = A $ᶠ γ
+encodeLifts A γ .snd S = encodeHasLifts S A γ
+
+opaque
+  reindexEncodeLifts : ∀ {@♭ ℓ ℓ' ℓ''}
+    {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' → Γ)
+    (@♭ A : Γ ⊢ᶠType ℓ'')
+    → encodeLifts A ∘ ρ ≡ encodeLifts (A ∘ᶠ ρ)
+  reindexEncodeLifts ρ A =
+    funExt λ γ →
+    Σext refl (funExt♭ λ S → cong$ (reindexEncodeHasLifts S ρ A))
+
+opaque
+  unfolding encodeHasLifts decodeLifts getFibLifts
+  decodeEncodeLifts : ∀ {@♭ ℓ ℓ'} {@♭ S : Shape} {@♭ Γ : Type ℓ}
+    (@♭ A : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ')
+    → decodeLifts S (encodeLifts A) ≡ getFibLifts S A
+  decodeEncodeLifts {S = S} A =
+    cong♭ (outᴰ S) (√ᴰ-reindex-compute-expand S _ _)
+    ∙ out-inᴰ _ _
+
+private
+  reindexEncodeInsideDecode : ∀ {@♭ ℓ ℓ' ℓ''}
+    (@♭ S : Shape)
+    {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' ▷⟨ S ⟩ → Γ)
+    (@♭ A : Γ ⊢ᶠType ℓ'')
+    → decodeLifts S (encodeLifts A ∘ ρ) ≡ decodeLifts S (encodeLifts (A ∘ᶠ ρ))
+  reindexEncodeInsideDecode S ρ A =
+    cong (subst (λ B → _ ⊢ˣ hasLiftsˣ S B) ⦅–⦆ (decodeLifts S (encodeLifts A ∘ ρ))) uip'
+    ∙ sym (substCongAssoc (λ B → _ ⊢ˣ hasLiftsˣ S B) fstˣ (reindexEncodeLifts ρ A) _)
+    ∙ congdep♭ (decodeLifts S) (reindexEncodeLifts ρ A)
+
+opaque
+  unfolding hasLifts getFibLifts hasVaries
+  encodeHasVaries : ∀ {@♭ ℓ ℓ'}
+    (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
+    {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
+    → Γ ⊢ˣ √ᴰ T (hasVaries S T σ) ∘ encodeLifts A
+  encodeHasVaries S T σ A =
+    appˣ (√ᴰ-reindex-expand T (encodeLifts A)) $
+    inᴰ T $♭
+    λ p r box s →
+    cong (λ l → l p (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out)
+      (reindexDecodeLifts (encodeLifts A `^ T) T (^-ε T)
+        ∙ reindexEncodeInsideDecode T (^-ε T) A
+        ∙ decodeEncodeLifts (A ∘ᶠ ^-ε T))
+    ∙ A .snd .vary S T σ r p box s
+    ∙ cong (λ l → l (p ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out)
+        (sym
+          (reindexDecodeLifts (encodeLifts A `^ S) S (^-ε S)
+            ∙ reindexEncodeInsideDecode S (^-ε S) A
+            ∙ decodeEncodeLifts (A ∘ᶠ ^-ε S)))
 
 opaque
   encode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → (Γ ⊢ˣ 𝑼ˣ ℓ')
   encode {ℓ' = ℓ'} {Γ} A = encoding
     where
-    Rl : (@♭ S : Shape) → Γ → √ S (Type* ℓ')
-    Rl S = R S (FibLifts A S)
-
-    Rv : ∀ (@♭ S T) (@♭ σ : ShapeHom S T) → Γ → √ T (Span* ℓ')
-    Rv S T σ = R T (FibVaries A S T σ)
-
     encoding : Γ ⊢ˣ 𝑼ˣ ℓ'
-    encoding γ .El = A $ᶠ γ
-    encoding γ .lifts S = Rl S γ
-    encoding γ .liftsBase S =
-      cong$ (cong♭ (R S) (sym (L√ S fst (Rl S))) ∙ R℘ S ∣ A ∣ (hasLifts S))
-    encoding γ .varies S T σ = Rv S T σ γ
-    encoding γ .variesBase S T σ =
-      cong$ (cong♭ (R T) (sym (L√ T fst (Rv S T σ))) ∙ R℘ T ∣ A ∣ (hasVaries S T σ))
-    encoding γ .variesSrc S T σ =
-      cong$ (cong♭ (R T) (sym (L√ T src* (Rv S T σ))))
-    encoding γ .variesDst S T σ =
-      cong$
-        (cong♭ (R T) (sym (L√ T dst* (Rv S T σ))) ∙ sym (ShapeHomR σ (FibLifts A S)))
+    encoding γ .fst = encodeLifts A γ
+    encoding γ .snd S T σ = encodeHasVaries S T σ A γ
 
 ------------------------------------------------------------------------------------------
 -- Inverse conditions for the correspondence between Fib Γ and Γ ⊢ˣ 𝑼ˣ
 ------------------------------------------------------------------------------------------
 
 opaque
-  unfolding encode ElFibStr
+  unfolding encode ElFibStr getFibLifts
   decodeEncode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → decode (encode A) ≡ A
   decodeEncode A =
-    Σext refl
-      (FibStrExt
-        (ShapeIsDiscrete λ (@♭ S) r p box s →
-          congΣ
-            (λ (C : Type* _) (eq : C .fst ≡ hasLifts S (∣ A ∣ ∘ p))
-              → subst id eq (C .snd) r box .fill s .out)
-            (lemma S p)
-            (uip _ refl)))
+    Σext refl $
+    FibStrExt {α = ElFibStr ∘ᶠˢ (encode A)} $
+    ShapeIsDiscrete λ (@♭ S) r p box s →
+    cong (λ lifter → lifter r box .fill s .out) (mainLemma S p)
     where
-    lemma : (@♭ S : Shape) (p : ⟨ S ⟩ → _)
-      → L S (λ (C : 𝑼 _) → C .lifts S) (encode A ∘ p)
-        ≡ (hasLifts S (∣ A ∣ ∘ p) , λ r → A .snd .lift S r p)
-    lemma S p =
-      cong$ (sym (L℘ S id (λ C → C .lifts S)))
-      ∙ cong$ (L℘ S id (R S {B = Type* _} (FibLifts A S)))
+    mainLemma : ∀ (@♭ S) p →
+      decodeLifts S (^-ε S) (encodeLifts A ∘ p) ≡ getFibLifts S (A ∘ᶠ ^-ε S) p
+    mainLemma S p =
+      cong$ (reindexDecodeLifts (encodeLifts A `^ S) S (^-ε S))
+      ∙ cong$ (reindexEncodeInsideDecode S (^-ε S) A)
+      ∙ cong$ (decodeEncodeLifts (A ∘ᶠ ^-ε S))
+
+opaque
+  𝑼Ext : ∀ {@♭ ℓ} {C C' : 𝑼 ℓ} → C .fst ≡ C' .fst → C ≡ C'
+  𝑼Ext eq =
+    Σext eq $
+    funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
+    √ᴰPreservesProp' T (hasVaries S T σ) (λ _ → hasVariesIsProp S T σ _) _ _ _
 
 opaque
   unfolding encode
-  encodeReindexFib : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
-    (@♭ A : Γ ⊢ᶠType ℓ'') (@♭ ρ : Δ → Γ) (δ : Δ)
-    → encode (A ∘ᶠ ρ) δ ≡ encode A (ρ δ)
-  encodeReindexFib A ρ γ =
-    𝑼Ext
-      refl
-      (funExt♭' $ cong$ $ R℘ _ ρ (FibLifts A _))
-      (funExt♭' $ funExt♭' $ funExt♭' $ cong$ $ R℘ _ ρ (FibVaries A _ _ _))
+  reindexEncode : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Δ : Type ℓ} {@♭ Γ : Type ℓ'}
+    (@♭ A : Γ ⊢ᶠType ℓ'') (@♭ ρ : Δ → Γ)
+    → encode A ∘ ρ ≡ encode (A ∘ᶠ ρ)
+  reindexEncode A ρ =
+    funExt' $ 𝑼Ext $ cong$ $ reindexEncodeLifts ρ A
 
 opaque
-  unfolding encode ElFibStr
+  unfolding encode ElFibStr encodeHasLifts decodeLifts
   encodeEl : ∀ {@♭ ℓ} → (C : 𝑼 ℓ) → encode (Elᶠ id) C ≡ C
-  encodeEl C =
-    𝑼Ext
-      refl
-      (funExt♭' $ cong$ $ cong♭ (R _) $♭ sym $ funExt $ Llifts _)
-      (funExt♭' $ funExt♭' $ funExt♭ λ σ →
-        cong$ $ cong♭ (R _) $♭ sym $ funExt λ C →
-        Lvaries _ _ σ C
-        ∙ cong
-          (λ w → _ , witness (getLifts _ C) (getLifts _ (C ∘ ⟪ σ ⟫)) w)
-          (funExt' $ funExt' $ funExt' $ uip'))
+  encodeEl {ℓ = ℓ} =
+    λ C → 𝑼Ext $ Σext refl (funExt♭ λ S → cong$ (lemma S))
+    where
+    get√Lifts : (@♭ S : Shape) (C : 𝑼 ℓ) → √ᴰ S (hasLifts S) (El C)
+    get√Lifts S C = C .fst .snd S
+
+    lemma : (@♭ S : Shape)
+      → encodeHasLifts S (Elᶠ {ℓ = ℓ} id) ≡ get√Lifts S
+    lemma S =
+      cong (appˣ (√ᴰ-reindex-expand S El))
+        (cong♭ (inᴰ S)
+          (reindexDecodeLifts (fst `^ S) S (^-ε S)
+            ∙ cong♭ (outᴰ S)
+                (sym (√ᴰ-reindex-compute-∘ S El (^-ε S) (get√Lifts S ∘ ^-ε S))))
+          ∙ sym (in-outᴰ S (appˣ (√ᴰ-reindex-compute S El) (get√Lifts S))))
+      ∙ √ᴰ-reindex-expand-compute S El (get√Lifts S)
 
 opaque
   encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ˣ 𝑼ˣ ℓ') → encode (decode C) ≡ C
-  encodeDecode C = funExt λ γ → encodeReindexFib (Elᶠ id) C γ ∙ encodeEl (C γ)
+  encodeDecode C = funExt λ γ → cong$ (sym (reindexEncode (Elᶠ id) C)) ∙ encodeEl (C γ)
