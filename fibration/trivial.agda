@@ -18,7 +18,7 @@ TFibStr : {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 TFibStr {Γ = Γ} A = (γ : Γ) (φ : Cof) (a : [ φ ] → A γ) → A γ [ φ ↦ a ]
 
 opaque
-  TFibStrToFibStr : {Γ : Type ℓ} {A : Γ → Type ℓ'} → TFibStr A → FibStr A
+  TFibStrToFibStr : {A : Γ → Type ℓ'} → TFibStr A → FibStr A
   TFibStrToFibStr c .lift S r p box =
     fitsPartialToFiller λ s →
     c (p s) (box .cof ∨ S ∋ r ≈ s) (boxToPartial box s)
@@ -30,9 +30,23 @@ opaque
     cofEq : (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (box .cof ∨ S ∋ r ≈ s)
     cofEq = cong (box .cof ∨_) (≈Equivariant σ r s)
 
+  reindexTFibStrToFibStr : {A : Γ → Type ℓ} {c : TFibStr A} (ρ : Δ → Γ)
+    → TFibStrToFibStr c ∘ᶠˢ ρ ≡ TFibStrToFibStr (c ∘ ρ)
+  reindexTFibStrToFibStr ρ = refl
+
+
 _⊢ᶠTriv_ : (Γ : Type ℓ) (ℓ' : Level) → Type (ℓ ⊔ lsuc ℓ')
 Γ ⊢ᶠTriv ℓ' = Σ (Γ → Type ℓ') TFibStr
+
+_∘ᵗ_ : (A : Γ ⊢ᶠTriv ℓ) (ρ : Δ → Γ) → Δ ⊢ᶠTriv ℓ
+(A ∘ᵗ ρ) .fst = A .fst ∘ ρ
+(A ∘ᵗ ρ) .snd = A .snd ∘ ρ
 
 TFibToFib : Γ ⊢ᶠTriv ℓ → Γ ⊢ᶠType ℓ
 TFibToFib A .fst = A .fst
 TFibToFib A .snd = TFibStrToFibStr (A .snd)
+
+opaque
+  reindexTFibToFib : {A : Γ ⊢ᶠTriv ℓ} (ρ : Δ → Γ)
+    → TFibToFib A ∘ᶠ ρ ≡ TFibToFib (A ∘ᵗ ρ)
+  reindexTFibToFib ρ = Σext refl (reindexTFibStrToFibStr ρ)

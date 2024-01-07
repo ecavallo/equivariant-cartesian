@@ -94,17 +94,13 @@ module _ {@♭ ℓ} where
       unfolding 𝑼Lift.filler
       eq : ∀ s → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
       eq s =
-        congΣ
-          make
+        congΣ make
           cofEq
           (substDom [_] cofEq _
             ∙ funExt (λ uv → partialEquivEq s (subst [_] (sym cofEq) uv) uv))
         where
-        make : (φ : Cof)
-          (part : [ φ ] → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out))
-          → 𝑼 ℓ
-        make φ part =
-          Glueᵁ φ (box .cap .out) (fst ∘ part) (snd ∘ part)
+        make : (φ : Cof) (part : [ φ ] → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out)) → 𝑼 ℓ
+        make φ part = Glueᵁ φ (box .cap .out) (fst ∘ part) (snd ∘ part)
 
         cofEq : (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (box .cof ∨ S ∋ r ≈ s)
         cofEq = cong (box .cof ∨_) (≈Equivariant σ r s)
@@ -115,6 +111,6 @@ module _ {@♭ ℓ} where
     𝑼FibStr .lift S r p box = 𝑼Lift.filler box
     𝑼FibStr .vary S T σ r p box s = 𝑼Vary.eq σ box s
 
-𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ )
+𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ)
 𝑼ᶠ ℓ .fst = 𝑼ˣ ℓ
 𝑼ᶠ ℓ .snd = 𝑼FibStr ∘ᶠˢ cst tt

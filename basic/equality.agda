@@ -63,6 +63,13 @@ congΣ : {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
   → f a₀ b₀ ≡ f a₁ b₁
 congΣ _ refl refl = refl
 
+congΣ+ : {A : Type ℓ} {B : A → Type ℓ'} {C : Type ℓ''}
+  (f : (a : A) → B a → C)
+  {a₀ a₁ : A} (p : a₀ ≡ a₁) ⦃ p' : B a₀ ≡ B a₁ ⦄
+  {b₀ : B a₀} {b₁ : B a₁} (q : coe p' b₀ ≡ b₁)
+  → f a₀ b₀ ≡ f a₁ b₁
+congΣ+ _ refl ⦃ refl ⦄ refl = refl
+
 --↓ Congruence for dependent functions.
 
 congdep : {A : Type ℓ} {B : A → Type ℓ'}
