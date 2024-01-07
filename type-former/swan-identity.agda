@@ -215,7 +215,12 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
   module _ (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a : Γ ⊢ᶠ A} (b : Γ ⊢ᶠ B ∘ᶠ (id ,, a))
     where
 
-    private
+    idSubstᶠ : {a' : Γ ⊢ᶠ A} (p : Γ ⊢ᶠ Idᶠ A a a')
+      → Γ ⊢ᶠ B ∘ᶠ (id ,, a')
+    idSubstᶠ p γ =
+      subst (∣ B ∣ ∘ (γ ,_)) (p γ .fst .at1)
+        (B .snd .lift 𝕚 0 _ (box p γ) .fill 1 .out)
+      where
       box : {a' : Γ ⊢ᶠ A} (p : Γ ⊢ᶠ Idᶠ A a a')
         → ∀ γ → OpenBox 𝕚 0 (∣ B ∣ ∘ (cst γ ,, p γ .fst .at))
       box p γ .cof = p γ .snd .fst
@@ -234,16 +239,10 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
           (sym (p γ .fst .at0))
           refl
 
-    idSubstᶠ : {a' : Γ ⊢ᶠ A} (p : Γ ⊢ᶠ Idᶠ A a a')
-      → Γ ⊢ᶠ B ∘ᶠ (id ,, a')
-    idSubstᶠ p γ =
-      subst (∣ B ∣ ∘ (γ ,_)) (p γ .fst .at1)
-        (B .snd .lift 𝕚 0 _ (box p γ) .fill 1 .out)
-
     idSubstRefl : idSubstᶠ (idreflᶠ A a) ≡ b
     idSubstRefl =
       funExt λ γ →
-      sym (B .snd .lift 𝕚 0 _ (box (idreflᶠ A a) γ) .fill 1 .out≡ tt)
+      sym (B .snd .lift 𝕚 0 _ _ .fill 1 .out≡ tt)
 
   ----------------------------------------------------------------------------------------
   -- Paulin-Mohring style J eliminator
