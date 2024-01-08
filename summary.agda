@@ -162,7 +162,7 @@ module _ (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') where
   λᶠ :
     Γ ▷ᶠ A ⊢ᶠ B
     → Γ ⊢ᶠ Πᶠ A B
-  λᶠ = type-former.pi.λˣ
+  λᶠ = internal-extensional-type-theory.λˣ
 
   --↓ Elimination.
 
@@ -170,7 +170,7 @@ module _ (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') where
     (f : Γ ⊢ᶠ Πᶠ A B)
     (a : Γ ⊢ᶠ A)
     → Γ ⊢ᶠ B ∘ᶠ (id ,, a)
-  appᶠ = type-former.pi.appˣ
+  appᶠ = internal-extensional-type-theory.appˣ
 
   --↓ Computation.
 
@@ -214,12 +214,12 @@ module _ (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') where
   fstᶠ :
     Γ ⊢ᶠ Σᶠ A B
     → Γ ⊢ᶠ A
-  fstᶠ = type-former.sigma.fstˣ
+  fstᶠ = internal-extensional-type-theory.fstˣ
 
   sndᶠ :
     (t : Γ ⊢ᶠ Σᶠ A B)
     → Γ ⊢ᶠ B ∘ᶠ (id ,, fstᶠ t)
-  sndᶠ = type-former.sigma.sndˣ
+  sndᶠ = internal-extensional-type-theory.sndˣ
 
   --↓ Uniqueness (η-principle).
 
