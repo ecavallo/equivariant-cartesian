@@ -189,7 +189,7 @@ singlCenterᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
 singlCenterᶠ A a =
   pairᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)) a (reflᶠ A a)
 
-private
+opaque
   singlContract : (A : 𝟙 ⊢ᶠType ℓ) (a : A $ᶠ tt) (c : Singlᶠ A (cst a) $ᶠ tt)
     → singlCenter a ~ c
   singlContract A a c = homotopy

@@ -15,12 +15,6 @@ private variable
   ℓ : Level
   Γ Δ : Type ℓ
 
--- TODO do something better with this
-Partial : (Z : Shape) (φ : ⟨ Z ⟩ → Cof)
-  (A : Γ ▷⟨ Z ⟩ → Type ℓ)
-  → Γ → Type ℓ
-Partial Z φ A γ = ∀ z → [ φ z ] → A (γ , z)
-
 Extensionˣ : (Z : Shape)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
   (φ : ⟨ Z ⟩ → Cof)

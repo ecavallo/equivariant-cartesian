@@ -173,7 +173,7 @@ opaque
 
 opaque
   coerceEquiv : (S : Shape)
-    (A : ⟨ S ⟩ ⊢ᶠType ℓ )
+    (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩) → (A $ᶠ r) ≃ (A $ᶠ s)
   coerceEquiv S A r s =
     Coerce.coerce S r ((A ∘ᶠ cst r) ≃ᶠ A) (idEquivᶠ A r) s
