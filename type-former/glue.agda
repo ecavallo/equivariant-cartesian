@@ -70,8 +70,8 @@ domToGlue : (φ : Cof)
   (f : (u : [ φ ]) → A u → B)
   (u : [ φ ]) → A u → WeakGlue φ f
 domToGlue φ f u b .cod = f u b
-domToGlue φ {A = A} f u a .dom v = subst A (cofIsProp' φ) a
-domToGlue φ f u a .match v = sym (congΣ f (cofIsProp' φ) refl)
+domToGlue φ {A = A} f u a .dom v = subst A (cofIsStrictProp' φ) a
+domToGlue φ f u a .match v = sym (congΣ f (cofIsStrictProp' φ) refl)
 
 domIsoGlue : (φ : Cof)
   {B : Type ℓ}
@@ -80,17 +80,12 @@ domIsoGlue : (φ : Cof)
   (u : [ φ ]) → A u ≅ WeakGlue φ f
 domIsoGlue φ {B} {A} f u = iso
   where
-  prfIr : (a : A u) → subst A (cofIsProp φ u u) a ≡ a
-  prfIr a = cong (subst A ⦅–⦆ a) uip'
-
   iso : A u ≅ WeakGlue φ f
   iso .to a = domToGlue φ f u a
   iso .from (wglue _ a _) = a u
-  iso .inv₁ = prfIr
-  iso .inv₂ = fg≡id
-    where
-    fg≡id : (gl : WeakGlue φ f) → (domToGlue φ f u (gl .dom u)) ≡ gl
-    fg≡id gl = WeakGlueExt (substCofEl φ (prfIr _)) (gl .match u)
+  iso .inv₁ a = cong (subst A ⦅–⦆ a) uip'
+  iso .inv₂ gl =
+    WeakGlueExt (λ u' → congdep (gl .dom) (cofIsStrictProp φ u u')) (gl .match u)
 
 domIsoGlueˣ : (φ : Γ → Cof)
   {B : Γ → Type ℓ'}

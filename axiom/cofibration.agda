@@ -22,9 +22,9 @@ postulate
   Cof : Type
   [_] : Cof → Type
 
-  --↓ Any cofibration is a proposition (up to strict equality).
+  --↓ Any cofibration is a proposition of the ambient type theory.
 
-  cofIsProp : (φ : Cof) → (u v : [ φ ]) → u ≡ v
+  cofIsStrictProp : (φ : Cof) → isStrictProp [ φ ]
 
   --↓ The type of equalities between two elements of a shape is coded by a cofibration.
 
@@ -32,7 +32,7 @@ postulate
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
   --↓ The empty and unit types are coded by cofibrations.
-  --↓ It is not strictly necessary to assume this separately: we have already assumed an
+  --↓ It is not strictly necessary to assume these separately: we have already assumed an
   --↓ interval shape with two disequal elements, so we could define ⊥ to be 𝕚 ∋ 0 ≈ 1 and
   --↓ ⊤ to be 𝕚 ∋ 0 ≈ 0.
 
@@ -54,7 +54,7 @@ postulate
   ∨-elim : ∀ {ℓ} {φ ψ : Cof} {P : [ φ ∨ ψ ] → Type ℓ}
     (f : (u : [ φ ]) → P (∨l u))
     (g : (v : [ ψ ]) → P (∨r v))
-    (p : (u : [ φ ]) (v : [ ψ ]) → subst P (cofIsProp (φ ∨ ψ) _ _) (f u) ≡ g v)
+    (p : (u : [ φ ]) (v : [ ψ ]) → subst P (cofIsStrictProp (φ ∨ ψ) _ _) (f u) ≡ g v)
     (w : [ φ ∨ ψ ]) → P w
 
   ∨-elim-βl : ∀ ℓ φ ψ P f g p u → ∨-elim {ℓ} {φ} {ψ} {P} f g p (∨l u) ≡ f u

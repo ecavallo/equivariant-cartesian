@@ -9,6 +9,7 @@ open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
+open import tiny
 open import fibration.fibration
 open import type-former.sigma
 
@@ -16,7 +17,7 @@ private variable
   ℓ ℓ' : Level
   Γ : Type ℓ
 
-open Tiny
+open DependentTiny
 
 opaque
   hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
@@ -28,7 +29,7 @@ hasLiftsˣ : (S : Shape)
 hasLiftsˣ S A γ = hasLifts S (A ∘ (γ ,_))
 
 𝑼Lifts : ∀ (@♭ ℓ) → Type (lsuc ℓ)
-𝑼Lifts ℓ = Σ A ∈ Type ℓ , ((@♭ S : Shape) → √ᴰ S (hasLifts S) A)
+𝑼Lifts ℓ = Σ A ∈ Type ℓ , ((@♭ S : Shape) → (S √ᴰ hasLifts S) A)
 
 𝑼Liftsˣ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
 𝑼Liftsˣ ℓ _ = 𝑼Lifts ℓ
@@ -76,7 +77,7 @@ hasVariesˣ : ∀ {@♭ ℓ ℓ'} (@♭ S T : Shape) (@♭ σ : ShapeHom S T) {�
 hasVariesˣ S T σ A γ = hasVaries S T σ (A ∘ (γ ,_))
 
 𝑼 : ∀ (@♭ ℓ) → Type (lsuc ℓ)
-𝑼 ℓ = Σ A ∈ 𝑼Lifts ℓ , ((@♭ S T : Shape) (@♭ σ : ShapeHom S T) → √ᴰ T (hasVaries S T σ) A)
+𝑼 ℓ = Σ A ∈ 𝑼Lifts ℓ , (∀ (@♭ S T) (@♭ σ : ShapeHom S T) → (T √ᴰ hasVaries S T σ) A)
 
 El : ∀ {@♭ ℓ} → 𝑼 ℓ → Type ℓ
 El = fst ∘ fst
@@ -131,7 +132,7 @@ opaque
 opaque
   unfolding hasLifts
   encodeHasLifts : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
-    → Γ ⊢ˣ √ᴰ S (hasLifts S) ∘ ∣ A ∣
+    → Γ ⊢ˣ (S √ᴰ hasLifts S) ∘ ∣ A ∣
   encodeHasLifts S A =
     appˣ (√ᴰ-reindex-expand S ∣ A ∣) $
     inᴰ S $♭
@@ -185,7 +186,7 @@ opaque
   encodeHasVaries : ∀ {@♭ ℓ ℓ'}
     (@♭ S T : Shape) (@♭ σ : ShapeHom S T)
     {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
-    → Γ ⊢ˣ √ᴰ T (hasVaries S T σ) ∘ encodeLifts A
+    → Γ ⊢ˣ (T √ᴰ hasVaries S T σ) ∘ encodeLifts A
   encodeHasVaries S T σ A =
     appˣ (√ᴰ-reindex-expand T (encodeLifts A)) $
     inᴰ T $♭
@@ -251,7 +252,7 @@ opaque
   encodeEl {ℓ = ℓ} =
     λ C → 𝑼Ext $ Σext refl (funExt♭ λ S → cong$ (lemma S))
     where
-    get√Lifts : (@♭ S : Shape) (C : 𝑼 ℓ) → √ᴰ S (hasLifts S) (El C)
+    get√Lifts : (@♭ S : Shape) (C : 𝑼 ℓ) → (S √ᴰ hasLifts S) (El C)
     get√Lifts S C = C .fst .snd S
 
     lemma : (@♭ S : Shape)

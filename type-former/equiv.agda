@@ -114,13 +114,13 @@ reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 ------------------------------------------------------------------------------------------
 
 opaque
-  IsEquivIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
-    → Γ ⊢ᶠ IsHPropᶠ (IsEquivᶠ A B f)
-  IsEquivIsHPropᶠ A B f =
-    ΠIsHPropᶠ
+  IsEquivIshPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') (f : Γ ⊢ᶠ A →ᶠ B)
+    → Γ ⊢ᶠ IshPropᶠ (IsEquivᶠ A B f)
+  IsEquivIshPropᶠ A B f =
+    ΠIshPropᶠ
       B
       (IsContrᶠ (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (f ∘ 𝒑) 𝒒))
-      (IsContrIsHPropᶠ (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (f ∘ 𝒑) 𝒒))
+      (IsContrIshPropᶠ (Fiberᶠ (A ∘ᶠ 𝒑) (B ∘ᶠ 𝒑) (f ∘ 𝒑) 𝒒))
 
 --↓ To construct a path between equivalences, it suffices to build a path between the
 --↓ underlying functions.
@@ -139,7 +139,7 @@ opaque
         (λˣ $
           congPathˣ
             (λˣ (fstˣ e₁ ∘ 𝒑 ∘ 𝒑 ,ˣ 𝒒))
-            (appˣ (appˣ (IsEquivIsHPropᶠ A B (fstˣ e₁) ∘ 𝒑) 𝒒) (sndˣ e₁ ∘ 𝒑)))
+            (appˣ (appˣ (IsEquivIshPropᶠ A B (fstˣ e₁) ∘ 𝒑) 𝒒) (sndˣ e₁ ∘ 𝒑)))
         (fstˣ e₀ ,ˣ p))
       (sndˣ e₀)
 

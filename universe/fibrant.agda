@@ -82,7 +82,7 @@ module _ {@♭ ℓ} where
           (λ u →
             cong
               (T.partialEquiv (⟪ σ ⟫ s))
-              (cofIsProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨l u))
+              (cofIsStrictProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨l u))
             ∙ Σext refl
               (cong
                 (subst ((_ ≃_) ∘ El) (box .cap .out≡ u))
@@ -90,7 +90,7 @@ module _ {@♭ ℓ} where
           (λ {refl →
             cong
               (T.partialEquiv (⟪ σ ⟫ s))
-              (cofIsProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨r refl))})
+              (cofIsStrictProp (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) uv (∨r refl))})
 
     opaque
       unfolding 𝑼Lift.filler

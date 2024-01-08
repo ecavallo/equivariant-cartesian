@@ -82,20 +82,20 @@ singlIsContrᶠ A a = singlCenterᶠ A a ,ˣ λˣ (singlContractᶠ (A ∘ᶠ �
 -- h-Propositions
 ------------------------------------------------------------------------------------------
 
-IsHProp : Type ℓ → Type ℓ
-IsHProp A = (a₀ a₁ : A) → a₀ ~ a₁
+IshProp : Type ℓ → Type ℓ
+IshProp A = (a₀ a₁ : A) → a₀ ~ a₁
 
-IsHPropˣ : (Γ → Type ℓ) → (Γ → Type ℓ)
-IsHPropˣ A γ = IsHProp (A γ)
+IshPropˣ : (Γ → Type ℓ) → (Γ → Type ℓ)
+IshPropˣ A γ = IshProp (A γ)
 
-IsHPropᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
-IsHPropᶠ A =
+IshPropᶠ : Γ ⊢ᶠType ℓ → Γ ⊢ᶠType ℓ
+IshPropᶠ A =
   Πᶠ A (Πᶠ (A ∘ᶠ 𝒑) (Pathᶠ (A ∘ᶠ 𝒑 ∘ᶠ 𝒑) (𝒒 ∘ 𝒑) 𝒒))
 
 --↓ Being contractible is an h-proposition.
 
-IsContrIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ IsHPropᶠ (IsContrᶠ A)
-IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
+IsContrIshPropᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ IshPropᶠ (IsContrᶠ A)
+IsContrIshPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
   where
   tfib = isContrToTFibStr (A ∘ᶠ (λ (_ : 𝟙) → γ)) (λ _ → a₀ , c₀)
 
@@ -139,10 +139,10 @@ IsContrIsHPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
 
 --↓ h-Propositions are closed under universal quantification.
 
-ΠIsHPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
-  → Γ ▷ᶠ A ⊢ᶠ IsHPropᶠ B
-  → Γ ⊢ᶠ IsHPropᶠ (Πᶠ A B)
-ΠIsHPropᶠ A B propB γ f₀ f₁ = line
+ΠIshPropᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ')
+  → Γ ▷ᶠ A ⊢ᶠ IshPropᶠ B
+  → Γ ⊢ᶠ IshPropᶠ (Πᶠ A B)
+ΠIshPropᶠ A B propB γ f₀ f₁ = line
   where
   line : f₀ ~ f₁
   line .at i a = propB (γ , a) (f₀ a) (f₁ a) .at i

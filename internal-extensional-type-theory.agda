@@ -31,7 +31,7 @@ private variable
 
 infix  1 _⊢ˣ_
 infixl 3 _▷ˣ_ _,,_ _,ˣ_
-infixr 3 _×ˣ_
+infixr 3 _→ˣ_ _×ˣ_
 
 --↓ Term judgment of the extensional type theory.
 

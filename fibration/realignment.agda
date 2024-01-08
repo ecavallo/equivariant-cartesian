@@ -92,7 +92,7 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
           (λ uS uT →
             α .vary S T σ r (id ,, uS) box i
             ∙ cong (λ w → α .lift S r (⟪ σ ⟫ ,, w) (reshapeBox σ box) .fill i .out)
-              (funExt λ s → cofIsProp' (φ (⟪ σ ⟫ s)))))
+              (funExt λ s → cofIsStrictProp' (φ (⟪ σ ⟫ s)))))
         refl)
 
 opaque

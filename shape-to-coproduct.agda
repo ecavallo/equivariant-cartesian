@@ -14,7 +14,7 @@ open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape
 open import axiom.cofibration
-open import axiom.tiny
+open import tiny
 
 module _ (@♭ S : Shape) where
 
@@ -34,12 +34,12 @@ module _ (@♭ S : Shape) where
     back = [ R inl ∣ R inr ]
 
     forward∘back : (c : A ⊎ B) → √` forward (back c) ≡ R id c
-    forward∘back (inl a) = cong$ (√R forward inl ∙ R℘ inl id)
-    forward∘back (inr b) = cong$ (√R forward inr ∙ R℘ inr id)
+    forward∘back (inl a) = cong$ (√R forward inl ∙ R^ inl id)
+    forward∘back (inr b) = cong$ (√R forward inr ∙ R^ inr id)
 
     back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L back (forward d) ≡ d
-    back∘forward (inl f) = cong$ (L℘ back inl)
-    back∘forward (inr g) = cong$ (L℘ back inr)
+    back∘forward (inl f) = cong$ (L^ back inl)
+    back∘forward (inr g) = cong$ (L^ back inr)
 
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
       {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}

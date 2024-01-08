@@ -50,10 +50,10 @@ _∋_≈ˣ_ : (S : Shape) → (Γ → ⟨ S ⟩) → (Γ → ⟨ S ⟩) → (Γ 
 _∨ˣ_ : (φ ψ : Γ → Cof) → (Γ → Cof)
 (φ ∨ˣ ψ) γ = φ γ ∨ ψ γ
 
---↓ Version of cofIsProp with implicit arguments.
+--↓ Version of cofIsStrictProp with implicit arguments.
 
-cofIsProp' : (φ : Cof) {u v : [ φ ]} → u ≡ v
-cofIsProp' φ = cofIsProp φ _ _
+cofIsStrictProp' : (φ : Cof) {u v : [ φ ]} → u ≡ v
+cofIsStrictProp' φ = cofIsStrictProp φ _ _
 
 ------------------------------------------------------------------------------------------
 -- Restricted types
@@ -139,17 +139,17 @@ opaque
   takeOutCof φ φ₀ φ₁ {f₀} {f₁} p q =
     ∨-elim
       (λ u₀ → ∨-elimEq
-        (λ u₁ → cong f₀ (cofIsProp (φ ∨ φ₀) _ _) ∙ p u₁)
-        (λ v₁ → p u₀ ∙ cong f₁ (cofIsProp (φ ∨ φ₁) _ _)))
+        (λ u₁ → cong f₀ (cofIsStrictProp' (φ ∨ φ₀)) ∙ p u₁)
+        (λ v₁ → p u₀ ∙ cong f₁ (cofIsStrictProp' (φ ∨ φ₁))))
       (λ v₀ → ∨-elimEq
-        (λ u₁ → cong f₀ (cofIsProp (φ ∨ φ₀) _ _) ∙ p u₁)
+        (λ u₁ → cong f₀ (cofIsStrictProp' (φ ∨ φ₀)) ∙ p u₁)
         (λ v₁ → q v₀ v₁))
       (λ _ _ → funExt' uip')
 
 --↓ Substitution for inhabitants of a cofibration
 
 substCofEl : (φ : Cof) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
-substCofEl φ {P} p v = subst P (cofIsProp φ _ v) p
+substCofEl φ {P} p v = subst P (cofIsStrictProp' φ) p
 
 --↓ To check a property indexed by two elements of a cofibration, it suffices to check
 --↓ the diagonal.

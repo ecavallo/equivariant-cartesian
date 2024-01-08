@@ -42,7 +42,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
       ⊤-∧-ext : ∀ {φ ψ} → (u : [ φ ]) → φ ∧ ψ ≡ ψ u
       ⊤-∧-ext {φ} {ψ} u =
         ext
-          (subst ([_] ∘ ψ) (cofIsProp' φ) ∘ ∧-snd)
+          (subst ([_] ∘ ψ) (cofIsStrictProp' φ) ∘ ∧-snd)
           (∧-pair u)
 
       ⊤-∨-ext : ∀ {φ ψ} → [ φ ] → (φ ∨ ψ) ≡ ⊤
@@ -54,7 +54,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
       ⊥-∨-ext : ∀ {φ ψ} → ¬ [ φ ] → (φ ∨ ψ) ≡ ψ
       ⊥-∨-ext {φ} {ψ} ¬u =
         ext
-          (∨-rec (𝟘-rec ∘ ¬u) id (λ _ _ → cofIsProp' ψ))
+          (∨-rec (𝟘-rec ∘ ¬u) id (λ _ _ → cofIsStrictProp' ψ))
           ∨r
 
   Constancy : {A : Type ℓ} {a₀ a₁ : A} (p : a₀ ~ a₁) → Type ℓ
