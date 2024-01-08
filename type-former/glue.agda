@@ -140,11 +140,11 @@ module WeakGlueLift {S r φ}
           (λ {v refl →
             congΣ eqToFiber (cong$ (cong dom (box .cap .out≡ v))) uip'})
 
-      fiberBox : OpenBox 𝕚 1 (cst (Fiber (f (s , us)) (codFill .fill s .out)))
+      fiberBox : OpenBox 𝕚 0 (cst (Fiber (f (s , us)) (codFill .fill s .out)))
       fiberBox .cof = box .cof ∨ S ∋ r ≈ s
       fiberBox .tube k v≡ = contractor (partialFiber v≡) .at k
       fiberBox .cap .out = center
-      fiberBox .cap .out≡ v≡ = contractor (partialFiber v≡) .at1
+      fiberBox .cap .out≡ v≡ = contractor (partialFiber v≡) .at0
 
       fiberFill =
         Fiberᶠ
@@ -152,7 +152,7 @@ module WeakGlueLift {S r φ}
           (_ , β ∘ᶠˢ (cst s))
           (f ∘ (s ,_))
           (cst (codFill .fill s .out))
-          .snd .lift 𝕚 1 (cst us) fiberBox .fill 0
+          .snd .lift 𝕚 0 (cst us) fiberBox .fill 1
 
     codFixBox : OpenBox 𝕚 1 (cst (B s))
     codFixBox .cof = box .cof ∨ φ s ∨ S ∋ r ≈ s
@@ -165,7 +165,7 @@ module WeakGlueLift {S r φ}
           (λ {us refl →
             fiberPathEq
               (sym (fiberFill us .out≡ (∨r refl))
-                ∙ contractor us (partialFiber us (∨r refl)) .at0)
+                ∙ contractor us (partialFiber us (∨r refl)) .at1)
               i
             ∙ box .cap .out .match us}))
         (λ v →
@@ -173,7 +173,7 @@ module WeakGlueLift {S r φ}
             (λ us →
               sym (box .tube s v .match us)
               ∙ fiberPathEq
-                  (sym (contractor us (partialFiber us (∨l v)) .at0)
+                  (sym (contractor us (partialFiber us (∨l v)) .at1)
                     ∙ fiberFill us .out≡ (∨l v)) i)
             (λ {refl → codBox .cap .out≡ v}))
     codFixBox .cap .out = codFill .fill s .out
@@ -196,14 +196,14 @@ module WeakGlueLift {S r φ}
     filler .fill s .out≡ v =
       WeakGlueExt
         (λ us →
-          cong fst (sym (contractor s us (partialFiber s us (∨l v)) .at0))
+          cong fst (sym (contractor s us (partialFiber s us (∨l v)) .at1))
           ∙ cong fst (fiberFill s us .out≡ (∨l v)))
         (codFixFill s .out≡ (∨l v))
     filler .cap≡ =
       WeakGlueExt
         (λ ur →
           cong fst (sym (fiberFill r ur .out≡ (∨r refl)))
-          ∙ cong fst (contractor r ur (partialFiber r ur (∨r refl)) .at0))
+          ∙ cong fst (contractor r ur (partialFiber r ur (∨r refl)) .at1))
         (sym (codFixFill r .out≡ (∨r (∨r refl))))
 
 module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
@@ -244,7 +244,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
       congdep₂
         (λ b box →
           Fiberᶠ (_ , α ∘ᶠˢ _) (_ , β ∘ᶠˢ _) _ (cst b) .snd .lift _ _
-            (cst uσs) box .fill 0 .out)
+            (cst uσs) box .fill 1 .out)
         varyCod
         (boxExtDep varyCod
           (cong (box .cof ∨_) (≈Equivariant σ r s))
@@ -344,7 +344,7 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
       (λ v → codFiber v .snd .at i)
       (λ u v →
         sym (cong (at ⦅–⦆ i ∘ snd) (extFFiber u .out≡ v))
-        ∙ substNaturality (λ _ → at ⦅–⦆ i) (sym (codFiber v .fst .match u))
+        ∙ substNaturality (at ⦅–⦆ i) (sym (codFiber v .fst .match u))
         ∙ substConst (sym (codFiber v .fst .match u)) _)
   codBox .cap .out = b
   codBox .cap .out≡ =
@@ -417,7 +417,7 @@ opaque
     → subst (λ C → Γ ▷[ φ ] ⊢ᶠ C →ᶠ (B ↾ᶠ φ)) (GlueᶠMatch φ B A fe) (fstˣ fe)
       ≡ unglueᶠ φ B A fe ↾ φ
   unglueᶠMatch φ B A fe =
-    sym (substNaturality (λ _ → ((cod ∘_) ∘ to) ∘_) (GlueᶠMatch φ B A fe))
+    sym (substNaturality (((cod ∘_) ∘ to) ∘_) (GlueᶠMatch φ B A fe))
     ∙ cong (((cod ∘_) ∘ to) ∘_) (≅realignᶠMatch φ _ _ (domIsoGlueˣ φ (fstˣ fe)))
 
   unglueᶠIsEquiv : (φ : Γ → Cof)

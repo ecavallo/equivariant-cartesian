@@ -152,9 +152,9 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
     → Γ ⊢ᶠ IdSinglᶠ A a
   idSinglCenterᶠ A a = a ,ˣ idreflᶠ A a
 
-  idSinglContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) (c : Γ ⊢ᶠ IdSinglᶠ A a)
+  idSinglContractᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) (c : Γ ⊢ᶠ IdSinglᶠ A a)
     → Γ ⊢ᶠ Idᶠ (IdSinglᶠ A a) (idSinglCenterᶠ A a) c
-  idSinglContrᶠ A a c γ = identity
+  idSinglContractᶠ A a c γ = identity
     where
     box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A $ᶠ γ))
     box i .cof = ∂ i ∨ c γ .snd .snd .fst
@@ -212,14 +212,14 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
         (∨-⊤-ext v ∙ sym (∨-⊤-ext v))
 
   idSinglContrRefl : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
-    → idSinglContrᶠ A a (idSinglCenterᶠ A a)
+    → idSinglContractᶠ A a (idSinglCenterᶠ A a)
       ≡ idreflᶠ (IdSinglᶠ A a) (idSinglCenterᶠ A a)
   idSinglContrRefl A a =
     funExt λ γ →
     IdExt
       (λ i →
-        idSinglContrᶠ A a (idSinglCenterᶠ A a) γ .snd .snd i tt
-        ∙ idSinglContrᶠ A a (idSinglCenterᶠ A a) γ .fst .at0)
+        idSinglContractᶠ A a (idSinglCenterᶠ A a) γ .snd .snd i tt
+        ∙ idSinglContractᶠ A a (idSinglCenterᶠ A a) γ .fst .at0)
       refl
 
   ----------------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
     (c : Γ ⊢ᶠ IdSinglᶠ A a)
     → Γ ⊢ᶠ P ∘ᶠ (id ,, c)
   idJᶠ A a P d c =
-    idSubstᶠ (IdSinglᶠ A a) P d (idSinglContrᶠ A a c)
+    idSubstᶠ (IdSinglᶠ A a) P d (idSinglContractᶠ A a c)
 
   idJreflᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
     (P : Γ ▷ᶠ IdSinglᶠ A a ⊢ᶠType ℓ')

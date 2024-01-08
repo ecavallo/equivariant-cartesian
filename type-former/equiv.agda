@@ -58,7 +58,7 @@ equiv∘iso iso e .snd c = contractor
   contractor .fst = invertFiber c (e .snd c .fst)
   contractor .snd (a , p) =
     subst
-      (_~ _)
+      (_ ~_)
       (FiberExt (iso .inv₁ _) (λ _ → refl))
       (congPath
         (invertFiber c)
@@ -163,35 +163,13 @@ fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 -- Identity and coercion maps are equivalences
 ------------------------------------------------------------------------------------------
 
---- TODO use existing proof of singleton contractibility
-idEquiv : {A : Type ℓ} → FibStr (λ (_ : 𝟙) → A) → A ≃ A
-idEquiv α .fst a = a
-idEquiv α .snd a .fst = (a , refl~ a)
-idEquiv {A = A} α .snd a .snd (a' , p) = h
-  where
-  qBox : (i : 𝕀) → OpenBox 𝕚 1 (cst A)
-  qBox i .cof = ∂ i
-  qBox i .tube j = ∂-rec i (λ {refl → p .at j}) (λ {refl → a})
-  qBox i .cap .out = a
-  qBox i .cap .out≡ = ∂-elim i (λ {refl → p .at1}) (λ {refl → refl})
+opaque
+  idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ A ≃ᶠ A
+  idEquivᶠ A = λˣ 𝒒 ,ˣ λˣ (singlIsContrᶠ (A ∘ᶠ 𝒑) 𝒒)
 
-  q : (i : 𝕀) → Filler (qBox i)
-  q i = α .lift 𝕚 1 (cst _) (qBox i)
-
-  h : (a' , p) ~ (a , refl~ a)
-  h .at i .fst = q i .fill 0 .out
-  h .at i .snd = path (λ j → q i .fill j .out) refl (q i .cap≡)
-  h .at0 =
-    FiberExt
-      (sym (q 0 .fill 0 .out≡ (∨l refl)) ∙ p .at0)
-      (λ j → sym (q 0 .fill j .out≡ (∨l refl)))
-  h .at1 =
-    FiberExt
-      (sym (q 1 .fill 0 .out≡ (∨r refl)))
-      (λ j → sym (q 1 .fill j .out≡ (∨r refl)))
-
-idEquivᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ A ≃ᶠ A
-idEquivᶠ (_ , α) γ = idEquiv (α ∘ᶠˢ cst γ)
+  reindexIdEquivᶠ : {A : Γ ⊢ᶠType ℓ} (ρ : Δ → Γ)
+    → idEquivᶠ A ∘ ρ ≡ idEquivᶠ (A ∘ᶠ ρ)
+  reindexIdEquivᶠ ρ = refl
 
 opaque
   coerceEquiv : (S : Shape)
@@ -217,7 +195,7 @@ opaque
       ((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A)
       (idEquivᶠ A (⟪ σ ⟫ r))
       s
-    ∙
-    cong
-      (λ β → Coerce.coerce S r (_ ≃ˣ _ , β) (idEquivᶠ A (⟪ σ ⟫ r)) s)
-      (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)
+    ∙ cong (Coerce.coerce S r _ ⦅–⦆ s) (cong$ (reindexIdEquivᶠ ⟪ σ ⟫))
+    ∙ cong
+        (λ β → Coerce.coerce S r (_ ≃ˣ _ , β) (idEquivᶠ (A ∘ᶠ ⟪ σ ⟫) r) s)
+        (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)

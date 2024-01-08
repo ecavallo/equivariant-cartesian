@@ -43,7 +43,9 @@ module _ {@♭ ℓ} where
       coh s u refl =
         Σext
           (box .cap .out≡ u)
-          (eqLemma (box .cap .out≡ u) (coerceEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r))
+          (eqLemma (box .cap .out≡ u)
+            (coerceEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r
+              ∙ cong$ (sym (reindexIdEquivᶠ (box .tube ⦅–⦆ u)))))
         where
         eqLemma : {A B : 𝑼 ℓ} (eq : A ≡ B) {e : El A ≃ El A}
           → e ≡ idEquivᶠ (Elᶠ id) A

@@ -217,7 +217,7 @@ module Tiny (@♭ S : Shape) where
       funExt λ γ →
       sym (substCongAssoc id (λ T → Σ C ∈ _ , √` fst C ≡ T) (cong$ (sym (R℘ ρ B))) _)
       ∙ Σext
-        (substNaturality (λ _ → fst) (cong$ (sym (R℘ ρ B)))
+        (substNaturality fst (cong$ (sym (R℘ ρ B)))
           ∙ substConst (cong$ (sym (R℘ ρ B))) _
           ∙ cong$ (sym (R℘ ρ (B ,, f))))
         uip'

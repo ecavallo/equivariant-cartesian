@@ -41,7 +41,7 @@ UATFib ℓ (tt , B) φ Part = filler
 
   partFun≡extendedFun : ∀ u → partEquiv u .fst ≡ extendedEquiv .fst
   partFun≡extendedFun u =
-    substNaturality (λ _ → fst) (GlueᵁMatch _ _ _ _ _) ∙
+    substNaturality fst (GlueᵁMatch _ _ _ _ _) ∙
     unglueᵁMatch u
 
   fixPath : (u : [ φ ]) → partEquiv u ~ extendedEquiv

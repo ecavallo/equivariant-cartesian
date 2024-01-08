@@ -185,7 +185,7 @@ opaque
       ≡ ≅realignᶠ φ B A iso ↾ φ
   ≅realignᶠMatch φ B A iso =
     funExt λ (γ , u) →
-    substNaturality {B = λ C → _ ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ↾ᶠ φ ∣} (λ _ → _$ (γ , u))
+    substNaturality {B = λ C → _ ⊢ˣ ∣ C ∣ ≅ˣ ∣ B ↾ᶠ φ ∣} (_$ (γ , u))
       (≅RealignᶠMatch φ B A iso)
     ∙ substCongAssoc (λ C → C ≅ B $ᶠ γ) (_$ᶠ (γ , u)) (≅RealignᶠMatch φ B A iso) _
     ∙ cong (subst (_≅ B $ᶠ γ) ⦅–⦆ (iso (γ , u))) uip'

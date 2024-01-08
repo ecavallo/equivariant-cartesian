@@ -111,9 +111,9 @@ opaque
 
 opaque
   substNaturality : {A : Type ℓ} {B : A → Type ℓ'} {C : A → Type ℓ''}
-    (η : ∀ a → B a → C a)
+    (η : ∀ {a} → B a → C a)
     {a₀ a₁ : A} (p : a₀ ≡ a₁) {b : B a₀}
-    → η a₁ (subst B p b) ≡ subst C p (η a₀ b)
+    → η (subst B p b) ≡ subst C p (η b)
   substNaturality η refl = refl
 
 --↓ Substitution in a family of function types where only the domain varies.

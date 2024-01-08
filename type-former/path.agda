@@ -175,38 +175,49 @@ module _ {A : Type ℓ} {B : Type ℓ'} {f : A → B} where
 -- Singleton contractibility
 ------------------------------------------------------------------------------------------
 
+Singl : (A : Type ℓ) (a : A) → Type ℓ
+Singl A = Fiber id
+
 Singlᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
-Singlᶠ A a = Fiberᶠ A A (λ _ → id) a
+Singlᶠ A a = Fiberᶠ A A (λˣ 𝒒) a
+
+singlCenter : {A : Type ℓ} (a : A) → Singl A a
+singlCenter a = a , refl~ a
 
 singlCenterᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   → Γ ⊢ᶠ Singlᶠ A a
 singlCenterᶠ A a =
   pairᶠ A (Pathᶠ (A ∘ᶠ 𝒑) 𝒒 (a ∘ 𝒑)) a (reflᶠ A a)
 
-singlContrᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) (c : Γ ⊢ᶠ Singlᶠ A a)
-  → Γ ⊢ᶠ Pathᶠ (Singlᶠ A a) c (singlCenterᶠ A a)
-singlContrᶠ A a c γ = homotopy
-  where
-  box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A $ᶠ γ))
-  box i .cof = ∂ i
-  box i .tube j = ∂-rec i (λ {refl → c γ .snd .at j}) (λ {refl → a γ})
-  box i .cap .out = a γ
-  box i .cap .out≡ = ∂-elim i (λ {refl → c γ .snd .at1}) (λ {refl → refl})
+private
+  singlContract : (A : 𝟙 ⊢ᶠType ℓ) (a : A $ᶠ tt) (c : Singlᶠ A (cst a) $ᶠ tt)
+    → singlCenter a ~ c
+  singlContract A a c = homotopy
+    where
+    box : (i : 𝕀) → OpenBox 𝕚 1 (∣ A ∣ ∘ cst tt)
+    box i .cof = ∂ i
+    box i .tube j = ∂-rec i (λ {refl → a}) (λ {refl → c .snd .at j})
+    box i .cap .out = a
+    box i .cap .out≡ = ∂-elim i (λ {refl → refl}) (λ {refl → c .snd .at1})
 
-  square : (i : 𝕀) → Filler (box i)
-  square i = A .snd .lift 𝕚 1 (cst _) (box i)
+    square : (i : 𝕀) → Filler (box i)
+    square i = A .snd .lift 𝕚 1 _ (box i)
 
-  homotopy : c γ ~ (a γ , refl~ (a γ))
-  homotopy .at i .fst = square i .fill 0 .out
-  homotopy .at i .snd = path (λ j → square i .fill j .out) refl (square i .cap≡)
-  homotopy .at0 =
-    FiberExt
-      (sym (square 0 .fill 0 .out≡ (∨l refl)) ∙ c γ .snd .at0)
-      (λ j → sym (square 0 .fill j .out≡ (∨l refl)))
-  homotopy .at1 =
-    FiberExt
-      (sym (square 1 .fill 0 .out≡ (∨r refl)))
-      (λ j → sym (square 1 .fill j .out≡ (∨r refl)))
+    homotopy : (a , refl~ a) ~ c
+    homotopy .at i .fst = square i .fill 0 .out
+    homotopy .at i .snd = path (λ j → square i .fill j .out) refl (square i .cap≡)
+    homotopy .at0 =
+      FiberExt
+        (sym (square 0 .fill 0 .out≡ (∨l refl)))
+        (λ j → sym (square 0 .fill j .out≡ (∨l refl)))
+    homotopy .at1 =
+      FiberExt
+        (sym (square 1 .fill 0 .out≡ (∨r refl)) ∙ c .snd .at0)
+        (λ j → sym (square 1 .fill j .out≡ (∨r refl)))
+
+singlContractᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A) (c : Γ ⊢ᶠ Singlᶠ A a)
+  → Γ ⊢ᶠ Pathᶠ (Singlᶠ A a) (singlCenterᶠ A a) c
+singlContractᶠ A a c γ = singlContract (A ∘ᶠ cst γ) (a γ) (c γ)
 
 ------------------------------------------------------------------------------------------
 -- Transport along paths.
@@ -222,16 +233,6 @@ substᶠ A B p b₀ γ =
       (subst (∣ B ∣ ∘ (γ ,_)) (sym (p γ .at0)) (b₀ γ))
       1)
 
-substInvᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ : Γ ⊢ᶠ A}
-  (p : Γ ⊢ᶠ Pathᶠ A a₀ a₁)
-  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
-  → Γ ⊢ᶠ B ∘ᶠ (id ,, a₀)
-substInvᶠ A B p b₀ γ =
-  subst (∣ B ∣ ∘ (γ ,_)) (p γ .at0)
-    (Coerce.coerce 𝕚 1 (B ∘ᶠ (cst γ ,, p γ .at))
-      (subst (∣ B ∣ ∘ (γ ,_)) (sym (p γ .at1)) (b₀ γ))
-      0)
-
 ------------------------------------------------------------------------------------------
 -- Weak Paulin-Mohring-style J eliminator, stated in a somewhat unorthodox form using
 -- singletons for ease of proof.
@@ -243,4 +244,4 @@ Jᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)
   (c : Γ ⊢ᶠ Singlᶠ A a)
   → Γ ⊢ᶠ P ∘ᶠ (id ,, c)
 Jᶠ A a P d c =
-  substInvᶠ (Singlᶠ A a) P (singlContrᶠ A a c) d
+  substᶠ (Singlᶠ A a) P (singlContractᶠ A a c) d
