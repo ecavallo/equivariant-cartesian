@@ -20,23 +20,23 @@ module √Axioms (@♭ S : Shape) where
     postulate
       --↓ Transposition from left to right.
 
-      R : @♭ (A ^ S → B) → (A → S √ B)
+      transposeRight : @♭ (A ^ S → B) → (A → S √ B)
 
       --↓ Transposition from right to left.
 
-      L : @♭ (A → S √ B) → (A ^ S → B)
+      transposeLeft : @♭ (A → S √ B) → (A ^ S → B)
 
       --↓ Right and left transposition are mutually inverse.
 
-      LR : (@♭ f : A ^ S → B) → L (R f) ≡ f
-      RL : (@♭ g : A → S √ B) → R (L g) ≡ g
+      transposeLeftRight : (@♭ f : A ^ S → B) → transposeLeft (transposeRight f) ≡ f
+      transposeRightLeft : (@♭ g : A → S √ B) → transposeRight (transposeLeft g) ≡ g
 
-    {-# REWRITE LR RL #-}
+    {-# REWRITE transposeLeftRight transposeRightLeft #-}
 
   postulate
-    --↓ One-sided naturality of right transposition.
+    --↓ Naturality of left-to-right transposition in the domain.
 
-    R^ : ∀ {@♭ ℓ ℓ' ℓ''}
+    transposeRight^ : ∀ {@♭ ℓ ℓ' ℓ''}
       {@♭ A : Type ℓ} {@♭ A' : Type ℓ'} {@♭ B : Type ℓ''}
       (@♭ h : A → A') (@♭ f : A' ^ S → B)
-      → R (f ∘ h `^ S) ≡ R f ∘ h
+      → transposeRight (f ∘ (h `^ S)) ≡ transposeRight f ∘ h

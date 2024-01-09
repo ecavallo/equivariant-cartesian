@@ -236,7 +236,7 @@ opaque
   𝑼Ext eq =
     Σext eq $
     funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
-    √ᴰPreservesProp' T (hasVaries S T σ) (λ _ → hasVariesIsProp S T σ _) _ _ _
+    √ᴰPreservesProp T (hasVaries S T σ) (λ _ → hasVariesIsProp S T σ _) _ _ _
 
 opaque
   unfolding encode

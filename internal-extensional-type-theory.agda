@@ -97,3 +97,8 @@ fstˣ = fst ∘_
 sndˣ : {A : Γ → Type ℓ} {B : Γ ▷ˣ A → Type ℓ'}
   (t : Γ ⊢ˣ Σˣ A B) → Γ ⊢ˣ B ∘ (id ,, fstˣ t)
 sndˣ = snd ∘_
+
+--↓ Binary coproducts
+
+_⊎ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
+(A ⊎ˣ B) γ = A γ ⊎ B γ

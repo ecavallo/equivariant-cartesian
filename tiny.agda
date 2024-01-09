@@ -18,38 +18,38 @@ module Tiny (@♭ S : Shape) where
 
   open √Axioms S public
 
-  --↓ One-sided naturality of left transposition is derivable.
+  --↓ Naturality of right-to-left transposition in the domain.
 
-  L^ : ∀ {@♭ ℓ ℓ' ℓ''}
+  transposeLeft^ : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ A' : Type ℓ'} {@♭ B : Type ℓ''}
     (@♭ g : A' → S √ B) (@♭ h : A → A')
-    → L g ∘ (h `^ S) ≡ L (g ∘ h)
-  L^ g h = cong♭ L (R^ h (L g))
+    → transposeLeft g ∘ (h `^ S) ≡ transposeLeft (g ∘ h)
+  transposeLeft^ g h = cong♭ transposeLeft (transposeRight^ h (transposeLeft g))
 
   --↓ Functoriality of √ in the type argument.
 
   √` : ∀ {@♭ ℓ ℓ'}
     {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
     (@♭ h : A → B) → S √ A → S √ B
-  √` h = R (h ∘ L id)
+  √` h = transposeRight (h ∘ transposeLeft id)
 
-  --↓ The other naturality property of right transposition.
+  --↓ Naturality of left-to-right transposition in the codomain.
 
-  √R : ∀ {@♭ ℓ ℓ' ℓ''}
+  √TransposeRight : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ B : Type ℓ'} {@♭ C : Type ℓ''}
     (@♭ h : B → C) (@♭ f : (⟨ S ⟩ → A) → B)
-    → √` h ∘ R f ≡ R (h ∘ f)
-  √R {A = A} {B} {C = C} h f =
-    sym (R^ (R f) (h ∘ L id))
-    ∙ cong♭ (λ f' → R (h ∘ f')) (L^ id (R f))
+    → √` h ∘ transposeRight f ≡ transposeRight (h ∘ f)
+  √TransposeRight {A = A} {B} {C = C} h f =
+    sym (transposeRight^ (transposeRight f) (h ∘ transposeLeft id))
+    ∙ cong♭ (λ f' → transposeRight (h ∘ f')) (transposeLeft^ id (transposeRight f))
 
-  --↓ The other naturality property of left transposition.
+  --↓ Naturality of right-to-left transposition in the codomain.
 
-  L√ : ∀ {@♭ ℓ ℓ' ℓ''}
+  √TransposeLeft : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ B : Type ℓ'} {@♭ C : Type ℓ''}
     (@♭ h : B → C) (@♭ g : A → S √ B)
-    → h ∘ L g  ≡ L (√` h ∘ g)
-  L√ h g = cong♭ L (sym (√R h (L g)))
+    → h ∘ transposeLeft g ≡ transposeLeft (√` h ∘ g)
+  √TransposeLeft h g = cong♭ transposeLeft (sym (√TransposeRight h (transposeLeft g)))
 
 --↓ The right adjoint induces a dependent right adjoint
 --↓ TODO elaborate (including about universe level)
@@ -58,7 +58,7 @@ opaque
   _√ᴰ_ : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ}
     (@♭ B : Γ ^ S → Type ℓ')
     → (Γ → Type (lsuc ℓ'))
-  (S √ᴰ B) γ = Σ C ∈ S √ (Type* _) , √` fst C ≡ R B γ
+  (S √ᴰ B) γ = Σ C ∈ S √ (Type* _) , √` fst C ≡ transposeRight B γ
     where
     open Tiny S
 
@@ -76,7 +76,7 @@ module DependentTiny (@♭ S : Shape) where
     reindex√ B ρ _ =
       cong
         (λ T → Σ C ∈ S √ (Type* _) , √` fst C ≡ T)
-        (cong$ (sym (R^ ρ B)))
+        (cong$ (sym (transposeRight^ ρ B)))
 
   module _ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
     {@♭ B : Γ' ^ S → Type ℓ''} (@♭ ρ : Γ → Γ')
@@ -134,14 +134,14 @@ module DependentTiny (@♭ S : Shape) where
       unfolding _√ᴰ_
 
       shut√ : @♭ (Γ ^ S ⊢ˣ B) → (Γ ⊢ˣ S √ᴰ B)
-      shut√ b γ .fst = R (B ,, b) γ
-      shut√ b γ .snd = cong$ (√R fst (B ,, b))
+      shut√ b γ .fst = transposeRight (B ,, b) γ
+      shut√ b γ .snd = cong$ (√TransposeRight fst (B ,, b))
 
       unshut√ : @♭ (Γ ⊢ˣ S √ᴰ B) → (Γ ^ S ⊢ˣ B)
       unshut√ t p =
         coe
-          (cong$ (L√ fst (fst ∘ t) ∙ cong♭ L (funExt (snd ∘ t))))
-          (L (fst ∘ t) p .snd)
+          (cong$ (√TransposeLeft fst (fst ∘ t) ∙ cong♭ transposeLeft (funExt (snd ∘ t))))
+          (transposeLeft (fst ∘ t) p .snd)
 
       unshutShut√ : (@♭ b : Γ ^ S ⊢ˣ B) → unshut√ (shut√ b) ≡ b
       unshutShut√ b =
@@ -149,9 +149,9 @@ module DependentTiny (@♭ S : Shape) where
 
       shutUnshut√ : (@♭ t : Γ ⊢ˣ S √ᴰ B) → shut√ (unshut√ t) ≡ t
       shutUnshut√ t =
-        funExt' $ Σext (cong$ (cong♭ R (sym lemma))) uip'
+        funExt' $ Σext (cong$ (cong♭ transposeRight (sym lemma))) uip'
         where
-        lemma : L (fst ∘ t) ≡ (B ,, unshut√ t)
+        lemma : transposeLeft (fst ∘ t) ≡ (B ,, unshut√ t)
         lemma = funExt' $ Σext _ refl
 
   open√ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} {@♭ B : Γ ▷⟨ S ⟩ ^ S → Type ℓ'}
@@ -169,11 +169,15 @@ module DependentTiny (@♭ S : Shape) where
         → appˣ (computeReindex√ ρ) (shut√ b ∘ ρ) ≡ shut√ (b ∘ (ρ `^ S))
       reindexShut√ b ρ =
         funExt λ γ →
-        sym (substCongAssoc id (λ T → Σ C ∈ _ , √` fst C ≡ T) (cong$ (sym (R^ ρ B))) _)
+        sym
+          (substCongAssoc
+            id
+            (λ T → Σ C ∈ _ , √` fst C ≡ T)
+            (cong$ (sym (transposeRight^ ρ B))) _)
         ∙ Σext
-          (substNaturality fst (cong$ (sym (R^ ρ B)))
-            ∙ substConst (cong$ (sym (R^ ρ B))) _
-            ∙ cong$ (sym (R^ ρ (B ,, b))))
+          (substNaturality fst (cong$ (sym (transposeRight^ ρ B)))
+            ∙ substConst (cong$ (sym (transposeRight^ ρ B))) _
+            ∙ cong$ (sym (transposeRight^ ρ (B ,, b))))
           uip'
 
     opaque

@@ -21,49 +21,53 @@ module _ (@♭ S : Shape) where
   open Tiny S
 
   shape→⊎♭ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
-    → ((⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) ≅ (⟨ S ⟩ → A ⊎ B)
-  shape→⊎♭ {A = A} {B} =
-    record
-    { to = forward
-    ; from = L back
-    ; inv₁ = back∘forward
-    ; inv₂ = λ _ → cong$ (L√ forward back ∙ cong♭ L (funExt forward∘back))
-    }
+    → ((A ^ S) ⊎ (B ^ S)) ≅ ((A ⊎ B) ^ S)
+  shape→⊎♭ {A = A} {B = B} = main
     where
-    forward = [ inl ∘_ ∣ inr ∘_ ]
-    back = [ R inl ∣ R inr ]
+    forward = [ inl `^ S ∣ inr `^ S ]
+    back = [ transposeRight inl ∣ transposeRight inr ]
 
-    forward∘back : (c : A ⊎ B) → √` forward (back c) ≡ R id c
-    forward∘back (inl a) = cong$ (√R forward inl ∙ R^ inl id)
-    forward∘back (inr b) = cong$ (√R forward inr ∙ R^ inr id)
+    forward∘back : ∀ c → √` forward (back c) ≡ transposeRight id c
+    forward∘back (inl a) =
+      cong$ (√TransposeRight forward inl ∙ transposeRight^ inl id)
+    forward∘back (inr b) =
+      cong$ (√TransposeRight forward inr ∙ transposeRight^ inr id)
 
-    back∘forward : (d : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B)) → L back (forward d) ≡ d
-    back∘forward (inl f) = cong$ (L^ back inl)
-    back∘forward (inr g) = cong$ (L^ back inr)
+    back∘forward : ∀ d → transposeLeft back (forward d) ≡ d
+    back∘forward (inl f) = cong$ (transposeLeft^ back inl)
+    back∘forward (inr g) = cong$ (transposeLeft^ back inr)
+
+    main : ((A ^ S) ⊎ (B ^ S)) ≅ ((A ⊎ B) ^ S)
+    main .to = forward
+    main .from = transposeLeft back
+    main .inv₁ = back∘forward
+    main .inv₂ _ =
+      cong$ (√TransposeLeft forward back ∙ cong♭ transposeLeft (funExt forward∘back))
 
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
-      {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
-      {@♭ B : Type ℓ''} {@♭ B' : Type ℓ'''}
-      (f : A → A') (g : B → B')
-      (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → B))
-      → shape→⊎♭ .to (((f ∘_) ⊎` (g ∘_)) p) ≡ (f ⊎` g) ∘ (shape→⊎♭ .to p)
+    {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
+    {@♭ B : Type ℓ''} {@♭ B' : Type ℓ'''}
+    (f : A → A') (g : B → B')
+    (p : (A ^ S) ⊎ (B ^ S))
+    → shape→⊎♭ .to (((f ∘_) ⊎` (g ∘_)) p) ≡ (f ⊎` g) ∘ (shape→⊎♭ .to p)
   shape→⊎♭` f g (inl _) = refl
   shape→⊎♭` f g (inr _) = refl
 
-  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Type ℓ}
-    (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → A))
+  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → A))
     → ∇ ∘ shape→⊎♭ .to p ≡ ∇ p
   shape→⊎♭∇ (inl _) = refl
   shape→⊎♭∇ (inr _) = refl
 
 shape→⊎ : ∀ {@♭ ℓ ℓ'} (S : Shape)
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-  → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
+  → Π ⟨ S ⟩ (A ⊎ˣ B)
+  → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
 shape→⊎ {ℓ} {ℓ'} =
   ShapeIsDiscrete main
   where
-  module _ (@♭ S : Shape) {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-    (h : (s : ⟨ S ⟩) → A s ⊎ B s)
+  module _ (@♭ S : Shape)
+    {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
+    (h : Π ⟨ S ⟩ (A ⊎ˣ B))
     where
 
     Ctx = Type ℓ × Type ℓ'
