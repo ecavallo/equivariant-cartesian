@@ -41,7 +41,7 @@ opaque
     → Γ ⊢ˣ hasLiftsˣ S (fstˣ A)
   decodeLifts S A =
     open√ S $♭
-    appˣ (computeReindex√ S (fst ∘ A)) $
+    appˣ (computeReindex√ S (fstˣ A)) $
     λ γs → A γs .snd S
 
 opaque
@@ -52,7 +52,7 @@ opaque
     → decodeLifts S A ∘ ρ ≡ decodeLifts S (A ∘ (ρ ×id))
   reindexDecodeLifts ρ S A =
     reindexOpen√ S _ _ ∙
-    cong♭ (open√ S) (computeReindex√-∘ S (fst ∘ A) (ρ ×id) _)
+    cong♭ (open√ S) (computeReindex√-∘ S (fstˣ A) (ρ ×id) _)
 
 opaque
   unfolding hasLifts
@@ -91,7 +91,7 @@ decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
   → Γ ⊢ˣ hasVariesˣ S T σ (fstˣ A)
 decodeVaries S T σ A =
   open√ T $♭
-  appˣ (computeReindex√ T (fst ∘ A)) $
+  appˣ (computeReindex√ T (fstˣ A)) $
   λ γt → A γt .snd S T σ
 
 ------------------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ opaque
   ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
   ElFibStr .lift =
     ShapeIsDiscrete λ (@♭ S) →
-    λ r A → decodeLifts S (^-ε S) (fst ∘ A) r
+    λ r A → decodeLifts S (^-ε S) (fstˣ A) r
   ElFibStr .vary =
     ShapeIsDiscrete λ (@♭ S) →
     ShapeIsDiscrete λ (@♭ T) →
@@ -255,8 +255,7 @@ opaque
     get√Lifts : (@♭ S : Shape) (C : 𝑼 ℓ) → (S √ᴰ hasLifts S) (El C)
     get√Lifts S C = C .fst .snd S
 
-    lemma : (@♭ S : Shape)
-      → encodeHasLifts S (Elᶠ {ℓ = ℓ} id) ≡ get√Lifts S
+    lemma : (@♭ S : Shape) → encodeHasLifts S (Elᶠ id) ≡ get√Lifts S
     lemma S =
       cong (appˣ (expandReindex√ S El))
         (cong♭ (shut√ S)
