@@ -59,7 +59,8 @@ module _ (@♭ S : Shape) where
 shape→⊎ : ∀ {@♭ ℓ ℓ'} (S : Shape)
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
   → ((s : ⟨ S ⟩) → A s ⊎ B s) → Π ⟨ S ⟩ A ⊎ Π ⟨ S ⟩ B
-shape→⊎ {ℓ} {ℓ'} = ShapeIsDiscrete main
+shape→⊎ {ℓ} {ℓ'} =
+  ShapeIsDiscrete main
   where
   module _ (@♭ S : Shape) {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
     (h : (s : ⟨ S ⟩) → A s ⊎ B s)

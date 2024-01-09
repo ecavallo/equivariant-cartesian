@@ -40,8 +40,8 @@ opaque
     (@♭ A : Γ ▷⟨ S ⟩ ⊢ˣ 𝑼Liftsˣ ℓ')
     → Γ ⊢ˣ hasLiftsˣ S (fstˣ A)
   decodeLifts S A =
-    outᴰ S $♭
-    appˣ (√ᴰ-reindex-compute S (fst ∘ A)) $
+    open√ S $♭
+    appˣ (computeReindex√ S (fst ∘ A)) $
     λ γs → A γs .snd S
 
 opaque
@@ -51,8 +51,8 @@ opaque
     (@♭ A : Γ ▷⟨ S ⟩ ⊢ˣ 𝑼Liftsˣ ℓ'')
     → decodeLifts S A ∘ ρ ≡ decodeLifts S (A ∘ (ρ ×id))
   reindexDecodeLifts ρ S A =
-    outᴰ-reindex S _ _ ∙
-    cong♭ (outᴰ S) (√ᴰ-reindex-compute-∘ S (fst ∘ A) (ρ ×id) _)
+    reindexOpen√ S _ _ ∙
+    cong♭ (open√ S) (computeReindex√-∘ S (fst ∘ A) (ρ ×id) _)
 
 opaque
   unfolding hasLifts
@@ -90,8 +90,8 @@ decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
   (@♭ A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼ˣ ℓ')
   → Γ ⊢ˣ hasVariesˣ S T σ (fstˣ A)
 decodeVaries S T σ A =
-  outᴰ T $♭
-  appˣ (√ᴰ-reindex-compute T (fst ∘ A)) $
+  open√ T $♭
+  appˣ (computeReindex√ T (fst ∘ A)) $
   λ γt → A γt .snd S T σ
 
 ------------------------------------------------------------------------------------------
@@ -134,8 +134,8 @@ opaque
   encodeHasLifts : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → Γ ⊢ˣ (S √ᴰ hasLifts S) ∘ ∣ A ∣
   encodeHasLifts S A =
-    appˣ (√ᴰ-reindex-expand S ∣ A ∣) $
-    inᴰ S $♭
+    appˣ (expandReindex√ S ∣ A ∣) $
+    shut√ S $♭
     λ p r box → A .snd .lift S r p box
 
   reindexEncodeHasLifts : ∀ {@♭ ℓ ℓ' ℓ''} (@♭ S : Shape)
@@ -143,10 +143,10 @@ opaque
     (@♭ A : Γ ⊢ᶠType ℓ'')
     → encodeHasLifts S A ∘ ρ ≡ encodeHasLifts S (A ∘ᶠ ρ)
   reindexEncodeHasLifts S ρ A =
-    cong (appˣ (√ᴰ-reindex-expand S ∣ A ∣ ∘ ρ))
-      (sym (√ᴰ-reindex-expand-compute S ρ _)
-        ∙ cong (appˣ (√ᴰ-reindex-expand S ρ)) (inᴰ-reindex S ρ _))
-    ∙ √ᴰ-reindex-expand-∘ S ∣ A ∣ ρ _
+    cong (appˣ (expandReindex√ S ∣ A ∣ ∘ ρ))
+      (sym (expandComputeReindex√ S ρ _)
+        ∙ cong (appˣ (expandReindex√ S ρ)) (reindexShut√ S _ ρ))
+    ∙ expandReindex√-∘ S ∣ A ∣ ρ _
 
 encodeLifts : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} → @♭ (Γ ⊢ᶠType ℓ') → Γ ⊢ˣ 𝑼Liftsˣ ℓ'
 encodeLifts A γ .fst = A $ᶠ γ
@@ -167,8 +167,8 @@ opaque
     (@♭ A : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ')
     → decodeLifts S (encodeLifts A) ≡ getFibLifts S A
   decodeEncodeLifts {S = S} A =
-    cong♭ (outᴰ S) (√ᴰ-reindex-compute-expand S _ _)
-    ∙ out-inᴰ _ _
+    cong♭ (open√ S) (computeExpandReindex√ S _ _)
+    ∙ openShut√ _ _
 
 private
   reindexEncodeInsideDecode : ∀ {@♭ ℓ ℓ' ℓ''}
@@ -188,8 +188,8 @@ opaque
     {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → Γ ⊢ˣ (T √ᴰ hasVaries S T σ) ∘ encodeLifts A
   encodeHasVaries S T σ A =
-    appˣ (√ᴰ-reindex-expand T (encodeLifts A)) $
-    inᴰ T $♭
+    appˣ (expandReindex√ T (encodeLifts A)) $
+    shut√ T $♭
     λ p r box s →
     cong (λ l → l p (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out)
       (reindexDecodeLifts (encodeLifts A `^ T) T (^-ε T)
@@ -258,13 +258,13 @@ opaque
     lemma : (@♭ S : Shape)
       → encodeHasLifts S (Elᶠ {ℓ = ℓ} id) ≡ get√Lifts S
     lemma S =
-      cong (appˣ (√ᴰ-reindex-expand S El))
-        (cong♭ (inᴰ S)
+      cong (appˣ (expandReindex√ S El))
+        (cong♭ (shut√ S)
           (reindexDecodeLifts (fst `^ S) S (^-ε S)
-            ∙ cong♭ (outᴰ S)
-                (sym (√ᴰ-reindex-compute-∘ S El (^-ε S) (get√Lifts S ∘ ^-ε S))))
-          ∙ sym (in-outᴰ S (appˣ (√ᴰ-reindex-compute S El) (get√Lifts S))))
-      ∙ √ᴰ-reindex-expand-compute S El (get√Lifts S)
+            ∙ cong♭ (open√ S)
+                (sym (computeReindex√-∘ S El (^-ε S) (get√Lifts S ∘ ^-ε S))))
+          ∙ sym (shutOpen√ S (appˣ (computeReindex√ S El) (get√Lifts S))))
+      ∙ expandComputeReindex√ S El (get√Lifts S)
 
 opaque
   encodeDecode : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ C : Γ ⊢ˣ 𝑼ˣ ℓ') → encode (decode C) ≡ C
