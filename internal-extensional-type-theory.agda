@@ -38,6 +38,14 @@ infixr 3 _→ˣ_ _×ˣ_
 _⊢ˣ_ : (Γ : Type ℓ) (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 (Γ ⊢ˣ A) = Π Γ A
 
+--↓ Term equality judgment of the extensionality judgment.
+
+EqTermSyntaxˣ : (Γ : Type ℓ) (A : Γ → Type ℓ') (a₀ a₁ : Γ ⊢ˣ A) → Type (ℓ ⊔ ℓ')
+EqTermSyntaxˣ Γ A a₀ a₁ = a₀ ≡ a₁
+
+infix 1 EqTermSyntaxˣ
+syntax EqTermSyntaxˣ Γ A a₀ a₁ = Γ ⊢ˣ a₀ ≡ a₁ ⦂ A
+
 --↓ Context and substitution extension for the extensional type theory.
 
 _▷ˣ_ : (Γ : Type ℓ) → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')

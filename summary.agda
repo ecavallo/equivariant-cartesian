@@ -54,11 +54,11 @@ _⊢ᶠ_≡_⦂Type : (Γ : Ctx ℓ) (A₀ A₁ : Γ ⊢ᶠType ℓ') → Type (
 
 infix 1 _⊢ᶠ_≡_⦂Type
 
-EqTerm : (Γ : Ctx ℓ) (A : Γ ⊢ᶠType ℓ') (a₀ a₁ : Γ ⊢ᶠ A) → Type (ℓ ⊔ ℓ')
-EqTerm Γ A a₀ a₁ = a₀ ≡ a₁
+EqTermSyntaxᶠ : (Γ : Ctx ℓ) (A : Γ ⊢ᶠType ℓ') (a₀ a₁ : Γ ⊢ᶠ A) → Type (ℓ ⊔ ℓ')
+EqTermSyntaxᶠ Γ A a₀ a₁ = a₀ ≡ a₁
 
-infix 1 EqTerm
-syntax EqTerm Γ A a₀ a₁ = Γ ⊢ᶠ a₀ ≡ a₁ ⦂ A
+infix 1 EqTermSyntaxᶠ
+syntax EqTermSyntaxᶠ Γ A a₀ a₁ = Γ ⊢ᶠ a₀ ≡ a₁ ⦂ A
 
 ------------------------------------------------------------------------------------------
 -- Contexts.

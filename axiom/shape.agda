@@ -81,11 +81,11 @@ _`^_ : ∀ {ℓ ℓ'} {Γ : Type ℓ} {Γ' : Type ℓ'}
 --↓ Unit and counit transformations for the adjunction between product with (_▷ S) and
 --↓ exponentation by (_^ S) a shape.
 
-^-η : ∀ {ℓ} (S : Shape) {Γ : Type ℓ} → Γ → Γ ▷⟨ S ⟩ ^ S
-^-η S = curry id
+^-unit : ∀ {ℓ} (S : Shape) {Γ : Type ℓ} → Γ → Γ ▷⟨ S ⟩ ^ S
+^-unit S = curry id
 
-^-ε : ∀ {ℓ} (S : Shape) {Γ : Type ℓ} → Γ ^ S ▷⟨ S ⟩ → Γ
-^-ε S = uncurry _$_
+^-counit : ∀ {ℓ} (S : Shape) {Γ : Type ℓ} → Γ ^ S ▷⟨ S ⟩ → Γ
+^-counit S = uncurry _$_
 
 ------------------------------------------------------------------------------------------
 -- Notation for interval endpoints.

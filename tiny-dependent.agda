@@ -121,8 +121,8 @@ module DependentTiny (@♭ S : Shape) where
 
   open√ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} {@♭ B : Γ ▷⟨ S ⟩ ^ S → Type ℓ'}
     → @♭ (Γ ▷⟨ S ⟩ ⊢ˣ S √ᴰ B)
-    → Γ ⊢ˣ B ∘ ^-η S
-  open√ t = unshut√ t ∘ ^-η S
+    → Γ ⊢ˣ B ∘ ^-unit S
+  open√ t = unshut√ t ∘ ^-unit S
 
   module _ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} {@♭ B : Γ' ^ S → Type ℓ''}
     where
@@ -161,53 +161,43 @@ module DependentTiny (@♭ S : Shape) where
     (@♭ t : Γ' ▷⟨ S ⟩ ⊢ˣ S √ᴰ B)
     → open√ t ∘ ρ ≡ open√ (appˣ (computeReindex√ (ρ ×id)) (t ∘ ρ ×id))
   reindexOpen√ ρ t =
-    cong (_∘ ^-η S) (reindexUnshut√ t (ρ ×id))
+    cong (_∘ ^-unit S) (reindexUnshut√ t (ρ ×id))
 
   opaque
     openShut√ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} {@♭ B : (Γ ▷⟨ S ⟩) ^ S → Type ℓ'}
       (@♭ b : Γ ▷⟨ S ⟩ ^ S ⊢ˣ B)
-      → open√ (shut√ b) ≡ b ∘ ^-η S
-    openShut√ b = cong (_∘ ^-η S) (unshutShut√ b)
+      → open√ (shut√ b) ≡ b ∘ ^-unit S
+    openShut√ b = cong (_∘ ^-unit S) (unshutShut√ b)
 
     shutOpen√ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} {@♭ B : Γ ^ S → Type ℓ'}
       (@♭ t : Γ ⊢ˣ S √ᴰ B)
-      → t ≡ shut√ (open√ (appˣ (computeReindex√ (^-ε S)) (t ∘ ^-ε S)))
+      → t ≡ shut√ (open√ (appˣ (computeReindex√ (^-counit S)) (t ∘ ^-counit S)))
     shutOpen√ t =
-      sym (shutUnshut√ t) ∙ cong♭ shut√ (cong (_∘ ^-η S) (reindexUnshut√ t (^-ε S)))
+      sym (shutUnshut√ t)
+      ∙ cong♭ shut√ (cong (_∘ ^-unit S) (reindexUnshut√ t (^-counit S)))
 
   opaque
+    √ᴰPreservesPropGlobal : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
+      (@♭ B : Γ ^ S → Type ℓ')
+      → @♭ ((@♭ b b' : Γ ^ S ⊢ˣ B) → b ≡ b')
+      → ((@♭ t t' : Γ ⊢ˣ S √ᴰ B) → t ≡ t')
+    √ᴰPreservesPropGlobal B propB t t' =
+      shutOpen√ t ∙ cong♭ shut√ (propB _ _) ∙ sym (shutOpen√ t')
+
     √ᴰPreservesProp : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
       (@♭ B : Γ ^ S → Type ℓ')
       → @♭ (∀ p → isStrictProp (B p))
       → ∀ γ → isStrictProp ((S √ᴰ B) γ)
     √ᴰPreservesProp {Γ = Γ} B propB γ t t' =
-      cong$ {a = γ , (t , t')} lem''
+      cong$ {a = γ , (t , t')} equateGenericPoints
       where
-      preservesPropGlobal : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
-        (@♭ B : Γ ^ S → Type ℓ')
-        → @♭ ((@♭ b b' : Γ ^ S ⊢ˣ B) → b ≡ b')
-        → ((@♭ t t' : Γ ⊢ˣ S √ᴰ B) → t ≡ t')
-      preservesPropGlobal B propB t t' =
-        shutOpen√ t ∙ cong♭ shut√ (propB _ _) ∙ sym (shutOpen√ t')
-
-      lem' :
-        _≡_
-          {A = Γ ▷ˣ (S √ᴰ B ×ˣ S √ᴰ B) ⊢ˣ S √ᴰ (B ∘ (𝒑 `^ S))}
-          (appˣ (computeReindex√ 𝒑) (fstˣ 𝒒))
-          (appˣ (computeReindex√ 𝒑) (sndˣ 𝒒))
-      lem' =
-        preservesPropGlobal
-          (B ∘ (𝒑 `^ S))
-          (λ b b' → funExt λ p → propB (𝒑 ∘ p) (b p) (b' p))
-          (appˣ (computeReindex√ 𝒑) (fstˣ 𝒒))
-          (appˣ (computeReindex√ 𝒑) (sndˣ 𝒒))
-
-      lem'' :
-        _≡_
-          {A = Γ ▷ˣ (S √ᴰ B ×ˣ S √ᴰ B) ⊢ˣ (S √ᴰ B) ∘ 𝒑}
-          (fstˣ 𝒒)
-          (sndˣ 𝒒)
-      lem'' =
+      equateGenericPoints : Γ ▷ˣ (S √ᴰ B ×ˣ S √ᴰ B) ⊢ˣ fstˣ 𝒒 ≡ sndˣ 𝒒 ⦂ (S √ᴰ B) ∘ 𝒑
+      equateGenericPoints =
         sym (expandComputeReindex√ 𝒑 (fstˣ 𝒒))
-        ∙ cong (appˣ (expandReindex√ 𝒑)) lem'
+        ∙ cong (appˣ (expandReindex√ 𝒑))
+          (√ᴰPreservesPropGlobal
+            (B ∘ (𝒑 `^ S))
+            (λ b b' → funExt λ p → propB (𝒑 ∘ p) (b p) (b' p))
+            (appˣ (computeReindex√ 𝒑) (fstˣ 𝒒))
+            (appˣ (computeReindex√ 𝒑) (sndˣ 𝒒)))
         ∙ expandComputeReindex√ 𝒑 (sndˣ 𝒒)
