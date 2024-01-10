@@ -47,20 +47,20 @@ module DependentTiny (@♭ S : Shape) where
     {@♭ B : Γ' ^ S → Type ℓ''} (@♭ ρ : Γ → Γ')
     where
 
-    computeReindex√ : Γ ⊢ˣ (S √ᴰ B) ∘ ρ →ˣ S √ᴰ (B ∘ (ρ `^ S))
-    computeReindex√ γ = coe (reindex√ B ρ γ)
+    doReindex√ : Γ ⊢ˣ (S √ᴰ B) ∘ ρ →ˣ S √ᴰ (B ∘ (ρ `^ S))
+    doReindex√ γ = coe (reindex√ B ρ γ)
 
-    expandReindex√ : Γ ⊢ˣ S √ᴰ (B ∘ (ρ `^ S)) →ˣ (S √ᴰ B) ∘ ρ
-    expandReindex√ γ = coe (sym (reindex√ B ρ γ))
+    undoReindex√ : Γ ⊢ˣ S √ᴰ (B ∘ (ρ `^ S)) →ˣ (S √ᴰ B) ∘ ρ
+    undoReindex√ γ = coe (sym (reindex√ B ρ γ))
 
-    computeExpandReindex√ : (b : Γ ⊢ˣ S √ᴰ (B ∘ (ρ `^ S)))
-      → appˣ computeReindex√ (appˣ expandReindex√ b) ≡ b
-    computeExpandReindex√ b =
+    doUndoReindex√ : (b : Γ ⊢ˣ S √ᴰ (B ∘ (ρ `^ S)))
+      → appˣ doReindex√ (appˣ undoReindex√ b) ≡ b
+    doUndoReindex√ b =
       funExt λ γ → adjustSubstEq id refl _ (reindex√ B ρ γ) refl refl
 
-    expandComputeReindex√ : (b : Γ ⊢ˣ (S √ᴰ B) ∘ ρ)
-      → appˣ expandReindex√ (appˣ computeReindex√ b) ≡ b
-    expandComputeReindex√ b =
+    undoDoReindex√ : (b : Γ ⊢ˣ (S √ᴰ B) ∘ ρ)
+      → appˣ undoReindex√ (appˣ doReindex√ b) ≡ b
+    undoDoReindex√ b =
       funExt λ γ → adjustSubstEq id refl _ (sym (reindex√ B ρ γ)) refl refl
 
   module _ {@♭ ℓ ℓ' ℓ'' ℓ'''}
@@ -69,10 +69,10 @@ module DependentTiny (@♭ S : Shape) where
     (@♭ ρ' : Γ' → Γ'') (@♭ ρ : Γ → Γ')
     where
 
-    computeReindex√-∘ : (b : Γ ⊢ˣ (S √ᴰ B) ∘ ρ' ∘ ρ)
-      → appˣ (computeReindex√ ρ) (appˣ (computeReindex√ ρ' ∘ ρ) b)
-        ≡ appˣ (computeReindex√ (ρ' ∘ ρ)) b
-    computeReindex√-∘ b =
+    doReindex√-∘ : (b : Γ ⊢ˣ (S √ᴰ B) ∘ ρ' ∘ ρ)
+      → appˣ (doReindex√ ρ) (appˣ (doReindex√ ρ' ∘ ρ) b)
+        ≡ appˣ (doReindex√ (ρ' ∘ ρ)) b
+    doReindex√-∘ b =
       funExt λ γ →
       adjustSubstEq id
         refl
@@ -81,10 +81,10 @@ module DependentTiny (@♭ S : Shape) where
         (reindex√ B (ρ' ∘ ρ) γ)
         refl
 
-    expandReindex√-∘ : (b : Γ ⊢ˣ S √ᴰ (B ∘ (ρ' ∘ ρ) `^ S))
-      → appˣ (expandReindex√ ρ' ∘ ρ) (appˣ (expandReindex√ ρ) b)
-        ≡ appˣ (expandReindex√ (ρ' ∘ ρ)) b
-    expandReindex√-∘ b =
+    undoReindex√-∘ : (b : Γ ⊢ˣ S √ᴰ (B ∘ (ρ' ∘ ρ) `^ S))
+      → appˣ (undoReindex√ ρ' ∘ ρ) (appˣ (undoReindex√ ρ) b)
+        ≡ appˣ (undoReindex√ (ρ' ∘ ρ)) b
+    undoReindex√-∘ b =
       funExt λ γ →
       adjustSubstEq id
         refl
@@ -131,7 +131,7 @@ module DependentTiny (@♭ S : Shape) where
       unfolding reindex√ shut√
 
       reindexShut√ : (@♭ b : Γ' ^ S ⊢ˣ B) (@♭ ρ : Γ → Γ')
-        → appˣ (computeReindex√ ρ) (shut√ b ∘ ρ) ≡ shut√ (b ∘ (ρ `^ S))
+        → appˣ (doReindex√ ρ) (shut√ b ∘ ρ) ≡ shut√ (b ∘ (ρ `^ S))
       reindexShut√ b ρ =
         funExt λ γ →
         sym
@@ -147,19 +147,19 @@ module DependentTiny (@♭ S : Shape) where
 
     opaque
       reindexUnshut√ : (@♭ g : Γ' ⊢ˣ S √ᴰ B) (@♭ ρ : Γ → Γ')
-        → unshut√ g ∘ (ρ `^ S) ≡ unshut√ (appˣ (computeReindex√ ρ) (g ∘ ρ))
+        → unshut√ g ∘ (ρ `^ S) ≡ unshut√ (appˣ (doReindex√ ρ) (g ∘ ρ))
       reindexUnshut√ g ρ =
         sym (unshutShut√ (unshut√ g ∘ (ρ `^ S)))
         ∙ cong♭ unshut√
           (sym (reindexShut√ (unshut√ g) ρ)
-            ∙ cong (appˣ (computeReindex√ ρ)) (cong (_∘ ρ) (shutUnshut√ g)))
+            ∙ cong (appˣ (doReindex√ ρ)) (cong (_∘ ρ) (shutUnshut√ g)))
 
   reindexOpen√ : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
     {@♭ B : Γ' ▷⟨ S ⟩ ^ S → Type ℓ''}
     (@♭ ρ : Γ → Γ')
     (@♭ t : Γ' ▷⟨ S ⟩ ⊢ˣ S √ᴰ B)
-    → open√ t ∘ ρ ≡ open√ (appˣ (computeReindex√ (ρ ×id)) (t ∘ ρ ×id))
+    → open√ t ∘ ρ ≡ open√ (appˣ (doReindex√ (ρ ×id)) (t ∘ ρ ×id))
   reindexOpen√ ρ t =
     cong (_∘ ^-unit S) (reindexUnshut√ t (ρ ×id))
 
@@ -171,7 +171,7 @@ module DependentTiny (@♭ S : Shape) where
 
     shutOpen√ : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} {@♭ B : Γ ^ S → Type ℓ'}
       (@♭ t : Γ ⊢ˣ S √ᴰ B)
-      → t ≡ shut√ (open√ (appˣ (computeReindex√ (^-counit S)) (t ∘ ^-counit S)))
+      → t ≡ shut√ (open√ (appˣ (doReindex√ (^-counit S)) (t ∘ ^-counit S)))
     shutOpen√ t =
       sym (shutUnshut√ t)
       ∙ cong♭ shut√ (cong (_∘ ^-unit S) (reindexUnshut√ t (^-counit S)))
@@ -193,11 +193,11 @@ module DependentTiny (@♭ S : Shape) where
       where
       equateGenericPoints : Γ ▷ˣ (S √ᴰ B ×ˣ S √ᴰ B) ⊢ˣ fstˣ 𝒒 ≡ sndˣ 𝒒 ⦂ (S √ᴰ B) ∘ 𝒑
       equateGenericPoints =
-        sym (expandComputeReindex√ 𝒑 (fstˣ 𝒒))
-        ∙ cong (appˣ (expandReindex√ 𝒑))
+        sym (undoDoReindex√ 𝒑 (fstˣ 𝒒))
+        ∙ cong (appˣ (undoReindex√ 𝒑))
           (√ᴰPreservesPropGlobal
             (B ∘ (𝒑 `^ S))
             (λ b b' → funExt λ p → propB (𝒑 ∘ p) (b p) (b' p))
-            (appˣ (computeReindex√ 𝒑) (fstˣ 𝒒))
-            (appˣ (computeReindex√ 𝒑) (sndˣ 𝒒)))
-        ∙ expandComputeReindex√ 𝒑 (sndˣ 𝒒)
+            (appˣ (doReindex√ 𝒑) (fstˣ 𝒒))
+            (appˣ (doReindex√ 𝒑) (sndˣ 𝒒)))
+        ∙ undoDoReindex√ 𝒑 (sndˣ 𝒒)
