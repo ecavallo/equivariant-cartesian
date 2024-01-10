@@ -21,7 +21,7 @@ open DependentTiny
 
 opaque
   hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
-  hasLifts S A = ∀ r (box : OpenBox S r A) → Filler box
+  hasLifts S A = ∀ r (box : OpenBox S A r) → Filler box
 
 hasLiftsˣ : (S : Shape)
   (A : Γ ▷⟨ S ⟩ → Type ℓ)
@@ -103,12 +103,12 @@ opaque
   ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
   ElFibStr .lift =
     ShapeIsDiscrete λ (@♭ S) →
-    λ r A → decodeLifts S (^-counit S) (fstˣ A) r
+    λ A → decodeLifts S (^-counit S) (fstˣ A)
   ElFibStr .vary =
     ShapeIsDiscrete λ (@♭ S) →
     ShapeIsDiscrete λ (@♭ T) →
     ShapeHomIsDiscrete λ (@♭ σ) →
-    λ r A → decodeVaries σ (^-counit T) A r
+    decodeVaries σ (^-counit T)
 
 Elˣ : ∀ {@♭ ℓ} → (Γ ⊢ˣ 𝑼ˣ ℓ) → (Γ → Type ℓ)
 Elˣ = El ∘_
@@ -127,7 +127,7 @@ opaque
   getFibLifts : (S : Shape)
     (A : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ)
     → Γ ⊢ˣ hasLiftsˣ S ∣ A ∣
-  getFibLifts S A γ r box = A .snd .lift S r (γ ,_) box
+  getFibLifts S A γ r box = A .snd .lift S (γ ,_) r box
 
 opaque
   unfolding hasLifts
@@ -136,7 +136,7 @@ opaque
   encodeHasLifts S A =
     appˣ (undoReindex√ S ∣ A ∣) $
     shut√ S $♭
-    λ p r box → A .snd .lift S r p box
+    λ p r box → A .snd .lift S p r box
 
   reindexEncodeHasLifts : ∀ {@♭ ℓ ℓ' ℓ''} (@♭ S : Shape)
     {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' → Γ)
@@ -195,7 +195,7 @@ opaque
       (reindexDecodeLifts (encodeLifts A `^ T) T (^-counit T)
         ∙ reindexEncodeInsideDecode T (^-counit T) A
         ∙ decodeEncodeLifts (A ∘ᶠ ^-counit T))
-    ∙ A .snd .vary S T σ r p box s
+    ∙ A .snd .vary S T σ p r box s
     ∙ cong (λ l → l (p ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out)
         (sym
           (reindexDecodeLifts (encodeLifts A `^ S) S (^-counit S)
@@ -221,7 +221,7 @@ opaque
   decodeEncode A =
     Σext refl $
     FibStrExt {α = ElFibStr ∘ᶠˢ (encode A)} $
-    ShapeIsDiscrete λ (@♭ S) r p box s →
+    ShapeIsDiscrete λ (@♭ S) p r box s →
     cong (λ lifter → lifter r box .fill s .out) (mainLemma S p)
     where
     mainLemma : ∀ (@♭ S) p →

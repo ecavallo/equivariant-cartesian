@@ -36,19 +36,19 @@ private variable
 module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   (α : FibStr (B ↾ φ))
-  (box : OpenBox S r B)
+  (box : OpenBox S B r)
   where
 
   --↓ First, use the partial fibration structure to construct a lift when the cofibration
   --↓ ∀φ holds.
 
   fillPartial : [ all S φ ] → Filler box
-  fillPartial u = α .lift S r (id ,, u) box
+  fillPartial u = α .lift S (id ,, u) r box
 
   --↓ Use the total fibration structure to construct a lift for the original box that
   --↓ also agrees on ∀φ with the partial lift just construction.
 
-  boxTotal : OpenBox S r B
+  boxTotal : OpenBox S B r
   boxTotal =
     addToTube
       box
@@ -56,7 +56,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
       (λ i u → fillPartial u .fill i)
       (λ v → fillPartial v .cap≡)
 
-  fillTotal = β .lift S r id boxTotal
+  fillTotal = β .lift S id r boxTotal
 
   --↓ Extract a filler for the original lifting problem
 
@@ -73,7 +73,7 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
   (φ : ⟨ T ⟩ → Cof)
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   (α : FibStr (B ↾ φ))
-  (box : OpenBox T (⟪ σ ⟫ r) B)
+  (box : OpenBox T B (⟪ σ ⟫ r))
   where
 
   module T = RealignLift φ β α box
@@ -81,17 +81,17 @@ module RealignVary {S T} (σ : ShapeHom S T) {r}
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
-    β .vary S T σ r id T.boxTotal s
+    β .vary S T σ id r T.boxTotal s
     ∙
     cong
-      (λ box' → β .lift S r ⟪ σ ⟫ box' .fill s .out)
+      (λ box' → β .lift S ⟪ σ ⟫ r box' .fill s .out)
       (boxExt
         (cong (box .cof ∨_) (allEquivariant σ φ))
         (λ i → takeOutCof (box .cof) (all T φ) (all S (φ ∘ ⟪ σ ⟫))
           (λ _ → refl)
           (λ uS uT →
-            α .vary S T σ r (id ,, uS) box i
-            ∙ cong (λ w → α .lift S r (⟪ σ ⟫ ,, w) (reshapeBox σ box) .fill i .out)
+            α .vary S T σ (id ,, uS) r box i
+            ∙ cong (λ w → α .lift S (⟪ σ ⟫ ,, w) r (reshapeBox σ box) .fill i .out)
               (funExt λ s → cofIsStrictProp' (φ (⟪ σ ⟫ s)))))
         refl)
 
@@ -102,9 +102,9 @@ opaque
     {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ↾ φ))
     → FibStr B
-  realignFibStr φ β α .lift S r p =
+  realignFibStr φ β α .lift S p r =
     RealignLift.filler (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
-  realignFibStr φ β α .vary S T σ r p =
+  realignFibStr φ β α .vary S T σ p r =
     RealignVary.eq σ (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
 
   --↓ Proof that the realigned fibration structure indeed restricts to the given partial
@@ -115,7 +115,7 @@ opaque
     (α : FibStr (B ↾ φ))
     → α ≡ realignFibStr φ β α ∘ᶠˢ 𝒑
   realignFibStrMatch φ β α =
-    FibStrExt λ S r p box s →
+    FibStrExt λ S p r box s →
       RealignLift.fillTotal _ ((β ↾ᶠˢ φ) ∘ᶠˢ p) (α ∘ᶠˢ ((𝒑 ∘ p) ×id)) _
       .fill s .out≡ (∨r (𝒒 ∘ p))
 

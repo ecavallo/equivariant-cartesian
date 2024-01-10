@@ -22,7 +22,7 @@ infixl 5 _∘ᶠˢ_ _∘ᶠ_ _$ᶠ_
 -- Open boxes
 ------------------------------------------------------------------------------------------
 
-record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type ℓ
+record OpenBox (S : Shape) (A : ⟨ S ⟩ → Type ℓ) (r : ⟨ S ⟩) : Type ℓ
   where
   constructor makeBox
   field
@@ -33,7 +33,7 @@ record OpenBox (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ → Type ℓ) : Type �
 open OpenBox public
 
 reshapeBox : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
-  → OpenBox T (⟪ σ ⟫ r) A → OpenBox S r (A ∘ ⟪ σ ⟫)
+  → OpenBox T A (⟪ σ ⟫ r) → OpenBox S (A ∘ ⟪ σ ⟫) r
 reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
@@ -41,18 +41,18 @@ reshapeBox σ box .cap = box .cap
 mapBox : {S : Shape} {r : ⟨ S ⟩}
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
   → (∀ s → A s → B s)
-  → OpenBox S r A → OpenBox S r B
+  → OpenBox S A r → OpenBox S B r
 mapBox f box .cof = box .cof
 mapBox f box .tube i u = f i (box .tube i u)
 mapBox f box .cap .out = f _ (box .cap .out)
 mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
 
-addToTube : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ}
-  (box : OpenBox S r A)
+addToTube : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r}
+  (box : OpenBox S A r)
   (φ : Cof)
   (t : (i : ⟨ S ⟩) → [ φ ] → A i [ box .cof ↦ box .tube i ])
   (matchCap : (v : [ φ ]) → t r v .out ≡ box .cap .out)
-  → OpenBox S r A
+  → OpenBox S A r
 addToTube box φ t matchCap .cof = box .cof ∨ φ
 addToTube box φ t matchCap .tube i =
   ∨-rec (box .tube i) (out ∘ t i) (λ u v → t i v .out≡ u)
@@ -60,29 +60,29 @@ addToTube box φ t matchCap .cap .out = box .cap .out
 addToTube box φ t matchCap .cap .out≡ =
   ∨-elimEq (box .cap .out≡) matchCap
 
-boxToPartial : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A)
+boxToPartial : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} (box : OpenBox S A r)
   (s : ⟨ S ⟩) → [ box .cof ∨ S ∋ r ≈ s ] → A s
-boxToPartial {S = S} {r} box s =
+boxToPartial box s =
   ∨-rec
     (box .tube s)
     (λ {refl → box .cap .out})
     (λ {u refl → box .cap .out≡ u})
 
 opaque
-  varyBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
-    (box : OpenBox T (⟪ σ ⟫ r) A)
+  varyBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ} {r}
+    (box : OpenBox T A (⟪ σ ⟫ r))
     (s : ⟨ S ⟩)
     (v : [ box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s ])
     (u : [ box .cof ∨ S ∋ r ≈ s ])
     → boxToPartial box (⟪ σ ⟫ s) v ≡ boxToPartial (reshapeBox σ box) s u
-  varyBoxToPartial {S = S} {T} σ {r} box s =
+  varyBoxToPartial {S = S} {T} σ {r = r} box s =
     takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s)(S ∋ r ≈ s)
       (λ u → refl)
       (λ {refl refl → refl})
 
 opaque
-  boxExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
-    {box box' : OpenBox S r A}
+  boxExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩}
+    {box box' : OpenBox S A r}
     → box .cof ≡ box' .cof
     → (∀ i u v → box .tube i u ≡ box' .tube i v)
     → box .cap .out ≡ box' .cap .out
@@ -96,18 +96,18 @@ opaque
   boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
     {b₀ b₁ : B} (b : b₀ ≡ b₁)
     {r : ⟨ S ⟩}
-    {box₀ : OpenBox S r (A b₀)} {box₁ : OpenBox S r (A b₁)}
+    {box₀ : OpenBox S (A b₀) r} {box₁ : OpenBox S (A b₁) r}
     → box₀ .cof ≡ box₁ .cof
     → (∀ i u v → subst (λ b' → A b' i) b (box₀ .tube i u) ≡ box₁ .tube i v)
     → subst (A ⦅–⦆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
-    → subst (OpenBox S r ∘ A) b box₀ ≡ box₁
-  boxExtDep refl f r x = boxExt f r x
+    → subst (OpenBox S ⦅–⦆ r ∘ A) b box₀ ≡ box₁
+  boxExtDep refl = boxExt
 
 ------------------------------------------------------------------------------------------
 -- Solutions to individual lifting problems
 ------------------------------------------------------------------------------------------
 
-record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : OpenBox S r A) : Type ℓ
+record Filler {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩} (box : OpenBox S A r) : Type ℓ
   where
   constructor makeFiller
   field
@@ -117,16 +117,16 @@ record Filler {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ} (box : Op
 open Filler public
 
 reshapeFiller : {S T : Shape} (σ : ShapeHom S T)
-  {r : ⟨ S ⟩} {A : ⟨ T ⟩ → Type ℓ}
-  {box : OpenBox T (⟪ σ ⟫ r) A}
+  {A : ⟨ T ⟩ → Type ℓ} {r : ⟨ S ⟩}
+  {box : OpenBox T A (⟪ σ ⟫ r)}
   → Filler box
   → Filler (reshapeBox σ box)
 reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
 opaque
-  fillerExt : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
-    {box : OpenBox S r A}
+  fillerExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ}  {r : ⟨ S ⟩}
+    {box : OpenBox S A r}
     {co co' : Filler box}
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
     → co ≡ co'
@@ -134,14 +134,14 @@ opaque
     congΣ makeFiller (funExt $ restrictExt ∘ p) uip'
 
 opaque
-  fillerCong : {S : Shape} {r : ⟨ S ⟩} {A : ⟨ S ⟩ → Type ℓ}
-    {box : OpenBox S r A}
+  fillerCong : {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩}
+    {box : OpenBox S A r}
     {co co' : Filler box}
     → co ≡ co'
     → (∀ s → co .fill s .out ≡ co' .fill s .out)
   fillerCong p s = cong out (cong$ (cong fill p))
 
-fitsPartialToFiller : ∀ {S r} {A : ⟨ S ⟩ → Type ℓ} {box : OpenBox S r A}
+fitsPartialToFiller : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} {box : OpenBox S A r}
   → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
   → Filler box
 fitsPartialToFiller filler .fill s = narrow (filler s) ∨l
@@ -158,17 +158,17 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
     --↓ For every shape S, map p : ⟨ S ⟩ → Γ, and open box over p, we have a chosen lift.
 
-    lift : (S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ)
-      (box : OpenBox S r (A ∘ p)) → Filler box
+    lift : (S : Shape) (p : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
+      (box : OpenBox S (A ∘ p) r) → Filler box
 
     --↓ The equivariance condition on lifts: for every shape homomorphism and open box,
     --↓ reshaping the open box and then lifting has the same effect as lifting and then
     --↓ reshaping the filler.
 
-    vary : ∀ S T (σ : ShapeHom S T) (r : ⟨ S ⟩) (p : ⟨ T ⟩ → Γ)
-      (box : OpenBox T (⟪ σ ⟫ r) (A ∘ p)) (s : ⟨ S ⟩)
-      → reshapeFiller σ (lift T (⟪ σ ⟫ r) p box) .fill s .out
-        ≡ lift S r (p ∘ ⟪ σ ⟫) (reshapeBox σ box) .fill s .out
+    vary : ∀ S T (σ : ShapeHom S T) (p : ⟨ T ⟩ → Γ) (r : ⟨ S ⟩)
+      (box : OpenBox T (A ∘ p) (⟪ σ ⟫ r)) (s : ⟨ S ⟩)
+      → reshapeFiller σ (lift T p (⟪ σ ⟫ r) box) .fill s .out
+        ≡ lift S (p ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out
 
 open FibStr public
 
@@ -204,8 +204,8 @@ _▷ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
 ------------------------------------------------------------------------------------------
 
 _∘ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
-(α ∘ᶠˢ ρ) .lift S r p = α .lift S r (ρ ∘ p)
-(α ∘ᶠˢ ρ) .vary S T σ r p = α .vary S T σ r (ρ ∘ p)
+(α ∘ᶠˢ ρ) .lift S p r = α .lift S (ρ ∘ p) r
+(α ∘ᶠˢ ρ) .vary S T σ p r = α .vary S T σ (ρ ∘ p) r
 
 _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
@@ -231,9 +231,9 @@ opaque
 
 FibStrEq : {Γ : Type ℓ} {A : Γ → Type ℓ'} (α₀ α₁ : FibStr A) → Type (ℓ ⊔ ℓ')
 FibStrEq {Γ = Γ} {A = A} α₀ α₁ =
-  ((S : Shape) (r : ⟨ S ⟩) (p : ⟨ S ⟩ → Γ)
-  (box : OpenBox S r (A ∘ p))
-  (s : ⟨ S ⟩) → α₀ .lift S r p box .fill s .out ≡ α₁ .lift S r p box .fill s .out)
+  ((S : Shape) (p : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
+  (box : OpenBox S (A ∘ p) r)
+  (s : ⟨ S ⟩) → α₀ .lift S p r box .fill s .out ≡ α₁ .lift S p r box .fill s .out)
 
 opaque
   FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A} → FibStrEq α α' → α ≡ α'
@@ -252,10 +252,10 @@ Retractˣ A B γ = Retract (A γ) (B γ)
 opaque
   retractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
     → Γ ⊢ˣ Retractˣ A B → FibStr B → FibStr A
-  retractFibStr retract β .lift S r p box = filler
+  retractFibStr retract β .lift S p r box = filler
     where
     fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
-    fillerB = β .lift S r p (mapBox (sec ∘ retract ∘ p) box)
+    fillerB = β .lift S p r (mapBox (sec ∘ retract ∘ p) box)
 
     filler : Filler box
     filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
@@ -266,8 +266,8 @@ opaque
       cong (retract (p r) .ret) (fillerB .cap≡)
       ∙ retract (p r) .inv _
 
-  retractFibStr retract β .vary S T σ r p box s =
-    cong (retract _ .ret) (β .vary S T σ r p (mapBox (sec ∘ retract ∘ p) box) s)
+  retractFibStr retract β .vary S T σ p r box s =
+    cong (retract _ .ret) (β .vary S T σ p r (mapBox (sec ∘ retract ∘ p) box) s)
 
 opaque
   unfolding retractFibStr

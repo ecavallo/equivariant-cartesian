@@ -28,8 +28,8 @@ Decision A = A ⊎ ¬ A
 module _ {@♭ ℓ} (A : Type ℓ) (decEq : (a a' : A) → Decision (a ≡ a')) where
 
   DecidableEqFibStr : FibStr (λ (_ : 𝟙) → A)
-  DecidableEqFibStr .lift S r p box .fill s .out = box .cap .out
-  DecidableEqFibStr .lift S r p box .fill s .out≡ u = lemma decision
+  DecidableEqFibStr .lift S p r box .fill s .out = box .cap .out
+  DecidableEqFibStr .lift S p r box .fill s .out≡ u = lemma decision
     where
     decision = shape→⊎ S (λ i → decEq (box .tube i u) (box .cap .out))
 

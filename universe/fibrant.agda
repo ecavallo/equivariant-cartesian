@@ -27,7 +27,7 @@ private variable
 
 module _ {@♭ ℓ} where
 
-  module 𝑼Lift {S r} (box : OpenBox S r (𝑼ˣ ℓ)) where
+  module 𝑼Lift {S r} (box : OpenBox S (𝑼ˣ ℓ) r) where
 
     tubeEquiv : ∀ s → [ box .cof ] → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out)
     tubeEquiv s u .fst = box .tube s u
@@ -68,7 +68,7 @@ module _ {@♭ ℓ} where
       filler .fill s .out≡ u = GlueᵁMatch _ _ _ _ (∨l u)
       filler .cap≡ = sym (GlueᵁMatch _ _ _ _ (∨r refl))
 
-  module 𝑼Vary {S T} (σ : ShapeHom S T) {r} (box : OpenBox T (⟪ σ ⟫ r) (𝑼ˣ ℓ))
+  module 𝑼Vary {S T} (σ : ShapeHom S T) {r} (box : OpenBox T (𝑼ˣ ℓ) (⟪ σ ⟫ r))
     where
 
     module T = 𝑼Lift box

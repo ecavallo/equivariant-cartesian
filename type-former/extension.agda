@@ -26,12 +26,12 @@ Extensionˣ Z A φ a γ =
 module ExtensionLift {Z φ S r}
   {A : ⟨ S ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : ⟨ S ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
-  (box : OpenBox S r (Extensionˣ Z A φ a))
+  (box : OpenBox S (Extensionˣ Z A φ a) r)
   where
 
   module _ (z : ⟨ Z ⟩) where
 
-    pointwiseBox : OpenBox S r (λ s → A (s , z))
+    pointwiseBox : OpenBox S (A ∘ (_, z)) r
     pointwiseBox =
       addToTube
         (mapBox (λ _ q → q z .out) box)
@@ -41,7 +41,7 @@ module ExtensionLift {Z φ S r}
           .out≡ u → sym (box .tube i u z .out≡ v))
         (λ v → box .cap .out z .out≡ v)
 
-    pointwiseFill = α .lift S r (_, z) pointwiseBox
+    pointwiseFill = α .lift S (_, z) r pointwiseBox
 
   filler : Filler box
   filler .fill s .out z .out = pointwiseFill z .fill s .out
@@ -53,7 +53,7 @@ module ExtensionLift {Z φ S r}
 module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : ⟨ T ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
-  (box : OpenBox T (⟪ σ ⟫ r) (Extensionˣ Z A φ a))
+  (box : OpenBox T (Extensionˣ Z A φ a) (⟪ σ ⟫ r))
   where
 
   module T = ExtensionLift α box
@@ -63,8 +63,8 @@ module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
   eq s =
     funExt λ z →
     restrictExt $
-    α .vary S T σ r (_, z) (T.pointwiseBox z) s
-    ∙ cong (λ b → α .lift S r ((_, z) ∘ ⟪ σ ⟫) b .fill s .out)
+    α .vary S T σ (_, z) r (T.pointwiseBox z) s
+    ∙ cong (λ b → α .lift S ((_, z) ∘ ⟪ σ ⟫) r b .fill s .out)
         (boxExt refl
           (λ _ →
             diagonalCofElim (box .cof ∨ φ z) $
@@ -77,8 +77,8 @@ opaque
     (φ : ⟨ Z ⟩ → Cof)
     (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒))
     → FibStr (Extensionˣ Z A φ a)
-  ExtensionFibStr Z α φ a .lift S r p = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
-  ExtensionFibStr Z α φ a .vary S T σ r p = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
+  ExtensionFibStr Z α φ a .lift S p r = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
+  ExtensionFibStr Z α φ a .vary S T σ p r = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming extension types is stable under reindexing

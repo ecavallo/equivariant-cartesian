@@ -194,14 +194,14 @@ opaque
     → singlCenter a ~ c
   singlContract A a c = homotopy
     where
-    box : (i : 𝕀) → OpenBox 𝕚 1 (∣ A ∣ ∘ cst tt)
+    box : (i : 𝕀) → OpenBox 𝕚 (∣ A ∣ ∘ cst tt) 1
     box i .cof = ∂ i
     box i .tube j = ∂-rec i (λ {refl → a}) (λ {refl → c .snd .at j})
     box i .cap .out = a
     box i .cap .out≡ = ∂-elim i (λ {refl → refl}) (λ {refl → c .snd .at1})
 
     square : (i : 𝕀) → Filler (box i)
-    square i = A .snd .lift 𝕚 1 _ (box i)
+    square i = A .snd .lift 𝕚 _ 1 (box i)
 
     homotopy : (a , refl~ a) ~ c
     homotopy .at i .fst = square i .fill 0 .out

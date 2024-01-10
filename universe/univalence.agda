@@ -50,7 +50,7 @@ UATFib ℓ (tt , B) φ Part = filler
       (cst $ eqToPath $ partFun≡extendedFun u)
       tt
 
-  box : OpenBox 𝕚 1 (cst (Σ A ∈ 𝑼 ℓ , El A ≃ El B))
+  box : OpenBox 𝕚 (cst (Σ A ∈ 𝑼 ℓ , El A ≃ El B)) 1
   box .cof = φ
   box .tube i u .fst = ExtendedTy
   box .tube i u .snd = fixPath u .at i
@@ -63,7 +63,7 @@ UATFib ℓ (tt , B) φ Part = filler
     subst
       (_ [ φ ↦_])
       (funExt λ u → sym (Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))))
-      (Σᶠ (𝑼ᶠ ℓ) (Elᶠ snd ≃ᶠ Elᶠ fst) .snd .lift 𝕚 1 (λ _ → B) box .fill 0)
+      (Σᶠ (𝑼ᶠ ℓ) (Elᶠ snd ≃ᶠ Elᶠ fst) .snd .lift 𝕚 (cst B) 1 box .fill 0)
 
 UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Elᶠ 𝒒 ≃ᶠ Elᶠ (𝒒 ∘ 𝒑))))
 UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ)

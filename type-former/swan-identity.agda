@@ -156,7 +156,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
     → Γ ⊢ᶠ Idᶠ (IdSinglᶠ A a) (idSinglCenterᶠ A a) c
   idSinglContractᶠ A a c γ = identity
     where
-    box : (i : 𝕀) → OpenBox 𝕚 1 (cst (A $ᶠ γ))
+    box : (i : 𝕀) → OpenBox 𝕚 (cst (A $ᶠ γ)) 1
     box i .cof = ∂ i ∨ c γ .snd .snd .fst
     box i .tube j =
       ∨-rec
@@ -178,7 +178,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
 
     opaque
       square : (i : 𝕀) → Filler (box i)
-      square i = A .snd .lift 𝕚 1 (cst _) (box i)
+      square i = A .snd .lift 𝕚 (cst _) 1 (box i)
 
     homotopy : (a γ , idrefl (a γ)) ~ c γ
     homotopy .at i .fst = square i .fill 0 .out
@@ -233,10 +233,10 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
       → Γ ⊢ᶠ B ∘ᶠ (id ,, a')
     idSubstᶠ p γ =
       subst (∣ B ∣ ∘ (γ ,_)) (p γ .fst .at1)
-        (B .snd .lift 𝕚 0 _ (box p γ) .fill 1 .out)
+        (B .snd .lift 𝕚 _ 0 (box p γ) .fill 1 .out)
       where
       box : {a' : Γ ⊢ᶠ A} (p : Γ ⊢ᶠ Idᶠ A a a')
-        → ∀ γ → OpenBox 𝕚 0 (∣ B ∣ ∘ (cst γ ,, p γ .fst .at))
+        → ∀ γ → OpenBox 𝕚 (∣ B ∣ ∘ (cst γ ,, p γ .fst .at)) 0
       box p γ .cof = p γ .snd .fst
       box p γ .tube i u =
         subst
@@ -256,7 +256,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
     idSubstRefl : idSubstᶠ (idreflᶠ A a) ≡ b
     idSubstRefl =
       funExt λ γ →
-      sym (B .snd .lift 𝕚 0 _ _ .fill 1 .out≡ tt)
+      sym (B .snd .lift 𝕚 _ 0 _ .fill 1 .out≡ tt)
 
   ----------------------------------------------------------------------------------------
   -- Paulin-Mohring style J eliminator

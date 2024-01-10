@@ -19,7 +19,7 @@ private variable
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ S ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox S r (Πˣ A B))
+  (box : OpenBox S (Πˣ A B) r)
   where
 
   module _ (s : ⟨ S ⟩) (a : A s) where
@@ -28,10 +28,10 @@ module ΠLift {S r}
 
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
-      boxCod : OpenBox S r (B ∘ (id ,, coerceA))
+      boxCod : OpenBox S (B ∘ (id ,, coerceA)) r
       boxCod = mapBox (λ i f → f (coerceA i)) box
 
-      fillCod = β .lift S r (id ,, coerceA) boxCod
+      fillCod = β .lift S (id ,, coerceA) r boxCod
 
   filler : Filler box
   filler .fill s .out a =
@@ -52,7 +52,7 @@ module ΠLift {S r}
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ T ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox T (⟪ σ ⟫ r) (Πˣ A B))
+  (box : OpenBox T (Πˣ A B) (⟪ σ ⟫ r))
   where
 
   module T = ΠLift α β box
@@ -66,7 +66,7 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
     funExt λ a →
     cong
       (subst (curry B (⟪ σ ⟫ s)) (T.Dom.cap≡ _ a))
-      (β .vary S T σ r (id ,, T.Dom.coerce _ a) (T.boxCod _ a (T.Dom.coerce _ a)) s)
+      (β .vary S T σ (id ,, T.Dom.coerce _ a) r (T.boxCod _ a (T.Dom.coerce _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
       (cong$ (funExt (varyDom s a))) refl
@@ -77,8 +77,8 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 opaque
   ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ˣ A → Type ℓ'} (β : FibStr B)
     → FibStr (Πˣ A B)
-  ΠFibStr α β .lift S r p = ΠLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
-  ΠFibStr α β .vary S T σ r p = ΠVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΠFibStr α β .lift S p r = ΠLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΠFibStr α β .vary S T σ p r = ΠVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing

@@ -49,9 +49,9 @@ IsContrᶠ A .snd = IsContrFibStr (A .snd)
 isContrToTFibStr : (A : Γ ⊢ᶠType ℓ) (c : Γ ⊢ᶠ IsContrᶠ A) → TFibStr ∣ A ∣
 isContrToTFibStr A c γ φ a =
   subst (A $ᶠ γ [ φ ↦_]) (funExt λ u → c γ .snd (a u) .at1) $
-  A .snd .lift 𝕚 0 (cst γ) box .fill 1
+  A .snd .lift 𝕚 (cst γ) 0 box .fill 1
   where
-  box : OpenBox 𝕚 0 (cst (A $ᶠ γ))
+  box : OpenBox 𝕚 (cst (A $ᶠ γ)) 0
   box .cof = φ
   box .tube i u = c γ .snd (a u) .at i
   box .cap .out = c γ .fst

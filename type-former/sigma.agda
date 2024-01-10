@@ -18,17 +18,17 @@ private variable
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ S ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox S r (Σˣ A B))
+  (box : OpenBox S (Σˣ A B) r)
   where
 
-  boxFst : OpenBox S r A
+  boxFst : OpenBox S A r
   boxFst = mapBox (λ _ → fst) box
 
-  fillFst = α .lift S r id boxFst
+  fillFst = α .lift S id r boxFst
 
   module _ (cA : Filler boxFst) where
 
-    boxSnd : OpenBox S r (B ∘ (id ,, out ∘ cA .fill))
+    boxSnd : OpenBox S (B ∘ (id ,, out ∘ cA .fill)) r
     boxSnd .cof = box .cof
     boxSnd .tube i u = subst (curry B i) (cA .fill i .out≡ u) (box .tube i u .snd)
     boxSnd .cap .out = subst (curry B r) (sym (cA .cap≡)) (box .cap .out .snd)
@@ -39,7 +39,7 @@ module ΣLift {S r}
         (sym (substCongAssoc (curry B r) fst (box .cap .out≡ u) _)
           ∙ congdep snd (box .cap .out≡ u))
 
-    fillSnd = β .lift S r (id ,, out ∘ cA .fill) boxSnd
+    fillSnd = β .lift S (id ,, out ∘ cA .fill) r boxSnd
 
   filler : Filler box
   filler .fill s .out .fst = fillFst .fill s .out
@@ -56,7 +56,7 @@ module ΣLift {S r}
 module ΣVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ T ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
-  (box : OpenBox T (⟪ σ ⟫ r) (Σˣ A B))
+  (box : OpenBox T (Σˣ A B) (⟪ σ ⟫ r))
   where
 
   module T = ΣLift α β box
@@ -64,25 +64,25 @@ module ΣVary {S T} (σ : ShapeHom S T) {r}
     ΣLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
   varyFst : reshapeFiller σ T.fillFst ≡ S.fillFst
-  varyFst = fillerExt (α .vary S T σ r id T.boxFst)
+  varyFst = fillerExt (α .vary S T σ id r T.boxFst)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     Σext
-      (α .vary S T σ r id T.boxFst s)
+      (α .vary S T σ id r T.boxFst s)
       (adjustSubstEq (curry B (⟪ σ ⟫ s))
          refl refl
-         (α .vary S T σ r id T.boxFst s)
+         (α .vary S T σ id r T.boxFst s)
          (cong (λ cA → cA .fill s .out) varyFst)
-         (β .vary S T σ r (id ,, out ∘ T.fillFst .fill) (T.boxSnd T.fillFst) s)
+         (β .vary S T σ (id ,, out ∘ T.fillFst .fill) r (T.boxSnd T.fillFst) s)
        ∙ sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA .fill s .out) varyFst _)
        ∙ congdep (λ cA → S.fillSnd cA .fill s .out) varyFst)
 
 opaque
   ΣFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ˣ A → Type ℓ'} (β : FibStr B)
     → FibStr (Σˣ A B)
-  ΣFibStr α β .lift S r p = ΣLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
-  ΣFibStr α β .vary S T σ r p = ΣVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΣFibStr α β .lift S p r = ΣLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΣFibStr α β .vary S T σ p r = ΣVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming Σ-types is stable under reindexing

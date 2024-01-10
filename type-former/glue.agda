@@ -102,17 +102,17 @@ module WeakGlueLift {S r φ}
   {B : ⟨ S ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ S ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
   (fe : ⟨ S ⟩ ▷[ φ ] ⊢ˣ A ≃ˣ (B ↾ φ))
-  (box : OpenBox S r (WeakGlueˣ φ (fstˣ fe)))
+  (box : OpenBox S (WeakGlueˣ φ (fstˣ fe)) r)
   where
 
   private
     f = fstˣ fe
     e = sndˣ fe
 
-  codBox : OpenBox S r B
+  codBox : OpenBox S B r
   codBox = mapBox (λ _ → cod) box
 
-  codFill = β .lift S r id codBox
+  codFill = β .lift S id r codBox
 
   module _ (s : ⟨ S ⟩) where
 
@@ -135,7 +135,7 @@ module WeakGlueLift {S r φ}
           (λ {v refl →
             congΣ eqToFiber (cong$ (cong dom (box .cap .out≡ v))) uip'})
 
-      fiberBox : OpenBox 𝕚 0 (cst (Fiber (f (s , us)) (codFill .fill s .out)))
+      fiberBox : OpenBox 𝕚 (cst (Fiber (f (s , us)) (codFill .fill s .out))) 0
       fiberBox .cof = box .cof ∨ S ∋ r ≈ s
       fiberBox .tube k v≡ = contractor (partialFiber v≡) .at k
       fiberBox .cap .out = center
@@ -147,9 +147,9 @@ module WeakGlueLift {S r φ}
           (_ , β ∘ᶠˢ (cst s))
           (f ∘ (s ,_))
           (cst (codFill .fill s .out))
-          .snd .lift 𝕚 0 (cst us) fiberBox .fill 1
+          .snd .lift 𝕚 (cst us) 0 fiberBox .fill 1
 
-    codFixBox : OpenBox 𝕚 1 (cst (B s))
+    codFixBox : OpenBox 𝕚 (cst (B s)) 1
     codFixBox .cof = box .cof ∨ φ s ∨ S ∋ r ≈ s
     codFixBox .tube i =
       ∨-rec
@@ -179,7 +179,7 @@ module WeakGlueLift {S r φ}
           (λ us → fiberFill us .out .snd .at1)
           (λ {refl → sym (codFill .cap≡)}))
 
-    codFixFill = β .lift 𝕚 1 (cst s) codFixBox .fill 0
+    codFixFill = β .lift 𝕚 (cst s) 1 codFixBox .fill 0
 
   opaque
     filler : Filler box
@@ -205,7 +205,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ T ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
   (fe : ⟨ T ⟩ ▷[ φ ] ⊢ˣ A ≃ˣ (B ↾ φ))
-  (box : OpenBox T (⟪ σ ⟫ r) (WeakGlueˣ φ (fstˣ fe)))
+  (box : OpenBox T (WeakGlueˣ φ (fstˣ fe)) (⟪ σ ⟫ r))
   where
 
   module T = WeakGlueLift β α fe box
@@ -219,7 +219,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
   module _ (s : ⟨ S ⟩) where
 
     varyCod : T.codFill .fill (⟪ σ ⟫ s) .out ≡ S.codFill .fill s .out
-    varyCod = β .vary S T σ r id T.codBox s
+    varyCod = β .vary S T σ id r T.codBox s
 
     varyCenter : ∀ uσs
       → subst (Fiber (f _)) varyCod (T.center (⟪ σ ⟫ s) uσs) ≡ S.center s uσs
@@ -238,8 +238,8 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
     varyFiber uσs =
       congdep₂
         (λ b box →
-          Fiberᶠ (_ , α ∘ᶠˢ _) (_ , β ∘ᶠˢ _) _ (cst b) .snd .lift _ _
-            (cst uσs) box .fill 1 .out)
+          Fiberᶠ (_ , α ∘ᶠˢ _) (_ , β ∘ᶠˢ _) _ (cst b) .snd .lift
+            _ (cst uσs) _ box .fill 1 .out)
         varyCod
         (boxExtDep varyCod
           (cong (box .cof ∨_) (≈Equivariant σ r s))
@@ -251,7 +251,7 @@ module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
     varyCodFix : T.codFixFill (⟪ σ ⟫ s) .out ≡ S.codFixFill s .out
     varyCodFix =
       cong
-        (λ box' → β .lift 𝕚 1 (cst (⟪ σ ⟫ s)) box' .fill 0 .out)
+        (λ box' → β .lift 𝕚 (cst (⟪ σ ⟫ s)) 1 box' .fill 0 .out)
         (boxExt
           (cong (λ ψ → box .cof ∨ φ (⟪ σ ⟫ s) ∨ ψ) (≈Equivariant σ r s))
           (λ i → takeOutCof (box .cof)
@@ -274,9 +274,9 @@ opaque
     {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
     (fe : Γ ▷[ φ ] ⊢ˣ A ≃ˣ (B ↾ φ))
     → FibStr (WeakGlueˣ φ (fstˣ fe))
-  WeakGlueFibStr φ β α fe .lift S r p =
+  WeakGlueFibStr φ β α fe .lift S p r =
     WeakGlueLift.filler (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
-  WeakGlueFibStr φ β α fe .vary S T σ r p =
+  WeakGlueFibStr φ β α fe .vary S T σ p r =
     WeakGlueVary.eq σ (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
 
   reindexWeakGlueFibStr : {φ : Γ → Cof}
@@ -331,7 +331,7 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
   extFFiber : (u : [ φ γ ]) → Fiber (fe (γ , u) .fst) b [ ψ ↦ fFiber u ]
   extFFiber u = equivToFiberTFib A (B ∘ᶠ 𝒑) fe _ _ (fFiber u)
 
-  codBox : OpenBox 𝕚 1 (cst (B $ᶠ γ))
+  codBox : OpenBox 𝕚 (cst (B $ᶠ γ)) 1
   codBox .cof = φ γ ∨ ψ
   codBox .tube i =
     ∨-rec
