@@ -16,6 +16,13 @@ module Tiny (@♭ S : Shape) where
 
   open √Axioms S public
 
+  --↓ Functoriality of √ in the type argument.
+
+  √` : ∀ {@♭ ℓ ℓ'}
+    {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
+    (@♭ h : A → B) → S √ A → S √ B
+  √` h = transposeRight (h ∘ transposeLeft id)
+
   --↓ Naturality of right-to-left transposition in the domain.
 
   transposeLeft^ : ∀ {@♭ ℓ ℓ' ℓ''}
@@ -24,20 +31,13 @@ module Tiny (@♭ S : Shape) where
     → transposeLeft g ∘ (h `^ S) ≡ transposeLeft (g ∘ h)
   transposeLeft^ g h = cong♭ transposeLeft (transposeRight^ h (transposeLeft g))
 
-  --↓ Functoriality of √ in the type argument.
-
-  √` : ∀ {@♭ ℓ ℓ'}
-    {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
-    (@♭ h : A → B) → S √ A → S √ B
-  √` h = transposeRight (h ∘ transposeLeft id)
-
   --↓ Naturality of left-to-right transposition in the codomain.
 
   √TransposeRight : ∀ {@♭ ℓ ℓ' ℓ''}
     {@♭ A : Type ℓ} {@♭ B : Type ℓ'} {@♭ C : Type ℓ''}
-    (@♭ h : B → C) (@♭ f : (⟨ S ⟩ → A) → B)
+    (@♭ h : B → C) (@♭ f : A ^ S → B)
     → √` h ∘ transposeRight f ≡ transposeRight (h ∘ f)
-  √TransposeRight {A = A} {B} {C = C} h f =
+  √TransposeRight h f =
     sym (transposeRight^ (transposeRight f) (h ∘ transposeLeft id))
     ∙ cong♭ (λ f' → transposeRight (h ∘ f')) (transposeLeft^ id (transposeRight f))
 
