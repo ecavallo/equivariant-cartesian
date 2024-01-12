@@ -1,9 +1,43 @@
 {-
 
-Tinyness of shapes.
+The right adjoint √ to exponentation by a shape extends (with a caveat) to a dependent right
+adjoint (DRA) √ᴰ in the sense of
+
+Birkedal, Clouston, Mannaa, Møgelberg, Pitts, & Spitters.
+Modal dependent type theory and dependent right adjoints.
+https://doi.org/10.1017/S0960129519000197
+
+This is convenient for defining the universe of fibrations (especially with the added
+complication of the equivariance condition), as observed in passing in
+
+Licata, Orton, Pitts, & Spitters.
+Internal Universes in Models of Homotopy Type Theory.
+https://doi.org/10.4230/LIPIcs.FSCD.2018.22
+
+The caveat concerns universe level: the definition of √ᴰ uses a universe 𝑽, and √ᴰ then
+takes 𝑽-small types to types in the *next* universe. Compare the construction in §4 of
+op. cit., where local universes are used to construct a CwF with a DRA.
+
+In the motivating cubical set semantics, there is an direct construction of this DRA
+which does not raise universe level. Namely, given a type family Γˢ.A → Γˢ we apply the
+right adjoint √ and pull back along the unit Γ → √(Γˢ) to define a family Γ.√B → Γ.
+
+Γ.√B → √(Γˢ.B)
+ | ⌟     |
+ ↓       ↓
+ Γ ———→ √(Γˢ)
+
+However, this construction is not visible from our internal setting.
+
+Using the fact that exponentiation by a shape has a further left adjoint (namely product
+with that shape), we formulate the elimination rule in the style of
+
+Gratzer, Cavallo, Kavvos, Guatto, & Birkedal.
+Modalities and parametric adjoints.
+https://doi.org/10.1145/3514241
 
 -}
-module tiny-dependent where
+module tiny.dependent where
 
 open import basic
 open import internal-extensional-type-theory
@@ -11,19 +45,21 @@ open import axiom.funext
 open import axiom.shape
 open import axiom.cofibration
 open import axiom.tiny
-open import tiny
+open import tiny.basic
 
 infixr 5 _√ᴰ_
 
 
---↓ The right adjoint induces a dependent right adjoint
---↓ TODO elaborate (including about universe level)
+--↓ Definition of the dependent right adjoint, which takes a family B over Γ ^ S and
+--↓ produces a family S √ᴰ B over Γ, with the intention that we have a natural isomorphism
+--↓ between sections of Γ ^ S ⊢ B and sections of Γ ⊢ S √ᴰ B.
 
 opaque
   _√ᴰ_ : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ}
     (@♭ B : Γ ^ S → Type ℓ')
     → (Γ → Type (lsuc ℓ'))
-  (S √ᴰ B) γ = Σ C ∈ S √ (Type* _) , √` fst C ≡ transposeRight B γ
+  _√ᴰ_ {ℓ' = ℓ'} S B γ =
+    Σ C ∈ S √ (Type* ℓ') , √` fst C ≡ transposeRight B γ
     where
     open Tiny S
 

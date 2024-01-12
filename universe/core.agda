@@ -9,7 +9,7 @@ open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
-open import tiny-dependent
+open import tiny.dependent
 open import fibration.fibration
 open import type-former.sigma
 

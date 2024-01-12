@@ -12,7 +12,7 @@ open import basic
 open import axiom
 open import cofibration
 open import fibration.fibration
-open import shape-to-coproduct
+open import tiny.preserves-coproduct
 
 private variable
   ℓ : Level

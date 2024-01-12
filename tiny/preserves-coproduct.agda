@@ -7,14 +7,14 @@
   TODO elaborate
 
 -}
-module shape-to-coproduct where
+module tiny.preserves-coproduct where
 
 open import basic
 open import internal-extensional-type-theory
 open import axiom.funext
 open import axiom.shape
 open import axiom.cofibration
-open import tiny
+open import tiny.basic
 
 module _ (@♭ S : Shape) where
 

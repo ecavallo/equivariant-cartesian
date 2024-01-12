@@ -3,7 +3,7 @@
 Tinyness of shapes.
 
 -}
-module tiny where
+module tiny.basic where
 
 open import basic
 open import internal-extensional-type-theory
