@@ -20,14 +20,14 @@ takes 𝑽-small types to types in the *next* universe. Compare the construction
 
 In the motivating cubical set semantics, there is an direct construction of this DRA
 which does not raise universe level. Namely, given a type family Γˢ.A → Γˢ we apply the
-right adjoint √ and pull back along the unit Γ → √(Γˢ) to define a family Γ.√B → Γ.
+right adjoint √ and reindex along the unit Γ → √(Γˢ) to define a family Γ.√B → Γ.
 
 Γ.√B → √(Γˢ.B)
  | ⌟     |
  ↓       ↓
  Γ ———→ √(Γˢ)
 
-However, this construction is not visible from our internal setting.
+However, in our internal setting we do not know that √ preserves maps with 𝑽-small fibers.
 
 Using the fact that exponentiation by a shape has a further left adjoint (namely product
 with that shape), we formulate the elimination rule in the style of
