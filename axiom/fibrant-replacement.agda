@@ -18,7 +18,7 @@ presented in
   On Higher Inductive Types in Cubical Type Theory
   https://doi.org/10.1145/3209108.3209197
 
-likewise does not obviously adapt equivariant fibrations.
+likewise does not obviously adapt to equivariant fibrations.
 
 The equivariant fibrant replacement of a map π : A → Γ can however still be expressed as
 a QIT indexed by Γ; we axiomatize this QIT here.
