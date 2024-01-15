@@ -7,7 +7,9 @@ module fibration.fibration where
 
 open import basic
 open import internal-extensional-type-theory
-open import axiom
+open import axiom.cofibration
+open import axiom.funext
+open import axiom.shape
 open import cofibration
 
 private variable

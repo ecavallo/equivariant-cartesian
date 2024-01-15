@@ -1,12 +1,33 @@
 {-
 
-Axiomatization of fibrant replacement as a (recursive) indexed quotient-inductive type.
+Axiomatization of fibrant replacement of a map π : A → Γ by a fibration Γ → Type,
+expressed as a (recursive) indexed quotient-inductive type (QIT).
+
+Unlike fibration replacement for the non-equivariant cartesian cubical set model, it does
+seems that equivariant fibrant replacment is not an instance of Swan's W-types with
+reductions as defined in:
+
+  Swan
+  W-Types with Reductions and the Small Object Argument
+  https://arxiv.org/abs/1802.07588
+
+The construction of higher inductive types (which incorporates a fibrant replacement)
+presented in
+
+  Coquand, Huber, & Mörtberg
+  On Higher Inductive Types in Cubical Type Theory
+  https://doi.org/10.1145/3209108.3209197
+
+likewise does not obviously adapt equivariant fibrations.
+
+The equivariant fibrant replacement of a map π : A → Γ can however still be expressed as
+a QIT indexed by Γ; we axiomatize this QIT here.
 
 -}
 module axiom.fibrant-replacement where
 
 open import basic
-open import axiom
+open import axiom.shape
 open import cofibration
 open import fibration.fibration
 

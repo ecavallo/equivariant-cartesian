@@ -10,3 +10,4 @@ open import axiom.shape public
 open import axiom.cofibration public
 open import axiom.realignment public
 open import axiom.tiny public
+open import axiom.fibrant-replacement public
