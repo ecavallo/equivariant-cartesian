@@ -89,7 +89,7 @@ narrow b f .out≡ u = b .out≡ (f u)
 -- Combining compatible partial functions
 ------------------------------------------------------------------------------------------
 
---↓ Dervied non-dependent elimination principle for a union of cofibrations.
+--↓ Derived non-dependent elimination principle for a union of cofibrations.
 
 ∨-rec : {φ ψ : Cof} {A : Type ℓ}
   (f : [ φ ] → A)
@@ -98,6 +98,15 @@ narrow b f .out≡ u = b .out≡ (f u)
   → [ φ ∨ ψ ] → A
 ∨-rec f g p =
   ∨-elim f g (λ u v → substConst _ _ ∙ p u v)
+
+--↓ Functoriality of union of cofibrations
+
+_∨`_ : {φ ψ φ' ψ' : Cof}
+  (f : [ φ ] → [ φ' ])
+  (g : [ ψ ] → [ ψ' ])
+  → [ φ ∨ ψ ] → [ φ' ∨ ψ' ]
+f ∨` g =
+  ∨-rec (∨l ∘ f) (∨r ∘ g) (λ _ _ → cofIsStrictProp' (_ ∨ _))
 
 --↓ Derived dependent elimination principle for a union of cofibrations into a family of
 --↓ equalities

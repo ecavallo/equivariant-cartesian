@@ -68,6 +68,12 @@ boxToPartial box s =
     (λ {refl → box .cap .out})
     (λ {u refl → box .cap .out≡ u})
 
+reshapePartial : ∀ {S T} (σ : ShapeHom S T) {r} {φ : Cof}
+  {A : (j : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ] → Type ℓ}
+  → ((j : ⟨ T ⟩) (v : [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ]) → A j v)
+  → ((i : ⟨ S ⟩) (u : [ φ ∨ S ∋ r ≈ i ]) → A (⟪ σ ⟫ i) ((id ∨` cong ⟪ σ ⟫) u))
+reshapePartial σ part i = part (⟪ σ ⟫ i) ∘ (id ∨` cong ⟪ σ ⟫)
+
 opaque
   varyBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ} {r}
     (box : OpenBox T A (⟪ σ ⟫ r))
@@ -76,7 +82,7 @@ opaque
     (u : [ box .cof ∨ S ∋ r ≈ s ])
     → boxToPartial box (⟪ σ ⟫ s) v ≡ boxToPartial (reshapeBox σ box) s u
   varyBoxToPartial {S = S} {T} σ {r = r} box s =
-    takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s)(S ∋ r ≈ s)
+    takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
       (λ u → refl)
       (λ {refl refl → refl})
 
