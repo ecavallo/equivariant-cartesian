@@ -1,7 +1,7 @@
 {-
 
 Axiomatization of fibrant replacement of a map π : A → Γ by a fibration Γ → Type,
-expressed as a (recursive) indexed quotient-inductive type (QIT).
+expressed as a (recursive) indexed quotient inductive type (QIT).
 
 Unlike fibration replacement for the non-equivariant cartesian cubical set model, it does
 seems that equivariant fibrant replacment is not an instance of Swan's W-types with
