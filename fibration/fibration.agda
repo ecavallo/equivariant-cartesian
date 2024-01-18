@@ -40,15 +40,6 @@ reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
 
-mapBox : {S : Shape} {r : ⟨ S ⟩}
-  {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-  → (∀ s → A s → B s)
-  → OpenBox S A r → OpenBox S B r
-mapBox f box .cof = box .cof
-mapBox f box .tube i u = f i (box .tube i u)
-mapBox f box .cap .out = f _ (box .cap .out)
-mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
-
 addToTube : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r}
   (box : OpenBox S A r)
   (φ : Cof)
@@ -69,6 +60,15 @@ boxToPartial box s =
     (box .tube s)
     (λ {refl → box .cap .out})
     (λ {u refl → box .cap .out≡ u})
+
+partialToBox : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} (φ : Cof)
+  → ((s : ⟨ S ⟩) → [ φ ∨ S ∋ r ≈ s ] → A s)
+  → OpenBox S A r
+partialToBox φ part .cof = φ
+partialToBox φ part .tube i = part i ∘ ∨l
+partialToBox φ part .cap .out = part _ (∨r refl)
+partialToBox {S = S} {r = r} φ part .cap .out≡ u =
+  cong (part _) (cofIsStrictProp' (φ ∨ S ∋ r ≈ r))
 
 reshapePartial : ∀ {S T} (σ : ShapeHom S T) {r} {φ : Cof}
   {A : (j : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ] → Type ℓ}
@@ -152,8 +152,15 @@ opaque
 fitsPartialToFiller : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} {box : OpenBox S A r}
   → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
   → Filler box
-fitsPartialToFiller filler .fill s = narrow (filler s) ∨l
-fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
+fitsPartialToFiller total .fill s = narrow (total s) ∨l
+fitsPartialToFiller total .cap≡ = sym (total _ .out≡ (∨r refl))
+
+fillerToFitsPartial : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} {box : OpenBox S A r}
+  → Filler box
+  → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
+fillerToFitsPartial filler s .out = filler .fill s .out
+fillerToFitsPartial filler s .out≡ =
+  ∨-elimEq (filler .fill s .out≡) (λ {refl → sym (filler .cap≡)})
 
 ------------------------------------------------------------------------------------------
 -- Equivariant fibrations
@@ -244,6 +251,27 @@ opaque
   reindexSubst α refl ρ refl = refl
 
 ------------------------------------------------------------------------------------------
+-- Mapping boxes and fillers
+------------------------------------------------------------------------------------------
+
+mapBox : {S : Shape} {r : ⟨ S ⟩}
+  {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
+  → (∀ s → A s → B s)
+  → OpenBox S A r → OpenBox S B r
+mapBox f box .cof = box .cof
+mapBox f box .tube i u = f i (box .tube i u)
+mapBox f box .cap .out = f _ (box .cap .out)
+mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
+
+mapFiller : {S : Shape} {r : ⟨ S ⟩}
+  {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
+  (f : ∀ s → A s → B s)
+  {box : OpenBox S A r}
+  → Filler box → Filler (mapBox f box)
+mapFiller f filler .fill s = mapRestrict (f s) (filler .fill s)
+mapFiller f filler .cap≡ = cong (f _) (filler .cap≡)
+
+------------------------------------------------------------------------------------------
 -- Extensionality principles for fibrations
 ------------------------------------------------------------------------------------------
 
@@ -261,7 +289,7 @@ opaque
       (funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' uip')
 
 ------------------------------------------------------------------------------------------
--- A retract of a fibration is a fibration
+-- A strict retract of a fibration is a fibration
 ------------------------------------------------------------------------------------------
 
 Retractˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))

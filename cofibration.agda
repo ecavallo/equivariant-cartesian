@@ -70,6 +70,13 @@ record _[_↦_] (A : Type ℓ) (φ : Cof) (a : [ φ ] → A) : Type ℓ where
 
 open _[_↦_] public
 
+--↓ Applying a function to a restricted type.
+
+mapRestrict : {A : Type ℓ} {B : Type ℓ'} (f : A → B) {φ : Cof} {a : [ φ ] → A}
+  → A [ φ ↦ a ] → B [ φ ↦ f ∘ a ]
+mapRestrict f z .out = f (z .out)
+mapRestrict f z .out≡ u = cong f (z .out≡ u)
+
 --↓ Extensionality principle for restricted types.
 
 restrictExt : {A : Type ℓ} {φ : Cof} {a : [ φ ] → A}
