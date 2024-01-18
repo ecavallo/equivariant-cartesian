@@ -27,7 +27,7 @@ open import universe.fibrant
 open import universe.glue
 
 UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Elˣ 𝒒 ≃ˣ Elˣ (𝒒 ∘ 𝒑)))
-UATFib ℓ (tt , B) φ Part = filler
+UATFib ℓ (tt , B) (φ , Part) = filler
   where
   ExtendedTy : 𝑼 ℓ
   ExtendedTy = Glueᵁ φ B (fst ∘ Part) (snd ∘ Part)

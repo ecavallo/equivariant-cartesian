@@ -321,7 +321,7 @@ codᶠFiberTFibStr : (φ : Γ → Cof)
   (A : Γ ▷[ φ ] ⊢ᶠType ℓ)
   (fe : Γ ▷[ φ ] ⊢ᶠ A ≃ᶠ (B ↾ᶠ φ))
   → TFibStr (Fiberˣ (codᶠ φ B A fe ∘ 𝒑) 𝒒)
-codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
+codᶠFiberTFibStr φ B A fe (γ , b) (ψ , codFiber) = ext
   where
   fFiber : (u : [ φ γ ]) → [ ψ ] → Fiber (fe (γ , u) .fst) b
   fFiber u v .fst = codFiber v .fst .dom u
@@ -329,7 +329,7 @@ codᶠFiberTFibStr φ B A fe (γ , b) ψ codFiber = ext
     subst (_~ b) (sym (codFiber v .fst .match u)) (codFiber v .snd)
 
   extFFiber : (u : [ φ γ ]) → Fiber (fe (γ , u) .fst) b [ ψ ↦ fFiber u ]
-  extFFiber u = equivToFiberTFib A (B ∘ᶠ 𝒑) fe _ _ (fFiber u)
+  extFFiber u = equivToFiberTFib A (B ∘ᶠ 𝒑) fe _ (_ , fFiber u)
 
   codBox : OpenBox 𝕚 (cst (B $ᶠ γ)) 1
   codBox .cof = φ γ ∨ ψ

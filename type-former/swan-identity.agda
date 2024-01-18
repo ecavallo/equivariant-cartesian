@@ -88,9 +88,9 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
   opaque
     ConstancyIsTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ˣ A} (p : Γ ⊢ˣ Pathˣ A a₀ a₁)
       → TFibStr (Constancyˣ p)
-    ConstancyIsTFib p γ φ a .out .fst = φ ∧ λ u → a u .fst
-    ConstancyIsTFib p γ φ a .out .snd i uv = a (∧-fst uv) .snd i (∧-snd uv)
-    ConstancyIsTFib p γ φ a .out≡ u = ConstancyExt (p γ) (sym (⊤-∧-ext u))
+    ConstancyIsTFib p γ (φ , a) .out .fst = φ ∧ λ u → a u .fst
+    ConstancyIsTFib p γ (φ , a) .out .snd i uv = a (∧-fst uv) .snd i (∧-snd uv)
+    ConstancyIsTFib p γ (φ , a) .out≡ u = ConstancyExt (p γ) (sym (⊤-∧-ext u))
 
   ConstancyTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ˣ A}
     → Γ ⊢ˣ Pathˣ A a₀ a₁
@@ -102,7 +102,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
     unfolding ConstancyIsTFib
     reindexConstancyTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ˣ A}
       {p : Γ ⊢ˣ Pathˣ A a₀ a₁} (ρ : Δ → Γ)
-      → ConstancyTFib p ∘ᵗ ρ ≡ ConstancyTFib (p ∘ ρ)
+      → ConstancyTFib p ∘ᵗᶠ ρ ≡ ConstancyTFib (p ∘ ρ)
     reindexConstancyTFib ρ = refl
 
   Idᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ

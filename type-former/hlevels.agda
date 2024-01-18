@@ -47,7 +47,7 @@ IsContrᶠ A .fst = IsContrˣ (A .fst)
 IsContrᶠ A .snd = IsContrFibStr (A .snd)
 
 isContrToTFibStr : (A : Γ ⊢ᶠType ℓ) (c : Γ ⊢ᶠ IsContrᶠ A) → TFibStr ∣ A ∣
-isContrToTFibStr A c γ φ a =
+isContrToTFibStr A c γ (φ , a) =
   subst (A $ᶠ γ [ φ ↦_]) (funExt λ u → c γ .snd (a u) .at1) $
   A .snd .lift 𝕚 (cst γ) 0 box .fill 1
   where
@@ -60,10 +60,10 @@ isContrToTFibStr A c γ φ a =
 TFibToIsContr : (A : Γ ⊢ᶠTriv ℓ) → Γ ⊢ᶠ IsContrᶠ (TFibToFib A)
 TFibToIsContr A γ = (center , contract)
   where
-  center = A .snd γ ⊥ (λ ()) .out
+  center = A .snd γ (⊥ , λ ()) .out
 
   ext : (a : A .fst γ) (i : 𝕀) → A .fst γ [ ∂ i ↦ _ ]
-  ext a i = A .snd γ (∂ i) (∂-rec i (cst center) (cst a))
+  ext a i = A .snd γ (∂ i , ∂-rec i (cst center) (cst a))
 
   contract : (a : A .fst γ) → center ~ a
   contract a .at i = ext a i .out
@@ -116,7 +116,7 @@ IsContrIshPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
 
     opaque
       total : (j : 𝕀) → A $ᶠ γ [ ∂ i ∨ ∂ j ↦ boundary j ]
-      total j = tfib tt (∂ i ∨ ∂ j) (boundary j)
+      total j = tfib tt (∂ i ∨ ∂ j , boundary j)
 
     line : c₀ a₁ .at i ~ a
     line .at j = total j .out
