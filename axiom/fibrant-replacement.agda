@@ -59,8 +59,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       (part : (i : ⟨ S ⟩) → [ φ ∨ S ∋ r ≈ i ] → FibReplace (p i))
       (s : ⟨ S ⟩)
       (u : [ φ ∨ S ∋ r ≈ s ])
-      → liftfr S p r φ part s
-        ≡ part s u
+      → part s u
+        ≡ liftfr S p r φ part s
 
     varyfr :
       (S : Shape) (T : Shape) (σ : ShapeHom S T)
@@ -92,9 +92,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       (part* : (i : ⟨ S ⟩) (u : [ φ ∨ S ∋ r ≈ i ]) → P (p i) (part i u))
       (s : ⟨ S ⟩)
       (u : [ φ ∨ S ∋ r ≈ s ])
-      → subst (P (p s)) (matchfr S p r φ part s u)
-          (liftfr* S p r φ part part* s)
-        ≡ part* s u)
+      → subst (P (p s)) (matchfr S p r φ part s u) (part* s u)
+        ≡ liftfr* S p r φ part part* s)
     (varyfr* :
       (S : Shape) (T : Shape) (σ : ShapeHom S T)
       (p : ⟨ T ⟩ → Γ)
