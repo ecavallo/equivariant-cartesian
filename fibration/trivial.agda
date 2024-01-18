@@ -19,11 +19,11 @@ TFibStr {Γ = Γ} A = (γ : Γ) (φ : Cof) (a : [ φ ] → A γ) → A γ [ φ �
 
 opaque
   TFibStrToFibStr : {A : Γ → Type ℓ'} → TFibStr A → FibStr A
-  TFibStrToFibStr c .lift S p r box =
+  TFibStrToFibStr c .lift S γ r box =
     fitsPartialToFiller λ s →
-    c (p s) (box .cof ∨ S ∋ r ≈ s) (boxToPartial box s)
-  TFibStrToFibStr c .vary S T σ p r box s =
-    congΣ ((out ∘_) ∘ c (p (⟪ σ ⟫ s))) cofEq $
+    c (γ s) (box .cof ∨ S ∋ r ≈ s) (boxToPartial box s)
+  TFibStrToFibStr c .vary S T σ γ r box s =
+    congΣ ((out ∘_) ∘ c (γ (⟪ σ ⟫ s))) cofEq $
     substDom [_] cofEq _
     ∙ funExt (λ u → varyBoxToPartial σ box s (subst [_] (sym cofEq) u) u)
     where

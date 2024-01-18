@@ -102,10 +102,10 @@ opaque
     {B : Γ → Type ℓ} (β : FibStr B)
     (α : FibStr (B ↾ φ))
     → FibStr B
-  realignFibStr φ β α .lift S p r =
-    RealignLift.filler (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
-  realignFibStr φ β α .vary S T σ p r =
-    RealignVary.eq σ (φ ∘ p) (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id)
+  realignFibStr φ β α .lift S γ r =
+    RealignLift.filler (φ ∘ γ) (β ∘ᶠˢ γ) (α ∘ᶠˢ γ ×id)
+  realignFibStr φ β α .vary S T σ γ r =
+    RealignVary.eq σ (φ ∘ γ) (β ∘ᶠˢ γ) (α ∘ᶠˢ γ ×id)
 
   --↓ Proof that the realigned fibration structure indeed restricts to the given partial
   --↓ fibration structure.
@@ -115,9 +115,9 @@ opaque
     (α : FibStr (B ↾ φ))
     → α ≡ realignFibStr φ β α ∘ᶠˢ 𝒑
   realignFibStrMatch φ β α =
-    FibStrExt λ S p r box s →
-      RealignLift.fillTotal _ ((β ↾ᶠˢ φ) ∘ᶠˢ p) (α ∘ᶠˢ ((𝒑 ∘ p) ×id)) _
-      .fill s .out≡ (∨r (𝒒 ∘ p))
+    FibStrExt λ S γ r box s →
+      RealignLift.fillTotal _ ((β ↾ᶠˢ φ) ∘ᶠˢ γ) (α ∘ᶠˢ ((𝒑 ∘ γ) ×id)) _
+      .fill s .out≡ (∨r (𝒒 ∘ γ))
 
   --↓ Realignment commutes with reindexing of fibrations.
 
@@ -126,7 +126,7 @@ opaque
     {α : FibStr (B ↾ φ)}
     (ρ : Δ → Γ)
     → realignFibStr φ β α ∘ᶠˢ ρ ≡ realignFibStr (φ ∘ ρ) (β ∘ᶠˢ ρ) (α ∘ᶠˢ ρ ×id)
-  reindexRealignFibStr ρ = FibStrExt λ S r p box s → refl
+  reindexRealignFibStr ρ = FibStrExt λ S r γ box s → refl
 
 ------------------------------------------------------------------------------------------
 -- Realignment for fibrations along cofibrations.

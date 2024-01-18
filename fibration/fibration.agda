@@ -186,14 +186,14 @@ hasVaries {S = S} {T = T} σ A liftT liftS =
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
-    --↓ For every shape S, map p : ⟨ S ⟩ → Γ, and open box over p, we have a chosen lift.
+    --↓ For every shape S, map γ : ⟨ S ⟩ → Γ, and open box over γ, we have a chosen lift.
 
-    lift : (S : Shape) (p : ⟨ S ⟩ → Γ) → hasLifts S (A ∘ p)
+    lift : (S : Shape) (γ : ⟨ S ⟩ → Γ) → hasLifts S (A ∘ γ)
 
     --↓ The lifts satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T) (p : ⟨ T ⟩ → Γ)
-      → hasVaries σ (A ∘ p) (lift T p) (lift S (p ∘ ⟪ σ ⟫))
+    vary : ∀ S T (σ : ShapeHom S T) (γ : ⟨ T ⟩ → Γ)
+      → hasVaries σ (A ∘ γ) (lift T γ) (lift S (γ ∘ ⟪ σ ⟫))
 
 open FibStr public
 
@@ -229,8 +229,8 @@ _▷ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
 ------------------------------------------------------------------------------------------
 
 _∘ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
-(α ∘ᶠˢ ρ) .lift S p r = α .lift S (ρ ∘ p) r
-(α ∘ᶠˢ ρ) .vary S T σ p r = α .vary S T σ (ρ ∘ p) r
+(α ∘ᶠˢ ρ) .lift S γ r = α .lift S (ρ ∘ γ) r
+(α ∘ᶠˢ ρ) .vary S T σ γ r = α .vary S T σ (ρ ∘ γ) r
 
 _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
@@ -272,14 +272,14 @@ mapFiller f filler .fill s = mapRestrict (f s) (filler .fill s)
 mapFiller f filler .cap≡ = cong (f _) (filler .cap≡)
 
 ------------------------------------------------------------------------------------------
--- Extensionality principles for fibrations
+-- Extensionality principle for fibrations
 ------------------------------------------------------------------------------------------
 
 FibStrEq : {Γ : Type ℓ} {A : Γ → Type ℓ'} (α₀ α₁ : FibStr A) → Type (ℓ ⊔ ℓ')
 FibStrEq {Γ = Γ} {A = A} α₀ α₁ =
-  ((S : Shape) (p : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
-  (box : OpenBox S (A ∘ p) r)
-  (s : ⟨ S ⟩) → α₀ .lift S p r box .fill s .out ≡ α₁ .lift S p r box .fill s .out)
+  ((S : Shape) (γ : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
+  (box : OpenBox S (A ∘ γ) r)
+  (s : ⟨ S ⟩) → α₀ .lift S γ r box .fill s .out ≡ α₁ .lift S γ r box .fill s .out)
 
 opaque
   FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A} → FibStrEq α α' → α ≡ α'
@@ -298,22 +298,22 @@ Retractˣ A B γ = Retract (A γ) (B γ)
 opaque
   retractFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
     → Γ ⊢ˣ Retractˣ A B → FibStr B → FibStr A
-  retractFibStr retract β .lift S p r box = filler
+  retractFibStr retract β .lift S γ r box = filler
     where
-    fillerB : Filler (mapBox (sec ∘ retract ∘ p) box)
-    fillerB = β .lift S p r (mapBox (sec ∘ retract ∘ p) box)
+    fillerB : Filler (mapBox (sec ∘ retract ∘ γ) box)
+    fillerB = β .lift S γ r (mapBox (sec ∘ retract ∘ γ) box)
 
     filler : Filler box
-    filler .fill s .out = retract (p s) .ret (fillerB .fill s .out)
+    filler .fill s .out = retract (γ s) .ret (fillerB .fill s .out)
     filler .fill s .out≡ u =
-      sym (retract (p s) .inv _)
-      ∙ cong (retract (p s) .ret) (fillerB .fill s .out≡ u)
+      sym (retract (γ s) .inv _)
+      ∙ cong (retract (γ s) .ret) (fillerB .fill s .out≡ u)
     filler .cap≡ =
-      cong (retract (p r) .ret) (fillerB .cap≡)
-      ∙ retract (p r) .inv _
+      cong (retract (γ r) .ret) (fillerB .cap≡)
+      ∙ retract (γ r) .inv _
 
-  retractFibStr retract β .vary S T σ p r box s =
-    cong (retract _ .ret) (β .vary S T σ p r (mapBox (sec ∘ retract ∘ p) box) s)
+  retractFibStr retract β .vary S T σ γ r box s =
+    cong (retract _ .ret) (β .vary S T σ γ r (mapBox (sec ∘ retract ∘ γ) box) s)
 
 opaque
   unfolding retractFibStr

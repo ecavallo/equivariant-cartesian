@@ -274,10 +274,10 @@ opaque
     {A : Γ ▷[ φ ] → Type ℓ} (α : FibStr A)
     (fe : Γ ▷[ φ ] ⊢ˣ A ≃ˣ (B ↾ φ))
     → FibStr (WeakGlueˣ φ (fstˣ fe))
-  WeakGlueFibStr φ β α fe .lift S p r =
-    WeakGlueLift.filler (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
-  WeakGlueFibStr φ β α fe .vary S T σ p r =
-    WeakGlueVary.eq σ (β ∘ᶠˢ p) (α ∘ᶠˢ p ×id) (fe ∘ p ×id)
+  WeakGlueFibStr φ β α fe .lift S γ r =
+    WeakGlueLift.filler (β ∘ᶠˢ γ) (α ∘ᶠˢ γ ×id) (fe ∘ γ ×id)
+  WeakGlueFibStr φ β α fe .vary S T σ γ r =
+    WeakGlueVary.eq σ (β ∘ᶠˢ γ) (α ∘ᶠˢ γ ×id) (fe ∘ γ ×id)
 
   reindexWeakGlueFibStr : {φ : Γ → Cof}
     {B : Γ → Type ℓ} {β : FibStr B}

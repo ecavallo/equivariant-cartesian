@@ -77,8 +77,8 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
 opaque
   ΠFibStr : {A : Γ → Type ℓ} (α : FibStr A) {B : Γ ▷ˣ A → Type ℓ'} (β : FibStr B)
     → FibStr (Πˣ A B)
-  ΠFibStr α β .lift S p r = ΠLift.filler (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
-  ΠFibStr α β .vary S T σ p r = ΠVary.eq σ (α ∘ᶠˢ p) (β ∘ᶠˢ (p ×id))
+  ΠFibStr α β .lift S γ r = ΠLift.filler (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
+  ΠFibStr α β .vary S T σ γ r = ΠVary.eq σ (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming Π-types is stable under reindexing

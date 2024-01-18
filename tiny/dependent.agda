@@ -150,10 +150,10 @@ module DependentTiny (@♭ S : Shape) where
       --↓ Inverse to the introduction rule, corresopnding to right-to-left transposition.
 
       unshut√ : @♭ (Γ ⊢ˣ S √ᴰ B) → (Γ ^ S ⊢ˣ B)
-      unshut√ t p =
+      unshut√ t γ =
         coe
           (cong$ (√TransposeLeft fst (fst ∘ t) ∙ cong♭ transposeLeft (funExt (snd ∘ t))))
-          (transposeLeft (fst ∘ t) p .snd)
+          (transposeLeft (fst ∘ t) γ .snd)
 
       --↓ Inverse laws.
 
@@ -254,7 +254,7 @@ module DependentTiny (@♭ S : Shape) where
 
     √ᴰPreservesProp : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
       (@♭ B : Γ ^ S → Type ℓ')
-      → @♭ (∀ p → isStrictProp (B p))
+      → @♭ (∀ γ → isStrictProp (B γ))
       → ∀ γ → isStrictProp ((S √ᴰ B) γ)
     √ᴰPreservesProp {Γ = Γ} B propB γ t t' =
       cong$ {a = γ , (t , t')} equateGenericPoints
@@ -265,7 +265,7 @@ module DependentTiny (@♭ S : Shape) where
         ∙ cong (appˣ (undoReindex√ 𝒑))
           (√ᴰPreservesPropSections
             (B ∘ (𝒑 `^ S))
-            (λ b b' → funExt λ p → propB (𝒑 ∘ p) (b p) (b' p))
+            (λ b b' → funExt λ γ' → propB (𝒑 ∘ γ') (b γ') (b' γ'))
             (appˣ (doReindex√ 𝒑) (fstˣ 𝒒))
             (appˣ (doReindex√ 𝒑) (sndˣ 𝒒)))
         ∙ undoDoReindex√ 𝒑 (sndˣ 𝒒)

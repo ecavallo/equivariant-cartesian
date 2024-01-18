@@ -57,10 +57,10 @@ hasVaries√ {S = S} {T = T} σ A =
     (decodeLifts S (^-counit S) (A ∘ ⟪ σ ⟫))
 
 opaque
-  hasVaries√IsProp : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : ShapeHom S T)
+  hasVaries√IsStrictProp : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : ShapeHom S T)
     (A : ⟨ T ⟩ → 𝑼Lifts ℓ)
-    (v v' : hasVaries√ σ A) → v ≡ v'
-  hasVaries√IsProp σ A v v' =
+    → isStrictProp (hasVaries√ σ A)
+  hasVaries√IsStrictProp σ A v v' =
     funExt' $ funExt' $ funExt' uip'
 
 hasVaries√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : ShapeHom S T) {Γ : Type ℓ}
@@ -124,7 +124,7 @@ opaque
   encodeHasLifts S A =
     appˣ (undoReindex√ S ∣ A ∣) $
     shut√ S $♭
-    λ p r box → A .snd .lift S p r box
+    λ γ r box → A .snd .lift S γ r box
 
   reindexEncodeHasLifts : ∀ {@♭ ℓ ℓ' ℓ''} (@♭ S : Shape)
     {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'} (@♭ ρ : Γ' → Γ)
@@ -177,13 +177,13 @@ opaque
   encodeHasVaries {S = S} {T = T} σ A =
     appˣ (undoReindex√ T (encodeLifts A)) $
     shut√ T $♭
-    λ p r box s →
-    cong (λ l → l p (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out)
+    λ γ r box s →
+    cong (λ l → l γ (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out)
       (reindexDecodeLifts (encodeLifts A `^ T) T (^-counit T)
         ∙ reindexEncodeInsideDecode T (^-counit T) A
         ∙ decodeEncodeLifts (A ∘ᶠ ^-counit T))
-    ∙ A .snd .vary S T σ p r box s
-    ∙ cong (λ l → l (p ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out)
+    ∙ A .snd .vary S T σ γ r box s
+    ∙ cong (λ l → l (γ ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out)
         (sym
           (reindexDecodeLifts (encodeLifts A `^ S) S (^-counit S)
             ∙ reindexEncodeInsideDecode S (^-counit S) A
@@ -208,12 +208,12 @@ opaque
   decodeEncode A =
     Σext refl $
     FibStrExt {α = ElFibStr ∘ᶠˢ (encode A)} $
-    ShapeIsDiscrete λ (@♭ S) p r box s →
-    cong (λ lifter → lifter r box .fill s .out) (mainLemma S p)
+    ShapeIsDiscrete λ (@♭ S) γ r box s →
+    cong (λ lifter → lifter r box .fill s .out) (mainLemma S γ)
     where
-    mainLemma : ∀ (@♭ S) p →
-      decodeLifts S (^-counit S) (encodeLifts A ∘ p) ≡ getFibLiftsˣ S (A ∘ᶠ ^-counit S) p
-    mainLemma S p =
+    mainLemma : ∀ (@♭ S) γ →
+      decodeLifts S (^-counit S) (encodeLifts A ∘ γ) ≡ getFibLiftsˣ S (A ∘ᶠ ^-counit S) γ
+    mainLemma S γ =
       cong$ (reindexDecodeLifts (encodeLifts A `^ S) S (^-counit S))
       ∙ cong$ (reindexEncodeInsideDecode S (^-counit S) A)
       ∙ cong$ (decodeEncodeLifts (A ∘ᶠ ^-counit S))
@@ -223,7 +223,7 @@ opaque
   𝑼Ext eq =
     Σext eq $
     funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
-    √ᴰPreservesProp T (hasVaries√ σ) (λ _ → hasVaries√IsProp σ _) _ _ _
+    √ᴰPreservesProp T (hasVaries√ σ) (λ _ → hasVaries√IsStrictProp σ _) _ _ _
 
 opaque
   unfolding encode

@@ -97,7 +97,7 @@ IshPropᶠ A =
 IsContrIshPropᶠ : (A : Γ ⊢ᶠType ℓ) → Γ ⊢ᶠ IshPropᶠ (IsContrᶠ A)
 IsContrIshPropᶠ A γ (a₀ , c₀) (a₁ , c₁) = singlPath
   where
-  tfib = isContrToTFibStr (A ∘ᶠ (λ (_ : 𝟙) → γ)) (λ _ → a₀ , c₀)
+  tfib = isContrToTFibStr (A ∘ᶠ cst γ) (λ _ → a₀ , c₀)
 
   module _ (i : 𝕀) (a : A $ᶠ γ) where
 

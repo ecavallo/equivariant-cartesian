@@ -77,8 +77,8 @@ opaque
     (φ : ⟨ Z ⟩ → Cof)
     (a : Γ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒))
     → FibStr (Extensionˣ Z A φ a)
-  ExtensionFibStr Z α φ a .lift S p r = ExtensionLift.filler (α ∘ᶠˢ (p ×id))
-  ExtensionFibStr Z α φ a .vary S T σ p r = ExtensionVary.eq σ (α ∘ᶠˢ (p ×id))
+  ExtensionFibStr Z α φ a .lift S γ r = ExtensionLift.filler (α ∘ᶠˢ (γ ×id))
+  ExtensionFibStr Z α φ a .vary S T σ γ r = ExtensionVary.eq σ (α ∘ᶠˢ (γ ×id))
 
   ----------------------------------------------------------------------------------------
   -- Forming extension types is stable under reindexing

@@ -110,8 +110,8 @@ module _ {@♭ ℓ} where
 
   opaque
     𝑼FibStr : FibStr {Γ = 𝟙} (𝑼ˣ ℓ)
-    𝑼FibStr .lift S r p box = 𝑼Lift.filler box
-    𝑼FibStr .vary S T σ r p box s = 𝑼Vary.eq σ box s
+    𝑼FibStr .lift S r γ box = 𝑼Lift.filler box
+    𝑼FibStr .vary S T σ r γ box s = 𝑼Vary.eq σ box s
 
 𝑼ᶠ : ∀ (@♭ ℓ) → Γ ⊢ᶠType (lsuc ℓ)
 𝑼ᶠ ℓ .fst = 𝑼ˣ ℓ
