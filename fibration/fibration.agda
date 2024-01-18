@@ -159,6 +159,21 @@ fitsPartialToFiller filler .cap≡ = sym (filler _ .out≡ (∨r refl))
 -- Equivariant fibrations
 ------------------------------------------------------------------------------------------
 
+--↓ Define what it means for a type over a shape to have a filler for any box over it.
+
+hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
+hasLifts S A = ∀ r (box : OpenBox S A r) → Filler box
+
+--↓ The equivariance condition on lifts: for every shape homomorphism and open box,
+--↓ reshaping the open box and then lifting has the same effect as lifting and then
+--↓ reshaping the filler.
+
+hasVaries : {S T : Shape} (σ : ShapeHom S T) (A : ⟨ T ⟩ → Type ℓ)
+  → hasLifts T A → hasLifts S (A ∘ ⟪ σ ⟫) → Type ℓ
+hasVaries {S = S} {T = T} σ A liftT liftS =
+  (r : ⟨ S ⟩) (box : OpenBox T A (⟪ σ ⟫ r)) (s : ⟨ S ⟩)
+  → liftT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out ≡ liftS r (reshapeBox σ box) .fill s .out
+
 --↓ Definition of an equivariant fibration structure.
 
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
@@ -166,17 +181,12 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
     --↓ For every shape S, map p : ⟨ S ⟩ → Γ, and open box over p, we have a chosen lift.
 
-    lift : (S : Shape) (p : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
-      (box : OpenBox S (A ∘ p) r) → Filler box
+    lift : (S : Shape) (p : ⟨ S ⟩ → Γ) → hasLifts S (A ∘ p)
 
-    --↓ The equivariance condition on lifts: for every shape homomorphism and open box,
-    --↓ reshaping the open box and then lifting has the same effect as lifting and then
-    --↓ reshaping the filler.
+    --↓ The lifts satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T) (p : ⟨ T ⟩ → Γ) (r : ⟨ S ⟩)
-      (box : OpenBox T (A ∘ p) (⟪ σ ⟫ r)) (s : ⟨ S ⟩)
-      → reshapeFiller σ (lift T p (⟪ σ ⟫ r) box) .fill s .out
-        ≡ lift S (p ∘ ⟪ σ ⟫) r (reshapeBox σ box) .fill s .out
+    vary : ∀ S T (σ : ShapeHom S T) (p : ⟨ T ⟩ → Γ)
+      → hasVaries σ (A ∘ p) (lift T p) (lift S (p ∘ ⟪ σ ⟫))
 
 open FibStr public
 
