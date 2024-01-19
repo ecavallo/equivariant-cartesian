@@ -171,7 +171,8 @@ fillerToFitsPartial filler s .out≡ =
 CellFillStr : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
 CellFillStr S A = ∀ r (box : OpenBox S A r) → Filler box
 
---↓ Type of
+--↓ A filling structure on a family consists of a cell filling structure for every
+--↓ reindexing of the family over a shape.
 
 FillStr : (S : Shape) {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 FillStr S {Γ} A = (γ : Γ ^ S) → CellFillStr S (A ∘ γ)
