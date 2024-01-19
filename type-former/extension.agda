@@ -34,7 +34,7 @@ module ExtensionLift {Z φ S r}
     pointwiseBox : OpenBox S (A ∘ (_, z)) r
     pointwiseBox =
       addToTube
-        (mapBox (λ _ q → q z .out) box)
+        (mapBox (out ∘ (_$ z)) box)
         (φ z)
         (λ i v → λ where
           .out → a (i , z , v)

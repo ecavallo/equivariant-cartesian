@@ -29,7 +29,7 @@ module ΠLift {S r}
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
       boxCod : OpenBox S (B ∘ (id ,, coerceA)) r
-      boxCod = mapBox (λ i f → f (coerceA i)) box
+      boxCod = mapBox (λ {i} f → f (coerceA i)) box
 
       fillCod = β .lift S (id ,, coerceA) r boxCod
 

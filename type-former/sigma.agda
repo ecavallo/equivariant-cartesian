@@ -22,7 +22,7 @@ module ΣLift {S r}
   where
 
   boxFst : OpenBox S A r
-  boxFst = mapBox (λ _ → fst) box
+  boxFst = mapBox fst box
 
   fillFst = α .lift S id r boxFst
 

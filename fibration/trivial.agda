@@ -14,10 +14,15 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
+--↓ Type of contractibility structures on a type.
+
+Contr : Type ℓ → Type ℓ
+Contr A = ((φ , a) : A ⁺) → A [ φ ↦ a ]
+
 --↓ Type of trivial fibration structures on a family.
 
 TFibStr : {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-TFibStr {Γ = Γ} A = (γ : Γ) ((φ , a) : (A γ) ⁺) → A γ [ φ ↦ a ]
+TFibStr A = ∀ γ → Contr (A γ)
 
 --↓ Type of trivial fibrations in a given context.
 
@@ -35,7 +40,7 @@ opaque
     cong (out ∘ c _) $
     Σext cofEq $
     substDom [_] cofEq _
-    ∙ funExt (λ u → varyBoxToPartial σ box s (subst [_] (sym cofEq) u) u)
+    ∙ funExt (λ u → reshapeBoxToPartial σ box s (subst [_] (sym cofEq) u) u)
     where
     cofEq : (box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (box .cof ∨ S ∋ r ≈ s)
     cofEq = cong (box .cof ∨_) (≈Equivariant σ r s)

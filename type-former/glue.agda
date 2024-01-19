@@ -110,7 +110,7 @@ module WeakGlueLift {S r φ}
     e = sndˣ fe
 
   codBox : OpenBox S B r
-  codBox = mapBox (λ _ → cod) box
+  codBox = mapBox cod box
 
   codFill = β .lift S id r codBox
 

@@ -24,6 +24,10 @@ infixl 5 _∘ᶠˢ_ _∘ᶠ_ _$ᶠ_
 -- Open boxes
 ------------------------------------------------------------------------------------------
 
+--↓ The type of open boxes for a given shape S with the cap at a point r of S. An open box
+--↓ consists of a cofibration, a partially defined element indexed by S (the "tube"), and
+--↓ a total element (the "cap") agreeing with the tube at r.
+
 record OpenBox (S : Shape) (A : ⟨ S ⟩ → Type ℓ) (r : ⟨ S ⟩) : Type ℓ
   where
   constructor makeBox
@@ -34,11 +38,16 @@ record OpenBox (S : Shape) (A : ⟨ S ⟩ → Type ℓ) (r : ⟨ S ⟩) : Type �
 
 open OpenBox public
 
+--↓ A shape homomorphism σ : S → T induces a map from T-boxes to S-boxes by
+--↓ precomposition.
+
 reshapeBox : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
   → OpenBox T A (⟪ σ ⟫ r) → OpenBox S (A ∘ ⟪ σ ⟫) r
 reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
 reshapeBox σ box .cap = box .cap
+
+--↓ Convenience function extending the tube of a box with another partial element.
 
 addToTube : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r}
   (box : OpenBox S A r)
@@ -52,6 +61,13 @@ addToTube box φ t matchCap .tube i =
 addToTube box φ t matchCap .cap .out = box .cap .out
 addToTube box φ t matchCap .cap .out≡ =
   ∨-elimEq (box .cap .out≡) matchCap
+
+------------------------------------------------------------------------------------------
+-- Open boxes as partial elements
+------------------------------------------------------------------------------------------
+
+--↓ An S-box with cofibration φ and cap at r can also be encoded as a family over
+--↓ over s : S defined on φ ∨ r ≈ s. This representation is sometimes more convenient.
 
 boxToPartial : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} (box : OpenBox S A r)
   (s : ⟨ S ⟩) → [ box .cof ∨ S ∋ r ≈ s ] → A s
@@ -70,50 +86,35 @@ partialToBox φ part .cap .out = part _ (∨r refl)
 partialToBox {S = S} {r = r} φ part .cap .out≡ u =
   cong (part _) (cofIsStrictProp' (φ ∨ S ∋ r ≈ r))
 
+--↓ Action of shape homomorphisms on open boxes encoded as partial elements.
+
 reshapePartial : ∀ {S T} (σ : ShapeHom S T) {r} {φ : Cof}
   {A : (j : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ] → Type ℓ}
   → ((j : ⟨ T ⟩) (v : [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ]) → A j v)
   → ((i : ⟨ S ⟩) (u : [ φ ∨ S ∋ r ≈ i ]) → A (⟪ σ ⟫ i) ((id ∨` cong ⟪ σ ⟫) u))
 reshapePartial σ part i = part (⟪ σ ⟫ i) ∘ (id ∨` cong ⟪ σ ⟫)
 
+--↓ Reshaping open boxes commutes with the conversion from the record to the
+--↓ partial-element representation.
+
 opaque
-  varyBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ} {r}
+  reshapeBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ} {r}
     (box : OpenBox T A (⟪ σ ⟫ r))
     (s : ⟨ S ⟩)
     (v : [ box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s ])
     (u : [ box .cof ∨ S ∋ r ≈ s ])
     → boxToPartial box (⟪ σ ⟫ s) v ≡ boxToPartial (reshapeBox σ box) s u
-  varyBoxToPartial {S = S} {T} σ {r = r} box s =
+  reshapeBoxToPartial {S = S} {T} σ {r = r} box s =
     takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
       (λ u → refl)
       (λ {refl refl → refl})
 
-opaque
-  boxExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩}
-    {box box' : OpenBox S A r}
-    → box .cof ≡ box' .cof
-    → (∀ i u v → box .tube i u ≡ box' .tube i v)
-    → box .cap .out ≡ box' .cap .out
-    → box ≡ box'
-  boxExt {box = box} refl q refl =
-    congΣ (λ t c → makeBox (box .cof) t (makeRestrict (box .cap .out) c))
-      (funExt' $ funExt' $ q _ _ _)
-      (funExt' uip')
-
-opaque
-  boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
-    {b₀ b₁ : B} (b : b₀ ≡ b₁)
-    {r : ⟨ S ⟩}
-    {box₀ : OpenBox S (A b₀) r} {box₁ : OpenBox S (A b₁) r}
-    → box₀ .cof ≡ box₁ .cof
-    → (∀ i u v → subst (λ b' → A b' i) b (box₀ .tube i u) ≡ box₁ .tube i v)
-    → subst (A ⦅–⦆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
-    → subst (OpenBox S ⦅–⦆ r ∘ A) b box₀ ≡ box₁
-  boxExtDep refl = boxExt
-
 ------------------------------------------------------------------------------------------
 -- Solutions to individual lifting problems
 ------------------------------------------------------------------------------------------
+
+--↓ A filler for an S-box over A is a section of A that restricts to its tube and cap
+--↓ where they are defined.
 
 record Filler {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩} (box : OpenBox S A r) : Type ℓ
   where
@@ -124,6 +125,9 @@ record Filler {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩} (box : Op
 
 open Filler public
 
+--↓ A shape homomorphism σ : S → T induces a map from T-fillers to S-fillers by
+--↓ precomposition.
+
 reshapeFiller : {S T : Shape} (σ : ShapeHom S T)
   {A : ⟨ T ⟩ → Type ℓ} {r : ⟨ S ⟩}
   {box : OpenBox T A (⟪ σ ⟫ r)}
@@ -132,22 +136,8 @@ reshapeFiller : {S T : Shape} (σ : ShapeHom S T)
 reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
-opaque
-  fillerExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ}  {r : ⟨ S ⟩}
-    {box : OpenBox S A r}
-    {co co' : Filler box}
-    → (∀ s → co .fill s .out ≡ co' .fill s .out)
-    → co ≡ co'
-  fillerExt p =
-    congΣ makeFiller (funExt $ restrictExt ∘ p) uip'
-
-opaque
-  fillerCong : {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩}
-    {box : OpenBox S A r}
-    {co co' : Filler box}
-    → co ≡ co'
-    → (∀ s → co .fill s .out ≡ co' .fill s .out)
-  fillerCong p s = cong out (cong$ (cong fill p))
+--↓ A total section fitting an open box encoded as a partial section is the same
+--↓ a filler for the open box encoded as a record.
 
 fitsPartialToFiller : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} {box : OpenBox S A r}
   → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])
@@ -172,14 +162,15 @@ CellFillStr : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
 CellFillStr S A = ∀ r (box : OpenBox S A r) → Filler box
 
 --↓ A filling structure on a family consists of a cell filling structure for every
---↓ reindexing of the family over a shape.
+--↓ reindexing of the family over a shape. This would be the definition of fibration in
+--↓ a "non-equivariant fibration" model.
 
 FillStr : (S : Shape) {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 FillStr S {Γ} A = (γ : Γ ^ S) → CellFillStr S (A ∘ γ)
 
---↓ The equivariance condition on filling structures: for every shape homomorphism
---↓ σ : S → T, filling an open box over T and then composing with σ should be the
---↓ same as composing the box with σ and then filling over S.
+--↓ The equivariance condition on cell filling structures associated to a shape
+--↓ homomorphism σ : S → T. Filling an open box over T and then composing with σ should be
+--↓ the same as composing the box with σ and then filling over S.
 
 CellEquivariance : {S T : Shape} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
   → CellFillStr T A → CellFillStr S (A ∘ ⟪ σ ⟫) → Type ℓ
@@ -187,6 +178,11 @@ CellEquivariance σ liftT liftS =
   ∀ r box s →
   reshapeFiller σ (liftT (⟪ σ ⟫ r) box) .fill s .out
   ≡ liftS r (reshapeBox σ box) .fill s .out
+
+Equivariance : {S T : Shape} (σ : ShapeHom S T) {Γ : Type ℓ} (A : Γ → Type ℓ')
+  → FillStr T A → FillStr S A → Type (ℓ ⊔ ℓ')
+Equivariance {T = T} σ {Γ} A fillT fillS =
+  (γ : Γ ^ T) → CellEquivariance σ (fillT γ) (fillS (γ ∘ ⟪ σ ⟫))
 
 --↓ Definition of an equivariant fibration structure.
 
@@ -199,8 +195,7 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
 
     --↓ The filling structures satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T) (γ : Γ ^ T)
-      → CellEquivariance σ (lift T γ) (lift S (γ ∘ ⟪ σ ⟫))
+    vary : ∀ S T (σ : ShapeHom S T) → Equivariance σ A (lift T) (lift S)
 
 open FibStr public
 
@@ -235,9 +230,13 @@ _▷ᶠ_ : (Γ : Type ℓ) (A : Γ ⊢ᶠType ℓ') → Type (ℓ ⊔ ℓ')
 -- Reindexing fibration structures and fibrations
 ------------------------------------------------------------------------------------------
 
+--↓ Reindexing of fibration structures.
+
 _∘ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (ρ : Δ → Γ) → FibStr (A ∘ ρ)
 (α ∘ᶠˢ ρ) .lift S γ r = α .lift S (ρ ∘ γ) r
 (α ∘ᶠˢ ρ) .vary S T σ γ r = α .vary S T σ (ρ ∘ γ) r
+
+--↓ Reindexing of fibrations.
 
 _∘ᶠ_ : (Γ ⊢ᶠType ℓ) → (Δ → Γ) → Δ ⊢ᶠType ℓ
 (A ∘ᶠ ρ) .fst = A .fst ∘ ρ
@@ -251,6 +250,8 @@ _↾ᶠˢ_ : {A : Γ → Type ℓ} (α : FibStr A) (φ : Γ → Cof) → FibStr 
 _↾ᶠ_ : (A : Γ ⊢ᶠType ℓ) (φ : Γ → Cof) → Γ ▷[ φ ] ⊢ᶠType ℓ
 (A ↾ᶠ φ) = A ∘ᶠ 𝒑
 
+--↓ Reindexing fibration structures commutes with substitution.
+
 opaque
   reindexSubst : {A A' : Γ → Type ℓ}
     (α : FibStr A) (P : A ≡ A') (ρ : Δ → Γ) (Q : A ∘ ρ ≡ A' ∘ ρ)
@@ -263,24 +264,56 @@ opaque
 
 mapBox : {S : Shape} {r : ⟨ S ⟩}
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-  → (∀ s → A s → B s)
+  → (∀ {s} → A s → B s)
   → OpenBox S A r → OpenBox S B r
 mapBox f box .cof = box .cof
-mapBox f box .tube i u = f i (box .tube i u)
-mapBox f box .cap .out = f _ (box .cap .out)
-mapBox f box .cap .out≡ u = cong (f _) (box .cap .out≡ u)
+mapBox f box .tube i u = f (box .tube i u)
+mapBox f box .cap .out = f (box .cap .out)
+mapBox f box .cap .out≡ u = cong f (box .cap .out≡ u)
 
 mapFiller : {S : Shape} {r : ⟨ S ⟩}
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}
-  (f : ∀ s → A s → B s)
+  (f : ∀ {s} → A s → B s)
   {box : OpenBox S A r}
   → Filler box → Filler (mapBox f box)
-mapFiller f filler .fill s = mapRestrict (f s) (filler .fill s)
-mapFiller f filler .cap≡ = cong (f _) (filler .cap≡)
+mapFiller f filler .fill s = mapRestrict f (filler .fill s)
+mapFiller f filler .cap≡ = cong f (filler .cap≡)
 
 ------------------------------------------------------------------------------------------
--- Extensionality principle for fibrations
+-- Extensionality principles
 ------------------------------------------------------------------------------------------
+
+opaque
+  boxExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ} {r : ⟨ S ⟩}
+    {box₀ box₁ : OpenBox S A r}
+    → box₀ .cof ≡ box₁ .cof
+    → (∀ i u v → box₀ .tube i u ≡ box₁ .tube i v)
+    → box₀ .cap .out ≡ box₁ .cap .out
+    → box₀ ≡ box₁
+  boxExt {box₀ = box₀} refl q refl =
+    congΣ (λ t c → makeBox (box₀ .cof) t (makeRestrict (box₀ .cap .out) c))
+      (funExt' $ funExt' $ q _ _ _)
+      (funExt' uip')
+
+opaque
+  boxExtDep : {S : Shape} {B : Type ℓ} {A : B → ⟨ S ⟩ → Type ℓ'}
+    {b₀ b₁ : B} (b : b₀ ≡ b₁)
+    {r : ⟨ S ⟩}
+    {box₀ : OpenBox S (A b₀) r} {box₁ : OpenBox S (A b₁) r}
+    → box₀ .cof ≡ box₁ .cof
+    → (∀ i u v → subst (λ b' → A b' i) b (box₀ .tube i u) ≡ box₁ .tube i v)
+    → subst (A ⦅–⦆ r) b (box₀ .cap .out) ≡ box₁ .cap .out
+    → subst (OpenBox S ⦅–⦆ r ∘ A) b box₀ ≡ box₁
+  boxExtDep refl = boxExt
+
+opaque
+  fillerExt : {S : Shape} {A : ⟨ S ⟩ → Type ℓ}  {r : ⟨ S ⟩}
+    {box : OpenBox S A r}
+    {f₀ f₁ : Filler box}
+    → (∀ s → f₀ .fill s .out ≡ f₁ .fill s .out)
+    → f₀ ≡ f₁
+  fillerExt p =
+    congΣ makeFiller (funExt $ restrictExt ∘ p) uip'
 
 opaque
   FibStrExt : {A : Γ → Type ℓ} {α₀ α₁ : FibStr A}
@@ -303,8 +336,8 @@ opaque
     → Γ ⊢ˣ Retractˣ A B → FibStr B → FibStr A
   retractFibStr retract β .lift S γ r box = filler
     where
-    fillerB : Filler (mapBox (sec ∘ retract ∘ γ) box)
-    fillerB = β .lift S γ r (mapBox (sec ∘ retract ∘ γ) box)
+    fillerB : Filler (mapBox (retract _ .sec) box)
+    fillerB = β .lift S γ r (mapBox (retract _ .sec) box)
 
     filler : Filler box
     filler .fill s .out = retract (γ s) .ret (fillerB .fill s .out)
@@ -316,7 +349,7 @@ opaque
       ∙ retract (γ r) .inv _
 
   retractFibStr retract β .vary S T σ γ r box s =
-    cong (retract _ .ret) (β .vary S T σ γ r (mapBox (sec ∘ retract ∘ γ) box) s)
+    cong (retract _ .ret) (β .vary S T σ γ r (mapBox (retract _ .sec) box) s)
 
 opaque
   unfolding retractFibStr
@@ -328,9 +361,6 @@ opaque
 ------------------------------------------------------------------------------------------
 -- Corollary: fibration structures can be transferred across isomorphisms
 ------------------------------------------------------------------------------------------
-
-_≅ˣ_ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
-_≅ˣ_ A B γ = A γ ≅ B γ
 
 opaque
   isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
