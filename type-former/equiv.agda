@@ -176,26 +176,23 @@ opaque
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩) → (A $ᶠ r) ≃ (A $ᶠ s)
   transpEquiv S A r s =
-    Transp.transp S r ((A ∘ᶠ cst r) ≃ᶠ A) (idEquivᶠ A r) s
+    fibTranspStr ((A ∘ᶠ cst r) ≃ᶠ A) .lift S id r (idEquivᶠ A r) s
 
   transpEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r : ⟨ S ⟩) → transpEquiv S A r r ≡ idEquivᶠ A r
   transpEquivCap S A r =
-    Transp.cap≡ S r
-      ((A ∘ᶠ cst r) ≃ᶠ A)
-      (idEquivᶠ A r)
+    fibTranspStr ((A ∘ᶠ cst r) ≃ᶠ A) .cap≡ S id r (idEquivᶠ A r)
 
   transpEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
     (A : ⟨ T ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩)
     → transpEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ transpEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
   transpEquivVary {S = S} σ A r s =
-    transpVary σ r
-      ((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A)
-      (idEquivᶠ A (⟪ σ ⟫ r))
-      s
-    ∙ cong (Transp.transp S r _ ⦅–⦆ s) (cong$ (reindexIdEquivᶠ ⟪ σ ⟫))
+    fibTranspStr ((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A) .vary _ _ σ id r (idEquivᶠ A (⟪ σ ⟫ r)) s
     ∙ cong
-        (λ β → Transp.transp S r (_ ≃ˣ _ , β) (idEquivᶠ (A ∘ᶠ ⟪ σ ⟫) r) s)
+        (fibTranspStr (((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A) ∘ᶠ ⟪ σ ⟫) .lift S id r ⦅–⦆ s)
+        (cong$ (reindexIdEquivᶠ ⟪ σ ⟫))
+    ∙ cong
+        (λ β → fibTranspStr (_ ≃ˣ _ , β) .lift S id r (idEquivᶠ (A ∘ᶠ ⟪ σ ⟫) r) s)
         (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)

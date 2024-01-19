@@ -1,6 +1,6 @@
 {-
 
-Transposrt
+Transport
 
 -}
 module fibration.transport where
@@ -10,36 +10,44 @@ open import axiom
 open import cofibration
 open import fibration.fibration
 
-private variable ℓ : Level
+private variable
+  ℓ ℓ' : Level
+  Γ : Type ℓ
 
-module Transp (S : Shape) (r : ⟨ S ⟩) (A : ⟨ S ⟩ ⊢ᶠType ℓ) (a : ∣ A ∣ r) where
+--↓ Open box corresponding to transport (i.e. with an empty tube)
 
-  box : OpenBox S ∣ A ∣ r
-  box .cof = ⊥
-  box .tube _ = 𝟘-rec
-  box .cap .out = a
-  box .cap .out≡ ()
+transpBox : {S : Shape} (A : ⟨ S ⟩ → Type ℓ) (r : ⟨ S ⟩) (a : A r) → OpenBox S A r
+transpBox A r a .cof = ⊥
+transpBox A r a .tube _ ()
+transpBox A r a .cap .out = a
+transpBox A r a .cap .out≡ ()
 
-  opaque
-    filler : Filler box
-    filler = A .snd .lift S id r box
+--↓ Type of transport structures on a family.
 
-  transp : (s : ⟨ S ⟩) → A $ᶠ s
-  transp s = filler .fill s .out
+record TranspStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
+  field
+    --↓ We have a transport operation on every shape.
 
-  open Filler filler public using (cap≡)
+    lift : (S : Shape) (γ : Γ ^ S) (r : ⟨ S ⟩) (a : A (γ r)) (s : ⟨ S ⟩) → A (γ s)
 
-module _ {S T : Shape} (σ : ShapeHom S T)
-  (r : ⟨ S ⟩) (A : ⟨ T ⟩ ⊢ᶠType ℓ) (a : A $ᶠ ⟪ σ ⟫ r)
-  where
+    cap≡ : (S : Shape) (γ : Γ ^ S) (r : ⟨ S ⟩) (a : A (γ r)) → lift S γ r a r ≡ a
 
-  private
-    module S = Transp S r (A ∘ᶠ ⟪ σ ⟫) a
-    module T = Transp T (⟪ σ ⟫ r) A a
+    --↓ The transport structures satisfy the equivariance condition.
 
-  opaque
-    unfolding Transp.filler
-    transpVary : (s : ⟨ S ⟩) → T.transp (⟪ σ ⟫ s) ≡ S.transp s
-    transpVary s =
-      A .snd .vary S T σ id r T.box s
-      ∙ cong (λ box → A .snd .lift S ⟪ σ ⟫ r box .fill s .out) (boxExt refl (λ _ ()) refl)
+    vary : ∀ S T (σ : ShapeHom S T)
+      (γ : Γ ^ T) (r : ⟨ S ⟩) (a : A (γ (⟪ σ ⟫ r))) (s : ⟨ S ⟩)
+      → lift T γ (⟪ σ ⟫ r) a (⟪ σ ⟫ s) ≡ lift S (γ ∘ ⟪ σ ⟫) r a s
+
+open TranspStr public
+
+fibStrToTranspStr : {A : Γ → Type ℓ} → FibStr A → TranspStr A
+fibStrToTranspStr {A = A} α .lift S γ r a s =
+  α .lift S γ r (transpBox (A ∘ γ) r a) .fill s .out
+fibStrToTranspStr {A = A} α .cap≡ S γ r a =
+  α .lift S γ r (transpBox (A ∘ γ) r a) .cap≡
+fibStrToTranspStr {A = A} α .vary S T σ γ r a s =
+  α .vary S T σ γ r (transpBox (A ∘ γ) (⟪ σ ⟫ r) a) s
+  ∙ cong (λ box → α .lift S (γ ∘ ⟪ σ ⟫) r box .fill s .out) (boxExt refl (λ _ ()) refl)
+
+fibTranspStr : (A : Γ ⊢ᶠType ℓ) → TranspStr ∣ A ∣
+fibTranspStr A = fibStrToTranspStr (A .snd)

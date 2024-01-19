@@ -22,11 +22,9 @@ module ΠLift {S r}
   (box : OpenBox S (Πˣ A B) r)
   where
 
-  module _ (s : ⟨ S ⟩) (a : A s) where
+  module Dom = TranspStr (fibStrToTranspStr α)
 
-    module Dom = Transp S s (A , α) a
-
-    module _ (coerceA : (i : ⟨ S ⟩) → A i) where
+  module _ (s : ⟨ S ⟩) (a : A s) (coerceA : (i : ⟨ S ⟩) → A i) where
 
       boxCod : OpenBox S (B ∘ (id ,, coerceA)) r
       boxCod = mapBox (λ {i} f → f (coerceA i)) box
@@ -36,18 +34,18 @@ module ΠLift {S r}
   filler : Filler box
   filler .fill s .out a =
     subst (curry B s)
-      (Dom.cap≡ s a)
-      (fillCod s a (Dom.transp s a) .fill s .out)
+      (Dom.cap≡ S id s a)
+      (fillCod s a (Dom.lift S id s a) .fill s .out)
   filler .fill s .out≡ u =
     funExt λ a →
-    sym (congdep (box .tube s u) (Dom.cap≡ s a))
-    ∙ cong (subst (curry B s) (Dom.cap≡ s a))
-        (fillCod s a (Dom.transp s a) .fill s .out≡ u)
+    sym (congdep (box .tube s u) (Dom.cap≡ S id s a))
+    ∙ cong (subst (curry B s) (Dom.cap≡ S id s a))
+        (fillCod s a (Dom.lift S id s a) .fill s .out≡ u)
   filler .cap≡ =
     funExt λ a →
-    cong (subst (curry B r) (Dom.cap≡ r a))
-      (fillCod r a (Dom.transp r a) .cap≡)
-    ∙ congdep (box .cap .out) (Dom.cap≡ r a)
+    cong (subst (curry B r) (Dom.cap≡ S id r a))
+      (fillCod r a (Dom.lift S id r a) .cap≡)
+    ∙ congdep (box .cap .out) (Dom.cap≡ S id r a)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
@@ -58,19 +56,19 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
   module T = ΠLift α β box
   module S = ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
-  varyDom : ∀ s a i → T.Dom.transp (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.Dom.transp s a i
-  varyDom s = transpVary σ s (A , α)
+  varyDom : ∀ s a i → T.Dom.lift T id (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.Dom.lift S id s a i
+  varyDom s = T.Dom.vary S T σ id s
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     funExt λ a →
     cong
-      (subst (curry B (⟪ σ ⟫ s)) (T.Dom.cap≡ _ a))
-      (β .vary S T σ (id ,, T.Dom.transp _ a) r (T.boxCod _ a (T.Dom.transp _ a)) s)
+      (subst (curry B (⟪ σ ⟫ s)) (T.Dom.cap≡ T id _ a))
+      (β .vary S T σ (id ,, T.Dom.lift T id _ a) r (T.boxCod _ a (T.Dom.lift T id _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
       (cong$ (funExt (varyDom s a))) refl
-      (T.Dom.cap≡ (⟪ σ ⟫ s) a) (S.Dom.cap≡ s a)
+      (T.Dom.cap≡ T id (⟪ σ ⟫ s) a) (S.Dom.cap≡ S id s a)
       (sym (substCongAssoc (curry B (⟪ σ ⟫ s)) (λ cA → cA s) (funExt (varyDom s a)) _)
         ∙ congdep (λ cA → S.fillCod s a cA .fill s .out) (funExt (varyDom s a)))
 
@@ -80,10 +78,10 @@ opaque
   ΠFibStr α β .lift S γ r = ΠLift.filler (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
   ΠFibStr α β .vary S T σ γ r = ΠVary.eq σ (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
 
-  ----------------------------------------------------------------------------------------
-  -- Forming Π-types is stable under reindexing
-  ----------------------------------------------------------------------------------------
+--↓ Forming Π-types is stable under reindexing
 
+opaque
+  unfolding ΠFibStr
   reindexΠFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ˣ A → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → ΠFibStr α β ∘ᶠˢ ρ ≡ ΠFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΠFibStr ρ = FibStrExt λ _ _ _ _ _ → refl

@@ -229,7 +229,8 @@ substᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a₀ a₁ 
   → Γ ⊢ᶠ B ∘ᶠ (id ,, a₁)
 substᶠ A B p b₀ γ =
   subst (∣ B ∣ ∘ (γ ,_)) (p γ .at1)
-    (Transp.transp 𝕚 0 (B ∘ᶠ (cst γ ,, p γ .at))
+    (fibTranspStr (B ∘ᶠ (cst γ ,, p γ .at)) .lift 𝕚 id
+      0
       (subst (∣ B ∣ ∘ (γ ,_)) (sym (p γ .at0)) (b₀ γ))
       1)
 
