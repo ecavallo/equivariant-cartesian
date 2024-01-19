@@ -10,7 +10,7 @@ open import internal-extensional-type-theory
 open import axiom
 open import cofibration
 open import fibration.fibration
-open import fibration.coercion
+open import fibration.transport
 
 private variable
   ℓ ℓ' : Level
@@ -24,7 +24,7 @@ module ΠLift {S r}
 
   module _ (s : ⟨ S ⟩) (a : A s) where
 
-    module Dom = Coerce S s (A , α) a
+    module Dom = Transp S s (A , α) a
 
     module _ (coerceA : (i : ⟨ S ⟩) → A i) where
 
@@ -37,16 +37,16 @@ module ΠLift {S r}
   filler .fill s .out a =
     subst (curry B s)
       (Dom.cap≡ s a)
-      (fillCod s a (Dom.coerce s a) .fill s .out)
+      (fillCod s a (Dom.transp s a) .fill s .out)
   filler .fill s .out≡ u =
     funExt λ a →
     sym (congdep (box .tube s u) (Dom.cap≡ s a))
     ∙ cong (subst (curry B s) (Dom.cap≡ s a))
-        (fillCod s a (Dom.coerce s a) .fill s .out≡ u)
+        (fillCod s a (Dom.transp s a) .fill s .out≡ u)
   filler .cap≡ =
     funExt λ a →
     cong (subst (curry B r) (Dom.cap≡ r a))
-      (fillCod r a (Dom.coerce r a) .cap≡)
+      (fillCod r a (Dom.transp r a) .cap≡)
     ∙ congdep (box .cap .out) (Dom.cap≡ r a)
 
 module ΠVary {S T} (σ : ShapeHom S T) {r}
@@ -58,15 +58,15 @@ module ΠVary {S T} (σ : ShapeHom S T) {r}
   module T = ΠLift α β box
   module S = ΠLift (α ∘ᶠˢ ⟪ σ ⟫) (β ∘ᶠˢ (⟪ σ ⟫ ×id)) (reshapeBox σ box)
 
-  varyDom : ∀ s a i → T.Dom.coerce (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.Dom.coerce s a i
-  varyDom s = coerceVary σ s (A , α)
+  varyDom : ∀ s a i → T.Dom.transp (⟪ σ ⟫ s) a (⟪ σ ⟫ i) ≡ S.Dom.transp s a i
+  varyDom s = transpVary σ s (A , α)
 
   eq : (s : ⟨ S ⟩) → T.filler .fill (⟪ σ ⟫ s) .out ≡ S.filler .fill s .out
   eq s =
     funExt λ a →
     cong
       (subst (curry B (⟪ σ ⟫ s)) (T.Dom.cap≡ _ a))
-      (β .vary S T σ (id ,, T.Dom.coerce _ a) r (T.boxCod _ a (T.Dom.coerce _ a)) s)
+      (β .vary S T σ (id ,, T.Dom.transp _ a) r (T.boxCod _ a (T.Dom.transp _ a)) s)
     ∙
     adjustSubstEq (curry B (⟪ σ ⟫ s))
       (cong$ (funExt (varyDom s a))) refl

@@ -32,7 +32,7 @@ module _ {@♭ ℓ} where
     tubeEquiv : ∀ s → [ box .cof ] → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out)
     tubeEquiv s u .fst = box .tube s u
     tubeEquiv s u .snd =
-      subst ((_ ≃_) ∘ El) (box .cap .out≡ u) (coerceEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r)
+      subst ((_ ≃_) ∘ El) (box .cap .out≡ u) (transpEquiv S (Elᶠ (box .tube ⦅–⦆ u)) s r)
 
     capEquiv : ∀ s → [ S ∋ r ≈ s ] → Σ A ∈ 𝑼 ℓ , El A ≃ El (box .cap .out)
     capEquiv s _ .fst = box .cap .out
@@ -44,7 +44,7 @@ module _ {@♭ ℓ} where
         Σext
           (box .cap .out≡ u)
           (eqLemma (box .cap .out≡ u)
-            (coerceEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r
+            (transpEquivCap S (Elᶠ (box .tube ⦅–⦆ u)) r
               ∙ cong$ (sym (reindexIdEquivᶠ (box .tube ⦅–⦆ u)))))
         where
         eqLemma : {A B : 𝑼 ℓ} (eq : A ≡ B) {e : El A ≃ El A}
@@ -86,7 +86,7 @@ module _ {@♭ ℓ} where
             ∙ Σext refl
               (cong
                 (subst ((_ ≃_) ∘ El) (box .cap .out≡ u))
-                (coerceEquivVary σ (Elᶠ (box .tube ⦅–⦆ u)) s r)))
+                (transpEquivVary σ (Elᶠ (box .tube ⦅–⦆ u)) s r)))
           (λ {refl →
             cong
               (T.partialEquiv (⟪ σ ⟫ s))

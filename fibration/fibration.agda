@@ -166,34 +166,40 @@ fillerToFitsPartial filler s .out≡ =
 -- Equivariant fibrations
 ------------------------------------------------------------------------------------------
 
---↓ Define what it means for a type over a shape to have a filler for any box over it.
+--↓ Type of operations filling open boxes over a given shape-indexed family.
 
-hasLifts : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
-hasLifts S A = ∀ r (box : OpenBox S A r) → Filler box
+CellFillStr : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
+CellFillStr S A = ∀ r (box : OpenBox S A r) → Filler box
 
---↓ The equivariance condition on lifts: for every shape homomorphism and open box,
---↓ reshaping the open box and then lifting has the same effect as lifting and then
---↓ reshaping the filler.
+--↓ Type of
 
-hasVaries : {S T : Shape} (σ : ShapeHom S T) (A : ⟨ T ⟩ → Type ℓ)
-  → hasLifts T A → hasLifts S (A ∘ ⟪ σ ⟫) → Type ℓ
-hasVaries {S = S} {T = T} σ A liftT liftS =
-  (r : ⟨ S ⟩) (box : OpenBox T A (⟪ σ ⟫ r)) (s : ⟨ S ⟩)
-  → liftT (⟪ σ ⟫ r) box .fill (⟪ σ ⟫ s) .out ≡ liftS r (reshapeBox σ box) .fill s .out
+FillStr : (S : Shape) {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
+FillStr S {Γ} A = (γ : Γ ^ S) → CellFillStr S (A ∘ γ)
+
+--↓ The equivariance condition on filling structures: for every shape homomorphism
+--↓ σ : S → T, filling an open box over T and then composing with σ should be the
+--↓ same as composing the box with σ and then filling over S.
+
+CellEquivariance : {S T : Shape} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
+  → CellFillStr T A → CellFillStr S (A ∘ ⟪ σ ⟫) → Type ℓ
+CellEquivariance σ liftT liftS =
+  ∀ r box s →
+  reshapeFiller σ (liftT (⟪ σ ⟫ r) box) .fill s .out
+  ≡ liftS r (reshapeBox σ box) .fill s .out
 
 --↓ Definition of an equivariant fibration structure.
 
 record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   constructor makeFib
   field
-    --↓ For every shape S, map γ : ⟨ S ⟩ → Γ, and open box over γ, we have a chosen lift.
+    --↓ We have a filling structure for every shape.
 
-    lift : (S : Shape) (γ : ⟨ S ⟩ → Γ) → hasLifts S (A ∘ γ)
+    lift : (S : Shape) → FillStr S A
 
-    --↓ The lifts satisfy the equivariance condition.
+    --↓ The filling structures satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T) (γ : ⟨ T ⟩ → Γ)
-      → hasVaries σ (A ∘ γ) (lift T γ) (lift S (γ ∘ ⟪ σ ⟫))
+    vary : ∀ S T (σ : ShapeHom S T) (γ : Γ ^ T)
+      → CellEquivariance σ (lift T γ) (lift S (γ ∘ ⟪ σ ⟫))
 
 open FibStr public
 
@@ -275,14 +281,10 @@ mapFiller f filler .cap≡ = cong (f _) (filler .cap≡)
 -- Extensionality principle for fibrations
 ------------------------------------------------------------------------------------------
 
-FibStrEq : {Γ : Type ℓ} {A : Γ → Type ℓ'} (α₀ α₁ : FibStr A) → Type (ℓ ⊔ ℓ')
-FibStrEq {Γ = Γ} {A = A} α₀ α₁ =
-  ((S : Shape) (γ : ⟨ S ⟩ → Γ) (r : ⟨ S ⟩)
-  (box : OpenBox S (A ∘ γ) r)
-  (s : ⟨ S ⟩) → α₀ .lift S γ r box .fill s .out ≡ α₁ .lift S γ r box .fill s .out)
-
 opaque
-  FibStrExt : {A : Γ → Type ℓ} {α α' : FibStr A} → FibStrEq α α' → α ≡ α'
+  FibStrExt : {A : Γ → Type ℓ} {α₀ α₁ : FibStr A}
+    → (∀ S γ r box s → α₀ .lift S γ r box .fill s .out ≡ α₁ .lift S γ r box .fill s .out)
+    → α₀ ≡ α₁
   FibStrExt q =
     congΣ makeFib
       (funExt' $ funExt' $ funExt' $ funExt' $ fillerExt $ q _ _ _ _)

@@ -10,7 +10,7 @@ open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
-open import fibration.coercion
+open import fibration.transport
 open import fibration.fibration
 open import fibration.trivial
 open import type-former.path

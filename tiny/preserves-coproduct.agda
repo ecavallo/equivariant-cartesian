@@ -53,7 +53,7 @@ module _ (@♭ S : Shape) where
   shape→⊎♭` f g (inl _) = refl
   shape→⊎♭` f g (inr _) = refl
 
-  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} (p : (⟨ S ⟩ → A) ⊎ (⟨ S ⟩ → A))
+  shape→⊎♭∇ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} (p : (A ^ S) ⊎ (A ^ S))
     → ∇ ∘ shape→⊎♭ .to p ≡ ∇ p
   shape→⊎♭∇ (inl _) = refl
   shape→⊎♭∇ (inr _) = refl

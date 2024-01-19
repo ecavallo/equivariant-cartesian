@@ -9,7 +9,7 @@ open import basic
 open import internal-extensional-type-theory
 open import axiom
 open import cofibration
-open import fibration.coercion
+open import fibration.transport
 open import fibration.fibration
 open import fibration.trivial
 open import type-former.hlevels
@@ -160,7 +160,7 @@ fiberTFibToIsEquiv : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') {f : Γ �
 fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 
 ------------------------------------------------------------------------------------------
--- Identity and coercion maps are equivalences
+-- Identity and transport functions are equivalences
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -172,30 +172,30 @@ opaque
   reindexIdEquivᶠ ρ = refl
 
 opaque
-  coerceEquiv : (S : Shape)
+  transpEquiv : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩) → (A $ᶠ r) ≃ (A $ᶠ s)
-  coerceEquiv S A r s =
-    Coerce.coerce S r ((A ∘ᶠ cst r) ≃ᶠ A) (idEquivᶠ A r) s
+  transpEquiv S A r s =
+    Transp.transp S r ((A ∘ᶠ cst r) ≃ᶠ A) (idEquivᶠ A r) s
 
-  coerceEquivCap : (S : Shape)
+  transpEquivCap : (S : Shape)
     (A : ⟨ S ⟩ ⊢ᶠType ℓ)
-    (r : ⟨ S ⟩) → coerceEquiv S A r r ≡ idEquivᶠ A r
-  coerceEquivCap S A r =
-    Coerce.cap≡ S r
+    (r : ⟨ S ⟩) → transpEquiv S A r r ≡ idEquivᶠ A r
+  transpEquivCap S A r =
+    Transp.cap≡ S r
       ((A ∘ᶠ cst r) ≃ᶠ A)
       (idEquivᶠ A r)
 
-  coerceEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
+  transpEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
     (A : ⟨ T ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩)
-    → coerceEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ coerceEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
-  coerceEquivVary {S = S} σ A r s =
-    coerceVary σ r
+    → transpEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ transpEquiv S (A ∘ᶠ ⟪ σ ⟫) r s
+  transpEquivVary {S = S} σ A r s =
+    transpVary σ r
       ((A ∘ᶠ cst (⟪ σ ⟫ r)) ≃ᶠ A)
       (idEquivᶠ A (⟪ σ ⟫ r))
       s
-    ∙ cong (Coerce.coerce S r _ ⦅–⦆ s) (cong$ (reindexIdEquivᶠ ⟪ σ ⟫))
+    ∙ cong (Transp.transp S r _ ⦅–⦆ s) (cong$ (reindexIdEquivᶠ ⟪ σ ⟫))
     ∙ cong
-        (λ β → Coerce.coerce S r (_ ≃ˣ _ , β) (idEquivᶠ (A ∘ᶠ ⟪ σ ⟫) r) s)
+        (λ β → Transp.transp S r (_ ≃ˣ _ , β) (idEquivᶠ (A ∘ᶠ ⟪ σ ⟫) r) s)
         (Σeq₂ (reindexEquivᶠ ⟪ σ ⟫) refl)
