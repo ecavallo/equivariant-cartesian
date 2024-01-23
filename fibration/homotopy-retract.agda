@@ -31,13 +31,13 @@ module hRetractLift {S r}
   where
 
   codBox : OpenBox S B r
-  codBox = mapBox (fst ∘ f) box
+  codBox = mapBox (f _ .fst) box
 
   codFiller : Filler codBox
   codFiller = β .lift S id r codBox
 
-  retractedFiller : Filler (mapBox (fst ∘ snd ∘ f) codBox)
-  retractedFiller = mapFiller (fst ∘ snd ∘ f) codFiller
+  retractedFiller : Filler (mapBox (f _ .snd .fst) codBox)
+  retractedFiller = mapFiller (f _ .snd .fst) codFiller
 
   correctorBox : (s : ⟨ S ⟩) → OpenBox 𝕚 (cst (A s)) 0
   correctorBox s .cof =
@@ -90,7 +90,7 @@ module hRetractVary {S T} (σ : ShapeHom S T) {r}
             takeOutCof (box .cof) (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) (S ∋ r ≈ s)
               (λ u → refl)
               (λ {refl refl → refl}))
-          (cong (f _ .snd .fst) (β .vary S T σ id r (mapBox (fst ∘ f) box) s)))
+          (cong (f _ .snd .fst) (β .vary S T σ id r (mapBox (f _ .fst) box) s)))
 
 
 hRetractFibStr :
