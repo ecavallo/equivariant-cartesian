@@ -67,9 +67,12 @@ fibTranspStr A = fibStrToTranspStr (A .snd)
 -- can construct a fibration structure on that family.
 ------------------------------------------------------------------------------------------
 
+FiberwiseFibStr : {Γ : Type ℓ} → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
+FiberwiseFibStr A = ∀ γ → FibStr {Γ = 𝟙} (A ∘ cst γ)
+
 module FromFiberwiseLift {S} {A : ⟨ S ⟩ → Type ℓ}
   (transp : TranspStr A)
-  (hcomp : ∀ s → FibStr {Γ = 𝟙} (A ∘ cst s))
+  (hcomp : FiberwiseFibStr A)
   {r : ⟨ S ⟩} (box : OpenBox S A r)
   where
   module _ (s : ⟨ S ⟩) where
@@ -94,7 +97,7 @@ module FromFiberwiseLift {S} {A : ⟨ S ⟩ → Type ℓ}
 
 module FromFiberwiseVary {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
   (transp : TranspStr A)
-  (hcomp : ∀ t → FibStr {Γ = 𝟙} (A ∘ cst t))
+  (hcomp : FiberwiseFibStr A)
   {r : ⟨ S ⟩} (box : OpenBox T A (⟪ σ ⟫ r))
   where
 
@@ -116,11 +119,11 @@ module FromFiberwiseVary {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
       hcomp (⟪ σ ⟫ s) .vary S T σ _ r (T.fiberBox (⟪ σ ⟫ s)) s
       ∙ cong (λ box' → hcomp (⟪ σ ⟫ s) .lift S _ r box' .fill s .out) (boxEq s)
 
-fiberwiseFibAndTranspToFibStr : {A : Γ → Type ℓ}
+transpAndFiberwiseToFibStr : {A : Γ → Type ℓ}
   → TranspStr A
-  → (∀ γ → FibStr {Γ = 𝟙} (A ∘ cst γ))
+  → FiberwiseFibStr A
   → FibStr A
-fiberwiseFibAndTranspToFibStr {A = A} transp hcomp .lift S γ r box =
+transpAndFiberwiseToFibStr {A = A} transp hcomp .lift S γ r box =
   FromFiberwiseLift.filler (transp ∘ᵗˢ γ) (hcomp ∘ γ) box
-fiberwiseFibAndTranspToFibStr transp hcomp .vary S T σ γ r box s =
+transpAndFiberwiseToFibStr transp hcomp .vary S T σ γ r box s =
   FromFiberwiseVary.eq σ (transp ∘ᵗˢ γ) (hcomp ∘ γ) box s

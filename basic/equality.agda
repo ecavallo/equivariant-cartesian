@@ -9,18 +9,28 @@ module basic.equality where
 
 open import basic.prelude
 open import basic.function
+open import axiom.funext
 
 private variable
   ℓ ℓ' ℓ'' : Level
 
-data _≡_ {A : Type ℓ} (a : A) : A → Type ℓ where
-  instance
-    refl : a ≡ a
+------------------------------------------------------------------------------------------
+-- Uniqueness of identity proofs.
+------------------------------------------------------------------------------------------
 
-infix 4 _≡_
+--↓ The --with-K flag allows us to prove this with pattern-matching.
 
-{-# BUILTIN EQUALITY _≡_ #-}
-{-# BUILTIN REWRITE _≡_ #-}
+uip : {A : Type ℓ} {a₀ a₁ : A} (p q : a₀ ≡ a₁) → p ≡ q
+uip refl refl = refl
+
+--↓ Variant with implicit arguments.
+
+uip' : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ≡ a₁} → p ≡ q
+uip' = uip _ _
+
+------------------------------------------------------------------------------------------
+-- Algebra of equality.
+------------------------------------------------------------------------------------------
 
 --↓ Transitivity of equality.
 
@@ -99,6 +109,16 @@ opaque
     → subst (C ∘ f) p b ≡ subst C (cong f p) b
   substCongAssoc _ _ refl _ = refl
 
+opaque
+  substFunExtAssoc : {A : Type ℓ} {B : A → Type ℓ'}
+    (C : (a : A) → B a → Type ℓ'')
+    {f₀ f₁ : (a : A) → B a} (p : ∀ a → f₀ a ≡ f₁ a)
+    (a₀ : A) (c : C a₀ (f₀ a₀))
+    → subst (λ f → C a₀ (f a₀)) (funExt p) c ≡ subst (C a₀) (p a₀) c
+  substFunExtAssoc C p a₀ c =
+    substCongAssoc (C a₀) (_$ a₀) (funExt p) c
+    ∙ cong (subst (C a₀) ⦅–⦆ c) (uip (cong$ (funExt p)) (p a₀))
+
 --↓ Substitution in a constant family.
 
 opaque
@@ -134,20 +154,6 @@ opaque
     → subst B p₀₂ b₀ ≡ subst B p₁₂ b₁
     → subst B p₀₃ b₀ ≡ subst B p₁₃ b₁
   adjustSubstEq B refl refl refl refl = id
-
-------------------------------------------------------------------------------------------
--- Uniqueness of identity proofs.
-------------------------------------------------------------------------------------------
-
---↓ The --with-K flag allows us to prove this with pattern-matching.
-
-uip : {A : Type ℓ} {a₀ a₁ : A} (p q : a₀ ≡ a₁) → p ≡ q
-uip refl refl = refl
-
---↓ Variant with implicit arguments.
-
-uip' : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ≡ a₁} → p ≡ q
-uip' = uip _ _
 
 ------------------------------------------------------------------------------------------
 -- Propositions with respect to strict equality.

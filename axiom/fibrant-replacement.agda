@@ -72,6 +72,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       → liftfr T p (⟪ σ ⟫ r) φ part (⟪ σ ⟫ s)
         ≡ liftfr S (p ∘ ⟪ σ ⟫) r φ (reshapePartial σ part) s
 
+  {-# REWRITE varyfr #-}
+
   module _ {P : (γ : Γ) → FibReplace γ → Type ℓ''}
     (infr* : (a : A) → P (π a) (infr a))
     (liftfr* :
@@ -102,8 +104,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       (part : (j : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ] → FibReplace (p j))
       (part* : (j : ⟨ T ⟩) (u : [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ]) → P (p j) (part j u))
       (s : ⟨ S ⟩)
-      → subst (P (p (⟪ σ ⟫ s))) (varyfr S T σ p r φ part s)
-          (liftfr* T p (⟪ σ ⟫ r) φ part part* (⟪ σ ⟫ s))
+      → liftfr* T p (⟪ σ ⟫ r) φ part part* (⟪ σ ⟫ s)
         ≡ liftfr* S (p ∘ ⟪ σ ⟫) r φ (reshapePartial σ part) (reshapePartial σ part*) s)
     where
 

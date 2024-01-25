@@ -63,7 +63,7 @@ addToTube box φ t matchCap .cap .out≡ =
   ∨-elimEq (box .cap .out≡) matchCap
 
 ------------------------------------------------------------------------------------------
--- Open boxes as partial elements
+-- Open boxes as partial elements.
 ------------------------------------------------------------------------------------------
 
 --↓ An S-box with cofibration φ and cap at r can also be encoded as a family over
@@ -110,7 +110,7 @@ opaque
       (λ {refl refl → refl})
 
 ------------------------------------------------------------------------------------------
--- Solutions to individual lifting problems
+-- Solutions to individual lifting problems.
 ------------------------------------------------------------------------------------------
 
 --↓ A filler for an S-box over A is a section of A that restricts to its tube and cap
@@ -153,7 +153,7 @@ fillerToFitsPartial filler s .out≡ =
   ∨-elimEq (filler .fill s .out≡) (λ {refl → sym (filler .cap≡)})
 
 ------------------------------------------------------------------------------------------
--- Equivariant fibrations
+-- Equivariant fibrations.
 ------------------------------------------------------------------------------------------
 
 --↓ Type of operations filling open boxes over a given shape-indexed family.
@@ -259,7 +259,7 @@ opaque
   reindexSubst α refl ρ refl = refl
 
 ------------------------------------------------------------------------------------------
--- Mapping boxes and fillers
+-- Mapping boxes and fillers.
 ------------------------------------------------------------------------------------------
 
 mapBox : {S : Shape} {r : ⟨ S ⟩}
@@ -280,7 +280,7 @@ mapFiller f filler .fill s = mapRestrict f (filler .fill s)
 mapFiller f filler .cap≡ = cong f (filler .cap≡)
 
 ------------------------------------------------------------------------------------------
--- Extensionality principles
+-- Extensionality principles.
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -325,7 +325,34 @@ opaque
       (funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' $ funExt' uip')
 
 ------------------------------------------------------------------------------------------
--- A strict retract of a fibration is a fibration
+-- Filling boxes expressed as partial elements in fibrations.
+------------------------------------------------------------------------------------------
+
+fibLiftPartial : (A : Γ ⊢ᶠType ℓ')
+  (S : Shape) (γ : Γ ^ S) (r : ⟨ S ⟩) (φ : Cof)
+  (part : (s : ⟨ S ⟩) → [ φ ∨ S ∋ r ≈ s ] → A $ᶠ γ s)
+  → (s : ⟨ S ⟩) → A $ᶠ γ s [ φ ∨ S ∋ r ≈ s ↦ part s ]
+fibLiftPartial (_ , α) S γ r φ part s .out =
+  α .lift S γ r (partialToBox φ part) .fill s .out
+fibLiftPartial (_ , α) S γ r φ part s .out≡ =
+  ∨-elimEq
+    (α .lift S γ r (partialToBox φ part) .fill s .out≡)
+    (λ {refl → sym (α .lift S γ r (partialToBox φ part) .cap≡)})
+
+fibVaryPartial : ∀ (A : Γ ⊢ᶠType ℓ')
+  {S T} (σ : ShapeHom S T) (γ : Γ ^ T) (r : ⟨ S ⟩) (φ : Cof)
+  (part : (t : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ t ] → A $ᶠ γ t)
+  (s : ⟨ S ⟩)
+  → fibLiftPartial A T γ (⟪ σ ⟫ r) φ part (⟪ σ ⟫ s) .out
+    ≡ fibLiftPartial A S (γ ∘ ⟪ σ ⟫) r φ (reshapePartial σ part) s .out
+fibVaryPartial (_ , α) σ γ r φ part s =
+  α .vary _ _ σ γ r (partialToBox φ part) s
+  ∙ cong
+    (λ box' → α .lift _ (γ ∘ ⟪ σ ⟫) r box' .fill s .out)
+    (boxExt refl (λ _ _ _ → cong (part _) (cofIsStrictProp' (_ ∨ _))) refl)
+
+------------------------------------------------------------------------------------------
+-- A strict retract of a fibration is a fibration.
 ------------------------------------------------------------------------------------------
 
 Retractˣ : (A : Γ → Type ℓ) (B : Γ → Type ℓ') → (Γ → Type (ℓ ⊔ ℓ'))
@@ -359,7 +386,7 @@ opaque
   reindexRetractFibStr retract ρ = FibStrExt λ _ _ _ _ _ → refl
 
 ------------------------------------------------------------------------------------------
--- Corollary: fibration structures can be transferred across isomorphisms
+-- Corollary: fibration structures can be transferred across isomorphisms.
 ------------------------------------------------------------------------------------------
 
 opaque

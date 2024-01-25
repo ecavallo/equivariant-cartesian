@@ -6,7 +6,6 @@ Function extensionality axiom and basic consequences
 module axiom.funext where
 
 open import basic.prelude
-open import basic.equality
 
 private variable ℓ ℓ' ℓ'' : Level
 
@@ -15,11 +14,11 @@ private variable ℓ ℓ' ℓ'' : Level
 ------------------------------------------------------------------------------------------
 
 postulate
-  funExt : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
-    → ((a : A) → f a ≡ g a) → f ≡ g
+  funExt : {A : Type ℓ} {B : A → Type ℓ'} {f₀ f₁ : (a : A) → B a}
+    → ((a : A) → f₀ a ≡ f₁ a) → f₀ ≡ f₁
 
-funExt' : {A : Type ℓ} {B : A → Type ℓ'} {f g : (a : A) → B a}
-  → ({a : A} → f a ≡ g a) → f ≡ g
+funExt' : {A : Type ℓ} {B : A → Type ℓ'} {f₀ f₁ : (a : A) → B a}
+  → ({a : A} → f₀ a ≡ f₁ a) → f₀ ≡ f₁
 funExt' p = funExt λ _ → p
 
 ------------------------------------------------------------------------------------------
@@ -29,11 +28,11 @@ funExt' p = funExt λ _ → p
 postulate
   funExt♭ : {@♭ ℓ : Level} {ℓ' : Level}
      {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
-     {f g : (@♭ a : A) → B a}
-     → ((@♭ a : A) → f a ≡ g a) → f ≡ g
+     {f₀ f₁ : (@♭ a : A) → B a}
+     → ((@♭ a : A) → f₀ a ≡ f₁ a) → f₀ ≡ f₁
 
 funExt♭' : {@♭ ℓ : Level} {ℓ' : Level}
    {@♭ A : Type ℓ} {B : @♭ A → Type ℓ'}
-   {f g : (@♭ a : A) → B a}
-   → ({@♭ a : A} → f a ≡ g a) → f ≡ g
+   {f₀ f₁ : (@♭ a : A) → B a}
+   → ({@♭ a : A} → f₀ a ≡ f₁ a) → f₀ ≡ f₁
 funExt♭' h = funExt♭ λ _ → h
