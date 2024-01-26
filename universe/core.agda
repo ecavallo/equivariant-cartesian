@@ -19,13 +19,13 @@ private variable
 
 open DependentTiny
 
-CellFillStrˣ : (S : Shape)
+LocalFillStrˣ : (S : Shape)
   (A : Γ ▷⟨ S ⟩ → Type ℓ)
   → (Γ → Type ℓ)
-CellFillStrˣ S A γ = CellFillStr S (A ∘ (γ ,_))
+LocalFillStrˣ S A γ = LocalFillStr S (A ∘ (γ ,_))
 
 𝑼Fill : ∀ (@♭ ℓ) → Type (lsuc ℓ)
-𝑼Fill ℓ = Σ A ∈ Type ℓ , ((@♭ S : Shape) → (S √ᴰ CellFillStr S) A)
+𝑼Fill ℓ = Σ A ∈ Type ℓ , ((@♭ S : Shape) → (S √ᴰ LocalFillStr S) A)
 
 𝑼Fillˣ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
 𝑼Fillˣ ℓ _ = 𝑼Fill ℓ
@@ -33,7 +33,7 @@ CellFillStrˣ S A γ = CellFillStr S (A ∘ (γ ,_))
 opaque
   decodeFill : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ} (@♭ S : Shape)
     (@♭ A : Γ ▷⟨ S ⟩ ⊢ˣ 𝑼Fillˣ ℓ')
-    → Γ ⊢ˣ CellFillStrˣ S (fstˣ A)
+    → Γ ⊢ˣ LocalFillStrˣ S (fstˣ A)
   decodeFill S A =
     open√ S $♭
     appˣ (doReindex√ S (fstˣ A)) $
@@ -49,22 +49,22 @@ opaque
     reindexOpen√ S _ _ ∙
     cong♭ (open√ S) (doReindex√-∘ S (fstˣ A) (ρ ×id) _)
 
-CellEquivariance√ : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : ShapeHom S T)
+LocalEquivariance√ : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : ShapeHom S T)
   (A : ⟨ T ⟩ → 𝑼Fill ℓ) → Type ℓ
-CellEquivariance√ {S = S} {T = T} σ A =
-  CellEquivariance σ
+LocalEquivariance√ {S = S} {T = T} σ A =
+  LocalEquivariance σ
     (decodeFill T (^-counit T) A)
     (decodeFill S (^-counit S) (A ∘ ⟪ σ ⟫))
 
-CellEquivariance√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : ShapeHom S T) {Γ : Type ℓ}
+LocalEquivariance√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : ShapeHom S T) {Γ : Type ℓ}
   (A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼Fillˣ ℓ')
   → (Γ → Type ℓ')
-CellEquivariance√ˣ σ A γ = CellEquivariance√ σ (A ∘ (γ ,_))
+LocalEquivariance√ˣ σ A γ = LocalEquivariance√ σ (A ∘ (γ ,_))
 
 𝑼 : ∀ (@♭ ℓ) → Type (lsuc ℓ)
 𝑼 ℓ =
   Σ A ∈ 𝑼Fill ℓ ,
-  (∀ (@♭ S T) (@♭ σ : ShapeHom S T) → (T √ᴰ CellEquivariance√ σ) A)
+  (∀ (@♭ S T) (@♭ σ : ShapeHom S T) → (T √ᴰ LocalEquivariance√ σ) A)
 
 El : ∀ {@♭ ℓ} → 𝑼 ℓ → Type ℓ
 El = fst ∘ fst
@@ -75,7 +75,7 @@ El = fst ∘ fst
 decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
   {@♭ S T : Shape} (@♭ σ : ShapeHom S T)
   (@♭ A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼ˣ ℓ')
-  → Γ ⊢ˣ CellEquivariance√ˣ σ (fstˣ A)
+  → Γ ⊢ˣ LocalEquivariance√ˣ σ (fstˣ A)
 decodeVaries {S = S} {T = T} σ A =
   open√ T $♭
   appˣ (doReindex√ T (fstˣ A)) $
@@ -110,12 +110,12 @@ decode = Elᶠ
 
 getFillStrˣ : (S : Shape)
   (A : Γ ▷⟨ S ⟩ ⊢ᶠType ℓ)
-  → Γ ⊢ˣ CellFillStrˣ S ∣ A ∣
+  → Γ ⊢ˣ LocalFillStrˣ S ∣ A ∣
 getFillStrˣ S A γ r box = A .snd .lift S (γ ,_) r box
 
 opaque
   encodeFillStr : ∀ {@♭ ℓ ℓ'} (@♭ S : Shape) {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
-    → Γ ⊢ˣ (S √ᴰ CellFillStr S) ∘ ∣ A ∣
+    → Γ ⊢ˣ (S √ᴰ LocalFillStr S) ∘ ∣ A ∣
   encodeFillStr S A =
     appˣ (undoReindex√ S ∣ A ∣) $
     shut√ S $♭
@@ -161,16 +161,16 @@ private
     → decodeFill S (encodeFill A ∘ ρ) ≡ decodeFill S (encodeFill (A ∘ᶠ ρ))
   reindexEncodeInsideDecode S ρ A =
     cong
-      (subst (λ B → _ ⊢ˣ CellFillStrˣ S B) ⦅–⦆ (decodeFill S (encodeFill A ∘ ρ)))
+      (subst (λ B → _ ⊢ˣ LocalFillStrˣ S B) ⦅–⦆ (decodeFill S (encodeFill A ∘ ρ)))
       uip'
-    ∙ sym (substCongAssoc (λ B → _ ⊢ˣ CellFillStrˣ S B) fstˣ (reindexEncodeLifts ρ A) _)
+    ∙ sym (substCongAssoc (λ B → _ ⊢ˣ LocalFillStrˣ S B) fstˣ (reindexEncodeLifts ρ A) _)
     ∙ congdep♭ (decodeFill S) (reindexEncodeLifts ρ A)
 
 opaque
   encodeEquivariance : ∀ {@♭ ℓ ℓ'}
     {@♭ S T : Shape} (@♭ σ : ShapeHom S T)
     {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
-    → Γ ⊢ˣ (T √ᴰ CellEquivariance√ σ) ∘ encodeFill A
+    → Γ ⊢ˣ (T √ᴰ LocalEquivariance√ σ) ∘ encodeFill A
   encodeEquivariance {S = S} {T = T} σ A =
     appˣ (undoReindex√ T (encodeFill A)) $
     shut√ T $♭
@@ -221,7 +221,7 @@ opaque
     Σext eq $
     funExt♭ λ S → funExt♭ λ T → funExt♭ λ σ →
     √ᴰPreservesProp T
-      (CellEquivariance√ σ)
+      (LocalEquivariance√ σ)
       (λ _ _ _ → funExt' $ funExt' $ funExt' uip')
       _ _ _
 
@@ -239,7 +239,7 @@ opaque
   encodeEl {ℓ = ℓ} =
     λ C → 𝑼Ext $ Σext refl (funExt♭ λ S → cong$ (lemma S))
     where
-    get√FillStr : (@♭ S : Shape) (C : 𝑼 ℓ) → (S √ᴰ CellFillStr S) (El C)
+    get√FillStr : (@♭ S : Shape) (C : 𝑼 ℓ) → (S √ᴰ LocalFillStr S) (El C)
     get√FillStr S C = C .fst .snd S
 
     lemma : (@♭ S : Shape) → encodeFillStr S (Elᶠ id) ≡ get√FillStr S

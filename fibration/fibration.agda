@@ -158,23 +158,23 @@ fillerToFitsPartial filler s .out≡ =
 
 --↓ Type of operations filling open boxes over a given shape-indexed family.
 
-CellFillStr : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
-CellFillStr S A = ∀ r (box : OpenBox S A r) → Filler box
+LocalFillStr : (S : Shape) (A : ⟨ S ⟩ → Type ℓ) → Type ℓ
+LocalFillStr S A = ∀ r (box : OpenBox S A r) → Filler box
 
---↓ A filling structure on a family consists of a cell filling structure for every
+--↓ A filling structure on a family consists of a local filling structure for every
 --↓ reindexing of the family over a shape. This would be the definition of fibration in
 --↓ a "non-equivariant fibration" model.
 
 FillStr : (S : Shape) {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
-FillStr S {Γ} A = (γ : Γ ^ S) → CellFillStr S (A ∘ γ)
+FillStr S {Γ} A = (γ : Γ ^ S) → LocalFillStr S (A ∘ γ)
 
---↓ The equivariance condition on cell filling structures associated to a shape
+--↓ The equivariance condition on local filling structures associated to a shape
 --↓ homomorphism σ : S → T. Filling an open box over T and then composing with σ should be
 --↓ the same as composing the box with σ and then filling over S.
 
-CellEquivariance : {S T : Shape} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
-  → CellFillStr T A → CellFillStr S (A ∘ ⟪ σ ⟫) → Type ℓ
-CellEquivariance σ liftT liftS =
+LocalEquivariance : {S T : Shape} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
+  → LocalFillStr T A → LocalFillStr S (A ∘ ⟪ σ ⟫) → Type ℓ
+LocalEquivariance σ liftT liftS =
   ∀ r box s →
   reshapeFiller σ (liftT (⟪ σ ⟫ r) box) .fill s .out
   ≡ liftS r (reshapeBox σ box) .fill s .out
@@ -182,7 +182,7 @@ CellEquivariance σ liftT liftS =
 Equivariance : {S T : Shape} (σ : ShapeHom S T) {Γ : Type ℓ} (A : Γ → Type ℓ')
   → FillStr T A → FillStr S A → Type (ℓ ⊔ ℓ')
 Equivariance {T = T} σ {Γ} A fillT fillS =
-  (γ : Γ ^ T) → CellEquivariance σ (fillT γ) (fillS (γ ∘ ⟪ σ ⟫))
+  (γ : Γ ^ T) → LocalEquivariance σ (fillT γ) (fillS (γ ∘ ⟪ σ ⟫))
 
 --↓ Definition of an equivariant fibration structure.
 
