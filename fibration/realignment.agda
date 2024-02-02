@@ -69,7 +69,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
 --↓ This proof relies on the invariance of ∀ under shape homomorphisms, i.e., that for
 --↓ any shape homorphism σ : S → T the cofibrations ∀t:T.φ(t) and ∀s:S.φ(σ(s)) are equal.
 
-module RealignVary {S T} (σ : ShapeHom S T) {r}
+module RealignVary {S T} (σ : Shape[ S , T ]) {r}
   (φ : ⟨ T ⟩ → Cof)
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   (α : FibStr (B ↾ φ))

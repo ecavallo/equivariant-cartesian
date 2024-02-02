@@ -184,7 +184,7 @@ opaque
   transpEquivCap S A r =
     fibTranspStr ((A ∘ᶠ cst r) ≃ᶠ A) .cap≡ S id r (idEquivᶠ A r)
 
-  transpEquivVary : ∀ {ℓ} {S T : Shape} (σ : ShapeHom S T)
+  transpEquivVary : ∀ {ℓ} {S T : Shape} (σ : Shape[ S , T ])
     (A : ⟨ T ⟩ ⊢ᶠType ℓ)
     (r s : ⟨ S ⟩)
     → transpEquiv T A (⟪ σ ⟫ r) (⟪ σ ⟫ s) ≡ transpEquiv S (A ∘ᶠ ⟪ σ ⟫) r s

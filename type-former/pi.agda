@@ -47,7 +47,7 @@ module ΠLift {S r}
       (fillCod r a (Dom.lift S id r a) .cap≡)
     ∙ congdep (box .cap .out) (Dom.cap≡ S id r a)
 
-module ΠVary {S T} (σ : ShapeHom S T) {r}
+module ΠVary {S T} (σ : Shape[ S , T ]) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ T ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox T (Πˣ A B) (⟪ σ ⟫ r))

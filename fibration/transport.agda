@@ -27,7 +27,7 @@ record TranspStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') wh
 
     --↓ The transport structures satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T)
+    vary : ∀ S T (σ : Shape[ S , T ])
       (γ : Γ ^ T) (r : ⟨ S ⟩) (a : A (γ (⟪ σ ⟫ r))) (s : ⟨ S ⟩)
       → lift T γ (⟪ σ ⟫ r) a (⟪ σ ⟫ s) ≡ lift S (γ ∘ ⟪ σ ⟫) r a s
 
@@ -95,7 +95,7 @@ module FromFiberwiseLift {S} {A : ⟨ S ⟩ → Type ℓ}
       fiberFiller r .cap≡
       ∙ transp .cap≡ S id r (box .cap .out)
 
-module FromFiberwiseVary {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
+module FromFiberwiseVary {S T} (σ : Shape[ S , T ]) {A : ⟨ T ⟩ → Type ℓ}
   (transp : TranspStr A)
   (hcomp : FiberwiseFibStr A)
   {r : ⟨ S ⟩} (box : OpenBox T A (⟪ σ ⟫ r))

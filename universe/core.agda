@@ -49,14 +49,14 @@ opaque
     reindexOpen√ S _ _ ∙
     cong♭ (open√ S) (doReindex√-∘ S (fstˣ A) (ρ ×id) _)
 
-LocalEquivariance√ : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : ShapeHom S T)
+LocalEquivariance√ : ∀ {@♭ ℓ} {@♭ S T} (@♭ σ : Shape[ S , T ])
   (A : ⟨ T ⟩ → 𝑼Fill ℓ) → Type ℓ
 LocalEquivariance√ {S = S} {T = T} σ A =
   LocalEquivariance σ
     (decodeFill T (^-counit T) A)
     (decodeFill S (^-counit S) (A ∘ ⟪ σ ⟫))
 
-LocalEquivariance√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : ShapeHom S T) {Γ : Type ℓ}
+LocalEquivariance√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : Shape[ S , T ]) {Γ : Type ℓ}
   (A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼Fillˣ ℓ')
   → (Γ → Type ℓ')
 LocalEquivariance√ˣ σ A γ = LocalEquivariance√ σ (A ∘ (γ ,_))
@@ -64,7 +64,7 @@ LocalEquivariance√ˣ σ A γ = LocalEquivariance√ σ (A ∘ (γ ,_))
 𝑼 : ∀ (@♭ ℓ) → Type (lsuc ℓ)
 𝑼 ℓ =
   Σ A ∈ 𝑼Fill ℓ ,
-  (∀ (@♭ S T) (@♭ σ : ShapeHom S T) → (T √ᴰ LocalEquivariance√ σ) A)
+  (∀ (@♭ S T) (@♭ σ : Shape[ S , T ]) → (T √ᴰ LocalEquivariance√ σ) A)
 
 El : ∀ {@♭ ℓ} → 𝑼 ℓ → Type ℓ
 El = fst ∘ fst
@@ -73,7 +73,7 @@ El = fst ∘ fst
 𝑼ˣ ℓ _ = 𝑼 ℓ
 
 decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
-  {@♭ S T : Shape} (@♭ σ : ShapeHom S T)
+  {@♭ S T : Shape} (@♭ σ : Shape[ S , T ])
   (@♭ A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼ˣ ℓ')
   → Γ ⊢ˣ LocalEquivariance√ˣ σ (fstˣ A)
 decodeVaries {S = S} {T = T} σ A =
@@ -168,7 +168,7 @@ private
 
 opaque
   encodeEquivariance : ∀ {@♭ ℓ ℓ'}
-    {@♭ S T : Shape} (@♭ σ : ShapeHom S T)
+    {@♭ S T : Shape} (@♭ σ : Shape[ S , T ])
     {@♭ Γ : Type ℓ} (@♭ A : Γ ⊢ᶠType ℓ')
     → Γ ⊢ˣ (T √ᴰ LocalEquivariance√ σ) ∘ encodeFill A
   encodeEquivariance {S = S} {T = T} σ A =

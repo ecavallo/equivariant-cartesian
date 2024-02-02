@@ -68,7 +68,7 @@ module _ {@♭ ℓ} where
       filler .fill s .out≡ u = GlueᵁMatch _ _ _ _ (∨l u)
       filler .cap≡ = sym (GlueᵁMatch _ _ _ _ (∨r refl))
 
-  module 𝑼Vary {S T} (σ : ShapeHom S T) {r} (box : OpenBox T (𝑼ˣ ℓ) (⟪ σ ⟫ r))
+  module 𝑼Vary {S T} (σ : Shape[ S , T ]) {r} (box : OpenBox T (𝑼ˣ ℓ) (⟪ σ ⟫ r))
     where
 
     module T = 𝑼Lift box

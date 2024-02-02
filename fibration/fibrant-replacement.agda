@@ -54,7 +54,7 @@ FibReplace-elimFib π P infr* =
   fixPart γ part* i u =
     subst (∣ P ∣ ∘ (γ i ,_)) (matchfr π _ γ _ _ _ i u) (part* i u)
 
-  reshapeFixPart : ∀ {S T} (σ : ShapeHom S T) γ {r} {φ}
+  reshapeFixPart : ∀ {S T} (σ : Shape[ S , T ]) γ {r} {φ}
     {part : (i : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ i ] → _}
     (part* : (i : ⟨ T ⟩) (u : [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ i ]) → P $ᶠ (γ i , part i u))
     → reshapePartial σ (fixPart γ part*) ≡ fixPart (γ ∘ ⟪ σ ⟫) (reshapePartial σ part*)

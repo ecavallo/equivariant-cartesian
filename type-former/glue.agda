@@ -201,7 +201,7 @@ module WeakGlueLift {S r φ}
           ∙ cong fst (contractor r ur (partialFiber r ur (∨r refl)) .at1))
         (sym (codFixFill r .out≡ (∨r (∨r refl))))
 
-module WeakGlueVary {S T} (σ : ShapeHom S T) {r φ}
+module WeakGlueVary {S T} (σ : Shape[ S , T ]) {r φ}
   {B : ⟨ T ⟩ → Type ℓ} (β : FibStr B)
   {A : ⟨ T ⟩ ▷[ φ ] → Type ℓ} (α : FibStr A)
   (fe : ⟨ T ⟩ ▷[ φ ] ⊢ˣ A ≃ˣ (B ↾ φ))

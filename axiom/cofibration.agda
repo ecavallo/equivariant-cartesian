@@ -70,13 +70,13 @@ postulate
 
   --↓ The first axiom can be understood as asserting that shape morphisms are monic.
 
-  ≈Equivariant : {S T : Shape} (σ : ShapeHom S T) (r s : ⟨ S ⟩)
+  ≈Equivariant : {S T : Shape} (σ : Shape[ S , T ]) (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
   --↓ The second axiom can be understood as asserting that shape morphisms are epic as
   --↓ seen by cofibrations. It is used in the proof of realignment for fibrations.
 
-  allEquivariant : {S T : Shape} (σ : ShapeHom S T) (φ : ⟨ T ⟩ → Cof)
+  allEquivariant : {S T : Shape} (σ : Shape[ S , T ]) (φ : ⟨ T ⟩ → Cof)
     → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)
 
 --↓ For convenience, we make the equations decoding cofibrations into definitional

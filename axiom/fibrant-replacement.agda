@@ -63,7 +63,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
         ≡ liftfr S p r φ part s
 
     varyfr :
-      (S : Shape) (T : Shape) (σ : ShapeHom S T)
+      (S : Shape) (T : Shape) (σ : Shape[ S , T ])
       (p : Γ ^ T)
       (r : ⟨ S ⟩)
       (φ : Cof)
@@ -97,7 +97,7 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       → subst (P (p s)) (matchfr S p r φ part s u) (part* s u)
         ≡ liftfr* S p r φ part part* s)
     (varyfr* :
-      (S : Shape) (T : Shape) (σ : ShapeHom S T)
+      (S : Shape) (T : Shape) (σ : Shape[ S , T ])
       (p : Γ ^ T)
       (r : ⟨ S ⟩)
       (φ : Cof)

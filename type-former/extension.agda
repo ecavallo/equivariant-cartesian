@@ -50,7 +50,7 @@ module ExtensionLift {Z φ S r}
     funExt λ z → restrictExt (pointwiseFill z .fill s .out≡ (∨l u))
   filler .cap≡ = funExt λ z → restrictExt (pointwiseFill z .cap≡)
 
-module ExtensionVary {Z φ S T} (σ : ShapeHom S T) {r}
+module ExtensionVary {Z φ S T} (σ : Shape[ S , T ]) {r}
   {A : ⟨ T ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
   {a : ⟨ T ⟩ ▷⟨ Z ⟩ ▷[ φ ∘ 𝒒 ] ⊢ˣ A ↾ (φ ∘ 𝒒)}
   (box : OpenBox T (Extensionˣ Z A φ a) (⟪ σ ⟫ r))

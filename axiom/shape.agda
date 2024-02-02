@@ -19,10 +19,10 @@ infixl 3 _▷⟨_⟩ _^_
 
 postulate
   Shape : Type
-  ShapeHom : Shape → Shape → Type
+  Shape[_,_] : Shape → Shape → Type
 
   ⟨_⟩ : Shape → Type
-  ⟪_⟫ : {I J : Shape} → ShapeHom I J → ⟨ I ⟩ → ⟨ J ⟩
+  ⟪_⟫ : {I J : Shape} → Shape[ I , J ] → ⟨ I ⟩ → ⟨ J ⟩
 
   𝕚 : Shape -- interval shape
 
@@ -54,12 +54,12 @@ postulate
 
   {-# REWRITE ShapeIsDiscrete-β #-}
 
-  ShapeHomIsDiscrete : {@♭ S T : Shape} {A : ShapeHom S T → Type ℓ}
-    → ((@♭ σ : ShapeHom S T) → A σ) → ((σ : ShapeHom S T) → A σ)
+  ShapeHomIsDiscrete : {@♭ S T : Shape} {A : Shape[ S , T ] → Type ℓ}
+    → ((@♭ σ : Shape[ S , T ]) → A σ) → ((σ : Shape[ S , T ]) → A σ)
 
-  ShapeHomIsDiscrete-β : {@♭ S T : Shape} {A : ShapeHom S T → Type ℓ}
-    (f : (@♭ σ : ShapeHom S T) → A σ)
-    (@♭ σ : ShapeHom S T) → ShapeHomIsDiscrete f σ ≡ f σ
+  ShapeHomIsDiscrete-β : {@♭ S T : Shape} {A : Shape[ S , T ] → Type ℓ}
+    (f : (@♭ σ : Shape[ S , T ]) → A σ)
+    (@♭ σ : Shape[ S , T ]) → ShapeHomIsDiscrete f σ ≡ f σ
 
   {-# REWRITE ShapeHomIsDiscrete-β #-}
 

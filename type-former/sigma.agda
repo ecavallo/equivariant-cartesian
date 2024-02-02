@@ -53,7 +53,7 @@ module ΣLift {S r}
         (fillFst .cap≡) refl
         (fillSnd fillFst .cap≡))
 
-module ΣVary {S T} (σ : ShapeHom S T) {r}
+module ΣVary {S T} (σ : Shape[ S , T ]) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : FibStr A)
   {B : ⟨ T ⟩ ▷ˣ A → Type ℓ'} (β : FibStr B)
   (box : OpenBox T (Σˣ A B) (⟪ σ ⟫ r))

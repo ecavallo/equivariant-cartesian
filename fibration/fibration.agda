@@ -41,7 +41,7 @@ open OpenBox public
 --↓ A shape homomorphism σ : S → T induces a map from T-boxes to S-boxes by
 --↓ precomposition.
 
-reshapeBox : ∀ {S T} (σ : ShapeHom S T) {r} {A : ⟨ T ⟩ → Type ℓ}
+reshapeBox : ∀ {S T} (σ : Shape[ S , T ]) {r} {A : ⟨ T ⟩ → Type ℓ}
   → OpenBox T A (⟪ σ ⟫ r) → OpenBox S (A ∘ ⟪ σ ⟫) r
 reshapeBox σ box .cof = box .cof
 reshapeBox σ box .tube = box .tube ∘ ⟪ σ ⟫
@@ -88,7 +88,7 @@ partialToBox {S = S} {r = r} φ part .cap .out≡ u =
 
 --↓ Action of shape homomorphisms on open boxes encoded as partial elements.
 
-reshapePartial : ∀ {S T} (σ : ShapeHom S T) {r} {φ : Cof}
+reshapePartial : ∀ {S T} (σ : Shape[ S , T ]) {r} {φ : Cof}
   {A : (j : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ] → Type ℓ}
   → ((j : ⟨ T ⟩) (v : [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ j ]) → A j v)
   → ((i : ⟨ S ⟩) (u : [ φ ∨ S ∋ r ≈ i ]) → A (⟪ σ ⟫ i) ((id ∨` cong ⟪ σ ⟫) u))
@@ -98,7 +98,7 @@ reshapePartial σ part i = part (⟪ σ ⟫ i) ∘ (id ∨` cong ⟪ σ ⟫)
 --↓ partial-element representation.
 
 opaque
-  reshapeBoxToPartial : ∀ {S T} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ} {r}
+  reshapeBoxToPartial : ∀ {S T} (σ : Shape[ S , T ]) {A : ⟨ T ⟩ → Type ℓ} {r}
     (box : OpenBox T A (⟪ σ ⟫ r))
     (s : ⟨ S ⟩)
     (v : [ box .cof ∨ T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s ])
@@ -128,7 +128,7 @@ open Filler public
 --↓ A shape homomorphism σ : S → T induces a map from T-fillers to S-fillers by
 --↓ precomposition.
 
-reshapeFiller : {S T : Shape} (σ : ShapeHom S T)
+reshapeFiller : {S T : Shape} (σ : Shape[ S , T ])
   {A : ⟨ T ⟩ → Type ℓ} {r : ⟨ S ⟩}
   {box : OpenBox T A (⟪ σ ⟫ r)}
   → Filler box
@@ -172,14 +172,14 @@ FillStr S {Γ} A = (γ : Γ ^ S) → LocalFillStr S (A ∘ γ)
 --↓ homomorphism σ : S → T. Filling an open box over T and then composing with σ should be
 --↓ the same as composing the box with σ and then filling over S.
 
-LocalEquivariance : {S T : Shape} (σ : ShapeHom S T) {A : ⟨ T ⟩ → Type ℓ}
+LocalEquivariance : {S T : Shape} (σ : Shape[ S , T ]) {A : ⟨ T ⟩ → Type ℓ}
   → LocalFillStr T A → LocalFillStr S (A ∘ ⟪ σ ⟫) → Type ℓ
 LocalEquivariance σ liftT liftS =
   ∀ r box s →
   reshapeFiller σ (liftT (⟪ σ ⟫ r) box) .fill s .out
   ≡ liftS r (reshapeBox σ box) .fill s .out
 
-Equivariance : {S T : Shape} (σ : ShapeHom S T) {Γ : Type ℓ} (A : Γ → Type ℓ')
+Equivariance : {S T : Shape} (σ : Shape[ S , T ]) {Γ : Type ℓ} (A : Γ → Type ℓ')
   → FillStr T A → FillStr S A → Type (ℓ ⊔ ℓ')
 Equivariance {T = T} σ {Γ} A fillT fillS =
   (γ : Γ ^ T) → LocalEquivariance σ (fillT γ) (fillS (γ ∘ ⟪ σ ⟫))
@@ -195,7 +195,7 @@ record FibStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
 
     --↓ The filling structures satisfy the equivariance condition.
 
-    vary : ∀ S T (σ : ShapeHom S T) → Equivariance σ A (lift T) (lift S)
+    vary : ∀ S T (σ : Shape[ S , T ]) → Equivariance σ A (lift T) (lift S)
 
 open FibStr public
 
@@ -340,7 +340,7 @@ fibLiftPartial (_ , α) S γ r φ part s .out≡ =
     (λ {refl → sym (α .lift S γ r (partialToBox φ part) .cap≡)})
 
 fibVaryPartial : ∀ (A : Γ ⊢ᶠType ℓ')
-  {S T} (σ : ShapeHom S T) (γ : Γ ^ T) (r : ⟨ S ⟩) (φ : Cof)
+  {S T} (σ : Shape[ S , T ]) (γ : Γ ^ T) (r : ⟨ S ⟩) (φ : Cof)
   (part : (t : ⟨ T ⟩) → [ φ ∨ T ∋ ⟪ σ ⟫ r ≈ t ] → A $ᶠ γ t)
   (s : ⟨ S ⟩)
   → fibLiftPartial A T γ (⟪ σ ⟫ r) φ part (⟪ σ ⟫ s) .out

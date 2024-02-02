@@ -68,7 +68,7 @@ module hRetractLift {S r}
         sym (f s .snd .snd (boxToPartial box s uv) .at1)
         ∙ correctorFiller s .fill 1 .out≡ uv
 
-module hRetractVary {S T} (σ : ShapeHom S T) {r}
+module hRetractVary {S T} (σ : Shape[ S , T ]) {r}
   {A : ⟨ T ⟩ → Type ℓ} (α : ∀ i → FibStr {Γ = 𝟙} (A ∘ cst i))
   {B : ⟨ T ⟩ → Type ℓ'} (β : FibStr B)
   (f : ⟨ T ⟩ ⊢ˣ hRetractˣ A B)
