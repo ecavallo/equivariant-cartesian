@@ -14,5 +14,8 @@ open import fibration.fibrant-replacement
 open import universe.core
 open import universe.fibrant
 
+--↓ Definition of the fibrant replacement. Note that because encode is a flat-modal
+--↓ function, Replaceᵁ can only be applied to flat-modal (i.e. global) types.
+
 Replaceᵁ : ∀ {@♭ ℓ} → @♭ Type ℓ → 𝑼 ℓ
 Replaceᵁ A = encode (FibReplaceᶠ (λ (a : A) → tt)) tt
