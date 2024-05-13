@@ -71,7 +71,7 @@ module DependentTiny (@♭ S : Shape) where
     unfolding _√ᴰ_
 
     --↓ The operator √ᴰ commutes with reindexing. Unfortunately this equality is not
-    --↓ definition, which leads to some bureaucratic complications later on.
+    --↓ definitional, which leads to some bureaucratic complications later on.
 
     reindex√ : ∀ {@♭ ℓ ℓ' ℓ''} {@♭ Γ : Type ℓ} {@♭ Γ' : Type ℓ'}
       (@♭ B : Γ' ^ S → Type ℓ'')
