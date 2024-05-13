@@ -1,6 +1,6 @@
 {-
 
-Notation and basic properties of functions
+Notation and basic properties of functions.
 
 -}
 module basic.function where

@@ -1,6 +1,6 @@
 {-
 
-Tinyness of shapes.
+Basic consequences of the axiomatized right adjoint to exponentation by a shape.
 
 -}
 module tiny.basic where

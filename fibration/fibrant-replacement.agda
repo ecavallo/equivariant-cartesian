@@ -15,6 +15,8 @@ private variable
   ℓ ℓ' ℓ'' : Level
   Γ Δ : Type ℓ
 
+--↓ The fibrant replacement of a map A → Γ is a fibration over Γ
+
 FibReplaceFibStr : {A : Type ℓ} (π : A → Γ) → FibStr (FibReplace π)
 FibReplaceFibStr π .lift S p r box =
   fitsPartialToFiller total
@@ -31,6 +33,9 @@ FibReplaceFibStr π .vary S T σ p r box s =
 FibReplaceᶠ : {Γ : Type ℓ} {A : Type ℓ'} (π : A → Γ) → Γ ⊢ᶠType (ℓ ⊔ ℓ')
 FibReplaceᶠ π .fst = FibReplace π
 FibReplaceᶠ π .snd = FibReplaceFibStr π
+
+--↓ Given a (fibrant) type family P over the fibrant replacement of a map π : A → Γ,
+--↓ a section of the pullback of P to A induces a section of P.
 
 FibReplace-elimFib :
   {A : Type ℓ} (π : A → Γ)
@@ -62,6 +67,9 @@ FibReplace-elimFib π P infr* =
       funExt λ i →
       funExt λ u →
       cong (subst (∣ P ∣ ∘ (γ (⟪ σ ⟫ i) ,_)) ⦅–⦆ (reshapePartial σ part* i u)) uip'
+
+--↓ Non-recursive eliminator for the fibrant replacement: a map over Γ from π : A → Γ into
+--↓ a fibration induces a map over Γ from its fibrant replacement.
 
 FibReplace-recFib :
   {A : Type ℓ} (π : A → Γ)

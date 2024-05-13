@@ -1,6 +1,6 @@
 {-
 
-Basic properties of cofibrations
+Basic properties of cofibrations.
 
 -}
 module cofibration where
@@ -94,7 +94,7 @@ restrictExt : {A : Type ℓ} {φ : Cof} {a : [ φ ] → A}
   → z ≡ z'
 restrictExt refl = cong (makeRestrict _) (funExt' uip')
 
---↓ Forget part of a restriction
+--↓ Forget part of a restriction.
 
 narrow : {φ ψ : Cof} {A : Type ℓ} {a : [ φ ] → A}
   → A [ φ ↦ a ] → (f : [ ψ ] → [ φ ]) → A [ ψ ↦ a ∘ f ]
@@ -115,7 +115,7 @@ narrow b f .out≡ u = b .out≡ (f u)
 ∨-rec f g p =
   ∨-elim f g (λ u v → substConst _ _ ∙ p u v)
 
---↓ Functoriality of union of cofibrations
+--↓ Functoriality of union of cofibrations.
 
 _∨`_ : {φ ψ φ' ψ' : Cof}
   (f : [ φ ] → [ φ' ])
@@ -125,7 +125,7 @@ f ∨` g =
   ∨-rec (∨l ∘ f) (∨r ∘ g) (λ _ _ → cofIsStrictProp' (_ ∨ _))
 
 --↓ Derived dependent elimination principle for a union of cofibrations into a family of
---↓ equalities
+--↓ equalities.
 
 opaque
   ∨-elimEq : {φ ψ : Cof} {A : [ φ ∨ ψ ] → Type ℓ}
@@ -171,7 +171,7 @@ opaque
         (λ v₁ → q v₀ v₁))
       (λ _ _ → funExt' uip')
 
---↓ Substitution for inhabitants of a cofibration
+--↓ Substitution for inhabitants of a cofibration.
 
 substCofEl : (φ : Cof) {P : [ φ ] → Type ℓ} {u : [ φ ]} → P u → ∀ v → P v
 substCofEl φ {P} p v = subst P (cofIsStrictProp' φ) p

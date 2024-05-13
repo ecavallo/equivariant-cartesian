@@ -136,8 +136,8 @@ reshapeFiller : {S T : Shape} (σ : Shape[ S , T ])
 reshapeFiller σ w .fill = w .fill ∘ ⟪ σ ⟫
 reshapeFiller σ w .cap≡ = w .cap≡
 
---↓ A total section fitting an open box encoded as a partial section is the same
---↓ a filler for the open box encoded as a record.
+--↓ A total section fitting an open box encoded as a partial section is the same as a
+--↓ filler for the open box encoded as a record.
 
 fitsPartialToFiller : ∀ {S} {A : ⟨ S ⟩ → Type ℓ} {r} {box : OpenBox S A r}
   → ((s : ⟨ S ⟩) → A s [ box .cof ∨ S ∋ r ≈ s ↦ boxToPartial box s ])

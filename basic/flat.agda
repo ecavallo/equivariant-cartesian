@@ -1,6 +1,6 @@
 {-
 
-Flat-modal functions
+Properties of flat-modal functions.
 
 -}
 module basic.flat where

@@ -1,6 +1,6 @@
 {-
 
-Postulated axioms and some basic consequences
+Postulated axioms and some basic consequences.
 
 -}
 module axiom where
