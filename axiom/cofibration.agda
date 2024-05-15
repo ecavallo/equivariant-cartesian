@@ -1,6 +1,6 @@
 {-
 
-Axiomatization of the type of cofibrations.
+Axiomatization of cofibrations.
 
 -}
 module axiom.cofibration where
@@ -12,7 +12,7 @@ open import axiom.shape
 infixr 4 _∨_
 
 ------------------------------------------------------------------------------------------
--- Axiomatization of cofibration classifier
+-- Axiomatization of the cofibration classifier.
 ------------------------------------------------------------------------------------------
 
 postulate
@@ -22,7 +22,7 @@ postulate
   Cof : Type
   [_] : Cof → Type
 
-  --↓ Any cofibration is a proposition of the ambient type theory.
+  --↓ Any cofibration is a strict proposition.
 
   cofIsStrictProp : (φ : Cof) → isStrictProp [ φ ]
 
@@ -65,16 +65,16 @@ postulate
   all : (S : Shape) → (⟨ S ⟩ → Cof) → Cof
   [all] : ∀ S φ → [ all S φ ] ≡ ((s : ⟨ S ⟩) → [ φ s ])
 
-  --↓ The shape equality and univeral quantification cofibrations are invariant under
-  --↓ shape morphisms in an appropriate sense.
+  --↓ We require that the shape equality and universal quantification cofibrations are
+  --↓ invariant under shape morphisms in the following sense.
 
-  --↓ The first axiom can be understood as asserting that shape morphisms are monic.
+  --↓ The first axiom can be read as asserting that shape morphisms are monic.
 
   ≈Equivariant : {S T : Shape} (σ : Shape[ S , T ]) (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
   --↓ The second axiom can be understood as asserting that shape morphisms are epic as
-  --↓ seen by cofibrations. It is used in the proof of realignment for fibrations.
+  --↓ far as cofibrations can see. It is used in the proof of realignment for fibrations.
 
   allEquivariant : {S T : Shape} (σ : Shape[ S , T ]) (φ : ⟨ T ⟩ → Cof)
     → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)

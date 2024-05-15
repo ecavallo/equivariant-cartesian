@@ -3,7 +3,7 @@
 Axiomatization of fibrant replacement of a map π : A → Γ by a fibration Γ → Type,
 expressed as a (recursive) indexed quotient inductive type (QIT).
 
-Unlike fibration replacement for the non-equivariant cartesian cubical set model, it does
+Unlike fibration replacement for the non-equivariant cartesian cubical set model, it
 seems that equivariant fibrant replacment is not an instance of Swan's W-types with
 reductions as defined in:
 
@@ -38,9 +38,15 @@ private variable
 module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
 
   postulate
+    --↓ Fibrant replacement of π : A → Γ as a family over Γ.
+
     FibReplace : Γ → Type (ℓ ⊔ ℓ')
 
+    --↓ Map from the input to its fibrant replacement.
+
     infr : (a : A) → FibReplace (π a)
+
+    --↓ Every open box in the fibrant replacement has a filler.
 
     liftfr :
       (S : Shape)
@@ -50,6 +56,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       (part : (i : ⟨ S ⟩) → [ φ ∨ S ∋ r ≈ i ] → FibReplace (p i))
       (s : ⟨ S ⟩)
       → FibReplace (p s)
+
+    --↓ Equation stating that fillers fill the open boxes they are meant to fill.
 
     matchfr :
       (S : Shape)
@@ -61,6 +69,8 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
       (u : [ φ ∨ S ∋ r ≈ s ])
       → part s u
         ≡ liftfr S p r φ part s
+
+    --↓ Equation stating that fillers satisfy the equivariance condition.
 
     varyfr :
       (S : Shape) (T : Shape) (σ : Shape[ S , T ])

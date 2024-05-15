@@ -1,7 +1,7 @@
 {-
 
-Postulates a type of shapes, types of homomorphisms between shapes,
-and the interval shape
+Postulates a type of shapes, types of homomorphisms between shapes, and the interval
+shape.
 
 -}
 module axiom.shape where
@@ -14,35 +14,48 @@ private variable ℓ : Level
 infixl 3 _▷⟨_⟩ _^_
 
 ------------------------------------------------------------------------------------------
--- Shapes
+-- Shapes.
 ------------------------------------------------------------------------------------------
 
 postulate
-  Shape : Type
-  Shape[_,_] : Shape → Shape → Type
+  --↓ Universe of shapes.
 
+  Shape : Type
   ⟨_⟩ : Shape → Type
+
+  --↓ Type of homomorphisms between a pair of shapes.
+
+  Shape[_,_] : Shape → Shape → Type
   ⟪_⟫ : {I J : Shape} → Shape[ I , J ] → ⟨ I ⟩ → ⟨ J ⟩
 
-  𝕚 : Shape -- interval shape
+  --↓ Interval shape.
 
+  𝕚 : Shape
+
+--↓ Notation for the interval type.
+
+𝕀 : Type
 𝕀 = ⟨ 𝕚 ⟩
 
-postulate -- interval endpoints
+--↓ Interval endpoints.
+
+postulate
   𝕚0 : 𝕀
   𝕚1 : 𝕀
   0≠1 : {A : Type ℓ} → 𝕚0 ≡ 𝕚1 → A
 
--- Notation for context extension by a shape
+--↓ Notation for context extension by a shape.
+
 _▷⟨_⟩ : ∀ {ℓ} → Type ℓ → Shape → Type ℓ
 Γ ▷⟨ S ⟩ = Γ × ⟨ S ⟩
 
--- Notation for context extension by the interval
+--↓ Notation for context extension by a copy of the interval.
+
 _▷𝕀 : ∀ {ℓ} → Type ℓ → Type ℓ
 Γ ▷𝕀 = Γ ▷⟨ 𝕚 ⟩
 
 ------------------------------------------------------------------------------------------
--- The objects of shapes and shape morphisms are discrete (i.e., crisp).
+-- The objects of shapes and shape morphisms are discrete (i.e., flat-modal).
 ------------------------------------------------------------------------------------------
 
 postulate

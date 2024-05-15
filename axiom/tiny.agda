@@ -1,6 +1,7 @@
 {-
 
-Axioms specifying that each shape is tiny.
+Axioms requiring that each shape is tiny, in the sense that exponentiation by each shape
+has an external right adjoint.
 
 -}
 module axiom.tiny where
@@ -9,6 +10,8 @@ open import basic
 open import axiom.shape
 
 infixr 4 _√_
+
+--↓ The right adjoint to exponentiation by S, written S √ (–)
 
 postulate
   _√_ : ∀ {@♭ ℓ} (@♭ S : Shape) (@♭ A : Type ℓ) → Type ℓ

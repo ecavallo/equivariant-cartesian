@@ -1,6 +1,6 @@
 {-
 
-Function extensionality axiom and basic consequences
+Function extensionality axioms.
 
 -}
 module axiom.funext where
@@ -10,7 +10,7 @@ open import basic.prelude
 private variable ℓ ℓ' ℓ'' : Level
 
 ------------------------------------------------------------------------------------------
--- Function extensionality
+-- Function extensionality.
 ------------------------------------------------------------------------------------------
 
 postulate
@@ -22,7 +22,7 @@ funExt' : {A : Type ℓ} {B : A → Type ℓ'} {f₀ f₁ : (a : A) → B a}
 funExt' p = funExt λ _ → p
 
 ------------------------------------------------------------------------------------------
--- Function extensionality for flat-modal functions
+-- Function extensionality for flat-modal functions.
 ------------------------------------------------------------------------------------------
 
 postulate

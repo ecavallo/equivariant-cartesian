@@ -15,11 +15,13 @@ private variable
   Γ Δ : Type ℓ
 
 --↓ Type of contractibility structures on a type.
+--↓ A contractibility structure extends any partial element to a total element.
 
 Contr : Type ℓ → Type ℓ
 Contr A = ((φ , a) : A ⁺) → A [ φ ↦ a ]
 
 --↓ Type of trivial fibration structures on a family.
+--↓ A trivial fibration structure consists of a contractibility structure on each fiber.
 
 TFibStr : {Γ : Type ℓ} (A : Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
 TFibStr A = ∀ γ → Contr (A γ)

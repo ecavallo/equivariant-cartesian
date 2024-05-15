@@ -46,7 +46,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
   fillPartial u = α .lift S (id ,, u) r box
 
   --↓ Use the total fibration structure to construct a lift for the original box that
-  --↓ also agrees on ∀φ with the partial lift just construction.
+  --↓ also agrees on ∀φ with the partial lift just constructed.
 
   boxTotal : OpenBox S B r
   boxTotal =
@@ -56,9 +56,9 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
       (λ i u → fillPartial u .fill i)
       (λ v → fillPartial v .cap≡)
 
-  fillTotal = β .lift S id r boxTotal
+    fillTotal = β .lift S id r boxTotal
 
-  --↓ Extract a filler for the original lifting problem
+  --↓ Extract a filler for the original lifting problem.
 
   filler : Filler box
   filler .fill s .out = fillTotal .fill s .out

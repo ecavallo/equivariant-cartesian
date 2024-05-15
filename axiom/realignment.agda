@@ -1,7 +1,6 @@
 {-
 
-Postulates realignment of isomorphisms-up-to-strict-equality along cofibrations for the
-universes of the ambient type theory.
+Postulates realignment along cofibrations for the universes of the ambient type theory.
 
 -}
 module axiom.realignment where
@@ -13,8 +12,7 @@ open import cofibration
 private variable ℓ : Level
 
 ------------------------------------------------------------------------------------------
--- We postulate realignment along cofibrations for the universes of the ambient type
--- theory.
+-- Postulates realignment along cofibrations for the universes of the ambient type theory.
 ------------------------------------------------------------------------------------------
 
 postulate
@@ -22,8 +20,7 @@ postulate
     (A : [ φ ] → Σ (Type ℓ) (_≅ B)) → Σ (Type ℓ) (_≅ B) [ φ ↦ A ]
 
 ------------------------------------------------------------------------------------------
--- Convenience functions unpacking the components of the postulated realignment for
--- isomorphisms
+-- Convenience functions unpacking the components of the postulated realignment.
 ------------------------------------------------------------------------------------------
 
 ≅Realign : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)

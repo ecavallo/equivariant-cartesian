@@ -1,6 +1,7 @@
 {-
 
-Transport
+Definition of (equivariant) transport structure on a family.
+This is the special case of filling structure where the cofibration is empty.
 
 -}
 module fibration.transport where
@@ -19,7 +20,7 @@ private variable
 
 record TranspStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') where
   field
-    --↓ We have a transport operation on every shape.
+    --↓ We have a transport operation for every shape.
 
     lift : (S : Shape) (γ : Γ ^ S) (r : ⟨ S ⟩) (a : A (γ r)) (s : ⟨ S ⟩) → A (γ s)
 
@@ -63,8 +64,9 @@ fibTranspStr : (A : Γ ⊢ᶠType ℓ) → TranspStr ∣ A ∣
 fibTranspStr A = fibStrToTranspStr (A .snd)
 
 ------------------------------------------------------------------------------------------
--- Given a transport structure on a family and a fibration structure on every fiber, we
--- can construct a fibration structure on that family.
+-- Given a transport structure on a family and a fibration structure on every fiber of the
+-- family (a "homogeneous filling structure"), we can construct a fibration structure on
+-- that family.
 ------------------------------------------------------------------------------------------
 
 FiberwiseFibStr : {Γ : Type ℓ} → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')
