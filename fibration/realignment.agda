@@ -56,7 +56,7 @@ module RealignLift {S r} (φ : ⟨ S ⟩ → Cof)
       (λ i u → fillPartial u .fill i)
       (λ v → fillPartial v .cap≡)
 
-    fillTotal = β .lift S id r boxTotal
+  fillTotal = β .lift S id r boxTotal
 
   --↓ Extract a filler for the original lifting problem.
 
