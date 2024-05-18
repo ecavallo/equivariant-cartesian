@@ -119,9 +119,15 @@ module _ {ℓ ℓ'} {A : Type ℓ} {Γ : Type ℓ'} (π : A → Γ) where
     where
 
     postulate
+      --↓ Eliminator for the fibrant replacement.
+
       FibReplace-elim : (γ : Γ) (t : FibReplace γ) → P γ t
 
+      --↓ Computation rule for elements from the input map.
+
       FibReplace-elim-β-in : (a : A) → FibReplace-elim (π a) (infr a) ≡ infr* a
+
+      --↓ Computation rule for freely-added lifts.
 
       FibReplace-elim-β-lift :
         (S : Shape)
