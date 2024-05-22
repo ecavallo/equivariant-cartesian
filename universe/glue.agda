@@ -1,7 +1,7 @@
 {-
 
 Closure of the universe under Glue types.
-This is later used to prove that the universe is fibrant.
+This is used to prove that the universe is fibrant.
 
 -}
 module universe.glue where
@@ -23,7 +23,7 @@ private variable
   Γ : Type ℓ
 
 ----------------------------------------------------------------------------------------
--- The universe is closed under Glue-types
+-- The universe is closed under Glue-types.
 ----------------------------------------------------------------------------------------
 
 module _ {@♭ ℓ} where

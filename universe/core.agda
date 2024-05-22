@@ -1,6 +1,6 @@
 {-
 
-Constructing a universe that classifies fibrations
+Constructing a universe that classifies fibrations.
 
 -}
 module universe.core where
@@ -61,6 +61,10 @@ LocalEquivariance√ˣ : ∀ {@♭ ℓ ℓ'} {@♭ S T} (@♭ σ : Shape[ S , T 
   → (Γ → Type ℓ')
 LocalEquivariance√ˣ σ A γ = LocalEquivariance√ σ (A ∘ (γ ,_))
 
+------------------------------------------------------------------------------------------
+-- Definition of the universe and decoding function.
+------------------------------------------------------------------------------------------
+
 𝑼 : ∀ (@♭ ℓ) → Type (lsuc ℓ)
 𝑼 ℓ =
   Σ A ∈ 𝑼Fill ℓ ,
@@ -72,6 +76,10 @@ El = fst ∘ fst
 𝑼ˣ : ∀ (@♭ ℓ) → (Γ → Type (lsuc ℓ))
 𝑼ˣ ℓ _ = 𝑼 ℓ
 
+------------------------------------------------------------------------------------------
+-- El : 𝑼 → Type is a fibration.
+------------------------------------------------------------------------------------------
+
 decodeVaries : ∀ {@♭ ℓ ℓ'} {@♭ Γ : Type ℓ}
   {@♭ S T : Shape} (@♭ σ : Shape[ S , T ])
   (@♭ A : Γ ▷⟨ T ⟩ ⊢ˣ 𝑼ˣ ℓ')
@@ -80,10 +88,6 @@ decodeVaries {S = S} {T = T} σ A =
   open√ T $♭
   appˣ (doReindex√ T (fstˣ A)) $
   λ γt → A γt .snd S T σ
-
-------------------------------------------------------------------------------------------
--- El : 𝑼 → Type is a fibration
-------------------------------------------------------------------------------------------
 
 opaque
   ElFibStr : ∀ {@♭ ℓ} → FibStr (El {ℓ})
@@ -105,7 +109,7 @@ Elᶠ = (El , ElFibStr) ∘ᶠ_
 decode = Elᶠ
 
 ------------------------------------------------------------------------------------------
--- Any fibration induces a map into 𝑼
+-- Any fibration over Γ induces an element of Γ ⊢ˣ 𝑼ˣ.
 ------------------------------------------------------------------------------------------
 
 getFillStrˣ : (S : Shape)
@@ -195,7 +199,7 @@ opaque
     encoding γ .snd S T σ = encodeEquivariance σ A γ
 
 ------------------------------------------------------------------------------------------
--- Inverse conditions for the correspondence between Fib Γ and Γ ⊢ˣ 𝑼ˣ
+-- Inverse conditions for the correspondence between Γ ⊢ᶠType ℓ' and Γ ⊢ˣ 𝑼ˣ ℓ'.
 ------------------------------------------------------------------------------------------
 
 opaque

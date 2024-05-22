@@ -1,6 +1,6 @@
 {-
 
-Fibrancy of the universe
+Fibrancy of the universe, derived from closure of the universe under Glue types.
 
 -}
 module universe.fibrant where
@@ -22,7 +22,7 @@ private variable
   Γ : Type ℓ
 
 ----------------------------------------------------------------------------------------
--- Fibrancy of the universe
+-- Fibrancy of the universe.
 ----------------------------------------------------------------------------------------
 
 module _ {@♭ ℓ} where

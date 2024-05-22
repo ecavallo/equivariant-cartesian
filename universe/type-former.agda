@@ -1,6 +1,6 @@
 {-
 
-Showing the universe is closed under type formers
+The universe is closed under various type formers.
 
 -}
 module universe.type-former where

@@ -26,6 +26,8 @@ open import universe.core
 open import universe.fibrant
 open import universe.glue
 
+--↓ The type of based equivalences is trivially fibrant.
+
 UATFib : ∀ (@♭ ℓ) → TFibStr {Γ = 𝟙 ▷ᶠ 𝑼ᶠ ℓ} (Σˣ (𝑼ˣ ℓ) (Elˣ 𝒒 ≃ˣ Elˣ (𝒒 ∘ 𝒑)))
 UATFib ℓ (tt , B) (φ , Part) = filler
   where
@@ -64,6 +66,8 @@ UATFib ℓ (tt , B) (φ , Part) = filler
       (_ [ φ ↦_])
       (funExt λ u → sym (Σext (GlueᵁMatch _ _ _ _ _) (sym (fixPath u .at0))))
       (Σᶠ (𝑼ᶠ ℓ) (Elᶠ snd ≃ᶠ Elᶠ fst) .snd .lift 𝕚 (cst B) 1 box .fill 0)
+
+--↓ The type of based equivalences is contractible.
 
 UA : ∀ (@♭ ℓ) → 𝟙 ⊢ᶠ Πᶠ (𝑼ᶠ ℓ) (IsContrᶠ (Σᶠ (𝑼ᶠ ℓ) (Elᶠ 𝒒 ≃ᶠ Elᶠ (𝒒 ∘ 𝒑))))
 UA ℓ = λˣ $ TFibToIsContr (_ , UATFib ℓ)

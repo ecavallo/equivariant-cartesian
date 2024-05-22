@@ -1,6 +1,6 @@
 {-
 
-Universe
+Interpretation of a univalent universe of types.
 
 -}
 module universe where
