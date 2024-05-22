@@ -14,4 +14,4 @@ the category of cartesian cubical sets.
 
 See [index.agda](index.agda) for more information.
 
-See [https://ecavallo.github.io/equivariant-cartesian](ecavallo.github.io/equivariant-cartesian) for a friendlier HTML interface.
+See [ecavallo.github.io/equivariant-cartesian](https://ecavallo.github.io/equivariant-cartesian) for a friendlier HTML interface.
