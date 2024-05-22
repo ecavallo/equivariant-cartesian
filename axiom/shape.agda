@@ -1,7 +1,7 @@
 {-
 
-Postulates a type of shapes, types of homomorphisms between shapes, and the interval
-shape.
+Axiomatization of shapes. Postulates a type of shapes, types of homomorphisms between
+shapes, and the interval shape.
 
 -}
 module axiom.shape where
@@ -18,17 +18,34 @@ infixl 3 _▷⟨_⟩ _^_
 ------------------------------------------------------------------------------------------
 
 postulate
-  --↓ Universe of shapes.
+  --↓ We postulate a universe of shapes.
+  --↓ For the equivariant model in cartesian cubical sets, we take Shape to be ℕ and
+  --↓ ⟨ n ⟩ to be the n-cube 𝕀ⁿ.
 
   Shape : Type
   ⟨_⟩ : Shape → Type
 
-  --↓ Type of homomorphisms between a pair of shapes.
+  --↓ We postulate a type of homomorphisms between each pair of shapes.
+  --↓ For the equivariant model in cartesian cubical sets, the shape homomorphisms are the
+  --↓ automorphisms of cubes.
+
+  --↓ For the formalization we do not need that the shape morphisms are closed under
+  --↓ composition and identities, but closing under these does not affect the
+  --↓ construction. We also do not need that shape morphisms are isomorphisms as in the
+  --↓ case of the equivariant model structure on cartesian cubes, but they are constrained
+  --↓ to be isomorphism-like by the axioms on cofibrations.
 
   Shape[_,_] : Shape → Shape → Type
   ⟪_⟫ : {I J : Shape} → Shape[ I , J ] → ⟨ I ⟩ → ⟨ J ⟩
 
   --↓ Interval shape.
+  --↓ The interval shape is used to define path types and thus equivalences and anything
+  --↓ that depends on equivalences.
+
+  --↓ In the equivariant model in cartesian cubical sets, this is the shape encoding the
+  --↓ 1-cube. In that case every shape is a power of the interval, but the construction
+  --↓ does not require that the shapes are generated in this way (nor that shapes are
+  --↓ closed under products).
 
   𝕚 : Shape
 
@@ -37,9 +54,9 @@ postulate
 𝕀 : Type
 𝕀 = ⟨ 𝕚 ⟩
 
---↓ Interval endpoints.
-
 postulate
+  --↓ We postulate that the interval has two distinct elements (the *endpoints*).
+
   𝕚0 : 𝕀
   𝕚1 : 𝕀
   0≠1 : {A : Type ℓ} → 𝕚0 ≡ 𝕚1 → A
@@ -54,11 +71,15 @@ _▷⟨_⟩ : ∀ {ℓ} → Type ℓ → Shape → Type ℓ
 _▷𝕀 : ∀ {ℓ} → Type ℓ → Type ℓ
 Γ ▷𝕀 = Γ ▷⟨ 𝕚 ⟩
 
-------------------------------------------------------------------------------------------
--- The objects of shapes and shape morphisms are discrete (i.e., flat-modal).
-------------------------------------------------------------------------------------------
-
 postulate
+  --↓ We postulate that the type of shapes and the type of homomorphisms between any two
+  --↓ shapes are flat-modal, i.e. "discrete".
+
+  --↓ In the motivating cartesian cubical set semantics, this means they are discrete
+  --↓ cubical sets, which is indeed the case for the equivariant model: the type of shapes
+  --↓ is the *set* ℕ and Shape[ m , n ] is the *set* of automorphisms from the m-cube to the
+  --↓ n-cube.
+
   ShapeIsDiscrete : {A : Shape → Type ℓ}
     → ((@♭ S : Shape) → A S) → ((S : Shape) → A S)
 

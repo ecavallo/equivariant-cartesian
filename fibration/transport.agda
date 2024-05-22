@@ -26,7 +26,7 @@ record TranspStr {Γ : Type ℓ} (A : Γ → Type ℓ') : Type (ℓ ⊔ ℓ') wh
 
     cap≡ : (S : Shape) (γ : Γ ^ S) (r : ⟨ S ⟩) (a : A (γ r)) → lift S γ r a r ≡ a
 
-    --↓ The transport structures satisfy the equivariance condition.
+    --↓ The transport structures must satisfy an equivariance condition.
 
     vary : ∀ S T (σ : Shape[ S , T ])
       (γ : Γ ^ T) (r : ⟨ S ⟩) (a : A (γ (⟪ σ ⟫ r))) (s : ⟨ S ⟩)
@@ -67,6 +67,9 @@ fibTranspStr A = fibStrToTranspStr (A .snd)
 -- Given a transport structure on a family and a fibration structure on every fiber of the
 -- family (a "homogeneous filling structure"), we can construct a fibration structure on
 -- that family.
+--
+-- This would be used in an extension of the interpretation to include higher inductive
+-- types.
 ------------------------------------------------------------------------------------------
 
 FiberwiseFibStr : {Γ : Type ℓ} → (Γ → Type ℓ') → Type (ℓ ⊔ ℓ')

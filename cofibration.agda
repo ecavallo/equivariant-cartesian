@@ -1,6 +1,6 @@
 {-
 
-Basic properties of cofibrations.
+Basic operations on and properties of cofibrations.
 
 -}
 module cofibration where
@@ -21,7 +21,7 @@ private variable
   Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
--- Abbreviations
+-- Abbreviations.
 ------------------------------------------------------------------------------------------
 
 --↓ Cofibration for the boundary of the interval shape.
@@ -56,20 +56,20 @@ cofIsStrictProp' : (φ : Cof) {u v : [ φ ]} → u ≡ v
 cofIsStrictProp' φ = cofIsStrictProp φ _ _
 
 ------------------------------------------------------------------------------------------
--- Partial elements
+-- Partial elements.
 ------------------------------------------------------------------------------------------
 
---↓ Type of partial elements in a type.
+--↓ Type of partial elements in a type, that is elements defined when some cofibration
+--↓ holds.
 
 _⁺ : Type ℓ → Type ℓ
 A ⁺ = Σ φ ∈ Cof , ([ φ ] → A)
 
 ------------------------------------------------------------------------------------------
--- Restricted types
+-- Restricted types.
 ------------------------------------------------------------------------------------------
 
---↓ A [ φ ↦ a ] is the type of elements of A which are equal to a whenever [ φ ] is
---↓ inhabited.
+--↓ A [ φ ↦ a ] is the type of elements of A which are equal to a whenever [ φ ] holds.
 
 record _[_↦_] (A : Type ℓ) (φ : Cof) (a : [ φ ] → A) : Type ℓ where
   constructor makeRestrict
@@ -102,7 +102,7 @@ narrow b f .out = b .out
 narrow b f .out≡ u = b .out≡ (f u)
 
 ------------------------------------------------------------------------------------------
--- Combining compatible partial functions
+-- Combining compatible partial functions.
 ------------------------------------------------------------------------------------------
 
 --↓ Derived non-dependent elimination principle for a union of cofibrations.

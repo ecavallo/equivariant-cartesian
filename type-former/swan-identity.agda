@@ -85,6 +85,10 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
   Idˣ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ˣ A) → (Γ → Type ℓ)
   Idˣ A a₀ a₁ γ = Id (a₀ γ) (a₁ γ)
 
+  ----------------------------------------------------------------------------------------
+  -- Fibrancy of Id-types.
+  ----------------------------------------------------------------------------------------
+
   opaque
     ConstancyIsTFib : {A : Γ → Type ℓ} {a₀ a₁ : Γ ⊢ˣ A} (p : Γ ⊢ˣ Pathˣ A a₀ a₁)
       → TFibStr (Constancyˣ p)
@@ -108,6 +112,8 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
   Idᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
   Idᶠ A a₀ a₁ = Σᶠ (Pathᶠ A a₀ a₁) (TFibToFib (ConstancyTFib 𝒒))
 
+  --↓ The fibrancy structure is stable under reindexing.
+
   opaque
     reindexIdᶠ : {A : Γ ⊢ᶠType ℓ} {a₀ a₁ : Γ ⊢ᶠ A}
       (ρ : Δ → Γ) → Idᶠ A a₀ a₁ ∘ᶠ ρ ≡ Idᶠ (A ∘ᶠ ρ) (a₀ ∘ ρ) (a₁ ∘ ρ)
@@ -126,7 +132,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
   idreflᶠ A a γ = idrefl (a γ)
 
   ----------------------------------------------------------------------------------------
-  -- Singleton and singleton contractibility for identity types
+  -- Singleton and singleton contractibility for identity types.
   ----------------------------------------------------------------------------------------
 
   IdSingl : {A : Type ℓ} (a : A) → Type ℓ
@@ -223,7 +229,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
       refl
 
   ----------------------------------------------------------------------------------------
-  -- Transport along identities
+  -- Transport along identities.
   ----------------------------------------------------------------------------------------
 
   module _ (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') {a : Γ ⊢ᶠ A} (b : Γ ⊢ᶠ B ∘ᶠ (id ,, a))
@@ -259,7 +265,7 @@ module SwanIdentity (ext : CofExtensionality) (dom : CofHasΣ) where
       sym (B .snd .lift 𝕚 _ 0 _ .fill 1 .out≡ tt)
 
   ----------------------------------------------------------------------------------------
-  -- Paulin-Mohring style J eliminator
+  -- Paulin-Mohring style J eliminator.
   ----------------------------------------------------------------------------------------
 
   idJᶠ : (A : Γ ⊢ᶠType ℓ) (a : Γ ⊢ᶠ A)

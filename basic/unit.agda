@@ -1,6 +1,6 @@
 {-
 
-  Unit type.
+Unit type.
 
 -}
 module basic.unit where

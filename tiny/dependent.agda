@@ -16,7 +16,7 @@ complication of the equivariance condition), as observed in passing in
 
 The caveat concerns universe level: the definition of √ᴰ uses a universe 𝑽, and √ᴰ then
 takes 𝑽-small types to types in the *next* universe. Compare the construction in §4 of
-[1], where local universes are used to construct a CwF with a DRA.
+[1], where *local* universes are used to construct a CwF with a DRA.
 
 In the motivating cubical set semantics, it should be possible to define √ᴰ in such a way
 that it does not raise universe level. Given a type family Γˢ.A → Γˢ we apply the right
@@ -27,7 +27,7 @@ adjoint √ and reindex along the unit Γ → √(Γˢ) to define a family Γ.�
  ↓       ↓
  Γ ———→ √(Γˢ)
 
-In our internal setting, however, we are not aware that √ preserves locally 𝑽-small maps.
+In our internal setting, however, we cannot see that √ preserves locally 𝑽-small maps.
 
 Using the fact that exponentiation by a shape has a further left adjoint (namely product
 with that shape), we formulate the elimination rule in the style of
@@ -35,6 +35,12 @@ with that shape), we formulate the elimination rule in the style of
 [3] Gratzer, Cavallo, Kavvos, Guatto, & Birkedal.
     Modalities and parametric adjoints.
     https://doi.org/10.1145/3514241
+
+Such a connective is also described in
+
+[4] Riley.
+    A Type Theory with a Tiny Object.
+    https://arxiv.org/abs/2403.01939
 
 -}
 module tiny.dependent where

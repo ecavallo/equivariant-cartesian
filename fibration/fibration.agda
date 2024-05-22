@@ -1,6 +1,7 @@
 {-
 
-Defines fibration structures and fibrations.
+Definition of fibration structures and fibrations.
+Types are interpreted as fibrations in the interpretation of homotopy type theory.
 
 -}
 module fibration.fibration where
@@ -385,9 +386,7 @@ opaque
     → retractFibStr retract β ∘ᶠˢ ρ  ≡ retractFibStr (retract ∘ ρ) (β ∘ᶠˢ ρ)
   reindexRetractFibStr retract ρ = FibStrExt λ _ _ _ _ _ → refl
 
-------------------------------------------------------------------------------------------
--- Corollary: fibration structures can be transferred across isomorphisms.
-------------------------------------------------------------------------------------------
+--↓ Corollary: fibration structures can be transferred across isomorphisms.
 
 opaque
   isomorphFibStr : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}

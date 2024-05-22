@@ -24,7 +24,7 @@ private variable
 infix 4 _≃_
 
 ------------------------------------------------------------------------------------------
--- Equivalences
+-- Equivalences.
 ------------------------------------------------------------------------------------------
 
 IsEquiv : {A : Type ℓ} {B : Type ℓ'} → (A → B) → Type (ℓ ⊔ ℓ')
@@ -65,7 +65,7 @@ equiv∘iso iso e .snd c = contractor
         (e .snd c .snd (iso .to a , p)))
 
 ------------------------------------------------------------------------------------------
--- Fibrancy of the type of equivalences between two fibrant types
+-- Fibrancy of the type of equivalences between two fibrant types.
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -110,7 +110,7 @@ reindexEquivᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ⊢ᶠType ℓ'}
 reindexEquivᶠ ρ = Σext refl (reindexEquivFibStr _)
 
 ------------------------------------------------------------------------------------------
--- Being an equivalence is an h-proposition
+-- Being an equivalence is an h-proposition.
 ------------------------------------------------------------------------------------------
 
 opaque
@@ -145,7 +145,7 @@ opaque
 
 ------------------------------------------------------------------------------------------
 -- A map f : A → B between fibrant types is an equivalence if and only if its fiber family
--- is a trivial fibration
+-- is a trivial fibration.
 ------------------------------------------------------------------------------------------
 
 equivToFiberTFib : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ')
@@ -160,7 +160,7 @@ fiberTFibToIsEquiv : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') {f : Γ �
 fiberTFibToIsEquiv A B c = curry (TFibToIsContr (_ , c))
 
 ------------------------------------------------------------------------------------------
--- Identity and transport functions are equivalences
+-- Identity and transport functions are equivalences.
 ------------------------------------------------------------------------------------------
 
 opaque

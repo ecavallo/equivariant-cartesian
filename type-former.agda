@@ -1,6 +1,6 @@
 {-
 
-Type formers
+Interpretations of type formers of homotopy type theory (excluding the universe).
 
 -}
 module type-former where

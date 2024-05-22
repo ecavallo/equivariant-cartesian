@@ -1,8 +1,7 @@
 {-
 
-  Propositional equality in the ambient type theory.
-
-  We use Agda's --with-K flag to make identity proofs unique (see "uip" below).
+Propositional equality in the ambient type theory.
+We use Agda's --with-K flag to make identity proofs unique (see "uip" below).
 
 -}
 module basic.equality where
@@ -23,7 +22,7 @@ private variable
 uip : {A : Type ℓ} {a₀ a₁ : A} (p q : a₀ ≡ a₁) → p ≡ q
 uip refl refl = refl
 
---↓ Variant with implicit arguments.
+--↓ Variant of uip with implicit arguments.
 
 uip' : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ≡ a₁} → p ≡ q
 uip' = uip _ _
@@ -155,9 +154,7 @@ opaque
     → subst B p₀₃ b₀ ≡ subst B p₁₃ b₁
   adjustSubstEq B refl refl refl refl = id
 
-------------------------------------------------------------------------------------------
--- Propositions with respect to strict equality.
-------------------------------------------------------------------------------------------
+--↓ Definition of propositions with respect to the ambient (strict) equality.
 
 isStrictProp : (A : Type ℓ) → Type ℓ
 isStrictProp A = (a₀ a₁ : A) → a₀ ≡ a₁

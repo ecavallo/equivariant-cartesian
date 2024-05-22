@@ -1,6 +1,6 @@
 {-
 
-  Σ-types.
+Σ-types of the ambient type theory.
 
 -}
 module basic.sigma where

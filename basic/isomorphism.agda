@@ -1,6 +1,7 @@
 {-
 
-Definitions of retract and isomorphism.
+Definition of isomorphism in the ambient type theory (with inverses up to strict
+equality).
 
 -}
 module basic.isomorphism where
@@ -12,6 +13,8 @@ private variable
   ℓ ℓ' : Level
 
 infix 4 _≅_
+
+--↓ Definition of isomorphism.
 
 record _≅_ (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
  field

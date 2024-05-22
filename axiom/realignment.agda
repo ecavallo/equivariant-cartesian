@@ -11,17 +11,14 @@ open import cofibration
 
 private variable ℓ : Level
 
-------------------------------------------------------------------------------------------
--- Postulates realignment along cofibrations for the universes of the ambient type theory.
-------------------------------------------------------------------------------------------
+--↓ We postulate realignment along cofibrations for the universes of the ambient type
+--↓ theory.
 
 postulate
   ≅Realigns : (φ : Cof) (B : Type ℓ)
     (A : [ φ ] → Σ (Type ℓ) (_≅ B)) → Σ (Type ℓ) (_≅ B) [ φ ↦ A ]
 
-------------------------------------------------------------------------------------------
--- Convenience functions unpacking the components of the postulated realignment.
-------------------------------------------------------------------------------------------
+--↓ Convenience functions unpacking the components of the postulated realignment.
 
 ≅Realign : (φ : Cof) {B : Type ℓ} {A : [ φ ] → Type ℓ} (e : (u : [ φ ]) → A u ≅ B)
   → Type ℓ

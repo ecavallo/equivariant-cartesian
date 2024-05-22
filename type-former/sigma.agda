@@ -1,6 +1,6 @@
 {-
 
-Fibration structure on Σ-types.
+Fibrancy of Σ-types.
 
 -}
 module type-former.sigma where
@@ -14,6 +14,10 @@ open import fibration.fibration
 private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
+
+------------------------------------------------------------------------------------------
+-- Fibrancy of Σ-types.
+------------------------------------------------------------------------------------------
 
 module ΣLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
@@ -84,9 +88,7 @@ opaque
   ΣFibStr α β .lift S γ r = ΣLift.filler (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
   ΣFibStr α β .vary S T σ γ r = ΣVary.eq σ (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
 
-  ----------------------------------------------------------------------------------------
-  -- Forming Σ-types is stable under reindexing
-  ----------------------------------------------------------------------------------------
+  --↓ The fibrancy structure on Σ-types is stable under reindexing.
 
   reindexΣFibStr : {A : Γ → Type ℓ} {α : FibStr A} {B : Γ ▷ˣ A → Type ℓ'} {β : FibStr B}
     (ρ : Δ → Γ) → ΣFibStr α β ∘ᶠˢ ρ ≡ ΣFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))

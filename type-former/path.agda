@@ -19,6 +19,8 @@ private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
 
+--↓ A path is a function from the interval shape with specified endpoints.
+
 record _~_ {A : Type ℓ} (a₀ a₁ : A) : Type ℓ where
   constructor path
   field
@@ -31,6 +33,8 @@ open _~_ public
 eqToPath : {A : Type ℓ} {a₀ a₁ : A} → a₀ ≡ a₁ → a₀ ~ a₁
 eqToPath {a₀ = a₀} eq = path (cst a₀) refl eq
 
+--↓ The reflexive path is the constant function.
+
 refl~ : {A : Type ℓ} (a : A) → a ~ a
 refl~ a = eqToPath refl
 
@@ -40,10 +44,14 @@ congPath f p .at = f ∘ p .at
 congPath f p .at0 = cong f (p .at0)
 congPath f p .at1 = cong f (p .at1)
 
+--↓ An extensionality principle for paths.
+
 PathExt : {A : Type ℓ} {a₀ a₁ : A} {p q : a₀ ~ a₁}
   → (∀ i → p .at i ≡ q .at i) → p ≡ q
 PathExt t =
   congΣ (uncurry ∘ path) (funExt t) (×ext uip' uip')
+
+--↓ Definition of the family underlying the path type.
 
 Pathˣ : (A : Γ → Type ℓ) (a₀ a₁ : Γ ⊢ˣ A) → Γ → Type ℓ
 Pathˣ A a₀ a₁ γ = a₀ γ ~ a₁ γ
@@ -53,6 +61,10 @@ congPathˣ : {A : Γ → Type ℓ} {B : Γ → Type ℓ'}
   {a₀ a₁ : Γ ⊢ˣ A} (p : Γ ⊢ˣ Pathˣ A a₀ a₁)
   → Γ ⊢ˣ Pathˣ B (appˣ f a₀) (appˣ f a₁)
 congPathˣ f p γ = congPath (f γ) (p γ)
+
+------------------------------------------------------------------------------------------
+-- Fibrancy of path types.
+------------------------------------------------------------------------------------------
 
 opaque
   private
@@ -76,9 +88,7 @@ opaque
   PathFibStr α a₀ a₁ =
     retractFibStr retract (ExtensionFibStr 𝕚 (α ∘ᶠˢ 𝒑) ∂ _)
 
-  ----------------------------------------------------------------------------------------
-  -- Forming Path types is stable under reindexing
-  ----------------------------------------------------------------------------------------
+  --↓ The fibrancy structure is stable under reindexing.
 
   reindexPathFibStr : {A : Γ → Type ℓ} {α : FibStr A} {a₀ a₁ : Γ ⊢ˣ A}
     (ρ : Δ → Γ)
@@ -90,10 +100,6 @@ opaque
       retractFibStr
       (funExt' $ retractExt (funExt' $ funExt' $ restrictExt refl) refl)
       (reindexExtensionFibStr ρ)
-
-------------------------------------------------------------------------------------------
--- Fibrant path types
-------------------------------------------------------------------------------------------
 
 Pathᶠ : (A : Γ ⊢ᶠType ℓ) (a₀ a₁ : Γ ⊢ᶠ A) → Γ ⊢ᶠType ℓ
 Pathᶠ A a₀ a₁ .fst = Pathˣ (A .fst) a₀ a₁

@@ -1,6 +1,6 @@
 {-
 
-Definition and basic properties of (strict) retracts.
+Definition and basic properties of retracts of the ambient type theory.
 
 -}
 module basic.retract where
@@ -14,6 +14,8 @@ open import axiom.funext
 private variable
   ℓ ℓ' : Level
 
+--↓ Definition of retract in the ambient type theory.
+
 record Retract (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
  constructor makeRetract
  field
@@ -23,12 +25,16 @@ record Retract (A : Type ℓ) (B : Type ℓ') : Type (ℓ ⊔ ℓ') where
 
 open Retract public
 
+--↓ Extensionality principle for equality of retracts.
+
 retractExt : {A : Type ℓ} {B : Type ℓ'}
   {retract₀ retract₁ : Retract A B}
   → retract₀ .sec ≡ retract₁ .sec
   → retract₀ .ret ≡ retract₁ .ret
   → retract₀ ≡ retract₁
 retractExt refl refl = cong (makeRetract _ _) (funExt' $ uip')
+
+--↓ Any isomorphism is in particular a retract.
 
 isoToRetract : {A : Type ℓ} {B : Type ℓ'}
   → A ≅ B → Retract A B

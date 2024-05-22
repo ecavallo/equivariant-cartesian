@@ -1,6 +1,6 @@
 {-
 
-Fibrancy of extension types.
+Fibrancy of extension types over shapes.
 
 -}
 module type-former.extension where
@@ -15,6 +15,16 @@ private variable
   ℓ : Level
   Γ Δ : Type ℓ
 
+------------------------------------------------------------------------------------------
+-- Definition of an extension type over a shape Z, type A over ⟨ Z ⟩, and partial element
+-- of A in the context extended by Z. Elements are functions from Z to A which extend the
+-- partial element.
+--
+-- For this to define a fibrant type when A is fibrant, it is important that the domain of
+-- definition of the partial element (φ below) depend only on Z and not on the ambient
+-- context.
+------------------------------------------------------------------------------------------
+
 Extensionˣ : (Z : Shape)
   (A : Γ ▷⟨ Z ⟩ → Type ℓ)
   (φ : ⟨ Z ⟩ → Cof)
@@ -22,6 +32,10 @@ Extensionˣ : (Z : Shape)
   → Γ → Type ℓ
 Extensionˣ Z A φ a γ =
   (z : ⟨ Z ⟩) → A (γ , z) [ φ z ↦ curry a (γ , z) ]
+
+------------------------------------------------------------------------------------------
+-- Fibrancy of extension types.
+------------------------------------------------------------------------------------------
 
 module ExtensionLift {Z φ S r}
   {A : ⟨ S ⟩ ▷⟨ Z ⟩ → Type ℓ} (α : FibStr A)
@@ -80,9 +94,8 @@ opaque
   ExtensionFibStr Z α φ a .lift S γ r = ExtensionLift.filler (α ∘ᶠˢ (γ ×id))
   ExtensionFibStr Z α φ a .vary S T σ γ r = ExtensionVary.eq σ (α ∘ᶠˢ (γ ×id))
 
-  ----------------------------------------------------------------------------------------
-  -- Forming extension types is stable under reindexing
-  ----------------------------------------------------------------------------------------
+  --↓ Forming extension types is stable under reindexing
+
   reindexExtensionFibStr : {Z : Shape}
     {A : Γ ▷⟨ Z ⟩ → Type ℓ} {α : FibStr A}
     {φ : ⟨ Z ⟩ → Cof}

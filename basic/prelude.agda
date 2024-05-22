@@ -1,8 +1,8 @@
 {-
 
 Absolute basics:
-- universe levels for the ambient type theory;
-- definition of equality.
+  ∙ universe levels for the ambient type theory;
+  ∙ definition of equality (with axiom K provided by the --with-K flag).
 
 -}
 module basic.prelude where

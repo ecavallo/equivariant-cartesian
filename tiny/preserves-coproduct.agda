@@ -1,10 +1,12 @@
 {-
 
-  Derives from external tinyness of the shape S that dependent exponentation by
-  S commutes with coproducts.
+Π over a shape S commutes with coproducts.
 
-  This argument relies on the fact that the universe of crisp types is closed under coproducts.
-  TODO elaborate
+We derive this from the axiom stating that each shape is tiny (exponentiation has an
+external right adjoint). From this assumption, it is a standard consequence (right
+adjoints preserve limits) that exponentiation by S commutes with coproducts of external
+types (i.e., types assumed under the flat modality). Using a universe, we extend this to
+arbitrary types and dependent exponentiation.
 
 -}
 module tiny.preserves-coproduct where
@@ -19,6 +21,8 @@ open import tiny.basic
 module _ (@♭ S : Shape) where
 
   open Tiny S
+
+  --↓ Exponentation by a shape commutes with coproducts of external types.
 
   shape→⊎♭ : ∀ {@♭ ℓ ℓ'} {@♭ A : Type ℓ} {@♭ B : Type ℓ'}
     → ((A ^ S) ⊎ (B ^ S)) ≅ ((A ⊎ B) ^ S)
@@ -44,6 +48,8 @@ module _ (@♭ S : Shape) where
     main .inv₂ _ =
       cong$ (√TransposeLeft forward back ∙ cong♭ transposeLeft (funExt forward∘back))
 
+  --↓ Naturality of the isomorphism above.
+
   shape→⊎♭` : ∀ {@♭ ℓ ℓ' ℓ'' ℓ'''}
     {@♭ A : Type ℓ} {@♭ A' : Type ℓ'}
     {@♭ B : Type ℓ''} {@♭ B' : Type ℓ'''}
@@ -57,6 +63,9 @@ module _ (@♭ S : Shape) where
     → ∇ ∘ shape→⊎♭ .to p ≡ ∇ p
   shape→⊎♭∇ (inl _) = refl
   shape→⊎♭∇ (inr _) = refl
+
+--↓ A dependent function from a shape into a coproduct defines a function into one of the
+--↓ summands.
 
 shape→⊎ : ∀ {@♭ ℓ ℓ'} (S : Shape)
   {A : ⟨ S ⟩ → Type ℓ} {B : ⟨ S ⟩ → Type ℓ'}

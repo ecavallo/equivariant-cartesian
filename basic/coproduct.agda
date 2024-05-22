@@ -1,6 +1,6 @@
 {-
 
-  Coproducts.
+Coproducts in the ambient type theory.
 
 -}
 module basic.coproduct where

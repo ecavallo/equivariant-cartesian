@@ -17,7 +17,7 @@ open import tiny.preserves-coproduct
 private variable
   ℓ : Level
 
---↓ Type of decision procedures for a type
+--↓ Type of decision procedures for a type.
 
 Decision : Type ℓ → Type ℓ
 Decision A = A ⊎ ¬ A

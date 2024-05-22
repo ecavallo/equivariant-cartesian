@@ -18,8 +18,6 @@ f $♭ a = f a
 
 infixr 5 _$♭_
 
---↓ Substitution for flat-modal families.
-
 --↓ Congruence for flat-modal functions.
 
 cong♭ : ∀ {@♭ ℓ} {@♭ A : Type ℓ} {B : Type ℓ'}

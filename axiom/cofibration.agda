@@ -11,30 +11,31 @@ open import axiom.shape
 
 infixr 4 _∨_
 
-------------------------------------------------------------------------------------------
--- Axiomatization of the cofibration classifier.
-------------------------------------------------------------------------------------------
-
 postulate
-  --↓ Object of cofibrations and decoding of cofibrations as types.
+  --↓ We postulate a type of cofibrations and decoding of cofibrations as types.
   --↓ The projection fst : Σ Cof [_] → Cof is the classifying map for cofibrations.
+
+  --↓ In the motivating semantics in cartesian cubical sets, the type of cofibrations is
+  --↓ the subobject classifier, ↓ or the classifier for levelwise decidable subobjects if
+  --↓ working constructively.
 
   Cof : Type
   [_] : Cof → Type
 
-  --↓ Any cofibration is a strict proposition.
+  --↓ We postulate that each cofibration is a proposition of the ambient type theory.
 
   cofIsStrictProp : (φ : Cof) → isStrictProp [ φ ]
 
-  --↓ The type of equalities between two elements of a shape is coded by a cofibration.
+  --↓ We postulate that the type of equalities between two elements of a shape is coded by
+  --↓ a cofibration.
 
   _∋_≈_ : (S : Shape) → ⟨ S ⟩ → ⟨ S ⟩ → Cof
   [≈] : (S : Shape) (s t : ⟨ S ⟩) → [ S ∋ s ≈ t ] ≡ (s ≡ t)
 
-  --↓ The empty and unit types are coded by cofibrations.
-  --↓ It is not strictly necessary to assume these separately: we have already assumed an
-  --↓ interval shape with two disequal elements, so we could define ⊥ to be 𝕚 ∋ 0 ≈ 1 and
-  --↓ ⊤ to be 𝕚 ∋ 0 ≈ 0.
+  --↓ We postulate that the empty and unit types are coded by cofibrations.
+  --↓ These postulates are redundant: we have already assumed an interval shape with two
+  --↓ distinct elements, so we could define ⊥ to be 𝕚 ∋ 0 ≈ 1 and ⊤ to be 𝕚 ∋ 0 ≈ 0.
+  --↓ It is however convenient to take them as primitive.
 
   ⊥ : Cof
   [⊥] : [ ⊥ ] ≡ 𝟘
@@ -42,9 +43,10 @@ postulate
   ⊤ : Cof
   [⊤] : [ ⊤ ] ≡ 𝟙
 
-  --↓ The union of two cofibrations is again a cofibration. Rather than introducing an
-  --↓ equality for decoding the union of cofibrations, we axiomatize its introduction
-  --↓ and elimination principles directly.
+  --↓ We postulate that the union of two cofibrations is again a cofibration.
+  --↓ Rather than postulating the existence of the union of arbitrary propositions (e.g.
+  --↓ via propositional truncation) and asserting a decoding equality for ∨, we axiomatize
+  --↓ introduction and elimination rules for the decoding of ∨ directly.
 
   _∨_ : Cof → Cof → Cof
 
@@ -60,21 +62,27 @@ postulate
   ∨-elim-βl : ∀ ℓ φ ψ P f g p u → ∨-elim {ℓ} {φ} {ψ} {P} f g p (∨l u) ≡ f u
   ∨-elim-βr : ∀ ℓ φ ψ P f g p v → ∨-elim {ℓ} {φ} {ψ} {P} f g p (∨r v) ≡ g v
 
-  --↓ Cofibrations are closed under universal quantification over a shape.
+  --↓ We postulate that cofibrations are closed under universal quantification over a shape.
 
   all : (S : Shape) → (⟨ S ⟩ → Cof) → Cof
   [all] : ∀ S φ → [ all S φ ] ≡ ((s : ⟨ S ⟩) → [ φ s ])
 
-  --↓ We require that the shape equality and universal quantification cofibrations are
-  --↓ invariant under shape morphisms in the following sense.
+  --↓ We postulate that the shape equality and universal quantification cofibrations are
+  --↓ invariant under shape morphisms in the following sense. These axioms have the effect
+  --↓ of forcing shape morphisms to be isomorphism-like, and are in particular
+  --↓ automatically satisfied if all shape morphisms are isomorphisms and Cof is
+  --↓ extensional (logically equivalent cofibrations are equal), as is the case in the
+  --↓ motivating semantics.
 
-  --↓ The first axiom can be read as asserting that shape morphisms are monic.
+  --↓ We postulate that shape equality is invariant under shape morphisms.
+  --↓ This can be read as asserting that shape morphisms are monic.
 
   ≈Equivariant : {S T : Shape} (σ : Shape[ S , T ]) (r s : ⟨ S ⟩)
     → (T ∋ ⟪ σ ⟫ r ≈ ⟪ σ ⟫ s) ≡ (S ∋ r ≈ s)
 
-  --↓ The second axiom can be understood as asserting that shape morphisms are epic as
-  --↓ far as cofibrations can see. It is used in the proof of realignment for fibrations.
+  --↓ We postulate that universal quantification is invariant under shape morphisms.
+  --↓ This can be read as asserting that shape morphisms are epic from the perspective of
+  --↓ cofibrations.
 
   allEquivariant : {S T : Shape} (σ : Shape[ S , T ]) (φ : ⟨ T ⟩ → Cof)
     → all T φ ≡ all S (φ ∘ ⟪ σ ⟫)

@@ -3,6 +3,14 @@
 Axioms requiring that each shape is tiny, in the sense that exponentiation by each shape
 has an external right adjoint.
 
+The fact that this right adjoint is external is captured by its being a flat-modal
+function from the universe of types. In the motivating semantics in cartesian cubical
+sets, this means it takes a closed presheaf as an argument rather than a family of
+presheaves over a context. (More precisely, it takes a family of presheaves over a *set*
+as opposed to over an arbitrary *presheaf*.)
+
+We encode the adjunction as a natural isomorphism on hom-sets.
+
 -}
 module axiom.tiny where
 

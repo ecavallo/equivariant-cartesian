@@ -27,7 +27,7 @@ private variable
   Γ Δ : Type ℓ
 
 ------------------------------------------------------------------------------------------
--- Weak Glue types
+-- Weak Glue types.
 ------------------------------------------------------------------------------------------
 
 record WeakGlue (φ : Cof)
@@ -61,7 +61,7 @@ opaque
   WeakGlueExt p refl = congΣ (wglue _) (funExt p) (funExt' uip')
 
 ------------------------------------------------------------------------------------------
--- Partial isomorphism from the domain
+-- Partial isomorphism from the domain.
 ------------------------------------------------------------------------------------------
 
 domToGlue : (φ : Cof)
@@ -95,7 +95,7 @@ domIsoGlueˣ : (φ : Γ → Cof)
 domIsoGlueˣ φ f (γ , u) = domIsoGlue (φ γ) (f ∘ (γ ,_)) u
 
 ------------------------------------------------------------------------------------------
--- Fibrancy of weak Glue types
+-- Fibrancy of weak Glue types.
 ------------------------------------------------------------------------------------------
 
 module WeakGlueLift {S r φ}
@@ -306,7 +306,7 @@ reindexWeakGlueᶠ : {φ : Γ → Cof}
 reindexWeakGlueᶠ ρ = Σext refl (reindexWeakGlueFibStr ρ)
 
 ------------------------------------------------------------------------------------------
--- Equivalence to the codomain for weak Glue types
+-- Equivalence to the codomain for weak Glue types.
 ------------------------------------------------------------------------------------------
 
 codᶠ : (φ : Γ → Cof)
@@ -375,7 +375,7 @@ codᶠEquiv φ B A fe =
   fiberTFibToIsEquiv (WeakGlueᶠ φ B A fe) B (codᶠFiberTFibStr φ B A fe)
 
 ------------------------------------------------------------------------------------------
--- Strict Glue types
+-- Strict Glue types.
 ------------------------------------------------------------------------------------------
 
 opaque

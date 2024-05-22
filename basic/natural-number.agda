@@ -1,7 +1,7 @@
 {-
 
-  Natural numbers.
-  We import Agda's builtin natural number datatype.
+Natural numbers of the ambient type theory.
+We import Agda's built-in natural number datatype.
 
 -}
 module basic.natural-number where

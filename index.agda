@@ -7,9 +7,9 @@ Formalization of an equivariant cartesian cubical set model of type theory
 This formalization accompanies the article
 
   The equivariant model structure on cartesian cubical sets.
-  Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, and Christian Sattler
+  Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, & Christian Sattler
 
-The contents of the formalization are summarized in Appendix A of the article.
+The contents of the formalization are outlined in Appendix A of the article.
 
 The formalization defines a model of homotopy type theory inside an extensional type
 theory augmented with a flat modality and axioms postulating *shapes* (among them an
@@ -34,14 +34,15 @@ compiled with the flags
   --rewriting
 
 In particular, the --with-K flag enables axiom K (uniqueness of identity proofs), while
-the --cohesion and --flat-split flags enable the flat modality.
+the --cohesion and --flat-split flags enable the flat modality (see the module
+axiom.flat for more information).
 
 -}
 
 module index where
 
 --↓ The summary module defines the interpretation of homotopy type theory: the judgments,
---↓ type formers (including universes), and the univalence axiom. Most of the results are
+--↓ type formers (including universes), and the univalence axiom. Most results are
 --↓ imported from elsewhere in the formalization.
 
 import summary
@@ -51,7 +52,7 @@ import summary
 
 import basic
 
---↓ Syntax for the internal model of *extensional* type theory where contexts are
+--↓ Syntax for the internal model of extensional type theory where contexts are
 --↓ interpreted as types and types as families in some universe.
 
 import internal-extensional-type-theory

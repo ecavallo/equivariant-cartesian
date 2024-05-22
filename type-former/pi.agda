@@ -1,6 +1,6 @@
 {-
 
-Fibration structure on Π-types.
+Fibrancy of Π-types.
 
 -}
 module type-former.pi where
@@ -15,6 +15,10 @@ open import fibration.transport
 private variable
   ℓ ℓ' : Level
   Γ Δ : Type ℓ
+
+------------------------------------------------------------------------------------------
+-- Fibrancy of Π-types.
+------------------------------------------------------------------------------------------
 
 module ΠLift {S r}
   {A : ⟨ S ⟩ → Type ℓ} (α : FibStr A)
@@ -78,7 +82,16 @@ opaque
   ΠFibStr α β .lift S γ r = ΠLift.filler (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
   ΠFibStr α β .vary S T σ γ r = ΠVary.eq σ (α ∘ᶠˢ γ) (β ∘ᶠˢ (γ ×id))
 
---↓ Forming Π-types is stable under reindexing
+Πᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
+Πᶠ A B .fst = Πˣ (A .fst) (B .fst)
+Πᶠ A B .snd = ΠFibStr (A .snd) (B .snd)
+
+--↓ Non-dependent functions.
+
+_→ᶠ_ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
+A →ᶠ B = Πᶠ A (B ∘ᶠ 𝒑)
+
+--↓ The fibration structure on Π-types is stable under reindexing.
 
 opaque
   unfolding ΠFibStr
@@ -86,13 +99,6 @@ opaque
     (ρ : Δ → Γ) → ΠFibStr α β ∘ᶠˢ ρ ≡ ΠFibStr (α ∘ᶠˢ ρ) (β ∘ᶠˢ (ρ ×id))
   reindexΠFibStr ρ = FibStrExt λ _ _ _ _ _ → refl
 
-Πᶠ : (A : Γ ⊢ᶠType ℓ) (B : Γ ▷ᶠ A ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-Πᶠ A B .fst = Πˣ (A .fst) (B .fst)
-Πᶠ A B .snd = ΠFibStr (A .snd) (B .snd)
-
 reindexΠᶠ : {A : Γ ⊢ᶠType ℓ} {B : Γ ▷ᶠ A ⊢ᶠType ℓ'}
   (ρ : Δ → Γ) → Πᶠ A B ∘ᶠ ρ ≡ Πᶠ (A ∘ᶠ ρ) (B ∘ᶠ (ρ ×id))
 reindexΠᶠ ρ = Σext refl (reindexΠFibStr ρ)
-
-_→ᶠ_ : (A : Γ ⊢ᶠType ℓ) (B : Γ ⊢ᶠType ℓ') → Γ ⊢ᶠType (ℓ ⊔ ℓ')
-A →ᶠ B = Πᶠ A (B ∘ᶠ 𝒑)
