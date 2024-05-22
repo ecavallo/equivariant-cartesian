@@ -13,3 +13,5 @@ theory augmented with a flat modality and axioms postulating *shapes* (among the
 the category of cartesian cubical sets.
 
 See [index.agda](index.agda) for more information.
+
+See [https://ecavallo.github.io/equivariant-cartesian](ecavallo.github.io/equivariant-cartesian) for a friendlier HTML interface.
