@@ -2,8 +2,9 @@
 
 This formalization accompanies the article
 
-> The equivariant model structure on cartesian cubical sets.
-> Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, and Christian Sattler
+> The equivariant model structure on cartesian cubical sets. \
+> Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, and Christian Sattler. \
+> [arXiv:2406.18497](https://arxiv.org/abs/2406.18497).
 
 The contents of the formalization are summarized in Appendix A of the article.
 
