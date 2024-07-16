@@ -7,7 +7,8 @@ Formalization of an equivariant cartesian cubical set model of type theory
 This formalization accompanies the article
 
   The equivariant model structure on cartesian cubical sets.
-  Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, & Christian Sattler
+  Steve Awodey, Evan Cavallo, Thierry Coquand, Emily Riehl, & Christian Sattler.
+  https://arxiv.org/abs/2406.18497
 
 The contents of the formalization are outlined in Appendix A of the article.
 
