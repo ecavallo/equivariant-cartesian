@@ -16,7 +16,7 @@ postulate
   --↓ The projection fst : Σ Cof [_] → Cof is the classifying map for cofibrations.
 
   --↓ In the motivating semantics in cartesian cubical sets, the type of cofibrations is
-  --↓ the subobject classifier, ↓ or the classifier for levelwise decidable subobjects if
+  --↓ the subobject classifier, or the classifier for levelwise decidable subobjects if
   --↓ working constructively.
 
   Cof : Type
