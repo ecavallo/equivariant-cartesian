@@ -3,8 +3,8 @@
 Π over a shape S commutes with coproducts.
 
 We derive this from the axiom stating that each shape is tiny (exponentiation has an
-external right adjoint). From this assumption, it is a standard consequence (right
-adjoints preserve limits) that exponentiation by S commutes with coproducts of external
+external right adjoint). From this assumption, it is a standard consequence (left
+adjoints preserve colimits) that exponentiation by S commutes with coproducts of external
 types (i.e., types assumed under the flat modality). Using a universe, we extend this to
 arbitrary types and dependent exponentiation.
 
